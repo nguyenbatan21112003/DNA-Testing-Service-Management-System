@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.services\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.repositories\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.Common.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.common\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.Common.csproj|solutionrelative:dnatestsystem.common\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Services\\Program.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Program.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Services\\Program.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T17:07:52.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Program.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Program.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Program.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T17:06:54.558Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Common\\Program.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Program.cs",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Common\\Program.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T17:05:45.678Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
