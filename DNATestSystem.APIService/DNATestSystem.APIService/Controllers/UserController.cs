@@ -4,11 +4,12 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
-using DNATestSystem.BusinessObjects.Entiry;
-using DNATestSystem.Service;
+using DNATestSystem.BusinessObjects.Entites;
+using DNATestSystem.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Application.Dtos;
+using DNATestSystem.Services.Service;
 
 namespace DNATestSystem.Controllers
 {

@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using DNATestSystem.BusinessObjects;
 using DNATestSystem.Application.Dtos;
-using SWP391.Interceptor;
-namespace SWP391.ModelValidation
+using DNATestSystem.Repositories;
+namespace DNATestSystem.ModelValidation
 {
     public class UserValidateModel : AbstractValidator<UserRegisterModel>
         {

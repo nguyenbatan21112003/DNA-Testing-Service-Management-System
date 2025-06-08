@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using DNATestSystem.BusinessObjects.Entiry;
+using DNATestSystem.BusinessObjects.Entites;
 
-namespace SWP391.Interceptor
+namespace DNATestSystem.Repositories
 {
     public interface IApplicationDbContext
     {

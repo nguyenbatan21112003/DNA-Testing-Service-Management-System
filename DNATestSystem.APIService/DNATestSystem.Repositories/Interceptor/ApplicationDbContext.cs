@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using DNATestSystem.BusinessObjects;
-using DNATestSystem.BusinessObjects.Entiry;
-using SWP391.Interceptor;
+using DNATestSystem.BusinessObjects.Entites;
 
-namespace DNATestSystem.Interceptor
+namespace DNATestSystem.Repositories
 {
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {

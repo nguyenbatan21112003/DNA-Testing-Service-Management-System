@@ -1,0 +1,13 @@
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.csproj.AssemblyReference.cache
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.GeneratedMSBuildEditorConfig.editorconfig
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.AssemblyInfoInputs.cache
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.AssemblyInfo.cs
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.csproj.CoreCompileInputs.cache
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.sourcelink.json
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\bin\Debug\net8.0\DNATestSystem.BusinessObjects.deps.json
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\bin\Debug\net8.0\DNATestSystem.BusinessObjects.dll
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\bin\Debug\net8.0\DNATestSystem.BusinessObjects.pdb
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.dll
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\refint\DNATestSystem.BusinessObjects.dll
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\DNATestSystem.BusinessObjects.pdb
+D:\FPT\SWP\DNATestSystem\DNATestSystem\src\DNATestSystem.APIService\DNATestSystem.Common\obj\Debug\net8.0\ref\DNATestSystem.BusinessObjects.dll

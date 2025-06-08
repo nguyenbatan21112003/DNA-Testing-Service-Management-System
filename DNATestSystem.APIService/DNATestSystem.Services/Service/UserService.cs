@@ -5,12 +5,12 @@ using DNATestSystem.Application.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DNATestSystem.BusinessObjects.Entiry;
-using SWP391.Interceptor;
-using DNATestSystem.Application.Hash;
+using DNATestSystem.BusinessObjects.Entites;
+using DNATestSystem.Repositories;
+using DNATestSystem.Services.Hepler;
 
 
-namespace DNATestSystem.Service
+namespace DNATestSystem.Services.Service
 {
     public class UserService : IUserService
     {
@@ -62,14 +62,14 @@ namespace DNATestSystem.Service
             var hashPassword = HashHelper.BCriptHash(password);
 
             // Tạo user mới
-            var data = new DNATestSystem.BusinessObjects.Entiry.User
+            var data = new DNATestSystem.BusinessObjects.Entites.User
             {
                 FullName = user.FullName,
                 EmailAddress = user.EmailAddress,
                 Password = hashPassword,
                 PhoneNumber = user.PhoneNumber,
                 salting = salting,
-                Role = DNATestSystem.BusinessObjects.Entiry.Role.Customer,
+                Role = DNATestSystem.BusinessObjects.Entites.Role.Customer,
                 //CreateAt = DateTime.Now
             };
 

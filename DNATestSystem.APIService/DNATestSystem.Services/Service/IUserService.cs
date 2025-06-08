@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DNATestSystem.BusinessObjects;
-using DNATestSystem.BusinessObjects.Entiry;
+using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Application.Dtos;
-namespace DNATestSystem.Service
+namespace DNATestSystem.Services.Service
 {
     public interface IUserService
     {

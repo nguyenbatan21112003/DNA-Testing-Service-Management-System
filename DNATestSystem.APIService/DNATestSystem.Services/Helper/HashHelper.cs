@@ -1,4 +1,4 @@
-﻿namespace DNATestSystem.Application.Hash
+﻿namespace DNATestSystem.Services.Hepler
 {
     public class HashHelper
     {
