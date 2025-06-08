@@ -1,18 +1,74 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\",
+  "WorkspaceRootPath": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.services\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.repositories\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.Common.csproj|c:\\users\\asus\\onedrive\\desktop\\swp391\\dnatestsystem\\dnatestsystem.apiservice\\dnatestsystem.common\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.Common.csproj|solutionrelative:dnatestsystem.common\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\confirmotpmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\confirmotpmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entiry\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entiry\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\modelvalidation\\uservalidatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\modelvalidation\\uservalidatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\migrations\\applicationdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\migrations\\applicationdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\verifypasswordmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\verifypasswordmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\userregistermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\userregistermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\userloginmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\userloginmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\pendingpasswordchange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\pendingpasswordchange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\passwordchangestore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\passwordchangestore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\changepasswordwhenloggedinmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\changepasswordwhenloggedinmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\dnatestsystem.businessobjects.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\dnatestsystem.businessobjects.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +78,231 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 16,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Services\\Program.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Program.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Services\\Program.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entiry\\User.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entiry\\User.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entiry\\User.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entiry\\User.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABYAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T17:07:52.251Z",
+              "WhenOpened": "2025-06-08T14:51:47.68Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ApplicationDbContextFactory.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:49:27.432Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Program.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Program.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Program.cs",
-              "RelativeToolTip": "DNATestSystem.Repositories\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "IApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T17:06:54.558Z",
+              "WhenOpened": "2025-06-08T14:48:50.178Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:48:13.506Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApplicationDbContextModelSnapshot.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\ApplicationDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Migrations\\ApplicationDbContextModelSnapshot.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\ApplicationDbContextModelSnapshot.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Migrations\\ApplicationDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:47:50.513Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "UserRegisterModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:57.366Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "UserLoginModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:53.626Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "PendingPasswordChange.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:49.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "PasswordChangeStore.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PasswordChangeStore.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\PasswordChangeStore.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PasswordChangeStore.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\PasswordChangeStore.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:42.952Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Common\\Program.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Program.cs",
-              "ToolTip": "C:\\Users\\Asus\\OneDrive\\Desktop\\SWP391\\DNATestSystem\\DNATestSystem.APIService\\DNATestSystem.Common\\Program.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAJAAAAAAAAAA==",
+              "Title": "ConfirmOtpModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ConfirmOtpModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\ConfirmOtpModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ConfirmOtpModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\ConfirmOtpModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T17:05:45.678Z",
+              "WhenOpened": "2025-06-08T14:40:40.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ChangePasswordWhenLoggedInModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordWhenLoggedInModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordWhenLoggedInModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordWhenLoggedInModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordWhenLoggedInModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:36.239Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ChangePasswordRequest.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:24.775Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "VerifyPasswordModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\VerifyPasswordModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\VerifyPasswordModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\VerifyPasswordModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\VerifyPasswordModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:20.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "DNATestSystem.BusinessObjects",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "RelativeToolTip": "DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-06-08T14:38:59.365Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\UserService.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Service\\UserService.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAYwEAAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:35:57.408Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\IUserService.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\IUserService.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\IUserService.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Service\\IUserService.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAADwvwoAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:35:56.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserValidateModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAwAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:25:39.101Z",
               "EditorCaption": ""
             }
           ]

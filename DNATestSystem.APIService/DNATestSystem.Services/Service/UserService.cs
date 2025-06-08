@@ -10,7 +10,7 @@ using SWP391.Interceptor;
 using DNATestSystem.Application.Hash;
 
 
-namespace SWP391.Service
+namespace DNATestSystem.Service
 {
     public class UserService : IUserService
     {

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DNATestSystem.Common\DNATestSystem.BusinessObjects.csproj" />
+    <ProjectReference Include="..\DNATestSystem.Repositories\DNATestSystem.Repositories.csproj" />
     <ProjectReference Include="..\DNATestSystem.Services\DNATestSystem.Services.csproj" />
   </ItemGroup>
 

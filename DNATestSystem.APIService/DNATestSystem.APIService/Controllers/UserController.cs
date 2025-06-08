@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using SWP391.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
-using SWP391.Application.Dtos;
-using Microsoft.AspNetCore.Authorization;
+using DNATestSystem.BusinessObjects.Entiry;
+using DNATestSystem.Service;
 
-namespace SWP391.Controllers
+using Microsoft.AspNetCore.Authorization;
+using DNATestSystem.Application.Dtos;
+
+namespace DNATestSystem.Controllers
 {
     [ApiController]
     [Route("user")]

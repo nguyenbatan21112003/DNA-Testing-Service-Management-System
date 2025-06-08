@@ -2,7 +2,7 @@
 using DNATestSystem.BusinessObjects;
 using DNATestSystem.BusinessObjects.Entiry;
 using DNATestSystem.Application.Dtos;
-namespace SWP391.Service
+namespace DNATestSystem.Service
 {
     public interface IUserService
     {
