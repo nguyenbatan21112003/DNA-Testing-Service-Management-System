@@ -1,0 +1,207 @@
+"use client";
+
+import { useState, useContext, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
+import { AuthContext } from "../../context/AuthContext";
+
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const location = useLocation();
+  const { user, logout } = useContext(AuthContext);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
+
+  // Đóng dropdown khi click ngoài
+  useEffect(() => {
+    function handleClick(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    }
+    if (showDropdown) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showDropdown]);
+
+  const openLoginModal = () => {
+    setIsLoginModalOpen(true);
+    setIsRegisterModalOpen(false);
+  };
+
+  const openRegisterModal = () => {
+    setIsRegisterModalOpen(true);
+    setIsLoginModalOpen(false);
+  };
+
+  return (
+    <header className="header">
+      <div className="header-container">
+        <Link to="/" className="logo-container" style={{ cursor: "pointer" }}>
+          <span className="logo-icon">🧬</span>
+          <span className="logo-text">DNA Lab</span>
+        </Link>
+
+        <button
+          className="mobile-menu-button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className="menu-icon"></span>
+        </button>
+
+        <nav className={`main-nav ${isMenuOpen ? "open" : ""}`}>
+          <ul className="nav-list">
+            <li className="nav-item">
+              <Link
+                to="/"
+                className={`nav-link ${
+                  location.pathname === "/" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Trang chủ
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/dichvu"
+                className={`nav-link ${
+                  location.pathname === "/dichvu" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dịch vụ
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/vechungtoi"
+                className={`nav-link ${
+                  location.pathname === "/vechungtoi" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Về chúng tôi
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/tintuc"
+                className={`nav-link ${
+                  location.pathname === "/tintuc" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Tin tức
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/lienhe"
+                className={`nav-link ${
+                  location.pathname === "/lienhe" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Liên hệ
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="header-buttons">
+          {user ? (
+            <div
+              style={{ position: "relative", display: "inline-block" }}
+              ref={dropdownRef}
+            >
+              <span
+                style={{ marginRight: 12, cursor: "pointer", fontWeight: 500 }}
+                onClick={() => setShowDropdown((v) => !v)}
+              >
+                {user.fullName || user.email}{" "}
+                <span style={{ fontSize: 18, verticalAlign: "middle" }}>
+                  &#x25BC;
+                </span>
+              </span>
+              {showDropdown && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "calc(100% + 8px)",
+                    background: "#fff",
+                    boxShadow: "0 2px 12px #0002",
+                    borderRadius: 8,
+                    minWidth: 160,
+                    zIndex: 100,
+                  }}
+                >
+                  <Link
+                    to="/taikhoan"
+                    style={{
+                      display: "block",
+                      padding: "12px 20px",
+                      color: "#222",
+                      textDecoration: "none",
+                      fontWeight: 500,
+                    }}
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    Tài khoản
+                  </Link>
+                  <div style={{ height: 1, background: "#eee" }}></div>
+                  <button
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      padding: "12px 20px",
+                      background: "none",
+                      border: "none",
+                      color: "#e74c3c",
+                      textAlign: "left",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      logout();
+                      setShowDropdown(false);
+                    }}
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button className="login-button" onClick={openLoginModal}>
+                Đăng nhập
+              </button>
+              <button className="register-button" onClick={openRegisterModal}>
+                Đăng ký
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSwitchToRegister={openRegisterModal}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+        onSwitchToLogin={openLoginModal}
+      />
+    </header>
+  );
+};
+
+export default Header;
