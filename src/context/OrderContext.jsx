@@ -96,7 +96,24 @@ export function OrderProvider({ children }) {
 
   // Thêm/Chỉnh sửa feedback và rating
   const addFeedback = (orderId, feedback, rating) => {
-    updateOrder(orderId, { feedback, rating });
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      const order = allOrders[idx];
+      const now = new Date();
+      const date = `${now.getDate()}/${
+        now.getMonth() + 1
+      }/${now.getFullYear()}`;
+      if (!order.feedbacks) order.feedbacks = [];
+      order.feedbacks.push({
+        rating,
+        feedback,
+        date,
+        user: order.name || order.fullName || order.email || "Người dùng",
+      });
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+    }
   };
 
   return (

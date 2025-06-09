@@ -17,6 +17,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import UserManagement from "./UserManagement";
 import StaffManagement from "./StaffManagement";
 import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
+import FeedbackList from "./FeedbackList";
 
 const { Sider, Content } = Layout;
 
@@ -241,6 +242,7 @@ const AdminDashboard = () => {
             {(activeTab === "test-types" || !activeTab) && (
               <AdminDNAStatsDashboard />
             )}
+            {activeTab === "rating-feedback" && <FeedbackList />}
           </div>
         </Content>
       </Layout>
