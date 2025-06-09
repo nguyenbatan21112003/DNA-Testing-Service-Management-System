@@ -2,15 +2,22 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Eye, EyeOff, Star } from "lucide-react";
 import { useOrderContext } from "../../context/OrderContext";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import React from "react";
 
 const sidebarTabs = [
-  { key: "profile", label: "Hồ sơ cá nhân" },
-  { key: "orders", label: "Đơn đăng ký" },
-  { key: "settings", label: "Cài đặt" },
+  { key: "profile", label: "Hồ sơ cá nhân", icon: <UserOutlined /> },
+  { key: "orders", label: "Đơn đăng ký", icon: <FileTextOutlined /> },
+  { key: "settings", label: "Cài đặt", icon: <SettingOutlined /> },
 ];
 
 const UserProfile = () => {
@@ -138,26 +145,30 @@ const UserProfile = () => {
         display: "flex",
         height: "calc(100vh - 56px)",
         minHeight: 0,
-        minWidth: "97%",
-        background: "#f7fafd",
+        width: "100vw",
+        maxWidth: "100vw",
+        background: "#f5f6fa",
+        margin: 0,
+        padding: 0,
       }}
     >
       {/* Sidebar giống admin */}
       <div
         className="profile-sidebar"
         style={{
-          minWidth: collapsed ? 80 : 220,
-          width: collapsed ? 80 : 220,
-          background: "#fff",
-          boxShadow: "0 2px 8px #e6e6e6",
+          minWidth: collapsed ? 80 : 240,
+          width: collapsed ? 80 : 240,
+          background: "linear-gradient(135deg, #00a67e 60%, #2196f3 100%)",
+          boxShadow: "2px 0 12px #e6e6e6",
           display: "flex",
           flexDirection: "column",
           alignItems: collapsed ? "center" : "flex-start",
-          padding: "0",
+          padding: 0,
           borderRadius: 0,
-          height: "calc(100vh - 56px)",
+          height: "100%",
           position: "relative",
           transition: "width 0.2s",
+          gap: 0,
         }}
       >
         {/* Nút thu gọn/mở rộng */}
@@ -192,7 +203,7 @@ const UserProfile = () => {
         <div
           style={{
             height: 64,
-            margin: 16,
+            margin: 0,
             fontWeight: 700,
             fontSize: 22,
             textAlign: "center",
@@ -203,15 +214,19 @@ const UserProfile = () => {
             cursor: "pointer",
             userSelect: "none",
             width: "100%",
+            background: "rgba(255,255,255,0.08)",
+            borderBottom: "1px solid #fff2",
           }}
           onClick={() => navigate("/")}
         >
-          <span style={{ fontSize: 28 }}>🧬</span>
+          <span style={{ fontSize: 28, color: "#fff" }}>🧬</span>
           {!collapsed && (
-            <span style={{ color: "#00a67e", fontWeight: 800 }}>DNA Lab</span>
+            <span style={{ color: "#fff", fontWeight: 800, letterSpacing: 1 }}>
+              DNA Lab
+            </span>
           )}
         </div>
-        {/* Tabs */}
+        {/* Tabs + Logout */}
         <div
           style={{
             width: "100%",
@@ -220,6 +235,7 @@ const UserProfile = () => {
             gap: 0,
             paddingTop: 12,
             flex: 1,
+            alignItems: "stretch",
           }}
         >
           {sidebarTabs.map((tabItem, idx) => (
@@ -231,18 +247,39 @@ const UserProfile = () => {
                   cursor: "pointer",
                   padding: collapsed ? "18px 0" : "18px 32px",
                   fontWeight: 600,
-                  background: tab === tabItem.key ? "#e6f7f1" : "transparent",
-                  color: tab === tabItem.key ? "#009e74" : "#222",
+                  background:
+                    tab === tabItem.key
+                      ? "rgba(255,255,255,0.18)"
+                      : "transparent",
+                  color: tab === tabItem.key ? "#fff" : "#fff9",
                   borderLeft:
                     tab === tabItem.key
-                      ? "4px solid #009e74"
+                      ? "4px solid #fff"
                       : "4px solid transparent",
                   textAlign: collapsed ? "center" : "left",
-                  fontSize: 16,
+                  fontSize: 17,
                   transition: "all 0.2s",
+                  borderRadius: 0,
+                  margin: 0,
+                  minHeight: 48,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {collapsed ? tabItem.label.charAt(0) : tabItem.label}
+                {tabItem.icon && (
+                  <span
+                    style={{
+                      marginRight: collapsed ? 0 : 12,
+                      fontSize: 20,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {tabItem.icon}
+                  </span>
+                )}
+                {collapsed ? "" : tabItem.label}
               </div>
               {idx === sidebarTabs.length - 1 && (
                 <div
@@ -252,20 +289,24 @@ const UserProfile = () => {
                     cursor: "pointer",
                     padding: collapsed ? "18px 0" : "18px 32px",
                     fontWeight: 700,
-                    color: "#e74c3c",
+                    color: "#fff",
                     borderLeft: "4px solid transparent",
                     textAlign: collapsed ? "center" : "left",
-                    fontSize: 16,
+                    fontSize: 17,
                     transition: "all 0.2s",
                     display: "flex",
                     alignItems: "center",
                     gap: 10,
-                    background: "#fff",
-                    borderTop: "1px solid #f0f0f0",
+                    background: "rgba(255,255,255,0.08)",
+                    borderTop: "1px solid #fff2",
+                    minHeight: 48,
+                    margin: 0,
                   }}
                 >
-                  <span style={{ fontSize: 20 }}>⎋</span>
-                  {!collapsed && <span>Đăng xuất</span>}
+                  <LogoutOutlined
+                    style={{ fontSize: 20, marginRight: collapsed ? 0 : 12 }}
+                  />
+                  {collapsed ? "" : "Đăng xuất"}
                 </div>
               )}
             </React.Fragment>
@@ -278,26 +319,43 @@ const UserProfile = () => {
         style={{
           flex: 1,
           margin: 0,
-          background: "#f4f6fb",
+          background: "#fff",
           borderRadius: 0,
-          boxShadow: "none",
-          padding: "32px 8px 0 8px",
+          boxShadow: "0 2px 12px #e6e6e6",
+          padding: "0 0 0 0",
           minWidth: 0,
           width: "100%",
           height: "100%",
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "stretch",
+          justifyContent: "flex-start",
           overflow: "auto",
         }}
       >
+        {/* Header nhỏ cho nội dung */}
+        <div
+          style={{
+            width: "100%",
+            padding: "28px 36px 0 36px",
+            fontWeight: 800,
+            fontSize: 28,
+            color: "#222",
+            letterSpacing: -1,
+            marginBottom: 0,
+          }}
+        >
+          {tab === "profile" && "Hồ sơ cá nhân"}
+          {tab === "orders" && "Đơn đăng ký"}
+          {tab === "settings" && "Cài đặt tài khoản"}
+        </div>
         <div
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            padding: "12px 36px 36px 36px",
           }}
         >
           {tab === "profile" && (
@@ -369,10 +427,10 @@ const UserProfile = () => {
             <div
               style={{
                 width: "100%",
-                background: "#fff",
-                borderRadius: 14,
+                background: "#f8fefd",
+                borderRadius: 16,
                 boxShadow: "0 2px 12px #e6e6e6",
-                padding: 48,
+                padding: 32,
                 margin: 0,
                 marginBottom: 0,
               }}
@@ -1363,6 +1421,14 @@ const UserProfile = () => {
         okText="Đăng xuất"
         cancelText="Hủy"
         title="Xác nhận đăng xuất"
+        okButtonProps={{
+          style: {
+            background: "#e74c3c",
+            borderColor: "#e74c3c",
+            color: "#fff",
+          },
+          className: "custom-logout-btn",
+        }}
       >
         <p>Bạn có chắc muốn đăng xuất không?</p>
       </Modal>

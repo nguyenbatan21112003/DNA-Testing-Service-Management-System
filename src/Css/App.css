@@ -1931,3 +1931,10 @@ section {
   box-shadow: 0 0 16px 4px #1677ff66, 0 2px 0 #1677ff33;
   transform: translateY(-2px) scale(1);
 }
+
+.custom-logout-btn:hover,
+.custom-logout-btn:focus {
+  background: #c0392b !important;
+  border-color: #c0392b !important;
+  color: #fff !important;
+}
