@@ -1,47 +1,40 @@
-import "./Css/App.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/HomePage/Header";
-import Banner from "./components/HomePage/Banner";
-import HomeIntroSection from "./components/HomePage/HomeIntroSection";
-import Hero from "./components/HomePage/Hero";
-import TestingTypes from "./components/HomePage/TestingTypes";
-import TestingProcess from "./components/HomePage/TestingProcess";
-import RegistrationForm from "./components/HomePage/RegistrationForm";
-import FAQContact from "./components/HomePage/FAQContact";
-import Footer from "./components/HomePage/Footer";
-import ScrollToTop from "./components/HomePage/ScrollToTop";
-import ServicesPage from "./components/Services/ServicesPage";
-import AboutUsPage from "./components/AboutUs/AboutUsPage";
-import BlogPage from "./components/BlogPage/BlogPage";
-import BlogDetailPage from "./components/BlogPage/BlogDetailPage";
-import ContactPage from "./components/Contact/ContactPage";
-import UserProfile from "./components/User/UserProfile";
+"use client"
 
-// Staff Components
-import TestResultsEntry from "./components/Staff/TestResultsEntry";
-import ConsultationRequests from "./components/Staff/ConsultationRequests";
-import AssignedTasks from "./components/Staff/AssignedTasks";
-import CustomerFeedback from "./components/Staff/CustomerFeedback";
-import HomeCollectionSamples from "./components/Staff/HomeCollectionSamples";
-import OnSiteCollectionReport from "./components/Staff/OnSiteCollectionReport";
-import StaffDashboard from "./components/Staff/StaffDashboard";
-import StaffLayout from "./components/Staff/StaffLayout";
-
+import "./Css/App.css"
+import { Routes, Route } from "react-router-dom"
+import Header from "./components/HomePage/Header"
+import Banner from "./components/HomePage/Banner"
+import HomeIntroSection from "./components/HomePage/HomeIntroSection"
+import Hero from "./components/HomePage/Hero"
+import TestingTypes from "./components/HomePage/TestingTypes"
+import TestingProcess from "./components/HomePage/TestingProcess"
+import RegistrationForm from "./components/HomePage/RegistrationForm"
+import FAQContact from "./components/HomePage/FAQContact"
+import Footer from "./components/HomePage/Footer"
+import ScrollToTop from "./components/HomePage/ScrollToTop"
+import ServicesPage from "./components/Services/ServicesPage"
+import AboutUsPage from "./components/AboutUs/AboutUsPage"
+import BlogPage from "./components/BlogPage/BlogPage"
+import BlogDetailPage from "./components/BlogPage/BlogDetailPage"
+import ContactPage from "./components/Contact/ContactPage"
+import UserProfile from "./components/User/UserProfile"
+import StaffDashboard from "./components/Staff/StaffDashboard"
+import AdminDashboard from "./components/Admin/AdminDashboard"
 /*-----------------------------------------------------*/
-import "./Css/Services-page.css";
-import "./Css/About-us-page.css";
-import "./Css/Blog.css";
-import "./Css/Contact.css";
+import "./Css/Services-page.css"
+import "./Css/About-us-page.css"
+import "./Css/Blog.css"
+import "./Css/Contact.css"
 /*-----------------------------------------------------*/
-import { AuthProvider } from "./context/AuthContext";
+import { useContext } from "react"
+import { AuthContext } from "./context/AuthContext"
+import { useLocation } from "react-router-dom"
 
 const blogData = [
   {
     id: 1,
     title: "Xét nghiệm ADN là gì? Các loại xét nghiệm ADN phổ biến",
-    excerpt:
-      "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
+    excerpt: "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
     content: `<h2>Xét nghiệm ADN là gì?</h2><p>Xét nghiệm ADN (Axit Deoxyribonucleic) là quá trình phân tích các mẫu sinh học để xác định cấu trúc di truyền của một cá nhân...</p>`,
     category: "kiến thức",
     date: "15/05/2023",
@@ -52,8 +45,7 @@ const blogData = [
   {
     id: 2,
     title: "Hướng dẫn chuẩn bị trước khi xét nghiệm ADN",
-    excerpt:
-      "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
+    excerpt: "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
     content: `<h2>Xét nghiệm ADN là gì?</h2><p>Xét nghiệm ADN (Axit Deoxyribonucleic) là quá trình phân tích các mẫu sinh học để xác định cấu trúc di truyền của một cá nhân...</p>`,
     category: "kiến thức",
     date: "01/10/2024",
@@ -64,8 +56,7 @@ const blogData = [
   {
     id: 3,
     title: "Sự khác biệt giữa xét nghiệm ADN dân sự và hành chính",
-    excerpt:
-      "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
+    excerpt: "Tìm hiểu về xét nghiệm ADN, cách thức hoạt động và các loại xét nghiệm ADN phổ biến hiện nay...",
     content: `<h2>Xét nghiệm ADN là gì?</h2><p>Xét nghiệm ADN (Axit Deoxyribonucleic) là quá trình phân tích các mẫu sinh học để xác định cấu trúc di truyền của một cá nhân...</p>`,
     category: "kiến thức",
     date: "01/10/2024",
@@ -73,7 +64,7 @@ const blogData = [
     tags: ["ADN", "Xét nghiệm", "Di truyền"],
     image: "./DNA.jpg",
   },
-];
+]
 
 function HomePage() {
   return (
@@ -86,107 +77,115 @@ function HomePage() {
       <RegistrationForm />
       <FAQContact />
     </>
-  );
+  )
 }
 
-function MainLayout({ children }) {
+function UserInfoBar({ user }) {
+  if (!user) return null
   return (
-    <>
-      <Header />
-      <main>{children}</main>
-      <Footer />
-      <ScrollToTop />
-    </>
-  );
-}
-
-function StaffApp() {
-  return (
-    <Routes>
-      <Route path="/" element={<StaffLayout />}>
-        <Route index element={<StaffDashboard />} />
-        <Route path="ketqua-xetnghiem" element={<TestResultsEntry />} />
-        <Route path="tuvan-khachhang" element={<ConsultationRequests />} />
-        <Route path="congviec-phancong" element={<AssignedTasks />} />
-        <Route path="phanhoi-khachhang" element={<CustomerFeedback />} />
-        <Route path="mau-laytainha" element={<HomeCollectionSamples />} />
-        <Route path="bienban-laymau" element={<OnSiteCollectionReport />} />
-      </Route>
-    </Routes>
-  );
+    <div
+      style={{
+        width: "100%",
+        height: 56,
+        background: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        padding: "0 40px",
+        borderBottom: "1px solid #f0f0f0",
+        fontWeight: 600,
+        fontSize: 16,
+        color: "#009e74",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 200,
+        gap: 16,
+      }}
+    >
+      {user.avatar || user.image ? (
+        <img
+          src={user.avatar || user.image}
+          alt="avatar"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            objectFit: "cover",
+            border: "2px solid #00a67e",
+            background: "#e6f7f1",
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: "#e6f7f1",
+            color: "#00a67e",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: 700,
+            fontSize: 20,
+            border: "2px solid #00a67e",
+          }}
+        >
+          {(user.name || user.fullName || user.email || "U").charAt(0).toUpperCase()}
+        </div>
+      )}
+      <span
+        style={{
+          color: "#009e74",
+          fontWeight: 700,
+          fontSize: 17,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: 180,
+          marginLeft: 8,
+        }}
+      >
+        {user.name || user.fullName || user.email}
+      </span>
+    </div>
+  )
 }
 
 function App() {
+  const { user } = useContext(AuthContext)
+  const location = useLocation()
+  const isAdminPage = location.pathname.startsWith("/admin")
+  const isUserPage = location.pathname.startsWith("/taikhoan")
+  const isStaffPage = location.pathname.startsWith("/staff") || location.pathname.startsWith("/nhanvien")
+  const isAdmin = user && user.role_id === 5
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <div className="app">
-          <Routes>
-            {/* Staff Routes - No Header/Footer */}
-            <Route path="/staff/*" element={<StaffApp />} />
-            
-            {/* Main Public Routes - With Header/Footer */}
-            <Route
-              path="/"
-              element={
-                <MainLayout>
-                  <HomePage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/dichvu"
-              element={
-                <MainLayout>
-                  <ServicesPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/vechungtoi"
-              element={
-                <MainLayout>
-                  <AboutUsPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/taikhoan"
-              element={
-                <MainLayout>
-                  <UserProfile />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/tintuc"
-              element={
-                <MainLayout>
-                  <BlogPage blogData={blogData} />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/tintuc/:id"
-              element={
-                <MainLayout>
-                  <BlogDetailPage blogData={blogData} />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/lienhe"
-              element={
-                <MainLayout>
-                  <ContactPage />
-                </MainLayout>
-              }
-            />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </AuthProvider>
-  );
+    <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
+      {isUserPage && <UserInfoBar user={user} />}
+      {/* Ẩn Header cho Staff Dashboard */}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && <Header />}
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dichvu" element={<ServicesPage />} />
+          <Route path="/vechungtoi" element={<AboutUsPage />} />
+          <Route path="/taikhoan" element={<UserProfile />} />
+          <Route path="/nhanvien" element={<StaffDashboard />} />
+          <Route path="/staff" element={<StaffDashboard />} />
+          <Route path="/tintuc" element={<BlogPage blogData={blogData} />} />
+          <Route path="/tintuc/:id" element={<BlogDetailPage blogData={blogData} />} />
+          <Route path="/lienhe" element={<ContactPage />} />
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Routes>
+      </main>
+      {/* Ẩn Footer cho Staff Dashboard */}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && <Footer />}
+      {!isStaffPage && <ScrollToTop />}
+    </div>
+  )
 }
 
-export default App;
+export default App

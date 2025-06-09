@@ -40,7 +40,7 @@ const TestingProcess = () => {
       id: 5,
       title: "Tư vấn sau xét nghiệm",
       description:
-        "Đội ngũ chuyên gia của chúng tôi sẵn sàng giải đáp mọi thắc mắc về kết quả xét nghiệm.",
+        "Đội ngũ chuyên gia của chúng tôi s���n sàng giải đáp mọi thắc mắc về kết quả xét nghiệm.",
       icon: <CheckCircle className="process-icon" />,
     },
   ];

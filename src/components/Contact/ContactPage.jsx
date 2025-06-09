@@ -19,7 +19,7 @@ const ContactPage = () => {
           <div className="contact-info-section">
             <h2>Thông tin liên hệ</h2>
             <p className="contact-description">
-              Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7. Hãy liên hệ với chúng tôi
+              Ch��ng tôi luôn sẵn sàng hỗ trợ bạn 24/7. Hãy liên hệ với chúng tôi
               qua các kênh sau:
             </p>
 

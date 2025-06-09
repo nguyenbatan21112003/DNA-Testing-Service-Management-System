@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
@@ -6,75 +7,82 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Lấy user từ localStorage nếu có
-    const storedUser = localStorage.getItem("user");
+    // Lấy user từ sessionStorage (nếu muốn giữ đăng nhập khi reload)
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
-    // Thêm tài khoản mẫu nếu chưa có user nào
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    if (users.length === 0) {
-      const demoUsers = [
-        {
-          fullName: "Nguyễn Văn A",
-          email: "user1@email.com",
-          phone: "098765432187654321",
-          password: "123456",
-        },
-        {
-          fullName: "Nguyễn Văn B",
-          email: "user2@email.com",
-          phone: "0123456789",
-          password: "123456",
-        },
-      ];
-      localStorage.setItem("users", JSON.stringify(demoUsers));
-    }
   }, []);
 
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const found = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (found) {
-      setUser(found);
-      localStorage.setItem("user", JSON.stringify(found));
-      return { success: true };
+  // Đổi baseURL thành mockAPI của bạn
+  const API_URL = "https://682d53164fae188947559003.mockapi.io/usersSWP";
+
+  // Đăng nhập
+  const login = async (email, password) => {
+    try {
+      const res = await axios.get(API_URL);
+      const found = res.data.find(
+        (u) => u.email === email && u.password === password
+      );
+      if (found) {
+        setUser(found);
+        sessionStorage.setItem("user", JSON.stringify(found));
+        return { success: true, role_id: found.role_id };
+      }
+      return { success: false, message: "Email hoặc mật khẩu không đúng!" };
+    } catch {
+      return { success: false, message: "Lỗi kết nối đến server!" };
     }
-    return { success: false, message: "Email hoặc mật khẩu không đúng!" };
   };
 
+  // Đăng xuất
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
   };
 
-  const register = ({ fullName, email, phone, password }) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    if (users.some((u) => u.email === email)) {
-      return { success: false, message: "Email đã tồn tại!" };
+  // Đăng ký
+  const register = async ({ fullName, email, phone, password }) => {
+    try {
+      const res = await axios.post("https://localhost:7037/user/register", {
+        fullName,
+        email,
+        phone,
+        password,
+      });
+      if (res.data && res.data.success) {
+        return {
+          success: true,
+          message: res.data?.message || "Đăng ký thành công",
+        };
+      } else {
+        return {
+          success: false,
+          message: res.data?.message || "Đăng ký thất bại!",
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Lỗi kết nối đến server!",
+      };
     }
-    const newUser = { fullName, email, phone, password };
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    return { success: true };
   };
 
-  const updateUser = (data) => {
+  // Cập nhật user
+  const updateUser = async (data) => {
     if (!user) return;
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const idx = users.findIndex((u) => u.email === user.email);
-    if (idx !== -1) {
-      users[idx] = { ...users[idx], ...data };
-      localStorage.setItem("users", JSON.stringify(users));
-      const updated = { ...user, ...data };
-      setUser(updated);
-      localStorage.setItem("user", JSON.stringify(updated));
+    try {
+      const updateRes = await axios.put(`${API_URL}/${user.user_id}`, {
+        ...user,
+        ...data,
+      });
+      setUser(updateRes.data);
+      sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+    } catch {
+      // Có thể xử lý lỗi ở đây
     }
   };
 
-  // Đổi mật khẩu có xác thực OTP (giả lập)
+  // Đổi mật khẩu có xác thực OTP (giả lập, không lưu trên mockAPI)
   const requestPasswordChange = (currentPassword, newPassword) => {
     if (!user) return { success: false, message: "Bạn chưa đăng nhập!" };
     if (user.password !== currentPassword) {
@@ -82,17 +90,17 @@ export const AuthProvider = ({ children }) => {
     }
     // Sinh OTP 6 số
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    localStorage.setItem(
+    sessionStorage.setItem(
       `otp_${user.email}`,
       JSON.stringify({ otp, newPassword, created: Date.now() })
     );
     return { success: true, otp };
   };
 
-  const verifyPasswordChange = (otpInput) => {
+  const verifyPasswordChange = async (otpInput) => {
     if (!user) return { success: false, message: "Bạn chưa đăng nhập!" };
     const otpData = JSON.parse(
-      localStorage.getItem(`otp_${user.email}`) || "null"
+      sessionStorage.getItem(`otp_${user.email}`) || "null"
     );
     if (!otpData)
       return {
@@ -100,25 +108,25 @@ export const AuthProvider = ({ children }) => {
         message: "Không tìm thấy yêu cầu đổi mật khẩu!",
       };
     if (Date.now() - otpData.created > 10 * 60 * 1000) {
-      localStorage.removeItem(`otp_${user.email}`);
+      sessionStorage.removeItem(`otp_${user.email}`);
       return { success: false, message: "Mã xác thực đã hết hạn!" };
     }
     if (otpInput !== otpData.otp) {
       return { success: false, message: "Mã xác thực không đúng!" };
     }
-    // Đổi mật khẩu
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const idx = users.findIndex((u) => u.email === user.email);
-    if (idx !== -1) {
-      users[idx].password = otpData.newPassword;
-      localStorage.setItem("users", JSON.stringify(users));
-      const updated = { ...user, password: otpData.newPassword };
-      setUser(updated);
-      localStorage.setItem("user", JSON.stringify(updated));
-      localStorage.removeItem(`otp_${user.email}`);
+    // Đổi mật khẩu trên mockAPI
+    try {
+      const updateRes = await axios.put(`${API_URL}/${user.user_id}`, {
+        ...user,
+        password: otpData.newPassword,
+      });
+      setUser(updateRes.data);
+      sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+      sessionStorage.removeItem(`otp_${user.email}`);
       return { success: true };
+    } catch {
+      return { success: false, message: "Có lỗi xảy ra!" };
     }
-    return { success: false, message: "Có lỗi xảy ra!" };
   };
 
   return (

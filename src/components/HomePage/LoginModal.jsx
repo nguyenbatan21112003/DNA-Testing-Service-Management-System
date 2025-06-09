@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -34,14 +36,21 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = login(email, password);
+    const result = await login(email, password);
     if (result.success) {
       setError("");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
       setTimeout(onClose, 1000);
+      if (result.role_id === 1) {
+        navigate("/taikhoan");
+      } else if (result.role_id === 2) {
+        navigate("/nhanvien");
+      } else if (result.role_id === 5) {
+        navigate("/admin");
+      }
     } else {
       setError(result.message);
     }

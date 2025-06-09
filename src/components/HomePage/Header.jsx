@@ -5,6 +5,8 @@ import { Link, useLocation } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { AuthContext } from "../../context/AuthContext";
+import { Modal } from "antd";
+import "../../css/Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +16,7 @@ const Header = () => {
   const { user, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef();
+  const [logoutModal, setLogoutModal] = useState(false);
 
   // Đóng dropdown khi click ngoài
   useEffect(() => {
@@ -34,6 +37,21 @@ const Header = () => {
   const openRegisterModal = () => {
     setIsRegisterModalOpen(true);
     setIsLoginModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    setLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    logout();
+    setLogoutModal(false);
+    setShowDropdown(false);
+    window.location.href = "/";
+  };
+
+  const cancelLogout = () => {
+    setLogoutModal(false);
   };
 
   return (
@@ -122,7 +140,7 @@ const Header = () => {
                 style={{ marginRight: 12, cursor: "pointer", fontWeight: 500 }}
                 onClick={() => setShowDropdown((v) => !v)}
               >
-                {user.fullName || user.email}{" "}
+                {user.name || user.fullName || user.email}{" "}
                 <span style={{ fontSize: 18, verticalAlign: "middle" }}>
                   &#x25BC;
                 </span>
@@ -140,19 +158,52 @@ const Header = () => {
                     zIndex: 100,
                   }}
                 >
-                  <Link
-                    to="/taikhoan"
-                    style={{
-                      display: "block",
-                      padding: "12px 20px",
-                      color: "#222",
-                      textDecoration: "none",
-                      fontWeight: 500,
-                    }}
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    Tài khoản
-                  </Link>
+                  {user.role_id === 5 && (
+                    <Link
+                      to="/admin"
+                      style={{
+                        display: "block",
+                        padding: "12px 20px",
+                        color: "#222",
+                        textDecoration: "none",
+                        fontWeight: 500,
+                      }}
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Trang quản trị
+                    </Link>
+                  )}
+                  {user.role_id === 2 ? (
+                    <Link
+                      to="/nhanvien"
+                      style={{
+                        display: "block",
+                        padding: "12px 20px",
+                        color: "#222",
+                        textDecoration: "none",
+                        fontWeight: 500,
+                      }}
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Quản lý
+                    </Link>
+                  ) : (
+                    user.role_id !== 5 && (
+                      <Link
+                        to="/taikhoan"
+                        style={{
+                          display: "block",
+                          padding: "12px 20px",
+                          color: "#222",
+                          textDecoration: "none",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Tài khoản
+                      </Link>
+                    )
+                  )}
                   <div style={{ height: 1, background: "#eee" }}></div>
                   <button
                     style={{
@@ -166,10 +217,7 @@ const Header = () => {
                       fontWeight: 500,
                       cursor: "pointer",
                     }}
-                    onClick={() => {
-                      logout();
-                      setShowDropdown(false);
-                    }}
+                    onClick={handleLogout}
                   >
                     Đăng xuất
                   </button>
@@ -200,6 +248,18 @@ const Header = () => {
         onClose={() => setIsRegisterModalOpen(false)}
         onSwitchToLogin={openLoginModal}
       />
+
+      <Modal
+        open={logoutModal}
+        onOk={confirmLogout}
+        onCancel={cancelLogout}
+        okText="Đăng xuất"
+        cancelText="Hủy"
+        okButtonProps={{ className: "custom-logout-btn" }}
+        title="Xác nhận đăng xuất"
+      >
+        <p>Bạn có chắc muốn đăng xuất không?</p>
+      </Modal>
     </header>
   );
 };

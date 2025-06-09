@@ -37,13 +37,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Mật khẩu không khớp!");
       return;
     }
-    const result = register({ fullName, email, phone, password });
+    const result = await register({ fullName, email, phone, password });
     if (result.success) {
       setError("");
       onClose();
@@ -66,6 +66,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-fullname">Họ và tên</label>
               <input
+                className="input-register"
                 type="text"
                 id="register-fullname"
                 value={fullName}
@@ -76,6 +77,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-email">Email</label>
               <input
+                className="input-register"
                 type="email"
                 id="register-email"
                 value={email}
@@ -86,6 +88,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-phone">Số điện thoại</label>
               <input
+                className="input-register"
                 type="tel"
                 id="register-phone"
                 value={phone}
@@ -96,6 +99,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group" style={{ position: "relative" }}>
               <label htmlFor="register-password">Mật khẩu</label>
               <input
+                className="input-register"
                 type={showPassword ? "text" : "password"}
                 id="register-password"
                 value={password}
@@ -123,6 +127,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 Xác nhận mật khẩu
               </label>
               <input
+                className="input-register"
                 type={showConfirmPassword ? "text" : "password"}
                 id="register-confirm-password"
                 value={confirmPassword}

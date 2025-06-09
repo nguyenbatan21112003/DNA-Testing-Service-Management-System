@@ -301,13 +301,13 @@ section {
 /* Scroll to top button */
 .scroll-to-top {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 20px;
+  right: 20px;
   background-color: white;
   color: var(--text-color);
   border: none;
   border-radius: 10px;
-  padding: 10px 15px;
+  padding: 5px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1913,4 +1913,21 @@ section {
   opacity: 1;
   transform: none;
   transition-delay: 0.4s;
+}
+
+.custom-modal-ok-btn {
+  background: #1677ff !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  min-width: 110px;
+  box-shadow: 0 2px 8px #1677ff33;
+  transition: box-shadow 0.18s, background 0.18s, transform 0.18s;
+}
+.custom-modal-ok-btn:hover,
+.custom-modal-ok-btn:focus {
+  background: #409eff !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px 4px #1677ff66, 0 2px 0 #1677ff33;
+  transform: translateY(-2px) scale(1);
 }

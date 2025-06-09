@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -90,4 +94,23 @@ body {
 
 .contact-form button:hover {
   background-color: #008c69;
+}
+
+.password-group {
+  position: relative;
+}
+.password-group input {
+  padding-right: 40px;
+}
+.pw-eye {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 2;
+  color: #888;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }

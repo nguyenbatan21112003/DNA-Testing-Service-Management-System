@@ -100,7 +100,13 @@ const BlogPage = ({ blogData }) => {
                         {post.author}
                       </span>
                     </div>
-                    <h2 className="blog-item-title">{post.title}</h2>
+                    <h2
+                      className="blog-item-title"
+                      onClick={() => navigate(`/tintuc/${post.id}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {post.title}
+                    </h2>
                     <p className="blog-item-excerpt">{post.excerpt}</p>
                     <div className="blog-item-tags">
                       {post.tags.map((tag, index) => (
