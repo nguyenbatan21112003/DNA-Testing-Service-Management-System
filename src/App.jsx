@@ -81,14 +81,92 @@ function HomePage() {
   );
 }
 
+function UserInfoBar({ user }) {
+  if (!user) return null;
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: 56,
+        background: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        padding: "0 40px",
+        borderBottom: "1px solid #f0f0f0",
+        fontWeight: 600,
+        fontSize: 16,
+        color: "#009e74",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 200,
+        gap: 16,
+      }}
+    >
+      {user.avatar || user.image ? (
+        <img
+          src={user.avatar || user.image}
+          alt="avatar"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            objectFit: "cover",
+            border: "2px solid #00a67e",
+            background: "#e6f7f1",
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: "#e6f7f1",
+            color: "#00a67e",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: 700,
+            fontSize: 20,
+            border: "2px solid #00a67e",
+          }}
+        >
+          {(user.name || user.fullName || user.email || "U")
+            .charAt(0)
+            .toUpperCase()}
+        </div>
+      )}
+      <span
+        style={{
+          color: "#009e74",
+          fontWeight: 700,
+          fontSize: 17,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: 180,
+          marginLeft: 8,
+        }}
+      >
+        {user.name || user.fullName || user.email}
+      </span>
+    </div>
+  );
+}
+
 function App() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isUserPage = location.pathname.startsWith("/taikhoan");
   const isAdmin = user && user.role_id === 5;
   return (
-    <div className="app">
-      {!(isAdmin && isAdminPage) && <Header />}
+    <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
+      {isUserPage && <UserInfoBar user={user} />}
+      {!(isAdmin && isAdminPage) && !isUserPage && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -106,7 +184,7 @@ function App() {
           {/* Thêm các route khác nếu cần */}
         </Routes>
       </main>
-      <Footer />
+      {!(isAdmin && isAdminPage) && !isUserPage && <Footer />}
       <ScrollToTop />
     </div>
   );
