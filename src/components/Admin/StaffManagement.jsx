@@ -172,6 +172,29 @@ const StaffManagement = () => {
   return (
     <div style={{ padding: 24 }}>
       <h2 style={{ marginBottom: 16 }}>Quản lý nhân viên</h2>
+      <div
+        style={{
+          width: 220,
+          background: "#fff",
+          borderRadius: 16,
+          boxShadow: "0 2px 12px #e6e6e6",
+          padding: "18px 0",
+          textAlign: "center",
+          margin: "0 auto 24px auto",
+        }}
+      >
+        <div style={{ fontSize: 15, color: "#888" }}>Tổng số nhân viên</div>
+        <div
+          style={{
+            fontSize: 32,
+            color: "#2196f3",
+            fontWeight: 800,
+            marginTop: 4,
+          }}
+        >
+          {staffs.length}
+        </div>
+      </div>
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -185,9 +208,6 @@ const StaffManagement = () => {
       >
         Thêm nhân viên/manager
       </Button>
-      <div style={{ marginBottom: 16, fontWeight: 500 }}>
-        Tổng số nhân viên: {staffs.length}
-      </div>
       <Table
         columns={columns}
         dataSource={staffs}

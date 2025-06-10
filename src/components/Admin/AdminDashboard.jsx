@@ -92,38 +92,15 @@ const AdminDashboard = () => {
     <Layout style={{ minHeight: "100vh", height: "100vh", overflow: "hidden" }}>
       <Sider
         width={220}
-        style={{ background: "#fff", position: "relative" }}
+        style={{
+          background: "linear-gradient(135deg, #00a67e 60%, #2196f3 100%)",
+          position: "relative",
+          color: "#fff",
+        }}
         collapsible
         collapsed={collapsed}
         trigger={null}
       >
-        <span
-          style={{
-            position: "absolute",
-            top: 18,
-            right: -24,
-            background: "#e74c3c",
-            borderRadius: 12,
-            width: 48,
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 100,
-            color: "#fff",
-            fontSize: 28,
-            boxShadow: "0 2px 8px #e74c3c55",
-            border: "2px solid #fff",
-            transition: "right 0.2s",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setCollapsed((c) => !c);
-          }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
         <div
           style={{
             height: 64,
@@ -137,27 +114,69 @@ const AdminDashboard = () => {
             gap: 8,
             cursor: "pointer",
             userSelect: "none",
+            color: "#fff",
           }}
           onClick={() => navigate("/")}
         >
           <span style={{ fontSize: 28 }}>🧬</span>
           {!collapsed && (
-            <span style={{ color: "#00a67e", fontWeight: 800 }}>DNA Lab</span>
+            <span style={{ color: "#fff", fontWeight: 800 }}>DNA Lab</span>
           )}
         </div>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <span
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,0.10)",
+              borderRadius: 8,
+              height: 48,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: collapsed ? "center" : "flex-start",
+              cursor: "pointer",
+              color: "#fff",
+              fontSize: 28,
+              boxShadow: "0 2px 8px #00a67e55",
+              border: "2px solid #fff",
+              paddingLeft: collapsed ? 0 : 32,
+              paddingRight: collapsed ? 0 : 0,
+              transition: "all 0.2s",
+              fontWeight: 600,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCollapsed((c) => !c);
+            }}
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {!collapsed && (
+              <span style={{ marginLeft: 16, fontSize: 17 }}>Menu</span>
+            )}
+          </span>
+        </div>
+        {/* Main menu */}
         <Menu
           mode="inline"
           selectedKeys={[activeTab]}
-          defaultSelectedKeys={[]}
           style={{
-            height: "calc(100vh - 112px)",
-            borderRight: 0,
+            flex: 1,
+            background: "transparent",
+            color: "#fff",
+            paddingTop: 12,
+            paddingBottom: 32, // extra space at bottom
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
-            paddingTop: 12,
-            paddingBottom: 12,
+            gap: 0,
           }}
+          theme="dark"
           items={menuItems}
           onClick={handleMenuClick}
         />

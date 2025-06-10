@@ -51,15 +51,11 @@ const UserProfile = () => {
   const [otpInput, setOtpInput] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("Tất cả");
-  const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const [ratingInput, setRatingInput] = useState(0);
   const [feedbackInput, setFeedbackInput] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState("");
-
-  const [kitToast, setKitToast] = useState("");
-  const [fileToast, setFileToast] = useState("");
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -68,6 +64,10 @@ const UserProfile = () => {
   // Thêm state cho modal feedback
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackOrder, setFeedbackOrder] = useState(null);
+
+  // State cho 2 modal riêng biệt
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
 
   // Lọc đơn đăng ký của user hiện tại
   const userOrders = orders.filter(
@@ -180,34 +180,6 @@ const UserProfile = () => {
           gap: 0,
         }}
       >
-        {/* Nút thu gọn/mở rộng */}
-        <span
-          style={{
-            position: "absolute",
-            top: 18,
-            right: collapsed ? -24 : -24,
-            background: "#00a67e",
-            borderRadius: 12,
-            width: 48,
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 100,
-            color: "#fff",
-            fontSize: 28,
-            boxShadow: "0 2px 8px #00a67e55",
-            border: "2px solid #fff",
-            transition: "right 0.2s",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setCollapsed((c) => !c);
-          }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
         {/* Logo DNA Lab */}
         <div
           style={{
@@ -234,6 +206,46 @@ const UserProfile = () => {
               DNA Lab
             </span>
           )}
+        </div>
+        {/* Collapse button below logo */}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <span
+            style={{
+              width: "100%",
+              background: "#00a67e",
+              borderRadius: 8,
+              height: 48,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: collapsed ? "center" : "flex-start",
+              cursor: "pointer",
+              color: "#fff",
+              fontSize: 28,
+              boxShadow: "0 2px 8px #00a67e55",
+              border: "2px solid #fff",
+              paddingLeft: collapsed ? 0 : 32,
+              paddingRight: collapsed ? 0 : 0,
+              transition: "all 0.2s",
+              fontWeight: 600,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCollapsed((c) => !c);
+            }}
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {!collapsed && (
+              <span style={{ marginLeft: 16, fontSize: 17 }}>Menu</span>
+            )}
+          </span>
         </div>
         {/* Tabs + Logout */}
         <div
@@ -663,7 +675,7 @@ const UserProfile = () => {
                           }}
                           onClick={() => {
                             setSelectedOrder(order);
-                            setShowDetail(true);
+                            setShowDetailModal(true);
                           }}
                         >
                           <Eye size={16} /> Xem chi tiết
@@ -684,17 +696,7 @@ const UserProfile = () => {
                           }}
                           onClick={() => {
                             setSelectedOrder(order);
-                            setShowDetail(true);
-                            setTimeout(() => {
-                              const el = document.getElementById(
-                                "order-result-section"
-                              );
-                              if (el)
-                                el.scrollIntoView({
-                                  behavior: "smooth",
-                                  block: "center",
-                                });
-                            }, 200);
+                            setShowResultModal(true);
                           }}
                         >
                           <EyeOff size={16} /> Xem kết quả
@@ -755,582 +757,6 @@ const UserProfile = () => {
                     </div>
                   ))}
               </div>
-              {/* Modal chi tiết đơn đăng ký */}
-              {showDetail && selectedOrder && (
-                <div
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: "rgba(0,0,0,0.18)",
-                    zIndex: 9999,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onClick={() => setShowDetail(false)}
-                >
-                  <div
-                    style={{
-                      background: "#fff",
-                      borderRadius: 18,
-                      minWidth: 340,
-                      maxWidth: 480,
-                      maxHeight: "90vh",
-                      padding: 32,
-                      boxShadow: "0 8px 32px #0002",
-                      position: "relative",
-                      fontSize: 17,
-                      overflowY: "auto",
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setShowDetail(false)}
-                      style={{
-                        position: "absolute",
-                        top: 14,
-                        right: 18,
-                        background: "none",
-                        border: "none",
-                        fontSize: 26,
-                        color: "#888",
-                        cursor: "pointer",
-                      }}
-                    >
-                      &times;
-                    </button>
-                    <h3
-                      style={{
-                        fontWeight: 800,
-                        fontSize: 26,
-                        marginBottom: 18,
-                        color: "#009e74",
-                        letterSpacing: -1,
-                        textAlign: "center",
-                      }}
-                    >
-                      Chi tiết đơn đăng ký
-                    </h3>
-                    <div
-                      style={{
-                        borderTop: "1px solid #e6e6e6",
-                        marginBottom: 18,
-                      }}
-                    />
-                    {/* Thông tin cơ bản dạng 1 cột */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 10,
-                      }}
-                    >
-                      <div>
-                        <span style={{ fontWeight: 700, color: "#009e74" }}>
-                          Mã đơn:
-                        </span>{" "}
-                        <span style={{ color: "#009e74", fontWeight: 700 }}>
-                          #{selectedOrder.id}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
-                        <span>{selectedOrder.status}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
-                        <span>{selectedOrder.type}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
-                        <span>{selectedOrder.date}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
-                        <span>{selectedOrder.name}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
-                        <span>{selectedOrder.phone}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Email:</span>{" "}
-                        <span>{selectedOrder.email}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
-                        <span>{selectedOrder.address}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>
-                          Ngày xét nghiệm:
-                        </span>{" "}
-                        <span>{selectedOrder.appointmentDate}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>
-                          Hình thức lấy mẫu:
-                        </span>{" "}
-                        <span>
-                          {getSampleMethodLabel(selectedOrder.sampleMethod)}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
-                        <span>{selectedOrder.note}</span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <span style={{ fontWeight: 600 }}>
-                          File Đơn Yêu Cầu Xét Nghiệm:
-                        </span>
-                        {selectedOrder.requestFormFile ? (
-                          <a
-                            href={
-                              selectedOrder.requestFormFile.startsWith("data:")
-                                ? selectedOrder.requestFormFile
-                                : selectedOrder.requestFormFile
-                            }
-                            download={
-                              selectedOrder.requestFormFileName ||
-                              "DonYeuCauXetNghiem"
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              color: "#0a7cff",
-                              textDecoration: "underline",
-                              fontWeight: 500,
-                              marginLeft: 8,
-                            }}
-                          >
-                            Tải file đã nộp
-                          </a>
-                        ) : (
-                          <>
-                            <input
-                              type="file"
-                              accept=".pdf,.doc,.docx"
-                              onChange={async (e) => {
-                                const file = e.target.files[0];
-                                if (!file) return;
-                                // Đọc file thành base64
-                                const reader = new FileReader();
-                                reader.onload = function (evt) {
-                                  const base64 = evt.target.result;
-                                  // Lưu vào localStorage (update order)
-                                  const allOrders = JSON.parse(
-                                    localStorage.getItem("dna_orders") || "[]"
-                                  );
-                                  const idx = allOrders.findIndex(
-                                    (o) => o.id === selectedOrder.id
-                                  );
-                                  if (idx !== -1) {
-                                    allOrders[idx] = {
-                                      ...allOrders[idx],
-                                      requestFormFile: base64,
-                                      requestFormFileName: file.name,
-                                    };
-                                    localStorage.setItem(
-                                      "dna_orders",
-                                      JSON.stringify(allOrders)
-                                    );
-                                  }
-                                  setSelectedOrder({
-                                    ...selectedOrder,
-                                    requestFormFile: base64,
-                                    requestFormFileName: file.name,
-                                  });
-                                  setFileToast("Đã nộp file thành công!");
-                                  setTimeout(() => setFileToast(""), 2000);
-                                };
-                                reader.readAsDataURL(file);
-                              }}
-                              style={{
-                                marginLeft: 8,
-                                fontSize: 13,
-                                padding: 2,
-                              }}
-                            />
-                            <span
-                              style={{
-                                color: "#888",
-                                marginLeft: 8,
-                                fontSize: 13,
-                              }}
-                            >
-                              (PDF, DOC, DOCX)
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        borderTop: "1px solid #e6e6e6",
-                        margin: "18px 0 18px 0",
-                      }}
-                    />
-                    {/* Thông báo đã nhận kit (nếu có) - chuyển lên trên phần kết quả */}
-                    {selectedOrder.sampleMethod === "home" &&
-                      selectedOrder.kitStatus === "da_nhan" && (
-                        <div
-                          style={{
-                            margin: "18px 0",
-                            padding: 14,
-                            background: "#e6f7f1",
-                            borderRadius: 8,
-                            border: "1px solid #b2e2d6",
-                            textAlign: "center",
-                            color: "#009e74",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Bạn đã xác nhận đã nhận kit. Nhân viên sẽ tiếp tục xử
-                          lý đơn của bạn.
-                        </div>
-                      )}
-                    {/* Kết quả xét nghiệm */}
-                    {(selectedOrder.status === "Có kết quả" ||
-                      selectedOrder.status === "Hoàn thành") && (
-                      <div
-                        id="order-result-section"
-                        style={{ margin: "18px 0 10px 0" }}
-                      >
-                        <b style={{ color: "#009e74" }}>Kết quả xét nghiệm:</b>
-                        <div style={{ margin: "10px 0" }}>
-                          {selectedOrder.result ? (
-                            <div
-                              style={{
-                                background: "#f6f8fa",
-                                border: "1px solid #cce3d3",
-                                borderRadius: 8,
-                                padding: 12,
-                              }}
-                            >
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: selectedOrder.result,
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <span style={{ color: "#888" }}>
-                              Chưa có bảng kết quả.
-                            </span>
-                          )}
-                        </div>
-                        {/* File kết quả xét nghiệm nếu có */}
-                        {selectedOrder.resultFile && (
-                          <div
-                            style={{
-                              margin: "14px 0 10px 0",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <span style={{ fontWeight: 600, marginRight: 8 }}>
-                              File kết quả xét nghiệm:
-                            </span>
-                            <a
-                              href={
-                                selectedOrder.resultFile.startsWith("data:")
-                                  ? selectedOrder.resultFile
-                                  : selectedOrder.resultFile
-                              }
-                              download={
-                                selectedOrder.resultFileName ||
-                                "KetQuaXetNghiem"
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                color: "#0a7cff",
-                                textDecoration: "underline",
-                                fontWeight: 500,
-                              }}
-                            >
-                              Tải file kết quả
-                            </a>
-                          </div>
-                        )}
-                        <div style={{ marginTop: 10 }}>
-                          <b>Nhân viên thực hiện:</b>{" "}
-                          {selectedOrder.staffName || (
-                            <span style={{ color: "#888" }}>Chưa cập nhật</span>
-                          )}
-                        </div>
-                        <div style={{ marginTop: 6 }}>
-                          <b>Xác nhận của Manager:</b>{" "}
-                          {selectedOrder.managerConfirm ? (
-                            <span style={{ color: "#009e74" }}>
-                              Đã xác nhận
-                            </span>
-                          ) : (
-                            <span style={{ color: "#888" }}>Chưa xác nhận</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {/* Đánh giá dịch vụ */}
-                    {(selectedOrder.status === "Có kết quả" ||
-                      selectedOrder.status === "Hoàn thành") &&
-                      !selectedOrder.feedback && (
-                        <div style={{ margin: "18px 0 10px 0" }}>
-                          <b>Đánh giá dịch vụ:</b>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              margin: "8px 0",
-                            }}
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={22}
-                                color={ratingInput >= star ? "#ffc107" : "#ddd"}
-                                style={{ cursor: "pointer" }}
-                                onClick={() => setRatingInput(star)}
-                              />
-                            ))}
-                            <span
-                              style={{
-                                color: "#888",
-                                fontSize: 15,
-                                marginLeft: 8,
-                              }}
-                            >
-                              {ratingInput > 0 ? `${ratingInput}/5` : ""}
-                            </span>
-                          </div>
-                          <textarea
-                            rows={3}
-                            placeholder="Nhận xét của bạn về dịch vụ..."
-                            value={feedbackInput}
-                            onChange={(e) => setFeedbackInput(e.target.value)}
-                            style={{
-                              width: "100%",
-                              borderRadius: 6,
-                              margin: "8px 0",
-                              padding: 8,
-                              border: "1px solid #ccc",
-                            }}
-                          />
-                          <button
-                            onClick={() => {
-                              if (ratingInput === 0) {
-                                setFeedbackSuccess("Vui lòng chọn số sao!");
-                                return;
-                              }
-                              addFeedback(
-                                selectedOrder.id,
-                                feedbackInput,
-                                ratingInput
-                              );
-                              // Khi cập nhật lại selectedOrder sau feedback, lấy từ userOrders
-                              const updatedOrder = userOrders.find(
-                                (o) => o.id === selectedOrder.id
-                              );
-                              setSelectedOrder({
-                                ...updatedOrder,
-                                feedback: feedbackInput,
-                                rating: ratingInput,
-                              });
-                              setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-                              setTimeout(() => setFeedbackSuccess(""), 2000);
-                            }}
-                            style={{
-                              background: "#009e74",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: 6,
-                              padding: "8px 24px",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Gửi đánh giá
-                          </button>
-                          {feedbackSuccess && (
-                            <div style={{ color: "#009e74", marginTop: 6 }}>
-                              {feedbackSuccess}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    {/* Hiển thị đánh giá đã gửi */}
-                    {selectedOrder.status === "Có kết quả" &&
-                      selectedOrder.feedback && (
-                        <div style={{ margin: "18px 0 10px 0" }}>
-                          <b>Đánh giá của bạn:</b>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              margin: "8px 0",
-                            }}
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={22}
-                                color={
-                                  selectedOrder.rating >= star
-                                    ? "#ffc107"
-                                    : "#ddd"
-                                }
-                              />
-                            ))}
-                            <span
-                              style={{
-                                color: "#888",
-                                fontSize: 15,
-                                marginLeft: 8,
-                              }}
-                            >
-                              {selectedOrder.rating}/5
-                            </span>
-                          </div>
-                          <div
-                            style={{
-                              background: "#f6f8fa",
-                              borderRadius: 6,
-                              padding: 10,
-                              color: "#333",
-                            }}
-                          >
-                            {selectedOrder.feedback}
-                          </div>
-                        </div>
-                      )}
-                    {/* Xác nhận nhận kit tại nhà */}
-                    {selectedOrder.sampleMethod === "home" &&
-                      selectedOrder.kitStatus === "da_gui" && (
-                        <div
-                          style={{
-                            margin: "18px 0",
-                            padding: 14,
-                            background: "#f6f8fa",
-                            borderRadius: 8,
-                            border: "1px solid #cce3d3",
-                            textAlign: "center",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              color: "#b88900",
-                              marginBottom: 10,
-                            }}
-                          >
-                            Bạn đã nhận được bộ kit xét nghiệm chưa?
-                          </div>
-                          <button
-                            style={{
-                              background: "#009e74",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: 6,
-                              padding: "8px 24px",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              // Cập nhật kitStatus thành 'da_nhan'
-                              const allOrders = JSON.parse(
-                                localStorage.getItem("dna_orders") || "[]"
-                              );
-                              const idx = allOrders.findIndex(
-                                (o) => o.id === selectedOrder.id
-                              );
-                              if (idx !== -1) {
-                                allOrders[idx] = {
-                                  ...allOrders[idx],
-                                  kitStatus: "da_nhan",
-                                };
-                                localStorage.setItem(
-                                  "dna_orders",
-                                  JSON.stringify(allOrders)
-                                );
-                              }
-                              setSelectedOrder({
-                                ...selectedOrder,
-                                kitStatus: "da_nhan",
-                              });
-                              setKitToast("Xác nhận nhận kit thành công!");
-                              setTimeout(() => setKitToast(""), 2000);
-                            }}
-                          >
-                            Tôi đã nhận kit
-                          </button>
-                        </div>
-                      )}
-                    {/* Lịch sử đánh giá */}
-                    {selectedOrder.feedbacks &&
-                      selectedOrder.feedbacks.length > 0 && (
-                        <div style={{ margin: "18px 0 10px 0" }}>
-                          <b>Lịch sử đánh giá của bạn:</b>
-                          {selectedOrder.feedbacks.map((fb, idx) => (
-                            <div
-                              key={idx}
-                              style={{
-                                background: "#f6f8fa",
-                                borderRadius: 6,
-                                padding: 10,
-                                color: "#333",
-                                margin: "8px 0",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 6,
-                                }}
-                              >
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    size={18}
-                                    color={
-                                      fb.rating >= star ? "#ffc107" : "#ddd"
-                                    }
-                                  />
-                                ))}
-                                <span
-                                  style={{
-                                    color: "#888",
-                                    fontSize: 15,
-                                    marginLeft: 8,
-                                  }}
-                                >
-                                  {fb.rating}/5
-                                </span>
-                              </div>
-                              <div style={{ fontSize: 15, margin: "4px 0" }}>
-                                {fb.feedback}
-                              </div>
-                              <div style={{ color: "#888", fontSize: 13 }}>
-                                Ngày: {fb.date}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                </div>
-              )}
             </div>
           )}
           {tab === "settings" && (
@@ -1345,16 +771,6 @@ const UserProfile = () => {
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Cài đặt tài khoản
-              </h2>
               <form
                 className="change-password-form"
                 onSubmit={pwStep === 1 ? handleSendOtp : handleVerifyOtp}
@@ -1472,46 +888,6 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-      {/* Toast xác nhận nhận kit */}
-      {kitToast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 32,
-            right: 32,
-            background: "#009e74",
-            color: "#fff",
-            padding: "14px 32px",
-            borderRadius: 12,
-            fontWeight: 700,
-            fontSize: 18,
-            zIndex: 9999,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-          }}
-        >
-          {kitToast}
-        </div>
-      )}
-      {/* Toast nộp file */}
-      {fileToast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 80,
-            right: 32,
-            background: "#009e74",
-            color: "#fff",
-            padding: "14px 32px",
-            borderRadius: 12,
-            fontWeight: 700,
-            fontSize: 18,
-            zIndex: 9999,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-          }}
-        >
-          {fileToast}
-        </div>
-      )}
       {/* Modal xác nhận đăng xuất */}
       <Modal
         open={showLogoutModal}
@@ -1676,6 +1052,233 @@ const UserProfile = () => {
             </div>
           </div>
         )}
+      {/* Modal chi tiết đơn đăng ký (chỉ thông tin đơn) */}
+      {showDetailModal && selectedOrder && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.18)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowDetailModal(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 18,
+              minWidth: 340,
+              maxWidth: 480,
+              maxHeight: "90vh",
+              padding: 32,
+              boxShadow: "0 8px 32px #0002",
+              position: "relative",
+              fontSize: 17,
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowDetailModal(false)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 18,
+                background: "none",
+                border: "none",
+                fontSize: 26,
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              &times;
+            </button>
+            <h3
+              style={{
+                fontWeight: 800,
+                fontSize: 26,
+                marginBottom: 18,
+                color: "#009e74",
+                letterSpacing: -1,
+                textAlign: "center",
+              }}
+            >
+              Chi tiết đơn đăng ký
+            </h3>
+            <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <span style={{ fontWeight: 700, color: "#009e74" }}>
+                  Mã đơn:
+                </span>{" "}
+                <span style={{ color: "#009e74", fontWeight: 700 }}>
+                  #{selectedOrder.id}
+                </span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
+                <span>{selectedOrder.status}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
+                <span>{selectedOrder.type}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
+                <span>{selectedOrder.date}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
+                <span>{selectedOrder.name}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
+                <span>{selectedOrder.phone}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Email:</span>{" "}
+                <span>{selectedOrder.email}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
+                <span>{selectedOrder.address}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày xét nghiệm:</span>{" "}
+                <span>{selectedOrder.appointmentDate}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Hình thức lấy mẫu:</span>{" "}
+                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
+                <span>{selectedOrder.note}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal xem kết quả (chỉ kết quả và file kết quả) */}
+      {showResultModal && selectedOrder && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.18)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowResultModal(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 18,
+              minWidth: 340,
+              maxWidth: 480,
+              maxHeight: "90vh",
+              padding: 32,
+              boxShadow: "0 8px 32px #0002",
+              position: "relative",
+              fontSize: 17,
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowResultModal(false)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 18,
+                background: "none",
+                border: "none",
+                fontSize: 26,
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              &times;
+            </button>
+            <h3
+              style={{
+                fontWeight: 800,
+                fontSize: 26,
+                marginBottom: 18,
+                color: "#009e74",
+                letterSpacing: -1,
+                textAlign: "center",
+              }}
+            >
+              Kết quả xét nghiệm
+            </h3>
+            <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
+            <div style={{ margin: "10px 0" }}>
+              {selectedOrder.result ? (
+                <div
+                  style={{
+                    background: "#f6f8fa",
+                    border: "1px solid #cce3d3",
+                    borderRadius: 8,
+                    padding: 12,
+                  }}
+                >
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: selectedOrder.result,
+                    }}
+                  />
+                </div>
+              ) : (
+                <span style={{ color: "#888" }}>Chưa có bảng kết quả.</span>
+              )}
+            </div>
+            {/* File kết quả xét nghiệm nếu có */}
+            {selectedOrder.resultFile && (
+              <div
+                style={{
+                  margin: "14px 0 10px 0",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <span style={{ fontWeight: 600, marginRight: 8 }}>
+                  File kết quả xét nghiệm:
+                </span>
+                <a
+                  href={
+                    selectedOrder.resultFile.startsWith("data:")
+                      ? selectedOrder.resultFile
+                      : selectedOrder.resultFile
+                  }
+                  download={selectedOrder.resultFileName || "KetQuaXetNghiem"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: "#0a7cff",
+                    textDecoration: "underline",
+                    fontWeight: 500,
+                  }}
+                >
+                  Tải file kết quả
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
