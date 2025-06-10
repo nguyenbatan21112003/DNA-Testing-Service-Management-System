@@ -103,8 +103,8 @@ const StaffDashboard = () => {
       const sampleOrders = [
         {
           id: 1001,
-          name: "Nguyễn Văn Minh",
-          email: "nguyenvanminh@gmail.com",
+          name: "Nguyễn Bá Tân",
+          email: "nguyenbatan@gmail.com",
           phone: "0123456789",
           type: "Xét nghiệm ADN cha con",
           status: "Chờ xử lý",
@@ -117,8 +117,8 @@ const StaffDashboard = () => {
         },
         {
           id: 1002,
-          name: "Trần Thị Hương",
-          email: "tranthihuong@gmail.com",
+          name: "Nguyễn Phúc Thiên Ân",
+          email: "nguyenphucthienan@gmail.com",
           phone: "0987654321",
           type: "Xét nghiệm ADN huyết thống",
           status: "Đang xử lý",
@@ -129,8 +129,8 @@ const StaffDashboard = () => {
         },
         {
           id: 1003,
-          name: "Lê Văn Đức",
-          email: "levanduc@gmail.com",
+          name: "Phạm Bảo Phi",
+          email: "phi@gmail.com",
           phone: "0123987456",
           type: "Xét nghiệm ADN cha con",
           status: "Hoàn thành",
