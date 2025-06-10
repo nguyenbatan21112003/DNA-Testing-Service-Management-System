@@ -381,16 +381,6 @@ const UserProfile = () => {
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Hồ sơ cá nhân
-              </h2>
               <div className="form-row">
                 <div className="form-group">
                   <label>Họ và tên</label>
@@ -444,16 +434,6 @@ const UserProfile = () => {
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Đơn đăng ký của bạn
-              </h2>
               <div className="orders-section" style={{ gap: 32 }}>
                 <div
                   className="orders-filter"
