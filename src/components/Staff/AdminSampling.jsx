@@ -17,8 +17,8 @@ import {
     Table,
     Tag,
     message,
-    Upload,
     Tabs,
+    Upload,
 } from "antd"
 import {
     PlusOutlined,
@@ -27,6 +27,7 @@ import {
     CameraOutlined,
     SaveOutlined,
     EyeOutlined,
+    AuditOutlined,
 } from "@ant-design/icons"
 
 const { Title, Text, Paragraph } = Typography
@@ -34,22 +35,22 @@ const { Option } = Select
 const { TextArea } = Input
 const { TabPane } = Tabs
 
-const SampleCollection = () => {
+const AdminSampling = () => {
     const [form] = Form.useForm()
-    const [sampleForms, setSampleForms] = useState([])
+    const [adminForms, setAdminForms] = useState([])
     const [selectedForm, setSelectedForm] = useState(null)
     const [previewModalVisible, setPreviewModalVisible] = useState(false)
     const [donors, setDonors] = useState([
         {
             id: 1,
             name: "",
-            idType: "PASSPORT",
+            idType: "CCCD",
             idNumber: "",
             idIssueDate: null,
             idIssuePlace: "",
             nationality: "Việt Nam",
             address: "",
-            sampleType: "Máu",
+            sampleType: "Nước bọt",
             sampleQuantity: "01",
             relationship: "",
             healthIssues: "không",
@@ -58,21 +59,21 @@ const SampleCollection = () => {
     ])
 
     useEffect(() => {
-        const savedForms = JSON.parse(localStorage.getItem("sample_collection_forms") || "[]")
-        setSampleForms(savedForms)
+        const savedForms = JSON.parse(localStorage.getItem("admin_sample_forms") || "[]")
+        setAdminForms(savedForms)
     }, [])
 
     const addDonor = () => {
         const newDonor = {
             id: donors.length + 1,
             name: "",
-            idType: "PASSPORT",
+            idType: "CCCD",
             idNumber: "",
             idIssueDate: null,
             idIssuePlace: "",
             nationality: "Việt Nam",
             address: "",
-            sampleType: "Máu",
+            sampleType: "Nước bọt",
             sampleQuantity: "01",
             relationship: "",
             healthIssues: "không",
@@ -95,16 +96,18 @@ const SampleCollection = () => {
         try {
             const newForm = {
                 id: Date.now(),
+                formNumber: `HC-${Date.now()}`,
                 ...values,
-                collectionDate: values.collectionDate.format("DD/MM/YYYY"),
+                collectionDate: values.collectionDate ? values.collectionDate.format("DD/MM/YYYY") : null,
                 donors: donors,
                 createdAt: new Date().toLocaleString("vi-VN"),
                 status: "Đã lấy mẫu",
+                type: "administrative",
             }
 
-            const updatedForms = [...sampleForms, newForm]
-            setSampleForms(updatedForms)
-            localStorage.setItem("sample_collection_forms", JSON.stringify(updatedForms))
+            const updatedForms = [...adminForms, newForm]
+            setAdminForms(updatedForms)
+            localStorage.setItem("admin_sample_forms", JSON.stringify(updatedForms))
 
             // Cập nhật đơn hàng tương ứng nếu có
             const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
@@ -118,7 +121,7 @@ const SampleCollection = () => {
                         sampleInfo: {
                             location: values.location,
                             collector: values.collector,
-                            collectionDate: values.collectionDate.format("DD/MM/YYYY"),
+                            collectionDate: values.collectionDate ? values.collectionDate.format("DD/MM/YYYY") : null,
                             donors: donors,
                         },
                     }
@@ -132,13 +135,13 @@ const SampleCollection = () => {
                 {
                     id: 1,
                     name: "",
-                    idType: "PASSPORT",
+                    idType: "CCCD",
                     idNumber: "",
                     idIssueDate: null,
                     idIssuePlace: "",
                     nationality: "Việt Nam",
                     address: "",
-                    sampleType: "Máu",
+                    sampleType: "Nước bọt",
                     sampleQuantity: "01",
                     relationship: "",
                     healthIssues: "không",
@@ -146,9 +149,10 @@ const SampleCollection = () => {
                 },
             ])
 
-            message.success("Lưu biên bản lấy mẫu thành công!")
-        } catch {
+            message.success("Lưu biên bản lấy mẫu hành chính thành công!")
+        } catch (error) {
             message.error("Có lỗi xảy ra khi lưu biên bản!")
+            console.error("Error saving form:", error)
         }
     }
 
@@ -157,7 +161,7 @@ const SampleCollection = () => {
         setPreviewModalVisible(true)
     }
 
-    const getAdministrativeOrders = () => {
+    const getAdminOrders = () => {
         const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
         return orders.filter((order) => order.type.includes("hành chính") && !order.sampleCollected)
     }
@@ -165,9 +169,8 @@ const SampleCollection = () => {
     const columns = [
         {
             title: "Mã biên bản",
-            dataIndex: "id",
-            key: "id",
-            render: (id) => `BB-${id}`,
+            dataIndex: "formNumber",
+            key: "formNumber",
         },
         {
             title: "Mã đơn hàng",
@@ -200,7 +203,7 @@ const SampleCollection = () => {
             title: "Trạng thái",
             dataIndex: "status",
             key: "status",
-            render: (status) => <Tag color="green">{status}</Tag>,
+            render: (status) => <Tag color="purple">{status}</Tag>,
         },
         {
             title: "Thao tác",
@@ -213,19 +216,8 @@ const SampleCollection = () => {
                         icon={<EyeOutlined />}
                         onClick={() => handleViewForm(record)}
                         style={{
-                            backgroundColor: "#00a67e",
-                            borderColor: "#00a67e",
-                            fontWeight: "500",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#008f6b"
-                            e.target.style.borderColor = "#008f6b"
-                            e.target.style.fontWeight = "600"
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#00a67e"
-                            e.target.style.borderColor = "#00a67e"
-                            e.target.style.fontWeight = "500"
+                            backgroundColor: "#722ed1",
+                            borderColor: "#722ed1",
                         }}
                     >
                         Xem
@@ -235,20 +227,9 @@ const SampleCollection = () => {
                         icon={<PrinterOutlined />}
                         onClick={() => handleViewForm(record)}
                         style={{
-                            backgroundColor: "#00a67e",
-                            borderColor: "#00a67e",
+                            backgroundColor: "#722ed1",
+                            borderColor: "#722ed1",
                             color: "white",
-                            fontWeight: "500",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#008f6b"
-                            e.target.style.borderColor = "#008f6b"
-                            e.target.style.fontWeight = "600"
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#00a67e"
-                            e.target.style.borderColor = "#00a67e"
-                            e.target.style.fontWeight = "500"
                         }}
                     >
                         In
@@ -261,9 +242,11 @@ const SampleCollection = () => {
     return (
         <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
             <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Lấy mẫu xét nghiệm</h1>
+                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#722ed1", margin: 0 }}>
+                    <AuditOutlined /> Lấy mẫu xét nghiệm hành chính
+                </h1>
                 <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
-                    Tạo biên bản lấy mẫu cho xét nghiệm ADN hành chính
+                    Tạo biên bản lấy mẫu cho các trường hợp tranh chấp, tòa án, cơ quan công quyền
                 </p>
             </div>
 
@@ -271,8 +254,8 @@ const SampleCollection = () => {
                 <TabPane tab="Tạo biên bản mới" key="create">
                     <Card>
                         <Form form={form} layout="vertical" onFinish={handleSave}>
-                            <Title level={4} style={{ textAlign: "center", color: "#00a67e" }}>
-                                BIÊN BẢN LẤY MẪU XÉT NGHIỆM
+                            <Title level={4} style={{ textAlign: "center", color: "#722ed1" }}>
+                                BIÊN BẢN LẤY MẪU XÉT NGHIỆM HÀNH CHÍNH
                             </Title>
 
                             <Row gutter={16}>
@@ -291,7 +274,7 @@ const SampleCollection = () => {
                                         label="Địa điểm lấy mẫu"
                                         rules={[{ required: true, message: "Vui lòng nhập địa điểm!" }]}
                                     >
-                                        <Input placeholder="Ví dụ: 132 Hoàng Văn Thụ, phường Phương Sài, Nha Trang" />
+                                        <Input placeholder="Ví dụ: Tòa án nhân dân TP.HCM - Phòng 201" />
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -312,13 +295,9 @@ const SampleCollection = () => {
                                     </Form.Item>
                                 </Col>
                                 <Col span={12}>
-                                    <Form.Item
-                                        name="orderId"
-                                        label="Mã đơn hàng (nếu có)"
-                                        rules={[{ required: true, message: "Vui lòng chọn đơn hàng!" }]}
-                                    >
+                                    <Form.Item name="orderId" label="Mã đơn hàng (nếu có)">
                                         <Select placeholder="Chọn đơn hàng xét nghiệm hành chính">
-                                            {getAdministrativeOrders().map((order) => (
+                                            {getAdminOrders().map((order) => (
                                                 <Option key={order.id} value={order.id.toString()}>
                                                     #{order.id} - {order.name} - {order.type}
                                                 </Option>
@@ -349,6 +328,27 @@ const SampleCollection = () => {
                                 </Col>
                             </Row>
 
+                            <Row gutter={16}>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="caseNumber"
+                                        label="Số vụ án/Số quyết định"
+                                        rules={[{ required: true, message: "Vui lòng nhập số vụ án!" }]}
+                                    >
+                                        <Input placeholder="Ví dụ: 123/2024/KDTM-ST" />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item
+                                        name="court"
+                                        label="Tòa án/Cơ quan yêu cầu"
+                                        rules={[{ required: true, message: "Vui lòng nhập tên tòa án!" }]}
+                                    >
+                                        <Input placeholder="Ví dụ: TAND TP.HCM" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
                             <Divider>Thông tin người cho mẫu</Divider>
 
                             {donors.map((donor, index) => (
@@ -358,22 +358,7 @@ const SampleCollection = () => {
                                     title={`Người cho mẫu thứ ${index + 1}`}
                                     extra={
                                         donors.length > 1 && (
-                                            <Button
-                                                type="text"
-                                                danger
-                                                icon={<DeleteOutlined />}
-                                                onClick={() => removeDonor(donor.id)}
-                                                style={{
-                                                    color: "#ff4d4f",
-                                                    fontWeight: "500",
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.target.style.fontWeight = "600"
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.target.style.fontWeight = "500"
-                                                }}
-                                            />
+                                            <Button type="text" danger icon={<DeleteOutlined />} onClick={() => removeDonor(donor.id)} />
                                         )
                                     }
                                     style={{ marginBottom: 16 }}
@@ -391,16 +376,15 @@ const SampleCollection = () => {
                                         <Col span={6}>
                                             <Form.Item label="Loại giấy tờ" required>
                                                 <Select value={donor.idType} onChange={(value) => updateDonor(donor.id, "idType", value)}>
-                                                    <Option value="PASSPORT">Passport</Option>
                                                     <Option value="CCCD">CCCD</Option>
                                                     <Option value="CMND">CMND</Option>
+                                                    <Option value="PASSPORT">Passport</Option>
                                                     <Option value="Giấy Chứng Sinh">Giấy Chứng Sinh</Option>
-                                                    <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
                                         <Col span={6}>
-                                            <Form.Item label="Số/quyển số" required>
+                                            <Form.Item label="Số giấy tờ" required>
                                                 <Input
                                                     value={donor.idNumber}
                                                     onChange={(e) => updateDonor(donor.id, "idNumber", e.target.value)}
@@ -460,8 +444,8 @@ const SampleCollection = () => {
                                                     value={donor.sampleType}
                                                     onChange={(value) => updateDonor(donor.id, "sampleType", value)}
                                                 >
+                                                    <Option value="Nước bọt">Nước bọt</Option>
                                                     <Option value="Máu">Máu</Option>
-                                                    <Option value="Niêm mạc miệng">Niêm mạc miệng</Option>
                                                     <Option value="Tóc">Tóc</Option>
                                                     <Option value="Móng tay">Móng tay</Option>
                                                 </Select>
@@ -534,19 +518,8 @@ const SampleCollection = () => {
                                 style={{
                                     width: "100%",
                                     marginBottom: 24,
-                                    borderColor: "#00a67e",
-                                    color: "#00a67e",
-                                    fontWeight: "500",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.target.style.borderColor = "#008f6b"
-                                    e.target.style.color = "#008f6b"
-                                    e.target.style.fontWeight = "600"
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.borderColor = "#00a67e"
-                                    e.target.style.color = "#00a67e"
-                                    e.target.style.fontWeight = "500"
+                                    borderColor: "#722ed1",
+                                    color: "#722ed1",
                                 }}
                             >
                                 Thêm người cho mẫu
@@ -558,46 +531,15 @@ const SampleCollection = () => {
 
                             <div style={{ textAlign: "center" }}>
                                 <Space size="large">
-                                    <Button
-                                        onClick={() => form.resetFields()}
-                                        style={{
-                                            backgroundColor: "#00a67e",
-                                            borderColor: "#00a67e",
-                                            color: "white",
-                                            fontWeight: "500",
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor = "#008f6b"
-                                            e.target.style.borderColor = "#008f6b"
-                                            e.target.style.fontWeight = "600"
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor = "#00a67e"
-                                            e.target.style.borderColor = "#00a67e"
-                                            e.target.style.fontWeight = "500"
-                                        }}
-                                    >
-                                        Làm mới
-                                    </Button>
+                                    <Button onClick={() => form.resetFields()}>Làm mới</Button>
                                     <Button
                                         type="primary"
                                         htmlType="submit"
                                         icon={<SaveOutlined />}
                                         size="large"
                                         style={{
-                                            backgroundColor: "#00a67e",
-                                            borderColor: "#00a67e",
-                                            fontWeight: "500",
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor = "#008f6b"
-                                            e.target.style.borderColor = "#008f6b"
-                                            e.target.style.fontWeight = "600"
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor = "#00a67e"
-                                            e.target.style.borderColor = "#00a67e"
-                                            e.target.style.fontWeight = "500"
+                                            backgroundColor: "#722ed1",
+                                            borderColor: "#722ed1",
                                         }}
                                     >
                                         Lưu biên bản
@@ -612,7 +554,7 @@ const SampleCollection = () => {
                     <Card>
                         <Table
                             columns={columns}
-                            dataSource={sampleForms}
+                            dataSource={adminForms}
                             rowKey="id"
                             pagination={{
                                 pageSize: 10,
@@ -627,52 +569,14 @@ const SampleCollection = () => {
 
             {/* Modal xem biên bản */}
             <Modal
-                title="Xem biên bản lấy mẫu"
+                title="Xem biên bản lấy mẫu hành chính"
                 open={previewModalVisible}
                 onCancel={() => setPreviewModalVisible(false)}
                 footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setPreviewModalVisible(false)}
-                        style={{
-                            backgroundColor: "#00a67e",
-                            borderColor: "#00a67e",
-                            color: "white",
-                            fontWeight: "500",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#008f6b"
-                            e.target.style.borderColor = "#008f6b"
-                            e.target.style.fontWeight = "600"
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#00a67e"
-                            e.target.style.borderColor = "#00a67e"
-                            e.target.style.fontWeight = "500"
-                        }}
-                    >
+                    <Button key="close" onClick={() => setPreviewModalVisible(false)}>
                         Đóng
                     </Button>,
-                    <Button
-                        key="print"
-                        type="primary"
-                        icon={<PrinterOutlined />}
-                        style={{
-                            backgroundColor: "#00a67e",
-                            borderColor: "#00a67e",
-                            fontWeight: "500",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#008f6b"
-                            e.target.style.borderColor = "#008f6b"
-                            e.target.style.fontWeight = "600"
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#00a67e"
-                            e.target.style.borderColor = "#00a67e"
-                            e.target.style.fontWeight = "500"
-                        }}
-                    >
+                    <Button key="print" type="primary" icon={<PrinterOutlined />}>
                         In biên bản
                     </Button>,
                 ]}
@@ -681,10 +585,7 @@ const SampleCollection = () => {
                 {selectedForm && (
                     <div style={{ background: "#fff", padding: 24 }}>
                         <div style={{ textAlign: "center", marginBottom: 24 }}>
-                            <Title level={4}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Title>
-                            <Text>Độc lập - Tự do - Hạnh phúc</Text>
-                            <Divider style={{ margin: "12px 0" }} />
-                            <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
+                            <Title level={4}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM HÀNH CHÍNH</Title>
                         </div>
 
                         <Paragraph>
@@ -698,10 +599,13 @@ const SampleCollection = () => {
                             2. Người yêu cầu xét nghiệm: <strong>{selectedForm.requesterName}</strong>, Địa chỉ hiện tại:{" "}
                             {selectedForm.requesterAddress}
                         </Paragraph>
+                        <Paragraph>
+                            3. Số vụ án: <strong>{selectedForm.caseNumber}</strong> - Tòa án: <strong>{selectedForm.court}</strong>
+                        </Paragraph>
 
                         <Paragraph>
-                            Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm ADN. Các mẫu của từng người được lấy riêng
-                            rẽ như sau:
+                            Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm ADN theo yêu cầu của cơ quan có thẩm quyền.
+                            Các mẫu của từng người được lấy riêng rẽ như sau:
                         </Paragraph>
 
                         {selectedForm.donors.map((donor, index) => (
@@ -719,7 +623,7 @@ const SampleCollection = () => {
                                         <Text>Loại giấy tờ: {donor.idType}</Text>
                                     </Col>
                                     <Col span={16}>
-                                        <Text>Số/quyển số: {donor.idNumber}</Text>
+                                        <Text>Số giấy tờ: {donor.idNumber}</Text>
                                     </Col>
                                 </Row>
                                 <Row gutter={16} style={{ marginTop: 8 }}>
@@ -758,29 +662,8 @@ const SampleCollection = () => {
                                         <Text>Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng: {donor.healthIssues}</Text>
                                     </Col>
                                 </Row>
-                                <div style={{ textAlign: "right", marginTop: 16 }}>
-                                    <Text>Vân tay ngón trỏ phải</Text>
-                                    <div
-                                        style={{
-                                            width: 80,
-                                            height: 80,
-                                            border: "1px dashed #999",
-                                            borderRadius: "50%",
-                                            display: "inline-block",
-                                            marginLeft: 8,
-                                        }}
-                                    ></div>
-                                </div>
                             </div>
                         ))}
-
-                        <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-                            * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể tách rời.
-                        </Paragraph>
-                        <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-                            * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày trả kết quả. Sau thời gian đó người yêu
-                            cầu xét nghiệm cung cấp và chịu trách nhiệm.
-                        </Paragraph>
 
                         <Row gutter={24} style={{ marginTop: 24, textAlign: "center" }}>
                             <Col span={8}>
@@ -802,7 +685,7 @@ const SampleCollection = () => {
                                 </div>
                             </Col>
                             <Col span={8}>
-                                <Text strong>NGƯỜI YÊU CẦU XÉT NGHIỆM</Text>
+                                <Text strong>ĐẠI DIỆN CƠ QUAN YÊU CẦU</Text>
                                 <div style={{ marginTop: 8 }}>
                                     <Text>(Ký và ghi rõ họ tên)</Text>
                                 </div>
@@ -818,4 +701,4 @@ const SampleCollection = () => {
     )
 }
 
-export default SampleCollection
+export default AdminSampling
