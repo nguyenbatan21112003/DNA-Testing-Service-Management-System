@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Services;
-
 using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Application.Dtos;
 using DNATestSystem.Services.Service;
@@ -39,24 +38,63 @@ namespace DNATestSystem.Controllers
             var id = _userService.Register(users);
             return Ok(new { message = "Đăng ký thành công", id });
         }
-        
-        [HttpPost("login")]
-        public IActionResult Login(UserLoginModel users)
+
+        [HttpPost("/login")]
+        public async Task<IActionResult> Login(UserLoginModel users)
         {
             //if (!ModelState.IsValid)
-            //{   
+            //{
             //    return BadRequest(ModelState);
             //}
             //return Ok(_userService.Login(users));
             var user = _userService.Login(users);
             if (user == null)
             {
-                return BadRequest(new { message = "Username or password is wrong" });
+                return BadRequest("Username or password is wrong");
             }
-            var token = _userService.GenerateJwt(user);
-            return Ok(token);
-        } 
-        
+
+            var newOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true
+            };
+            var accessToken = _userService.GenerateJwt(user);
+            var refreshToken = _userService.GenerateRefreshToken(user.UserId);
+            //mình nên return accessToken còn refreshToken thì nên lưu vào trong cookie
+            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
+            return Ok(accessToken);
+            //nếu hết hạn tk refreshToken thì cookie nó sẽ tự xóa
+
+        }
+        [HttpPost("refresh-token")]
+        public IActionResult RefreshToken()
+        {
+            var isExist = HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+            if (!isExist)
+            {
+                return Unauthorized("RefreshToken is not found");
+            }
+            var user = _userService.GetUserByRefreshToken(refreshToken!);
+            if (user == null)
+            {
+                return Unauthorized("RefreshToken is not found");
+            }
+            //nếu như có tk refreshToken thì mình phải xóa nó đi
+            _userService.DeleteOldRefreshToken(user.UserId);
+
+            //sao đó là tạo mới
+            var newOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true
+            };
+            var accessToken = _userService.GenerateJwt(user);
+            var mew_refreshToken = _userService.GenerateRefreshToken(user.UserId);
+            //mình nên return accessToken còn refreshToken thì nên lưu vào trong cookie
+            HttpContext.Response.Cookies.Append("refreshToken", mew_refreshToken, newOptions);
+            return Ok(accessToken);
+        }
+
         [HttpPost("/logout")]
         public IActionResult Logout()
         {
@@ -64,42 +102,7 @@ namespace DNATestSystem.Controllers
             return Ok();
         }
 
-        [HttpPost("verify-current-password")]
-        public IActionResult VerifyCurrentPassword([FromBody] VerifyPasswordModel model)
-        {
-            if (_userService.VerifyCurrentPassword(model.Email, model.CurrentPassword))
-                return Ok("Password correct");
-            return BadRequest("Invalid password");
-        }
-
-        [HttpPost("request-password-change")]
-        public IActionResult RequestPasswordChange([FromBody] ChangePasswordRequest model)
-        {
-            _userService.RequestPasswordChange(model.Email, model.NewPassword);
-            return Ok("OTP sent");
-        }
-
-        [HttpPost("confirm-otp")]
-        public IActionResult ConfirmOtp([FromBody] ConfirmOtpModel model)
-        {
-            if (_userService.ConfirmOtp(model.Email, model.Otp))
-                return Ok("Password changed successfully");
-            return BadRequest("Invalid OTP");
-        }
-
-        [Authorize]
-        [HttpPost("change-password")]
-        public IActionResult ChangePassword([FromBody] ChangePasswordWhenLoggedInModel model)
-        {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            if (!_userService.VerifyCurrentPassword(email, model.CurrentPassword))
-            {
-                return BadRequest("Mật khẩu hiện tại không chính xác.");
-            }
-
-            _userService.ChangePassword(email, model.NewPassword);
-            return Ok("Đổi mật khẩu thành công.");
-        }
+      
         //[Authorize]
         //[HttpPost("verify-current-password")]
         //public IActionResult VerifyCurrentPassword([FromBody] string currentPassword)
