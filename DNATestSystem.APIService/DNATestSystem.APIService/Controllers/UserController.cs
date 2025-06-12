@@ -22,7 +22,7 @@ namespace DNATestSystem.Controllers
             _userService = userService;
         }
         [HttpPost("register")]
-        public IActionResult Register(UserRegisterModel users)
+        public IActionResult Register([FromBody] UserRegisterModel users)
         {
             if (!ModelState.IsValid)
             {

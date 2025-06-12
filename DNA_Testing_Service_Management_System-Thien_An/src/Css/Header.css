@@ -1,0 +1,14 @@
+.custom-logout-btn {
+  background: #e74c3c !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-weight: 600;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.custom-logout-btn:hover,
+.custom-logout-btn:focus {
+  background: #ff6659 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px #e74c3c33 !important;
+}
