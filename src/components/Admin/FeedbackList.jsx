@@ -16,6 +16,7 @@ const FeedbackList = () => {
           rating: fb.rating,
           feedback: fb.feedback,
           date: fb.date,
+          email: fb.email || o.email || "",
         });
       });
     }
@@ -158,6 +159,16 @@ const FeedbackList = () => {
                       fontSize: 17,
                     }}
                   >
+                    Email
+                  </th>
+                  <th
+                    style={{
+                      padding: 16,
+                      textAlign: "left",
+                      fontWeight: 700,
+                      fontSize: 17,
+                    }}
+                  >
                     Loại dịch vụ
                   </th>
                   <th
@@ -176,6 +187,7 @@ const FeedbackList = () => {
                     #{f.id}
                   </td>
                   <td style={{ padding: 12 }}>{f.name}</td>
+                  <td style={{ padding: 12 }}>{f.email}</td>
                   <td style={{ padding: 12 }}>{f.type}</td>
                   <td
                     style={{
@@ -189,7 +201,7 @@ const FeedbackList = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td colSpan={4} style={{ padding: 0, border: 0 }}>
+                  <td colSpan={5} style={{ padding: 0, border: 0 }}>
                     <div
                       style={{
                         width: "100%",
@@ -203,7 +215,7 @@ const FeedbackList = () => {
               <tbody>
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     style={{
                       textAlign: "center",
                       padding: 10,
@@ -228,7 +240,7 @@ const FeedbackList = () => {
                 </tr>
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     style={{
                       padding: 10,
                       fontWeight: 600,

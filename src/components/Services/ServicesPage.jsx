@@ -18,7 +18,7 @@ const ServicesPage = () => {
   const [category, setCategory] = useState("civil");
   const [serviceType, setServiceType] = useState("");
   const [sampleMethod, setSampleMethod] = useState("");
-  const { addOrder } = useOrderContext();
+  const { addOrder, pricingData } = useOrderContext();
   const [showToast, setShowToast] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [readGuide, setReadGuide] = useState(false);
@@ -494,48 +494,14 @@ const ServicesPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Xét nghiệm cha con</td>
-                        <td>4.500.000</td>
-                        <td>1.800.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm mẹ con</td>
-                        <td>4.500.000</td>
-                        <td>1.800.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm anh chị em ruột</td>
-                        <td>6.000.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm họ hàng</td>
-                        <td>7.500.000</td>
-                        <td>2.000.000</td>
-                        <td>7-10 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm nguồn gốc</td>
-                        <td>4.500.000</td>
-                        <td>2.000.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm sức khỏe di truyền</td>
-                        <td>6.000.000</td>
-                        <td>2.000.000</td>
-                        <td>4-6 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm nhanh</td>
-                        <td>6.500.000</td>
-                        <td>3.000.000</td>
-                        <td>24-48 giờ</td>
-                      </tr>
+                      {pricingData && pricingData.civil && pricingData.civil.map((service) => (
+                        <tr key={service.id}>
+                          <td>{service.name}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.price)}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.additionalPrice)}</td>
+                          <td>{service.time}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <div className="pricing-note">
@@ -558,36 +524,14 @@ const ServicesPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Xét nghiệm ADN khai sinh</td>
-                        <td>6.500.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN di trú</td>
-                        <td>8.500.000</td>
-                        <td>2.000.000</td>
-                        <td>7-10 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN thừa kế</td>
-                        <td>7.500.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN tranh chấp</td>
-                        <td>8.000.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm hành chính nhanh</td>
-                        <td>10.000.000</td>
-                        <td>3.000.000</td>
-                        <td>48-72 giờ</td>
-                      </tr>
+                      {pricingData && pricingData.admin && pricingData.admin.map((service) => (
+                        <tr key={service.id}>
+                          <td>{service.name}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.price)}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.additionalPrice)}</td>
+                          <td>{service.time}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <div className="pricing-note">

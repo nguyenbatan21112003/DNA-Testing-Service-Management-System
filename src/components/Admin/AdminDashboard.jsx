@@ -18,6 +18,7 @@ import UserManagement from "./UserManagement";
 import StaffManagement from "./StaffManagement";
 import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
 import FeedbackList from "./FeedbackList";
+import PricingManagement from "./PricingManagement";
 
 const { Sider, Content } = Layout;
 
@@ -257,7 +258,7 @@ const AdminDashboard = () => {
           <div style={{ padding: 24, minHeight: 360 }}>
             {activeTab === "user-management" && <UserManagement />}
             {activeTab === "staff-management" && <StaffManagement />}
-            {activeTab === "processing" && <ProcessingManagement />}
+            {activeTab === "processing" && <PricingManagement />}
             {(activeTab === "test-types" || !activeTab) && (
               <AdminDNAStatsDashboard />
             )}
