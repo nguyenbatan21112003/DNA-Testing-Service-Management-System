@@ -41,7 +41,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+               .AllowCredentials();
     });
 });
 //if (FirebaseApp.DefaultInstance == null)
@@ -62,6 +63,10 @@ builder.Services.AddControllers()
 
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDistributedMemoryCache(); // BẮT BUỘC cho session
 builder.Services.AddSession();
 builder.Services.AddAuthorization(); // Thêm dòng này để fix lỗi
@@ -138,12 +143,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(policy =>
-{
-    policy.WithOrigins("http://localhost:5173")  // FE Vite
-          .AllowAnyMethod()
-          .AllowAnyHeader();
-});
+app.UseCors("AllowFrontend");
+
+//app.UseCors(policy =>
+//{
+//    policy.WithOrigins("http://localhost:5173")  // FE Vite
+//          .AllowAnyMethod()
+//          .AllowAnyHeader();
+//});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();

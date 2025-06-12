@@ -1,50 +1,8 @@
 [
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "Logout",
-    "RelativePath": "logout",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "ChangePassword",
-    "RelativePath": "user/change-password",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "model",
-        "Type": "DNATestSystem.Application.Dtos.ChangePasswordWhenLoggedInModel",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "ConfirmOtp",
-    "RelativePath": "user/confirm-otp",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "model",
-        "Type": "DNATestSystem.Application.Dtos.ConfirmOtpModel",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Login",
-    "RelativePath": "user/login",
+    "RelativePath": "login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -59,6 +17,26 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "Logout",
+    "RelativePath": "logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "RefreshToken",
+    "RelativePath": "user/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Register",
     "RelativePath": "user/register",
     "HttpMethod": "POST",
@@ -68,38 +46,6 @@
       {
         "Name": "users",
         "Type": "DNATestSystem.Application.Dtos.UserRegisterModel",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "RequestPasswordChange",
-    "RelativePath": "user/request-password-change",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "model",
-        "Type": "DNATestSystem.Application.Dtos.ChangePasswordRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "VerifyCurrentPassword",
-    "RelativePath": "user/verify-current-password",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "model",
-        "Type": "DNATestSystem.Application.Dtos.VerifyPasswordModel",
         "IsRequired": true
       }
     ],

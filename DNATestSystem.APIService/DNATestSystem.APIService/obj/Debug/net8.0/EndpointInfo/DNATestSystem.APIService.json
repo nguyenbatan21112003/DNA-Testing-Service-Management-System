@@ -37,7 +37,7 @@
         }
       }
     },
-    "/user/login": {
+    "/login": {
       "post": {
         "tags": [
           "User"
@@ -61,6 +61,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/user/refresh-token": {
+      "post": {
+        "tags": [
+          "User"
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -79,192 +91,14 @@
           }
         }
       }
-    },
-    "/user/verify-current-password": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyPasswordModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyPasswordModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyPasswordModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/user/request-password-change": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/user/confirm-otp": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfirmOtpModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfirmOtpModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfirmOtpModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/user/change-password": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordWhenLoggedInModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordWhenLoggedInModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordWhenLoggedInModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "ChangePasswordRequest": {
-        "required": [
-          "email",
-          "newPassword"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "minLength": 1,
-            "type": "string",
-            "format": "email"
-          },
-          "newPassword": {
-            "maxLength": 100,
-            "minLength": 6,
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ChangePasswordWhenLoggedInModel": {
-        "type": "object",
-        "properties": {
-          "currentPassword": {
-            "type": "string",
-            "nullable": true
-          },
-          "newPassword": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ConfirmOtpModel": {
-        "required": [
-          "email",
-          "otp"
-        ],
-        "type": "object",
-        "properties": {
-          "otp": {
-            "maxLength": 6,
-            "minLength": 6,
-            "type": "string"
-          },
-          "email": {
-            "minLength": 1,
-            "type": "string",
-            "format": "email"
-          }
-        },
-        "additionalProperties": false
-      },
       "UserLoginModel": {
         "type": "object",
         "properties": {
-          "emailAddress": {
+          "email": {
             "type": "string",
             "nullable": true
           },
@@ -293,25 +127,6 @@
           "phoneNumber": {
             "type": "string",
             "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "VerifyPasswordModel": {
-        "required": [
-          "currentPassword",
-          "email"
-        ],
-        "type": "object",
-        "properties": {
-          "email": {
-            "minLength": 1,
-            "type": "string",
-            "format": "email"
-          },
-          "currentPassword": {
-            "minLength": 1,
-            "type": "string"
           }
         },
         "additionalProperties": false

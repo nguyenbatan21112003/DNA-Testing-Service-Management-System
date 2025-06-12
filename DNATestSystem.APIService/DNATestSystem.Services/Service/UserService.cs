@@ -9,7 +9,6 @@ using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Hepler;
 
-
 namespace DNATestSystem.Services.Service
 {
     public class UserService : IUserService
@@ -27,12 +26,12 @@ namespace DNATestSystem.Services.Service
         public User? Login(UserLoginModel loginModel)
         {
             var user = _context.Users
-                .FirstOrDefault(x => x.EmailAddress == loginModel.EmailAddress);
+                .FirstOrDefault(x => x.Email == loginModel.Email);
             if (user == null)
             {
                 return null;
             }
-            var password = loginModel.Password + user.salting;
+            var password = loginModel.Password;
 
             if (HashHelper.BCriptVerify(password, user.Password))
             {
@@ -41,42 +40,26 @@ namespace DNATestSystem.Services.Service
             return null;
         }
 
-
-
         public int Register(UserRegisterModel user)
-        {
-            //// Kiểm tra trùng email
-            //var existingUser = _context.Users
-            //    .FirstOrDefault(u => u.EmailAddress == user.EmailAddress);
-            //// Kiểm tra trung số
-            //var existingPhoneNumber = _context.Users
-            //    .FirstOrDefault(u => u.PhoneNumber == user.PhoneNumber);
-            //if (existingUser != null && existingPhoneNumber != null)
-            //{
-            //    return -1; // Email đã tồn tại
-            //}
-
-            // Sinh salt + mã hóa password
-            var salting = HashHelper.GenerateRandomString(100);
-            var password = user.Password + salting;
+        {           
+            var password = user.Password;
             var hashPassword = HashHelper.BCriptHash(password);
 
             // Tạo user mới
             var data = new DNATestSystem.BusinessObjects.Entites.User
             {
                 FullName = user.FullName,
-                EmailAddress = user.EmailAddress,
+                Email = user.EmailAddress,
                 Password = hashPassword,
-                PhoneNumber = user.PhoneNumber,
-                salting = salting,
-                Role = DNATestSystem.BusinessObjects.Entites.Role.Customer,
+                Phone = user.PhoneNumber,
+                Role = BusinessObjects.Entites.Enum.Role.Customer,
                 //CreateAt = DateTime.Now
             };
 
             _context.Users.Add(data);
             _context.SaveChanges();
 
-            return data.Id;
+            return data.UserId;
         }
 
         public string GenerateJwt(User user)
@@ -84,8 +67,8 @@ namespace DNATestSystem.Services.Service
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Email , user.EmailAddress),
+                new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
+                new Claim(ClaimTypes.Email , user.Email),
                 new Claim(ClaimTypes.Role , user.Role.ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
@@ -101,62 +84,64 @@ namespace DNATestSystem.Services.Service
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public bool VerifyCurrentPassword(string email, string currentPassword)
+        public string GenerateRefreshToken(int userId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
-            if (user == null) return false;
+            string refreshToken = HashHelper.GenerateRandomString(64);
+            //refresh Token nên hash lại
+            string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
 
-            var saltedPassword = currentPassword + user.salting;
-            return HashHelper.BCriptVerify(saltedPassword, user.Password);
-        }
-
-        public void RequestPasswordChange(string email, string newPassword)
-        {
-            var otp = new Random().Next(100000, 999999).ToString();
-
-            var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
-            if (user == null) throw new Exception("User not found");
-
-            var salt = user.salting;
-            var hashNewPass = HashHelper.BCriptHash(newPassword + salt);
-
-            PasswordChangeStore.Requests[email] = new PendingPasswordChange
+            var data = new RefreshToken
             {
-                Email = email,
-                NewPassword = hashNewPass,
-                Otp = otp
+                UsedID = userId,
+                Token = hashRefreshToken,
+                ExpireTime = DateTime.UtcNow.AddDays(7), // 7 ngày 
+                IsRevoked = false
             };
 
-            Console.WriteLine($"[OTP] Gửi đến {email}: {otp}");
-            // TODO: Gửi email/sms thật
-        }
-        public bool ConfirmOtp(string email, string otp)
-        {
-            if (!PasswordChangeStore.Requests.ContainsKey(email)) return false;
+            _context.RefreshTokens.Add(data);
 
-            var pending = PasswordChangeStore.Requests[email];
-            if (pending.Otp != otp) return false;
-
-            var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
-            if (user == null) return false;
-
-            user.Password = pending.NewPassword;
             _context.SaveChanges();
 
-            PasswordChangeStore.Requests.Remove(email);
-            return true;
+            return hashRefreshToken;
         }
-        public void ChangePassword(string email, string newPassword)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
-            if (user == null) throw new Exception("Không tìm thấy người dùng");
 
-            var saltedPassword = newPassword + user.salting;
-            user.Password = HashHelper.BCriptHash(saltedPassword);
+        public User GetUserByRefreshToken(string refreshToken)
+        {
+            var user = _context.RefreshTokens.
+            Where(x => x.Token == refreshToken && !x.IsRevoked && x.ExpireTime > DateTime.Now)
+            .Select(x => x.User)
+            .FirstOrDefault();
+            return user;
+        }
+
+        public void DeleteOldRefreshToken(string refreshToken)
+        {
+            var entity = _context.RefreshTokens
+                        .FirstOrDefault(x => x.Token == refreshToken);
+
+
+            if (entity != null)
+            {
+                return;
+            }
+            _context.RefreshTokens.Remove(entity);
             _context.SaveChanges();
         }
 
-      
+        public void DeleteOldRefreshToken(int userId)
+        {
+            var entity = _context.RefreshTokens
+                        .Where(x => x.UsedID == userId)
+                        .ToList();
+
+            if (entity != null)
+            {
+                return;
+            }
+            _context.RefreshTokens.RemoveRange(entity);
+            _context.SaveChanges();
+        }
+        
     }
 }
 

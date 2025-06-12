@@ -22,7 +22,7 @@ namespace DNATestSystem.Repositories.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Entites.User", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Entites.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,7 +30,35 @@ namespace DNATestSystem.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("EmailAddress")
+                    b.Property<DateTime>("ExpireTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsedID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsedID");
+
+                    b.ToTable("RefreshToken", (string)null);
+                });
+
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Entites.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -42,7 +70,7 @@ namespace DNATestSystem.Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -52,13 +80,28 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Property<DateTime>("createAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("salting")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("status")
+                        .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Entites.RefreshToken", b =>
+                {
+                    b.HasOne("DNATestSystem.BusinessObjects.Entites.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UsedID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Entites.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

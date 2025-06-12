@@ -11,7 +11,7 @@ namespace DNATestSystem.ModelValidation
             RuleFor(x => x.EmailAddress)
                 .NotEmpty().WithMessage("Email không được để trống")
                 .EmailAddress().WithMessage("Email không hợp lệ")
-                    .Must(email => !context.Users.Any(u => u.EmailAddress == email))
+                    .Must(email => !context.Users.Any(u => u.Email == email))
                     .WithMessage("Email đã được sử dụng");
 
             RuleFor(x => x.FullName)
@@ -27,7 +27,7 @@ namespace DNATestSystem.ModelValidation
                     .WithMessage("Số điện thoại không hợp lệ")
                     .Length(10)
                     .WithMessage("Số điện thoại phải đủ 10 số !")
-                    .Must(phone => !context.Users.Any(u => u.PhoneNumber == phone))
+                    .Must(phone => !context.Users.Any(u => u.Phone == phone))
                     .WithMessage("Số điện thoại đã được sử dụng");               
             }
         }

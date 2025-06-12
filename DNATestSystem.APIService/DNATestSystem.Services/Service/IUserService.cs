@@ -13,9 +13,9 @@ namespace DNATestSystem.Services.Service
         int Register(UserRegisterModel user);
         User? Login(UserLoginModel user);
         string GenerateJwt(User user);
-        bool VerifyCurrentPassword(string email, string currentPassword);
-        bool ConfirmOtp(string email, string otp);
-        void RequestPasswordChange(string email, string newPassword);
-        void ChangePassword(string email, string newPassword);
+        string GenerateRefreshToken(int userId);
+        User GetUserByRefreshToken(String refreshToken);
+        public void DeleteOldRefreshToken(string refreshToken);
+        public void DeleteOldRefreshToken(int userId);
     }
 }

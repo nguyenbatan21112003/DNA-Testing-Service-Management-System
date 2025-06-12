@@ -1,4 +1,7 @@
-﻿namespace DNATestSystem.Services.Hepler
+﻿using System.Security.Cryptography;
+using System.Text;
+
+namespace DNATestSystem.Services.Hepler
 {
     public class HashHelper
     {
@@ -17,9 +20,16 @@
             var random = new Random();
             for (int i = 0; i < length; i++)
             {
-                s += (char)random.Next(1, 255);
+                s += (char)random.Next('a', 'z');
             }
             return s;
+        }
+
+        public static string Hash256(string input)
+        {
+            byte[] hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+            string hash = Convert.ToHexString(hashBytes);
+            return hash;
         }
     }
 }
