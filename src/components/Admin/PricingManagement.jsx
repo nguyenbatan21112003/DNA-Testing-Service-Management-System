@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, Table, Button, Modal, Form, Input, InputNumber, message } from "antd";
 import { EditOutlined, SaveOutlined } from "@ant-design/icons";
 import { useOrderContext } from "../../context/OrderContext";
+import "./PricingManagement.css"; // Import CSS file for hover effects
 
 const { TabPane } = Tabs;
 
@@ -97,6 +98,7 @@ const PricingManagement = () => {
           type="primary" 
           icon={<EditOutlined />} 
           onClick={() => handleEdit(record)}
+          className="edit-button"
           style={{ background: "#52c41a", borderColor: "#52c41a" }}
         >
           Sửa
@@ -142,6 +144,13 @@ const PricingManagement = () => {
             type="primary"
             icon={<SaveOutlined />}
             onClick={handleSave}
+            className="save-button"
+            style={{ 
+              background: "#1677ff", 
+              borderColor: "#1677ff",
+              color: "#fff",
+              fontWeight: 600
+            }}
           >
             Lưu thay đổi
           </Button>,
