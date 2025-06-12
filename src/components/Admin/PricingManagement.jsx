@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Tabs, Table, Button, Modal, Form, Input, InputNumber, message } from "antd";
 import { EditOutlined, SaveOutlined } from "@ant-design/icons";
 import { useOrderContext } from "../../context/OrderContext";
-import "./PricingManagement.css"; // Import CSS file for hover effects
+import "../../Css/PricingManagement.css"; // Import CSS file for hover effects
 
 const { TabPane } = Tabs;
 

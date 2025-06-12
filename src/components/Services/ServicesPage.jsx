@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Dna,
   FileText,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { useOrderContext } from "../../context/OrderContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const ServicesPage = () => {
   const [activeTab, setActiveTab] = useState("civil");
@@ -19,6 +20,7 @@ const ServicesPage = () => {
   const [serviceType, setServiceType] = useState("");
   const [sampleMethod, setSampleMethod] = useState("");
   const { addOrder, pricingData } = useOrderContext();
+  const { user } = useContext(AuthContext);
   const [showToast, setShowToast] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [readGuide, setReadGuide] = useState(false);
@@ -114,14 +116,15 @@ const ServicesPage = () => {
       date: new Date().toLocaleDateString("vi-VN"),
       price: 0, // Có thể lấy giá từ bảng giá nếu muốn
       status: "Chờ xử lý",
-      name: form.fullName.value,
+      name: user ? user.fullName : form.fullName.value,
       phone: form.phone.value,
-      email: form.email.value,
+      email: user ? user.email : form.email.value,
       address: form.address.value,
       appointmentDate: form.appointmentDate.value,
       category: form.category.value,
       sampleMethod: form.sampleMethod.value,
       note: form.message.value,
+      userId: user ? user.user_id : null, // Lưu ID người dùng nếu đã đăng nhập
     };
     addOrder(newOrder);
     form.reset();
@@ -556,6 +559,28 @@ const ServicesPage = () => {
                 vụ xét nghiệm ADN. Chúng tôi sẽ liên hệ với bạn trong thời gian
                 sớm nhất.
               </p>
+              {!user && (
+                <div style={{ 
+                  background: "#f0f7ff", 
+                  border: "1px solid #d0e3ff", 
+                  borderRadius: "8px", 
+                  padding: "12px 16px", 
+                  marginTop: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px"
+                }}>
+                  <div style={{ color: "#0a66c2", fontSize: "18px" }}>ℹ️</div>
+                  <div>
+                    <p style={{ margin: 0, color: "#0a66c2", fontWeight: 500 }}>
+                      Đăng nhập để trải nghiệm tốt hơn
+                    </p>
+                    <p style={{ margin: "4px 0 0 0", fontSize: "14px" }}>
+                      Đăng nhập để thông tin của bạn được tự động điền vào biểu mẫu và dễ dàng theo dõi đơn đăng ký.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="service-form-container">
               {showToast && (
@@ -582,17 +607,48 @@ const ServicesPage = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="fullName">Họ và tên</label>
-                    <input type="text" id="fullName" name="fullName" required />
+                    <input 
+                      type="text" 
+                      id="fullName" 
+                      name="fullName" 
+                      required 
+                      defaultValue={user ? user.fullName : ""}
+                      style={user ? { backgroundColor: "#f9f9f9", color: "#333" } : {}}
+                    />
+                    {user && (
+                      <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                        Tự động điền từ tài khoản của bạn (có thể chỉnh sửa)
+                      </small>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="phone">Số điện thoại</label>
-                    <input type="tel" id="phone" name="phone" required />
+                    <input 
+                      type="tel" 
+                      id="phone" 
+                      name="phone" 
+                      required 
+                      defaultValue={user ? user.phone : ""}
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" required />
+                    <input 
+                      type="email" 
+                      id="email" 
+                      name="email" 
+                      required 
+                      defaultValue={user ? user.email : ""}
+                      readOnly={user ? true : false}
+                      style={user ? { backgroundColor: "#f5f5f5", color: "#333" } : {}}
+                    />
+                    {user && (
+                      <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                        Tự động điền từ tài khoản của bạn
+                      </small>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="address">Địa chỉ</label>
@@ -601,6 +657,7 @@ const ServicesPage = () => {
                       id="address"
                       name="address"
                       placeholder="Càng chi tiết càng tốt"
+                      defaultValue={user && user.address ? user.address : ""}
                     />
                   </div>
                 </div>
