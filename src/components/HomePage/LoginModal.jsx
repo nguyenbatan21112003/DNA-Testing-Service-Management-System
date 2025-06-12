@@ -98,6 +98,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </div>
             <div className="form-group" style={{ position: "relative" }}>
               <label htmlFor="login-password">Mật khẩu</label>
+
               <input
                 type={showPassword ? "text" : "password"}
                 id="login-password"
@@ -105,21 +106,21 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 style={{ paddingRight: 36 }}
+                className="password-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
               />
-              <span
+              <button
+                type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: 36,
-                  cursor: "pointer",
-                  color: "#888",
-                }}
+                className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                 tabIndex={0}
                 aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
+                {showPassword ? (
+                  <EyeOff size={20} className="h-5 w-5" />
+                ) : (
+                  <Eye size={20} className="h-5 w-5" />
+                )}
+              </button>
             </div>
             <div className="form-options">
               <label className="checkbox-label">

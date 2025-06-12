@@ -107,20 +107,15 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 required
                 style={{ paddingRight: 36 }}
               />
-              <span
+              <button
+                type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: 36,
-                  cursor: "pointer",
-                  color: "#888",
-                }}
+                className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                 tabIndex={0}
                 aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
+              </button>
             </div>
             <div className="form-group" style={{ position: "relative" }}>
               <label htmlFor="register-confirm-password">
@@ -135,22 +130,17 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 required
                 style={{ paddingRight: 36 }}
               />
-              <span
+              <button
+                type="button"
                 onClick={() => setShowConfirmPassword((v) => !v)}
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: 36,
-                  cursor: "pointer",
-                  color: "#888",
-                }}
+                className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                 tabIndex={0}
                 aria-label={
                   showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                 }
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </span>
+              </button>
             </div>
             <div className="form-options">
               <label className="checkbox-label">

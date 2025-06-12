@@ -786,11 +786,16 @@ const UserProfile = () => {
                         value={pwForm.current}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, current: !p.current }))
+                        }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                         }
                       >
                         {showPw.current ? (
@@ -798,7 +803,7 @@ const UserProfile = () => {
                         ) : (
                           <Eye size={18} />
                         )}
-                      </span>
+                      </button>
                     </div>
                     <div className="form-group password-group">
                       <label>Mật khẩu mới</label>
@@ -808,15 +813,20 @@ const UserProfile = () => {
                         value={pwForm.new}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, new: !p.new }))
                         }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                        }
                       >
                         {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </span>
+                      </button>
                     </div>
                     <div className="form-group password-group">
                       <label>Xác nhận mật khẩu mới</label>
@@ -826,11 +836,16 @@ const UserProfile = () => {
                         value={pwForm.confirm}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, confirm: !p.confirm }))
+                        }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                         }
                       >
                         {showPw.confirm ? (
@@ -838,7 +853,7 @@ const UserProfile = () => {
                         ) : (
                           <Eye size={18} />
                         )}
-                      </span>
+                      </button>
                     </div>
                     <button className="submit-button" type="submit">
                       Gửi mã xác thực
