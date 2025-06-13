@@ -147,11 +147,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\fileCode\\SWP391\\BE-DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+      "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
       "projectName": "DNATestSystem.BusinessObjects",
-      "projectPath": "D:\\fileCode\\SWP391\\BE-DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+      "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
       "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-      "outputPath": "D:\\fileCode\\SWP391\\BE-DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\obj\\",
+      "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
