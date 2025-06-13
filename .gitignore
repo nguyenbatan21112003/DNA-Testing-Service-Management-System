@@ -18,3 +18,13 @@ obj/
 *.idea/
 *.vscode/
 *.vsidx
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.dll
+*.exe
+*.cache
+*.v2
+*.json.backup
