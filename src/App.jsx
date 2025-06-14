@@ -20,6 +20,7 @@ import ContactPage from "./components/Contact/ContactPage"
 import UserProfile from "./components/User/UserProfile"
 import StaffDashboard from "./components/Staff/StaffDashboard"
 import AdminDashboard from "./components/Admin/AdminDashboard"
+import ManagerDashboard from "./components/Manager/ManagerDashboard"
 /*-----------------------------------------------------*/
 import "./Css/Services-page.css"
 import "./Css/About-us-page.css"
@@ -160,13 +161,14 @@ function App() {
   const isAdminPage = location.pathname.startsWith("/admin")
   const isUserPage = location.pathname.startsWith("/taikhoan")
   const isStaffPage = location.pathname.startsWith("/staff") || location.pathname.startsWith("/nhanvien")
+  const isManagerPage = location.pathname.startsWith("/manager") || location.pathname.startsWith("/quanly")
   const isAdmin = user && user.role_id === 5
 
   return (
     <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
       {isUserPage && <UserInfoBar user={user} />}
-      {/* Ẩn Header cho Staff Dashboard */}
-      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && <Header />}
+      {/* Ẩn Header cho các Dashboard */}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -179,11 +181,13 @@ function App() {
           <Route path="/tintuc/:id" element={<BlogDetailPage blogData={blogData} />} />
           <Route path="/lienhe" element={<ContactPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route path="/quanly" element={<ManagerDashboard />} />
+          <Route path="/manager" element={<ManagerDashboard />} />
         </Routes>
       </main>
-      {/* Ẩn Footer cho Staff Dashboard */}
-      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && <Footer />}
-      {!isStaffPage && <ScrollToTop />}
+      {/* Ẩn Footer cho các Dashboard */}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && <Footer />}
+      {!isStaffPage && !isManagerPage && <ScrollToTop />}
     </div>
   )
 }

@@ -50,6 +50,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
         navigate("/nhanvien");
       } else if (result.role_id === 5) {
         navigate("/admin");
+      } else if (result.role_id === 4) {
+        navigate("/quanly");
       }
     } else {
       setError(result.message);
