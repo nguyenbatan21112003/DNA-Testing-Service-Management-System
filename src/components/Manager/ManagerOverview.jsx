@@ -216,3 +216,35 @@ const ManagerOverview = () => {
                             </div>
                         </Card>
                     </Col>
+                    {/* Timeline hoạt động */}
+                    <Col xs={24} lg={12}>
+                        <Card title="Hoạt động gần đây" style={{ height: "300px" }}>
+                            <Timeline items={activities} />
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+
+            {/* Đơn hàng cần xử lý gấp */}
+            <div
+                style={{
+                    background: "#fff",
+                    padding: "24px",
+                    borderRadius: "12px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    border: "1px solid #f0f0f0",
+                }}
+            >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                    <h3 style={{ margin: 0, color: "#722ed1" }}>Đơn hàng cần xử lý gấp</h3>
+                    <Button type="primary" style={{ background: "#722ed1", borderColor: "#722ed1" }}>
+                        Xem tất cả
+                    </Button>
+                </div>
+                <Table columns={columns} dataSource={urgentOrders} pagination={false} size="middle" scroll={{ x: 800 }} />
+            </div>
+        </div>
+    )
+}
+
+export default ManagerOverview
