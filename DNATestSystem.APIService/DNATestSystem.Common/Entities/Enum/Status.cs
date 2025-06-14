@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNATestSystem.BusinessObjects.Entites.Enum
+namespace DNATestSystem.BusinessObjects.Entities.Enum
 {
     public enum Status
     {

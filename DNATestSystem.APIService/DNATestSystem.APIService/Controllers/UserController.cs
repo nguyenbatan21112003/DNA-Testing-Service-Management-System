@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
-using DNATestSystem.BusinessObjects.Entites;
+using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Application.Dtos;

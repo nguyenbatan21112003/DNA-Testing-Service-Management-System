@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using DNATestSystem.BusinessObjects.Entites;
+using DNATestSystem.BusinessObjects.Entities;
+using DNATestSystem.BusinessObjects.Models;
 
 namespace DNATestSystem.Repositories
 {

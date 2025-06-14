@@ -1294,11 +1294,13 @@
       "DNATestSystem.BusinessObjects/1.0.0": {
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "FluentValidation.AspNetCore": "11.3.0"
+          "FluentValidation.AspNetCore": "11.3.0",
+          "Microsoft.EntityFrameworkCore": "9.0.5",
+          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.5"
         },
         "runtime": {
           "DNATestSystem.BusinessObjects.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -1311,7 +1313,7 @@
         },
         "runtime": {
           "DNATestSystem.Repositories.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -1326,7 +1328,7 @@
         },
         "runtime": {
           "DNATestSystem.Services.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }

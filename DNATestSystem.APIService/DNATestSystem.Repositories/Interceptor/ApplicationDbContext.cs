@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.BusinessObjects;
+using DNATestSystem.BusinessObjects.Models;
 
 namespace DNATestSystem.Repositories
 {
@@ -26,7 +26,7 @@ namespace DNATestSystem.Repositories
             modelBuilder.Entity<RefreshToken>()
                         .HasOne(rt => rt.User)
                         .WithMany(u => u.RefreshTokens)  // 👈 chính xác tên navigation trong User
-                        .HasForeignKey(rt => rt.UsedID)
+                        .HasForeignKey(rt => rt.UserId)
                         .OnDelete(DeleteBehavior.Restrict); // hoặc Cascade nếu muốn xóa theo
 
 

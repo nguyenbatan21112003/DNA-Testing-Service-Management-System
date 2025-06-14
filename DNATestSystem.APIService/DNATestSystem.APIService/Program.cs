@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using DNATestSystem.ModelValidation;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Service;
+using DNATestSystem.BusinessObjects.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

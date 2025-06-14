@@ -5,9 +5,10 @@ using DNATestSystem.Application.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Hepler;
+using DNATestSystem.BusinessObjects.Entities;
+using DNATestSystem.BusinessObjects.Models;
 
 namespace DNATestSystem.Services.Service
 {
@@ -46,13 +47,13 @@ namespace DNATestSystem.Services.Service
             var hashPassword = HashHelper.BCriptHash(password);
 
             // Tạo user mới
-            var data = new DNATestSystem.BusinessObjects.Entites.User
+            var data = new DNATestSystem.BusinessObjects.Models.User // Sử dụng Enum để xác định vai trò
             {
                 FullName = user.FullName,
                 Email = user.EmailAddress,
                 Password = hashPassword,
                 Phone = user.PhoneNumber,
-                Role = BusinessObjects.Entites.Enum.Role.Customer,
+                RoleId = (int)BusinessObjects.Entities.Enum.RoleNum.Customer, // Mặc định là User
                 //CreateAt = DateTime.Now
             };
 
@@ -90,12 +91,12 @@ namespace DNATestSystem.Services.Service
             //refresh Token nên hash lại
             string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
 
-            var data = new RefreshToken
+            var data = new BusinessObjects.Models.RefreshToken
             {
-                UsedID = userId,
+                UserId = userId,
                 Token = hashRefreshToken,
-                ExpireTime = DateTime.UtcNow.AddDays(7), // 7 ngày 
-                IsRevoked = false
+                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
+                Revoked = false
             };
 
             _context.RefreshTokens.Add(data);
@@ -108,7 +109,7 @@ namespace DNATestSystem.Services.Service
         public User GetUserByRefreshToken(string refreshToken)
         {
             var user = _context.RefreshTokens.
-            Where(x => x.Token == refreshToken && !x.IsRevoked && x.ExpireTime > DateTime.Now)
+            Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
             .Select(x => x.User)
             .FirstOrDefault();
             return user;
@@ -131,7 +132,7 @@ namespace DNATestSystem.Services.Service
         public void DeleteOldRefreshToken(int userId)
         {
             var entity = _context.RefreshTokens
-                        .Where(x => x.UsedID == userId)
+                        .Where(x => x.UserId== userId)
                         .ToList();
 
             if (entity != null)
