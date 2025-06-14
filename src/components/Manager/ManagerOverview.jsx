@@ -151,3 +151,68 @@ const ManagerOverview = () => {
         },
     ]
 
+    // Thay đổi phần return để thêm màu nền và đường viền
+    return (
+        <div style={{ padding: "0" }}>
+            {/* Header */}
+            <div style={{ marginBottom: "24px", textAlign: "center" }}>
+                <h1 style={{ fontSize: "28px", fontWeight: "700", color: "#722ed1", margin: 0 }}>
+                    Dashboard Manager - Tổng quan
+                </h1>
+                <p style={{ color: "#666", margin: "8px 0 0 0" }}>Giám sát và quản lý toàn bộ quy trình xét nghiệm DNA</p>
+            </div>
+
+            {/* Thống kê tổng quan */}
+            <div
+                style={{
+                    background: "#fff",
+                    padding: "24px",
+                    borderRadius: "12px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    border: "1px solid #f0f0f0",
+                    marginBottom: "24px",
+                }}
+            >
+                <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
+                    {stats.map((stat, index) => (
+                        <Col xs={24} sm={12} lg={6} key={index}>
+                            <Card>
+                                <Statistic
+                                    title={stat.title}
+                                    value={stat.value}
+                                    prefix={stat.icon}
+                                    suffix={<span style={{ fontSize: "14px", color: stat.color, fontWeight: 600 }}>{stat.change}</span>}
+                                    valueStyle={{ color: stat.color, fontWeight: 700 }}
+                                />
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+
+                <Row gutter={[16, 16]}>
+                    {/* Hiệu suất 7 ngày */}
+                    <Col xs={24} lg={12}>
+                        <Card title="Hiệu suất 7 ngày qua" style={{ height: "300px" }}>
+                            <div style={{ marginBottom: "16px" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                    <span>Tỷ lệ đúng hạn</span>
+                                    <span style={{ fontWeight: 600, color: "#52c41a" }}>94%</span>
+                                </div>
+                                <Progress percent={94} strokeColor="#52c41a" />
+                            </div>
+                            <div style={{ marginBottom: "16px" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                    <span>Thời gian xử lý TB</span>
+                                    <span style={{ fontWeight: 600, color: "#722ed1" }}>2.3 ngày</span>
+                                </div>
+                                <Progress percent={77} strokeColor="#722ed1" />
+                            </div>
+                            <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                    <span>Độ hài lòng KH</span>
+                                    <span style={{ fontWeight: 600, color: "#fa8c16" }}>4.8/5</span>
+                                </div>
+                                <Progress percent={96} strokeColor="#fa8c16" />
+                            </div>
+                        </Card>
+                    </Col>
