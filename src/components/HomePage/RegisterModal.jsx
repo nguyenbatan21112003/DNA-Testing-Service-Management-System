@@ -66,7 +66,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-fullname">Họ và tên</label>
               <input
-                className="input-register"
+                className="input-register bg-white"
                 type="text"
                 id="register-fullname"
                 value={fullName}
@@ -77,7 +77,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-email">Email</label>
               <input
-                className="input-register"
+                className="input-register bg-white"
                 type="email"
                 id="register-email"
                 value={email}
@@ -88,7 +88,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group">
               <label htmlFor="register-phone">Số điện thoại</label>
               <input
-                className="input-register"
+                className="input-register bg-white"
                 type="tel"
                 id="register-phone"
                 value={phone}
@@ -99,7 +99,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <div className="form-group" style={{ position: "relative" }}>
               <label htmlFor="register-password">Mật khẩu</label>
               <input
-                className="input-register"
+                className="input-register bg-white"
                 type={showPassword ? "text" : "password"}
                 id="register-password"
                 value={password}
@@ -122,7 +122,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 Xác nhận mật khẩu
               </label>
               <input
-                className="input-register"
+                className="input-register bg-white"
                 type={showConfirmPassword ? "text" : "password"}
                 id="register-confirm-password"
                 value={confirmPassword}

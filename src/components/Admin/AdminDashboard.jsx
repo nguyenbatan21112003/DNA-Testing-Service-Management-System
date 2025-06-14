@@ -6,7 +6,6 @@ import {
   AppstoreOutlined,
   FileProtectOutlined,
   LogoutOutlined,
-  StarOutlined,
   ExclamationCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -17,7 +16,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import UserManagement from "./UserManagement";
 import StaffManagement from "./StaffManagement";
 import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
-import FeedbackList from "./FeedbackList";
 import PricingManagement from "./PricingManagement";
 
 const { Sider, Content } = Layout;
@@ -32,11 +30,6 @@ const menuItems = [
     key: "processing",
     icon: <FileProtectOutlined />,
     label: "Thời gian & Chi phí",
-  },
-  {
-    key: "rating-feedback",
-    icon: <StarOutlined />,
-    label: "Rating & Feedback",
   },
   {
     key: "policy-violation",
@@ -262,7 +255,6 @@ const AdminDashboard = () => {
             {(activeTab === "test-types" || !activeTab) && (
               <AdminDNAStatsDashboard />
             )}
-            {activeTab === "rating-feedback" && <FeedbackList />}
           </div>
         </Content>
       </Layout>

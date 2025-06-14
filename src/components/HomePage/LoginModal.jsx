@@ -89,6 +89,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             <div className="form-group">
               <label htmlFor="login-email">Email</label>
               <input
+              className="bg-white p-4"
                 type="email"
                 id="login-email"
                 value={email}
@@ -106,7 +107,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 style={{ paddingRight: 36 }}
-                className="password-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+                className="bg-white p-4 password-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 duration-200"
               />
               <button
                 type="button"
@@ -123,10 +124,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               </button>
             </div>
             <div className="form-options">
-              <label className="checkbox-label">
+              <label className="checkbox-label ">
                 <input
                   type="checkbox"
                   checked={rememberMe}
+                  className="bg-white"
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 <span>Ghi nhớ đăng nhập</span>
