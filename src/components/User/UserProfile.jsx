@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import React from "react";
 import TimelineProgress from "./TimelineProgress";
+import NewOrderButton from "./NewOrderButton";
 
 const sidebarTabs = [
   { key: "profile", label: "Hồ sơ cá nhân", icon: <UserOutlined /> },
@@ -469,6 +470,7 @@ const UserProfile = () => {
                       outline: "none"
                     }}
                   />
+                  <NewOrderButton />
                 </div>
                 <div
                   className="orders-filter"
@@ -616,48 +618,73 @@ const UserProfile = () => {
                                     : "#009e74",
                                 fontWeight: 600,
                                 fontSize: 14,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                whiteSpace: "nowrap",
+                                minWidth: 80,
+                                maxWidth: 120,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
                               }}
                             >
                               {order.status}
                             </span>
                             {/* Badge trạng thái nhận kit */}
-                            {order.sampleMethod === "home" &&
-                              order.kitStatus === "da_gui" && (
-                                <span
-                                  style={{
-                                    marginLeft: 10,
-                                    background: "#ffe6b0",
-                                    color: "#b88900",
-                                    borderRadius: 8,
-                                    padding: "2px 10px",
-                                    fontWeight: 600,
-                                    fontSize: 13,
-                                    verticalAlign: "middle",
-                                  }}
-                                >
-                                  Chờ nhận kit
-                                </span>
-                              )}
-                            {order.sampleMethod === "home" &&
-                              order.kitStatus === "da_nhan" && (
-                                <span
-                                  style={{
-                                    marginLeft: 10,
-                                    background: "#e0f7ef",
-                                    color: "#009e74",
-                                    borderRadius: 8,
-                                    padding: "2px 10px",
-                                    fontWeight: 600,
-                                    fontSize: 13,
-                                    verticalAlign: "middle",
-                                  }}
-                                >
-                                  Đã nhận kit
-                                </span>
-                              )}
+                            {order.sampleMethod === "home" && order.kitStatus === "da_gui" && (
+                              <span
+                                style={{
+                                  marginLeft: 10,
+                                  background: "#ffe6b0",
+                                  color: "#b88900",
+                                  borderRadius: 8,
+                                  padding: "2px 10px",
+                                  fontWeight: 600,
+                                  fontSize: 13,
+                                  verticalAlign: "middle",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  whiteSpace: "nowrap",
+                                  minWidth: 60,
+                                  maxWidth: 100,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                Chờ nhận kit
+                              </span>
+                            )}
+                            {order.sampleMethod === "home" && order.kitStatus === "da_nhan" && (
+                              <span
+                                style={{
+                                  marginLeft: 10,
+                                  background: "#e0f7ef",
+                                  color: "#009e74",
+                                  borderRadius: 8,
+                                  padding: "2px 10px",
+                                  fontWeight: 600,
+                                  fontSize: 13,
+                                  verticalAlign: "middle",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  whiteSpace: "nowrap",
+                                  minWidth: 60,
+                                  maxWidth: 100,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                Đã nhận kit
+                              </span>
+                            )}
                           </div>
                           <div className="order-type" style={{ marginBottom: 8 }}>
                             {order.type}
+                          </div>
+                          <div style={{ color: '#888', fontSize: 15, marginBottom: 2 }}>
+                            <b>Thể loại:</b> {order.category === 'civil' ? 'Dân sự' : order.category === 'admin' ? 'Hành chính' : order.category}
+                          </div>
+                          <div style={{ color: '#888', fontSize: 15, marginBottom: 8 }}>
+                            <b>Hình thức thu mẫu:</b> {getSampleMethodLabel(order.sampleMethod)}
                           </div>
                           <div
                             className="order-date"
@@ -666,140 +693,154 @@ const UserProfile = () => {
                             Ngày đăng ký: {order.date}
                           </div>
                         </div>
-                        <div className="order-actions">
-                          <div
-                            className="order-price"
-                            style={{
-                              color: "#009e74",
-                              fontWeight: 700,
-                              fontSize: 20,
-                            }}
-                          >
-                            {order.price
-                              ? order.price.toLocaleString() + " đ"
-                              : ""}
+                        <div style={{ width: "100%", display: "flex", flexDirection: "row", gap: 16, justifyContent: "flex-end", marginBottom: 16 }}>
+                          {/* Nhóm trái: Xem chi tiết, Nhập form */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "1px solid #16a34a",
+                                color: "#16a34a",
+                                background: "#fff",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "border 0.2s, color 0.2s, background 0.2s",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                              onMouseOver={e => {
+                                e.currentTarget.style.background = "#e6f7ef";
+                                e.currentTarget.style.color = "#15803d";
+                                e.currentTarget.style.border = "1px solid #15803d";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#fff";
+                                e.currentTarget.style.color = "#16a34a";
+                                e.currentTarget.style.border = "1px solid #16a34a";
+                              }}
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowDetailModal(true);
+                              }}
+                            >
+                              <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
+                            </button>
+                            <button
+                              style={{
+                                border: "1px solid #bbb",
+                                color: "#444",
+                                background: "#fff",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "border 0.2s, color 0.2s, background 0.2s",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                            >
+                              <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
+                            </button>
                           </div>
-                          <button
-                            className="order-btn"
-                            style={{
-                              border: "1px solid #16a34a",
-                              color: "#16a34a",
-                              background: "#fff",
-                              borderRadius: 10,
-                              padding: "10px 24px",
-                              fontWeight: 600,
-                              fontSize: 16,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                              marginBottom: 0,
-                              transition: "border 0.2s, color 0.2s, background 0.2s",
-                              outline: "none",
-                              cursor: "pointer"
-                            }}
-                            onMouseOver={e => {
-                              e.currentTarget.style.background = "#e6f7ef";
-                              e.currentTarget.style.color = "#15803d";
-                              e.currentTarget.style.border = "1px solid #15803d";
-                            }}
-                            onMouseOut={e => {
-                              e.currentTarget.style.background = "#fff";
-                              e.currentTarget.style.color = "#16a34a";
-                              e.currentTarget.style.border = "1px solid #16a34a";
-                            }}
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setShowDetailModal(true);
-                            }}
-                          >
-                            <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
-                          </button>
-                          <button
-                            className="order-btn"
-                            style={{
-                              border: "1px solid #2563eb",
-                              color: "#2563eb",
-                              background: "#fff",
-                              borderRadius: 10,
-                              padding: "10px 24px",
-                              fontWeight: 600,
-                              fontSize: 16,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                              marginBottom: 0,
-                              transition: "border 0.2s, color 0.2s, background 0.2s",
-                              outline: "none",
-                              cursor: "pointer"
-                            }}
-                            onMouseOver={e => {
-                              e.currentTarget.style.background = "#e0edff";
-                              e.currentTarget.style.color = "#1d4ed8";
-                              e.currentTarget.style.border = "1px solid #1d4ed8";
-                            }}
-                            onMouseOut={e => {
-                              e.currentTarget.style.background = "#fff";
-                              e.currentTarget.style.color = "#2563eb";
-                              e.currentTarget.style.border = "1px solid #2563eb";
-                            }}
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setShowResultModal(true);
-                            }}
-                          >
-                            <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
-                          </button>
-                          <button
-                            className="order-btn"
-                            style={{
-                              border: "none",
-                              color: "#fff",
-                              background: "#fbbf24",
-                              borderRadius: 10,
-                              padding: "10px 24px",
-                              fontWeight: 600,
-                              fontSize: 16,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                              marginBottom: 0,
-                              transition: "background 0.2s, color 0.2s",
-                              outline: "none",
-                              cursor:
-                                order.status === "Có kết quả" || order.status === "Hoàn thành"
-                                  ? "pointer"
-                                  : "not-allowed",
-                              opacity:
-                                order.status === "Có kết quả" || order.status === "Hoàn thành"
-                                  ? 1
-                                  : 0.6,
-                            }}
-                            disabled={
-                              !(
-                                order.status === "Có kết quả" ||
-                                order.status === "Hoàn thành"
-                              )
-                            }
-                            onMouseOver={e => {
-                              if (order.status === "Có kết quả" || order.status === "Hoàn thành")
-                                e.currentTarget.style.background = "#f59e1b";
-                            }}
-                            onMouseOut={e => {
-                              if (order.status === "Có kết quả" || order.status === "Hoàn thành")
-                                e.currentTarget.style.background = "#fbbf24";
-                            }}
-                            onClick={() => {
-                              if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
-                                setFeedbackOrder(order);
-                                setRatingInput(0);
-                                setFeedbackInput("");
-                                setFeedbackSuccess("");
-                                setShowFeedbackModal(true);
+                          {/* Nhóm phải: Xem kết quả, Đánh giá */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "1px solid #2563eb",
+                                color: "#2563eb",
+                                background: "#fff",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "border 0.2s, color 0.2s, background 0.2s",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                              onMouseOver={e => {
+                                e.currentTarget.style.background = "#e0edff";
+                                e.currentTarget.style.color = "#1d4ed8";
+                                e.currentTarget.style.border = "1px solid #1d4ed8";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#fff";
+                                e.currentTarget.style.color = "#2563eb";
+                                e.currentTarget.style.border = "1px solid #2563eb";
+                              }}
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowResultModal(true);
+                              }}
+                            >
+                              <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
+                            </button>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "none",
+                                color: "#fff",
+                                background: "#fbbf24",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "background 0.2s, color 0.2s",
+                                outline: "none",
+                                cursor:
+                                  order.status === "Có kết quả" || order.status === "Hoàn thành"
+                                    ? "pointer"
+                                    : "not-allowed",
+                                opacity:
+                                  order.status === "Có kết quả" || order.status === "Hoàn thành"
+                                    ? 1
+                                    : 0.6,
+                              }}
+                              disabled={
+                                !(
+                                  order.status === "Có kết quả" ||
+                                  order.status === "Hoàn thành"
+                                )
                               }
-                            }}
-                          >
-                            <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
-                          </button>
+                              onMouseOver={e => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành")
+                                  e.currentTarget.style.background = "#f59e1b";
+                              }}
+                              onMouseOut={e => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành")
+                                  e.currentTarget.style.background = "#fbbf24";
+                              }}
+                              onClick={() => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
+                                  setFeedbackOrder(order);
+                                  setRatingInput(0);
+                                  setFeedbackInput("");
+                                  setFeedbackSuccess("");
+                                  setShowFeedbackModal(true);
+                                }
+                              }}
+                            >
+                              <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
+                            </button>
+                          </div>
                         </div>
                       </div>
                       {/* Nút ẩn/hiện timeline */}
@@ -1194,59 +1235,6 @@ const UserProfile = () => {
               Chi tiết đơn đăng ký
             </h3>
             <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
-            {/* Tiến độ và timeline xử lý */}
-            {selectedOrder && (
-              <div style={{ marginBottom: 24 }}>
-                {/* Tiến độ */}
-                {(() => {
-                  // Xác định các mốc timeline
-                  const steps = [
-                    { key: "registered", label: "Đăng ký", date: selectedOrder.date },
-                    { key: "kit_sent", label: "Gửi kit", date: selectedOrder.kitSentDate },
-                    { key: "sample_received", label: "Nhận mẫu", date: selectedOrder.sampleReceivedDate },
-                    { key: "analyzing", label: "Phân tích", date: selectedOrder.analyzingDate },
-                    { key: "completed", label: "Hoàn thành", date: selectedOrder.completedDate || selectedOrder.finishDate },
-                  ];
-                  // Xác định bước hiện tại dựa vào status
-                  let currentStep = 0;
-                  if (selectedOrder.status === "Hoàn thành") currentStep = 5;
-                  else if (selectedOrder.status === "Phân tích") currentStep = 4;
-                  else if (selectedOrder.status === "Nhận mẫu") currentStep = 3;
-                  else if (selectedOrder.status === "Gửi kit") currentStep = 2;
-                  else if (selectedOrder.status === "Đăng ký") currentStep = 1;
-                  else if (selectedOrder.status === "Đang xử lý") currentStep = 4; // tuỳ hệ thống
-                  // Tính phần trăm tiến độ
-                  const percent = Math.round((currentStep / 5) * 100);
-                  return (
-                    <>
-                      <div style={{ fontWeight: 600, marginBottom: 8 }}>Tiến độ</div>
-                      <div style={{ width: "100%", background: "#f0f4f8", borderRadius: 8, height: 10, marginBottom: 8 }}>
-                        <div style={{ width: `${percent}%`, background: "#009e74", height: 10, borderRadius: 8, transition: "width 0.4s" }} />
-                      </div>
-                      <div style={{ fontSize: 15, color: "#888", marginBottom: 18 }}>{percent}%</div>
-                      <div style={{ fontWeight: 600, marginBottom: 8 }}>Timeline xử lý</div>
-                      <div style={{ background: "#f6f8fa", borderRadius: 10, padding: 16, marginBottom: 8 }}>
-                        {steps.map((step, idx) => (
-                          <div key={step.key} style={{ display: "flex", alignItems: "center", marginBottom: idx < steps.length - 1 ? 10 : 0 }}>
-                            <span style={{
-                              display: "inline-block",
-                              width: 14,
-                              height: 14,
-                              borderRadius: "50%",
-                              background: idx < currentStep ? "#00c292" : "#ccc",
-                              marginRight: 10,
-                              border: idx < currentStep ? "2px solid #00c292" : "2px solid #ccc",
-                            }} />
-                            <span style={{ fontWeight: idx < currentStep ? 600 : 400, color: idx < currentStep ? "#00a67e" : "#888", minWidth: 110 }}>{step.label}</span>
-                            <span style={{ color: "#888", marginLeft: 12, fontSize: 14 }}>{step.date || (idx < currentStep ? "Đã xong" : "")}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
                 <span style={{ fontWeight: 700, color: "#009e74" }}>
@@ -1263,6 +1251,14 @@ const UserProfile = () => {
               <div>
                 <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
                 <span>{selectedOrder.type}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Thể loại:</span>{" "}
+                <span>{selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
@@ -1287,10 +1283,6 @@ const UserProfile = () => {
               <div>
                 <span style={{ fontWeight: 600 }}>Ngày xét nghiệm:</span>{" "}
                 <span>{selectedOrder.appointmentDate}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Hình thức lấy mẫu:</span>{" "}
-                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
@@ -1417,5 +1409,4 @@ const UserProfile = () => {
     </div>
   );
 };
-
 export default UserProfile;

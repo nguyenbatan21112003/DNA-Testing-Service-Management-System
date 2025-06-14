@@ -18,6 +18,7 @@ import ContactPage from "./components/Contact/ContactPage";
 import UserProfile from "./components/User/UserProfile";
 import StaffOrderManager from "./components/Staff/StaffOrderManager";
 import AdminDashboard from "./components/Admin/AdminDashboard";
+import Error404 from './components/Errors/Error404';
 /*-----------------------------------------------------*/
 import "./Css/Services-page.css";
 import "./Css/About-us-page.css";
@@ -181,7 +182,7 @@ function App() {
           />
           <Route path="/lienhe" element={<ContactPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
-          {/* Thêm các route khác nếu cần */}
+          <Route path='*' element={<Error404 />} />
         </Routes>
       </main>
       {!(isAdmin && isAdminPage) && !isUserPage && <Footer />}

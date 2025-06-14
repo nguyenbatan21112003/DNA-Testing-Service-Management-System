@@ -757,39 +757,6 @@ const ServicesPage = () => {
                   <label htmlFor="message">Ghi chú thêm</label>
                   <textarea id="message" name="message" rows="4"></textarea>
                 </div>
-                {/* Link tải Đơn Yêu Cầu Xét Nghiệm luôn hiển thị */}
-                <div
-                  style={{
-                    margin: "18px 0 10px 0",
-                    background: "#f6f8fa",
-                    border: "1px solid #cce3d3",
-                    borderRadius: 8,
-                    padding: 20,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: "#009e74",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Tải Đơn Yêu Cầu Xét Nghiệm và hướng dẫn:
-                  </div>
-                  <div style={{ marginBottom: 6 }}>
-                    <a
-                      href="/DonYeuCauXetNghiem.docx"
-                      download
-                      style={{
-                        color: "#0a7cff",
-                        textDecoration: "underline",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Tải Đơn Yêu Cầu Xét Nghiệm
-                    </a>
-                  </div>
-                </div>
                 {/* Hướng dẫn tự thu mẫu tại nhà */}
                 {category === "civil" && sampleMethod === "home" && (
                   <div
