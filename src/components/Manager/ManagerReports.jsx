@@ -236,3 +236,44 @@ const ManagerReports = () => {
                     </div>
                     <div style={{ marginTop: "16px", fontSize: "14px", color: "#666" }}>Số đơn hàng theo tháng</div>
                 </div>
+                {/* Phân bố loại xét nghiệm */}
+                <div
+                    style={{
+                        background: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        border: "1px solid #f0f0f0",
+                    }}
+                >
+                    <h3 style={{ margin: "0 0 20px 0", color: "#722ed1" }}>Phân bố dịch vụ</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {serviceDistribution.map((service, index) => (
+                            <div key={index}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                                    <span style={{ fontSize: "14px", fontWeight: "600" }}>{service.name}</span>
+                                    <span style={{ fontSize: "14px", color: "#666" }}>{service.value}%</span>
+                                </div>
+                                <div
+                                    style={{
+                                        width: "100%",
+                                        height: "8px",
+                                        background: "#f0f0f0",
+                                        borderRadius: "4px",
+                                        overflow: "hidden",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: `${service.value}%`,
+                                            height: "100%",
+                                            background: service.color,
+                                            borderRadius: "4px",
+                                        }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
