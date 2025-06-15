@@ -190,3 +190,49 @@ const ManagerReports = () => {
                     </div>
                 </div>
             </div>
+            {/* Charts */}
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px", marginBottom: "32px" }}>
+                {/* Biểu đồ xu hướng */}
+                <div
+                    style={{
+                        background: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        border: "1px solid #f0f0f0",
+                    }}
+                >
+                    <h3 style={{ margin: "0 0 20px 0", color: "#722ed1" }}>Xu hướng 12 tháng</h3>
+                    <div style={{ height: "250px", display: "flex", alignItems: "end", gap: "4px", padding: "0 8px" }}>
+                        {chartData.map((month, index) => (
+                            <div key={index} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                <div
+                                    style={{
+                                        width: "100%",
+                                        height: `${(month.orders / 50) * 200}px`,
+                                        background: "linear-gradient(to top, #722ed1, #9254de)",
+                                        borderRadius: "4px 4px 0 0",
+                                        marginBottom: "8px",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "-20px",
+                                            left: "50%",
+                                            transform: "translateX(-50%)",
+                                            fontSize: "10px",
+                                            fontWeight: "600",
+                                            color: "#722ed1",
+                                        }}
+                                    >
+                                        {month.orders}
+                                    </div>
+                                </div>
+                                <div style={{ fontSize: "12px", color: "#666", textAlign: "center" }}>{month.month}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ marginTop: "16px", fontSize: "14px", color: "#666" }}>Số đơn hàng theo tháng</div>
+                </div>
