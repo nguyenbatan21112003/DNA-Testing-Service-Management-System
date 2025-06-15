@@ -1415,7 +1415,7 @@ const UserProfile = () => {
         </div>
       )}
       {showFormModal && selectedOrderForForm && (
-        <RequestFormModal open={showFormModal} onClose={() => setShowFormModal(false)} order={selectedOrderForForm} />
+        <RequestFormModal open={showFormModal} onClose={() => setShowFormModal(false)} order={selectedOrderForForm} category={selectedOrderForForm.category} />
       )}
     </div>
   );

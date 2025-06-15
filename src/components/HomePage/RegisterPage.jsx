@@ -32,7 +32,15 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'url("/ImgRegister/Vice_City_08.jpg") center/cover no-repeat',
+      }}
+    >
       <div style={{ background: '#fff', borderRadius: 18, maxWidth: 420, width: '100%', boxShadow: '0 8px 32px #0002', padding: 36 }}>
         <h2 style={{ textAlign: 'center', color: '#009e74', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Đăng ký tài khoản</h2>
         <form onSubmit={handleSubmit}>

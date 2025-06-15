@@ -34,7 +34,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'url("/ImgLogin/Leonida_Keys_01.jpg") center/cover no-repeat',
+      }}
+    >
       {showToast && (
         <div style={{ position: 'fixed', top: 24, right: 24, background: '#00a67e', color: '#fff', padding: '12px 28px', borderRadius: 8, boxShadow: '0 2px 12px #0002', zIndex: 2000, fontWeight: 500, fontSize: 16 }}>
           Đăng nhập thành công!

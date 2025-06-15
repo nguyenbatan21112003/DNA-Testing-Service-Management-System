@@ -16,7 +16,7 @@ const labelStyle = {
   display: 'block',
 };
 
-const RequestFormModal = ({ open, onClose }) => {
+const RequestFormModal = ({ open, onClose, category }) => {
   const [commitChecked, setCommitChecked] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   if (!open) return null;
@@ -152,6 +152,59 @@ const RequestFormModal = ({ open, onClose }) => {
               ))}
             </tbody>
           </table>
+          {/* Nếu là hành chính thì hiện thêm form biên bản lấy mẫu */}
+          {category === 'admin' && (
+            <div style={{ marginTop: 32, borderTop: '2px dashed #bbb', paddingTop: 24 }}>
+              <h3 style={{ textAlign: 'center', color: '#e74c3c', fontWeight: 900, fontSize: 28, marginBottom: 18, letterSpacing: 1 }}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</h3>
+              <div style={{ marginBottom: 16, fontWeight: 600, fontSize: 17, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+                <span style={{ whiteSpace: 'nowrap' }}>Hôm nay, ngày</span>
+                <input style={{ width: 38, ...inputStyle, textAlign: 'center', color: '#e91e63', fontWeight: 700, margin: '0 2px' }} maxLength={2} />
+                <span style={{ margin: '0 2px', whiteSpace: 'nowrap' }}>tháng</span>
+                <input style={{ width: 38, ...inputStyle, textAlign: 'center', color: '#e91e63', fontWeight: 700, margin: '0 2px' }} maxLength={2} />
+                <span style={{ margin: '0 2px', whiteSpace: 'nowrap' }}>năm</span>
+                <input style={{ width: 54, ...inputStyle, textAlign: 'center', color: '#e91e63', fontWeight: 700, margin: '0 2px' }} maxLength={4} />
+                <span style={{ margin: '0 2px', whiteSpace: 'nowrap' }}>, tại</span>
+                <input style={{ width: 180, ...inputStyle, margin: '0 2px' }} />
+              </div>
+              <div style={{ marginBottom: 16, fontWeight: 600 }}>
+                <span>Chúng tôi gồm có:</span>
+                <div style={{ marginTop: 6, marginLeft: 18 }}>
+                  1. Nhân viên thu mẫu: <input style={{ width: 220, ...inputStyle, border: '1.5px solid #e67e22' }} />
+                </div>
+                <div style={{ marginTop: 6, marginLeft: 18 }}>
+                  2. Người yêu cầu xét nghiệm: <input style={{ width: 220, ...inputStyle, border: '1.5px solid #e67e22' }} />
+                  <span style={{ marginLeft: 12 }}>Địa chỉ hiện tại: <input style={{ width: 320, ...inputStyle, border: '1.5px solid #e67e22' }} /></span>
+                </div>
+              </div>
+              <div style={{ marginBottom: 18, fontWeight: 600 }}>
+                Chúng tôi tiến hành lấy mẫu của những người đề nghị xét nghiệm ADN. Các mẫu của từng người được lấy riêng rẽ như sau:
+              </div>
+              {[1,2,3].map(i => (
+                <div key={i} style={{ border: '1.5px solid #e67e22', borderRadius: 10, padding: 14, marginBottom: 18, background: '#fffbe6', boxShadow: '0 2px 8px #e67e2211' }}>
+                  <div style={{ display: 'flex', gap: 18, marginBottom: 8 }}>
+                    <div style={{ flex: 2, fontSize: 16 }}>
+                      <div style={{ marginBottom: 4 }}>Họ và tên: <input style={{ width: 180, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Ngày sinh: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Loại giấy tờ: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /> Số: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /> Ngày cấp: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Ngày hết hạn: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /> Nơi cấp: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /> Quốc tịch: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Địa chỉ: <input style={{ width: 320, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Loại mẫu: <input style={{ width: 80, ...inputStyle, border: '1.5px solid #bbb' }} /> Số lượng mẫu: <input style={{ width: 60, ...inputStyle, border: '1.5px solid #bbb' }} /> Mối quan hệ: <input style={{ width: 120, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Người cho mẫu hoặc giám hộ (ký tên): <input style={{ width: 180, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                      <div style={{ marginBottom: 4 }}>Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng: <input style={{ width: 180, ...inputStyle, border: '1.5px solid #bbb' }} /></div>
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <div style={{ fontWeight: 700, marginBottom: 8, color: '#e67e22', fontSize: 16 }}>Người cho mẫu thứ {i}</div>
+                      <div style={{ border: '1.5px solid #bbb', borderRadius: 8, width: 100, height: 120, margin: '0 auto', background: '#fff' }}>
+                        <span style={{ color: '#bbb', fontSize: 13, lineHeight: '120px' }}>[Dấu vân tay]</span>
+                      </div>
+                      <div style={{ fontSize: 13, marginTop: 4, color: '#888' }}>Vân tay ngón trỏ phải</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Nút cam kết và Lưu chuyển xuống cuối cùng */}
           <div style={{ marginTop: 18, marginBottom: 8 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input type="checkbox" checked={commitChecked} onChange={e => setCommitChecked(e.target.checked)} />
