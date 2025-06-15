@@ -36,4 +36,34 @@ const ManagerReports = () => {
                 revenue: Math.floor(Math.random() * 200000000) + 150000000,
             })
         }
-        setChartData(monthlyData)
+        setChartData(monthlyData)// Hiệu suất nhân viên
+        setStaffPerformance([
+            { name: "Nguyễn Thị Lan", completed: 45, onTime: 42, rating: 4.8, efficiency: 93.3 },
+            { name: "Trần Văn Nam", completed: 38, onTime: 35, rating: 4.6, efficiency: 92.1 },
+            { name: "Lê Thị Hoa", completed: 41, onTime: 39, rating: 4.7, efficiency: 95.1 },
+            { name: "Phạm Văn Đức", completed: 33, onTime: 30, rating: 4.5, efficiency: 90.9 },
+        ])
+
+        // Phân bố loại dịch vụ
+        setServiceDistribution([
+            { name: "Xét nghiệm ADN cha con", value: 45, color: "#722ed1" },
+            { name: "Xét nghiệm huyết thống", value: 25, color: "#1890ff" },
+            { name: "Xét nghiệm anh em", value: 20, color: "#52c41a" },
+            { name: "Xét nghiệm khác", value: 10, color: "#faad14" },
+        ])
+    }, [])
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+        }).format(amount)
+    }
+
+    const exportToExcel = () => {
+        alert("Chức năng xuất Excel đang được phát triển...")
+    }
+
+    const printReport = () => {
+        window.print()
+    }
