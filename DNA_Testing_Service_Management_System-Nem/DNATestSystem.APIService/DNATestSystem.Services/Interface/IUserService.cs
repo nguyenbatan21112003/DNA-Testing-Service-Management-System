@@ -3,6 +3,7 @@ using DNATestSystem.BusinessObjects;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 namespace DNATestSystem.Services.Interface
 {
     public interface IUserService
@@ -16,7 +17,9 @@ namespace DNATestSystem.Services.Interface
         string GenerateJwt(User user);
         string GenerateRefreshToken(int userId);
         User GetUserByRefreshToken(string refreshToken);
-        public void DeleteOldRefreshToken(string refreshToken);
-        public void DeleteOldRefreshToken(int userId);
+        void DeleteOldRefreshToken(string refreshToken);
+        void DeleteOldRefreshToken(int userId);
+        List<ServiceSummaryDto> GetService();
+        ServiceSummaryDetailsModel  GetServiceById(int id);
     }
 }

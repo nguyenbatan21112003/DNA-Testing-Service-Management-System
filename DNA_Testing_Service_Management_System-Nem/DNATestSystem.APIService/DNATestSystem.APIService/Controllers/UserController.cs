@@ -9,6 +9,7 @@ using DNATestSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 
 namespace DNATestSystem.Controllers
 {
@@ -101,8 +102,24 @@ namespace DNATestSystem.Controllers
             HttpContext.Session.Clear();
             return Ok();
         }
+        [HttpGet("/services")]
+        public List<ServiceSummaryDto> getAllService()
+        {
+            var data = _userService.GetService();
+            return data;
 
-      
+        }
+        [HttpGet("/services{id}")]
+        public IActionResult getServiceById(int id)
+        {
+            var service = _userService.GetServiceById(id);
+            if (service == null)
+                return NotFound(new { message = "Service không tồn tại" });
+
+            return Ok(service);
+        }
+
+
         //[Authorize]
         //[HttpPost("verify-current-password")]
         //public IActionResult VerifyCurrentPassword([FromBody] string currentPassword)

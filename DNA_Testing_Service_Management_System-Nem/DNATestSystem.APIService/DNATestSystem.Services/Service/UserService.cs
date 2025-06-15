@@ -10,6 +10,8 @@ using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.Services.Service
 {
@@ -144,7 +146,52 @@ namespace DNATestSystem.Services.Service
             _context.RefreshTokens.RemoveRange(entity);
             _context.SaveChanges();
         }
-        
+
+        public List<ServiceSummaryDto> GetService()
+        {
+            var services = _context.Services
+                            .Include(s => s.PriceDetails)
+                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
+                            .Select(s => new ServiceSummaryDto
+                            {
+                                Id = s.ServiceId,
+                                Slug = s.Slug,
+                                ServiceName = s.ServiceName,
+                                Category = s.Category,
+                                IsUrgent = false, // gán cứng nếu chưa có
+                                IncludeVAT = true,
+                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
+                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
+                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
+                            }) .ToList();
+            return services;                     
+        }
+
+        public ServiceSummaryDetailsModel GetServiceById(int id)
+        {
+            var service = _context.Services
+                .FirstOrDefault(s => s.ServiceId == id);
+
+            if (service == null) return null;
+
+            var priceDetail = service.PriceDetails.FirstOrDefault();
+
+            return new ServiceSummaryDetailsModel
+            {
+                Id = service.ServiceId,
+                Slug = service.Slug,
+                ServiceName = service.ServiceName,
+                Category = service.Category,
+                Description = service.Description,
+                IsUrgent = false, // hoặc true nếu bạn có trường này
+                IncludeVAT = true,
+                Price2Samples = priceDetail?.Price2Samples,
+                Price3Samples = priceDetail?.Price3Samples,
+                TimeToResult = priceDetail?.TimeToResult,
+                CreatedAt = service.CreatedAt
+            };
+        }
+    
     }
 }
 

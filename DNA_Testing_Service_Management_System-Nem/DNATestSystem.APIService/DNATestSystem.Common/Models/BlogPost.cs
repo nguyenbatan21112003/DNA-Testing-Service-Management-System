@@ -21,6 +21,8 @@ public partial class BlogPost
 
     public bool? IsPublished { get; set; }
 
+    public string? ThumbnailURL { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
