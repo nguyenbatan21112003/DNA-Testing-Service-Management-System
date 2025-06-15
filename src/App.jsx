@@ -164,10 +164,11 @@ function App() {
   const isAdminPage = location.pathname.startsWith("/admin");
   const isUserPage = location.pathname.startsWith("/taikhoan");
   const isAdmin = user && user.role_id === 5;
+  const is404 = location.pathname === '/404' || location.pathname === '*' || location.pathname.startsWith('/404');
   return (
     <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
-      {isUserPage && <UserInfoBar user={user} />}
-      {!(isAdmin && isAdminPage) && !isUserPage && <Header />}
+      {isUserPage && !is404 && <UserInfoBar user={user} />}
+      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -185,8 +186,8 @@ function App() {
           <Route path='*' element={<Error404 />} />
         </Routes>
       </main>
-      {!(isAdmin && isAdminPage) && !isUserPage && <Footer />}
-      <ScrollToTop />
+      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && <Footer />}
+      {!is404 && <ScrollToTop />}
     </div>
   );
 }

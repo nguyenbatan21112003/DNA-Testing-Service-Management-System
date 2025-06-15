@@ -15,6 +15,7 @@ import { Modal } from "antd";
 import React from "react";
 import TimelineProgress from "./TimelineProgress";
 import NewOrderButton from "./NewOrderButton";
+import RequestFormModal from "./RequestFormModal";
 
 const sidebarTabs = [
   { key: "profile", label: "Hồ sơ cá nhân", icon: <UserOutlined /> },
@@ -74,6 +75,9 @@ const UserProfile = () => {
   const [searchOrder, setSearchOrder] = useState("");
 
   const [showTimeline, setShowTimeline] = useState({});
+
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [selectedOrderForForm, setSelectedOrderForForm] = useState(null);
 
   // Lọc đơn đăng ký của user hiện tại
   const userOrders = orders.filter(
@@ -748,6 +752,10 @@ const UserProfile = () => {
                                 outline: "none",
                                 cursor: "pointer"
                               }}
+                              onClick={() => {
+                                setSelectedOrderForForm(order);
+                                setShowFormModal(true);
+                              }}
                             >
                               <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
                             </button>
@@ -1405,6 +1413,9 @@ const UserProfile = () => {
             )}
           </div>
         </div>
+      )}
+      {showFormModal && selectedOrderForForm && (
+        <RequestFormModal open={showFormModal} onClose={() => setShowFormModal(false)} order={selectedOrderForForm} />
       )}
     </div>
   );
