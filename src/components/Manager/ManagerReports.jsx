@@ -23,7 +23,9 @@ const ManagerReports = () => {
             totalRevenue: 2450000000, // 2.45 tỷ VNĐ
             onTimeRate: 92.3,
             customerSatisfaction: 4.7,
-        })// Dữ liệu biểu đồ xu hướng 12 tháng
+        })
+
+        // Dữ liệu biểu đồ xu hướng 12 tháng
         const monthlyData = []
         for (let i = 11; i >= 0; i--) {
             const date = new Date()
@@ -37,6 +39,7 @@ const ManagerReports = () => {
             })
         }
         setChartData(monthlyData)
+
         // Hiệu suất nhân viên
         setStaffPerformance([
             { name: "Nguyễn Thị Lan", completed: 45, onTime: 42, rating: 4.8, efficiency: 93.3 },
@@ -190,6 +193,7 @@ const ManagerReports = () => {
                     </div>
                 </div>
             </div>
+
             {/* Charts */}
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px", marginBottom: "32px" }}>
                 {/* Biểu đồ xu hướng */}
@@ -236,6 +240,7 @@ const ManagerReports = () => {
                     </div>
                     <div style={{ marginTop: "16px", fontSize: "14px", color: "#666" }}>Số đơn hàng theo tháng</div>
                 </div>
+
                 {/* Phân bố loại xét nghiệm */}
                 <div
                     style={{
@@ -277,3 +282,86 @@ const ManagerReports = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Bảng hiệu suất nhân viên */}
+            <div
+                style={{
+                    background: "#fff",
+                    padding: "24px",
+                    borderRadius: "12px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    border: "1px solid #f0f0f0",
+                }}
+            >
+                <h3 style={{ margin: "0 0 20px 0", color: "#722ed1" }}>Hiệu suất nhân viên</h3>
+                <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                            <tr style={{ background: "#f9f9f9" }}>
+                                <th style={{ padding: "12px", textAlign: "left", borderBottom: "1px solid #e8e8e8" }}>Nhân viên</th>
+                                <th style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #e8e8e8" }}>Hoàn thành</th>
+                                <th style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #e8e8e8" }}>Đúng hạn</th>
+                                <th style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #e8e8e8" }}>Đánh giá</th>
+                                <th style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #e8e8e8" }}>Hiệu suất</th>
+                                <th style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #e8e8e8" }}>Xếp hạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {staffPerformance.map((staff, index) => (
+                                <tr key={index}>
+                                    <td style={{ padding: "12px", borderBottom: "1px solid #f0f0f0" }}>
+                                        <div style={{ fontWeight: "600" }}>{staff.name}</div>
+                                    </td>
+                                    <td style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+                                        {staff.completed}
+                                    </td>
+                                    <td style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+                                        <span style={{ color: staff.onTime >= staff.completed * 0.9 ? "#52c41a" : "#ff4d4f" }}>
+                                            {staff.onTime}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                                            <span>{staff.rating}</span>
+                                            <span style={{ color: "#faad14" }}>⭐</span>
+                                        </div>
+                                    </td>
+                                    <td style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+                                        <span
+                                            style={{
+                                                padding: "4px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "600",
+                                                background: staff.efficiency >= 95 ? "#f6ffed" : staff.efficiency >= 90 ? "#fff7e6" : "#fff2f0",
+                                                color: staff.efficiency >= 95 ? "#52c41a" : staff.efficiency >= 90 ? "#faad14" : "#ff4d4f",
+                                            }}
+                                        >
+                                            {staff.efficiency}%
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: "12px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+                                        <span
+                                            style={{
+                                                padding: "4px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "600",
+                                                background: index === 0 ? "#fff7e6" : index === 1 ? "#f6ffed" : "#f0f5ff",
+                                                color: index === 0 ? "#faad14" : index === 1 ? "#52c41a" : "#1890ff",
+                                            }}
+                                        >
+                                            #{index + 1}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default ManagerReports
