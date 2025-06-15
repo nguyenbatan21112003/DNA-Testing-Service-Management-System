@@ -2,16 +2,12 @@
 
 import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal";
 import { AuthContext } from "../../context/AuthContext";
 import { Modal } from "antd";
 import "../../css/Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -28,16 +24,6 @@ const Header = () => {
     if (showDropdown) document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showDropdown]);
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-    setIsRegisterModalOpen(false);
-  };
-
-  const openRegisterModal = () => {
-    setIsRegisterModalOpen(true);
-    setIsLoginModalOpen(false);
-  };
 
   const handleLogout = () => {
     setLogoutModal(true);
@@ -226,28 +212,12 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <button className="login-button" onClick={openLoginModal}>
-                Đăng nhập
-              </button>
-              <button className="register-button" onClick={openRegisterModal}>
-                Đăng ký
-              </button>
+              <Link to="/login" className="login-button">Đăng nhập</Link>
+              <Link to="/register" className="register-button">Đăng ký</Link>
             </>
           )}
         </div>
       </div>
-
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSwitchToRegister={openRegisterModal}
-      />
-
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
-        onSwitchToLogin={openLoginModal}
-      />
 
       <Modal
         open={logoutModal}

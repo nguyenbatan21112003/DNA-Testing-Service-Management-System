@@ -19,6 +19,8 @@ import UserProfile from "./components/User/UserProfile";
 import StaffOrderManager from "./components/Staff/StaffOrderManager";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import Error404 from './components/Errors/Error404';
+import LoginPage from './components/HomePage/LoginPage';
+import RegisterPage from './components/HomePage/RegisterPage';
 /*-----------------------------------------------------*/
 import "./Css/Services-page.css";
 import "./Css/About-us-page.css";
@@ -165,10 +167,11 @@ function App() {
   const isUserPage = location.pathname.startsWith("/taikhoan");
   const isAdmin = user && user.role_id === 5;
   const is404 = location.pathname === '/404' || location.pathname === '*' || location.pathname.startsWith('/404');
+  const isLoginOrRegister = location.pathname === '/login' || location.pathname === '/register';
   return (
     <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
-      {isUserPage && !is404 && <UserInfoBar user={user} />}
-      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && <Header />}
+      {isUserPage && !is404 && !isLoginOrRegister && <UserInfoBar user={user} />}
+      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && !isLoginOrRegister && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -183,11 +186,13 @@ function App() {
           />
           <Route path="/lienhe" element={<ContactPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path='*' element={<Error404 />} />
         </Routes>
       </main>
-      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && <Footer />}
-      {!is404 && <ScrollToTop />}
+      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && !isLoginOrRegister && <Footer />}
+      {!is404 && !isLoginOrRegister && <ScrollToTop />}
     </div>
   );
 }
