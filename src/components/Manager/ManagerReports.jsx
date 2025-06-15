@@ -36,7 +36,8 @@ const ManagerReports = () => {
                 revenue: Math.floor(Math.random() * 200000000) + 150000000,
             })
         }
-        setChartData(monthlyData)// Hiệu suất nhân viên
+        setChartData(monthlyData)
+        // Hiệu suất nhân viên
         setStaffPerformance([
             { name: "Nguyễn Thị Lan", completed: 45, onTime: 42, rating: 4.8, efficiency: 93.3 },
             { name: "Trần Văn Nam", completed: 38, onTime: 35, rating: 4.6, efficiency: 92.1 },
@@ -67,3 +68,125 @@ const ManagerReports = () => {
     const printReport = () => {
         window.print()
     }
+
+    return (
+        <div style={{ padding: "0" }}>
+            {/* Header */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "24px" }}>
+                <div>
+                    <h1 style={{ fontSize: "28px", fontWeight: "700", color: "#722ed1", margin: 0, textAlign: "center" }}>
+                        Báo cáo & Thống kê
+                    </h1>
+                    <p style={{ color: "#666", margin: "8px 0 0 0", textAlign: "center" }}>
+                        Phân tích hiệu suất và xu hướng kinh doanh
+                    </p>
+                </div>
+                <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
+                    <button
+                        onClick={exportToExcel}
+                        style={{
+                            padding: "10px 16px",
+                            background: "#52c41a",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                        }}
+                    >
+                        Xuất Excel
+                    </button>
+                    <button
+                        onClick={printReport}
+                        style={{
+                            padding: "10px 16px",
+                            background: "#1890ff",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                        }}
+                    >
+                        In báo cáo
+                    </button>
+                </div>
+            </div>
+
+            {/* KPI Cards */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                    gap: "20px",
+                    marginBottom: "32px",
+                }}
+            >
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #722ed1 0%, #9254de 100%)",
+                        color: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(114, 46, 209, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>Tổng đơn hàng</div>
+                    <div style={{ fontSize: "32px", fontWeight: "700", marginBottom: "4px" }}>{reportData.totalOrders}</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>+12% so với tháng trước</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #52c41a 0%, #73d13d 100%)",
+                        color: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(82, 196, 26, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>Doanh thu</div>
+                    <div style={{ fontSize: "24px", fontWeight: "700", marginBottom: "4px" }}>
+                        {formatCurrency(reportData.totalRevenue)}
+                    </div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>+8% so với tháng trước</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)",
+                        color: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(24, 144, 255, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>Tỷ lệ đúng hạn</div>
+                    <div style={{ fontSize: "32px", fontWeight: "700", marginBottom: "4px" }}>{reportData.onTimeRate}%</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>Mục tiêu: ≥95%</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #faad14 0%, #ffc53d 100%)",
+                        color: "#fff",
+                        padding: "24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(250, 173, 20, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>Hài lòng KH</div>
+                    <div style={{ fontSize: "32px", fontWeight: "700", marginBottom: "4px" }}>
+                        {reportData.customerSatisfaction}/5
+                    </div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>
+                        {"⭐".repeat(Math.floor(reportData.customerSatisfaction))}
+                    </div>
+                </div>
+            </div>
