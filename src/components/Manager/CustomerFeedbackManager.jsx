@@ -97,3 +97,42 @@ const CustomerFeedbackManager = () => {
         ]
 
         setFeedbacks(sampleFeedbacks)
+        // Tính toán thống kê
+        const totalFeedbacks = sampleFeedbacks.length
+        const avgRating = sampleFeedbacks.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
+        const pending = sampleFeedbacks.filter((f) => f.responseStatus === "Chưa phản hồi").length
+        const complaints = sampleFeedbacks.filter((f) => f.category === "Khiếu nại").length
+
+        setStats({
+            avgRating: avgRating.toFixed(1),
+            totalFeedbacks,
+            pending,
+            complaints,
+        })
+    }, [])
+
+    const tabs = [
+        { key: "all", label: "Tất cả", count: feedbacks.length },
+        { key: "new", label: "Mới", count: feedbacks.filter((f) => f.status === "Mới").length },
+        { key: "processing", label: "Đang xử lý", count: feedbacks.filter((f) => f.status === "Đang xử lý").length },
+        { key: "resolved", label: "Đã giải quyết", count: feedbacks.filter((f) => f.status === "Đã giải quyết").length },
+        { key: "complaints", label: "Khiếu nại", count: feedbacks.filter((f) => f.category === "Khiếu nại").length },
+        { key: "high-priority", label: "Ưu tiên cao", count: feedbacks.filter((f) => f.priority === "Cao").length },
+    ]
+
+    const getFilteredFeedbacks = () => {
+        switch (activeTab) {
+            case "new":
+                return feedbacks.filter((f) => f.status === "Mới")
+            case "processing":
+                return feedbacks.filter((f) => f.status === "Đang xử lý")
+            case "resolved":
+                return feedbacks.filter((f) => f.status === "Đã giải quyết")
+            case "complaints":
+                return feedbacks.filter((f) => f.category === "Khiếu nại")
+            case "high-priority":
+                return feedbacks.filter((f) => f.priority === "Cao")
+            default:
+                return feedbacks
+        }
+    }
