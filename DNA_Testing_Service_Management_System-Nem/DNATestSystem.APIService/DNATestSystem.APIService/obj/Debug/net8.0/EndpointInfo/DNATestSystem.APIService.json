@@ -283,6 +283,28 @@
           }
         }
       }
+    },
+    "/blogPost{Slug}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "Slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -307,6 +329,10 @@
             "nullable": true
           },
           "thumbnailURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "authorName": {
             "type": "string",
             "nullable": true
           }

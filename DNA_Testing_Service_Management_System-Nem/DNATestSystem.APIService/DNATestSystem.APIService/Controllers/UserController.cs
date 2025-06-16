@@ -124,6 +124,14 @@ namespace DNATestSystem.Controllers
             var data = _userService.GetAllBlogPosts();   
             return data;
         }
+        [HttpGet("/blogPost{Slug}")]
+        public IActionResult getBlogPostBySlug(string Slug)
+        {
+            var Blog = _userService.GetBlogPostDetailsModel(Slug);
+            if(Blog == null)
+                return NotFound(new { message = "Blog không tồn tại" });
+            return Ok(Blog);
+        }
 
 
         //[Authorize]

@@ -17,5 +17,8 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Service
         public string? Summary { get; set; }
 
         public string? ThumbnailURL { get; set; }
+
+        public string? AuthorName { get; set; } 
+
     }
 }

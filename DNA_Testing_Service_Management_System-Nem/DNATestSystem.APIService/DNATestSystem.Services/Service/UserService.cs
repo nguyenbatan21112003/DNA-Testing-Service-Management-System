@@ -195,20 +195,43 @@ namespace DNATestSystem.Services.Service
         public List<BlogPostModel> GetAllBlogPosts()
         {
             var blogPosts = _context.BlogPosts
-           .Select(p => new BlogPostModel
-           {
-               PostId = p.PostId,
-               Title = p.Title,
-               Slug = p.Slug,
-               Summary = p.Summary,
-               ThumbnailURL = p.ThumbnailURL,
-           })
-           .ToList();
-
-                return blogPosts;
+                 .Include(p => p.Author)
+                 .Where(p => (bool)p.IsPublished)
+                 .Select(p => new BlogPostModel
+                 {
+                     PostId = p.PostId,
+                     Title = p.Title,
+                     Slug = p.Slug,
+                     Summary = p.Summary,
+                     ThumbnailURL = p.ThumbnailURL,
+                     AuthorName = p.Author.FullName
+                 })
+                 .ToList();
+            return blogPosts;
             }
 
+        public BlogPostDetailsModel GetBlogPostDetailsModel(string Slug)
+        {
+            var blog = _context.BlogPosts
+               .FirstOrDefault(s => s.Slug == Slug);
 
+            if (blog == null) return null;
+
+
+            return new BlogPostDetailsModel
+            {
+               PostId = blog.PostId,
+               Title = blog.Title,  
+               Slug = blog.Slug,    
+               Summary = blog.Summary,  
+               ThumbnailURL = blog.ThumbnailURL,    
+               Content = blog.Content,
+               CreatedAt = blog.CreatedAt,
+               UpdatedAt = blog.UpdatedAt,
+               IsPublished = blog.IsPublished,
+               AuthorId = blog.AuthorId,
+            };
+        }
     }
 }
 

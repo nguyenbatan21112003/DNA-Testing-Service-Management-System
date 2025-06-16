@@ -69,6 +69,22 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getBlogPostBySlug",
+    "RelativePath": "blogPost{Slug}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Slug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Login",
     "RelativePath": "login",
     "HttpMethod": "POST",

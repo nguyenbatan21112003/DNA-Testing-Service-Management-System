@@ -23,6 +23,6 @@ namespace DNATestSystem.Services.Interface
         ServiceSummaryDetailsModel  GetServiceById(int id);
 
         List<BlogPostModel> GetAllBlogPosts();
-        //BlogPostDetailsModel GetBlogPostBySlug(string Slug);
+        BlogPostDetailsModel GetBlogPostDetailsModel(string Slug);
     }
 }
