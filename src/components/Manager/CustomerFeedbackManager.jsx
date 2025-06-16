@@ -193,3 +193,68 @@ const CustomerFeedbackManager = () => {
                     Xem, phân loại và phản hồi đánh giá, khiếu nại của khách hàng
                 </p>
             </div>
+            {/* Stats Cards */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gap: "20px",
+                    marginBottom: "32px",
+                }}
+            >
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #722ed1 0%, #9254de 100%)",
+                        color: "#fff",
+                        padding: "20px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(114, 46, 209, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>⭐ Đánh giá TB</div>
+                    <div style={{ fontSize: "28px", fontWeight: "700", marginBottom: "4px" }}>{stats.avgRating}/5</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>{"⭐".repeat(Math.floor(stats.avgRating))}</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)",
+                        color: "#fff",
+                        padding: "20px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(24, 144, 255, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>📝 Tổng phản hồi</div>
+                    <div style={{ fontSize: "28px", fontWeight: "700", marginBottom: "4px" }}>{stats.totalFeedbacks}</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>Tháng này</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #faad14 0%, #ffc53d 100%)",
+                        color: "#fff",
+                        padding: "20px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(250, 173, 20, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>⏳ Chưa xử lý</div>
+                    <div style={{ fontSize: "28px", fontWeight: "700", marginBottom: "4px" }}>{stats.pending}</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>Cần phản hồi</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)",
+                        color: "#fff",
+                        padding: "20px",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(255, 77, 79, 0.3)",
+                    }}
+                >
+                    <div style={{ fontSize: "16px", opacity: 0.9, marginBottom: "8px" }}>🚨 Khiếu nại</div>
+                    <div style={{ fontSize: "28px", fontWeight: "700", marginBottom: "4px" }}>{stats.complaints}</div>
+                    <div style={{ fontSize: "14px", opacity: 0.8 }}>Cần ưu tiên</div>
+                </div>
+            </div>
