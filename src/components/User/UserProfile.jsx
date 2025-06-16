@@ -735,30 +735,32 @@ const UserProfile = () => {
                             >
                               <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
                             </button>
-                            <button
-                              style={{
-                                border: "1px solid #bbb",
-                                color: "#444",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                marginBottom: 0,
-                                transition: "border 0.2s, color 0.2s, background 0.2s",
-                                outline: "none",
-                                cursor: "pointer"
-                              }}
-                              onClick={() => {
-                                setSelectedOrderForForm(order);
-                                setShowFormModal(true);
-                              }}
-                            >
-                              <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
-                            </button>
+                            {order.category === 'civil' && (
+                              <button
+                                style={{
+                                  border: "1px solid #bbb",
+                                  color: "#444",
+                                  background: "#fff",
+                                  borderRadius: 10,
+                                  padding: "10px 24px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  marginBottom: 0,
+                                  transition: "border 0.2s, color 0.2s, background 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer"
+                                }}
+                                onClick={() => {
+                                  setSelectedOrderForForm(order);
+                                  setShowFormModal(true);
+                                }}
+                              >
+                                <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
+                              </button>
+                            )}
                           </div>
                           {/* Nhóm phải: Xem kết quả, Đánh giá */}
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1380,41 +1382,10 @@ const UserProfile = () => {
                 <span style={{ color: "#888" }}>Chưa có bảng kết quả.</span>
               )}
             </div>
-            {/* File kết quả xét nghiệm nếu có */}
-            {selectedOrder.resultFile && (
-              <div
-                style={{
-                  margin: "14px 0 10px 0",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ fontWeight: 600, marginRight: 8 }}>
-                  File kết quả xét nghiệm:
-                </span>
-                <a
-                  href={
-                    selectedOrder.resultFile.startsWith("data:")
-                      ? selectedOrder.resultFile
-                      : selectedOrder.resultFile
-                  }
-                  download={selectedOrder.resultFileName || "KetQuaXetNghiem"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    color: "#0a7cff",
-                    textDecoration: "underline",
-                    fontWeight: 500,
-                  }}
-                >
-                  Tải file kết quả
-                </a>
-              </div>
-            )}
           </div>
         </div>
       )}
-      {showFormModal && selectedOrderForForm && (
+      {showFormModal && selectedOrderForForm && selectedOrderForForm.category === 'civil' && (
         <RequestFormModal open={showFormModal} onClose={() => setShowFormModal(false)} order={selectedOrderForForm} category={selectedOrderForForm.category} />
       )}
     </div>
