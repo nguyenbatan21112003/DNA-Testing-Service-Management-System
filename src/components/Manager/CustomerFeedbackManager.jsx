@@ -258,3 +258,49 @@ const CustomerFeedbackManager = () => {
                     <div style={{ fontSize: "14px", opacity: 0.8 }}>Cần ưu tiên</div>
                 </div>
             </div>
+            {/* Tabs */}
+            <div
+                style={{
+                    display: "flex",
+                    gap: "8px",
+                    marginBottom: "24px",
+                    borderBottom: "1px solid #f0f0f0",
+                    paddingBottom: "16px",
+                    flexWrap: "wrap",
+                }}
+            >
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        style={{
+                            padding: "10px 16px",
+                            border: "none",
+                            borderRadius: "8px",
+                            background: activeTab === tab.key ? "#722ed1" : "#f5f5f5",
+                            color: activeTab === tab.key ? "#fff" : "#666",
+                            fontWeight: "600",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            transition: "all 0.2s ease",
+                            fontSize: "14px",
+                        }}
+                    >
+                        {tab.label}
+                        <span
+                            style={{
+                                background: activeTab === tab.key ? "rgba(255,255,255,0.2)" : "#ddd",
+                                color: activeTab === tab.key ? "#fff" : "#666",
+                                padding: "2px 6px",
+                                borderRadius: "10px",
+                                fontSize: "12px",
+                                fontWeight: "700",
+                            }}
+                        >
+                            {tab.count}
+                        </span>
+                    </button>
+                ))}
+            </div>
