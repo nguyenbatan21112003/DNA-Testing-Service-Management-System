@@ -12,6 +12,8 @@ import {
 import { useLocation, Link } from "react-router-dom";
 import { useOrderContext } from "../../context/OrderContext";
 import { AuthContext } from "../../context/AuthContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ServicesPage = () => {
   const [activeTab, setActiveTab] = useState("civil");
@@ -24,6 +26,7 @@ const ServicesPage = () => {
   const [showToast, setShowToast] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [readGuide, setReadGuide] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState(null);
 
   const serviceOptions = {
     civil: [
@@ -67,13 +70,6 @@ const ServicesPage = () => {
     ],
     admin: [{ value: "center", label: "Tại trung tâm" }],
   };
-
-  // Lấy ngày hôm nay theo định dạng yyyy-mm-dd
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  const minDate = `${yyyy}-${mm}-${dd}`;
 
   useEffect(() => {
     // Scroll đến phần dịch vụ theo hash trên URL
@@ -120,7 +116,7 @@ const ServicesPage = () => {
       phone: form.phone.value,
       email: user ? user.email : form.email.value,
       address: form.address.value,
-      appointmentDate: form.appointmentDate.value,
+      appointmentDate: appointmentDate ? appointmentDate.toLocaleDateString("vi-VN") : "",
       category: form.category.value,
       sampleMethod: form.sampleMethod.value,
       note: form.message.value,
@@ -744,12 +740,17 @@ const ServicesPage = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="appointmentDate">Ngày xét nghiệm</label>
-                    <input
-                      type="date"
+                    <DatePicker
+                      selected={appointmentDate}
+                      onChange={date => setAppointmentDate(date)}
+                      minDate={new Date()}
+                      filterDate={date => date.getDay() !== 0}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Chọn ngày"
                       id="appointmentDate"
                       name="appointmentDate"
                       required
-                      min={minDate}
+                      className="form-control"
                     />
                   </div>
                 </div>
