@@ -136,3 +136,60 @@ const CustomerFeedbackManager = () => {
                 return feedbacks
         }
     }
+    const handleResponseFeedback = (feedback) => {
+        setSelectedFeedback(feedback)
+        setShowModal(true)
+    }
+
+    const handleSubmitResponse = (responseData) => {
+        const updatedFeedbacks = feedbacks.map((feedback) => {
+            if (feedback.id === selectedFeedback.id) {
+                return {
+                    ...feedback,
+                    status: responseData.status,
+                    responseStatus: "Đã phản hồi",
+                    response: responseData.response,
+                    responseDate: new Date().toLocaleDateString("vi-VN"),
+                    responseBy: "Trần Văn Quản",
+                    actionPlan: responseData.actionPlan,
+                    contactMethod: responseData.contactMethod,
+                }
+            }
+            return feedback
+        })
+
+        setFeedbacks(updatedFeedbacks)
+        setShowModal(false)
+        setSelectedFeedback(null)
+    }
+
+    const getRatingColor = (rating) => {
+        if (rating >= 4) return "#52c41a"
+        if (rating >= 3) return "#faad14"
+        return "#ff4d4f"
+    }
+
+    const getPriorityColor = (priority) => {
+        switch (priority) {
+            case "Cao":
+                return "#ff4d4f"
+            case "Trung bình":
+                return "#faad14"
+            case "Thấp":
+                return "#52c41a"
+            default:
+                return "#666"
+        }
+    }
+
+    return (
+        <div style={{ padding: "0" }}>
+            {/* Header */}
+            <div style={{ marginBottom: "24px", textAlign: "center" }}>
+                <h1 style={{ fontSize: "28px", fontWeight: "700", color: "#722ed1", margin: 0 }}>
+                    Quản lý phản hồi khách hàng
+                </h1>
+                <p style={{ color: "#666", margin: "8px 0 0 0" }}>
+                    Xem, phân loại và phản hồi đánh giá, khiếu nại của khách hàng
+                </p>
+            </div>
