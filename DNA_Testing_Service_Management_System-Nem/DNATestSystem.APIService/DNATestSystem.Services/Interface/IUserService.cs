@@ -21,5 +21,8 @@ namespace DNATestSystem.Services.Interface
         void DeleteOldRefreshToken(int userId);
         List<ServiceSummaryDto> GetService();
         ServiceSummaryDetailsModel  GetServiceById(int id);
+
+        List<BlogPostModel> GetAllBlogPosts();
+        //BlogPostDetailsModel GetBlogPostBySlug(string Slug);
     }
 }

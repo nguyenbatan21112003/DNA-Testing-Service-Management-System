@@ -118,6 +118,12 @@ namespace DNATestSystem.Controllers
 
             return Ok(service);
         }
+        [HttpGet("/blogPost")]
+        public List<BlogPostModel> getAllBlogPsot()
+        {
+            var data = _userService.GetAllBlogPosts();   
+            return data;
+        }
 
 
         //[Authorize]

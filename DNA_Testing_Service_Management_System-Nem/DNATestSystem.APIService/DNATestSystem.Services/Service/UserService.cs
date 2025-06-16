@@ -191,7 +191,24 @@ namespace DNATestSystem.Services.Service
                 CreatedAt = service.CreatedAt
             };
         }
-    
+
+        public List<BlogPostModel> GetAllBlogPosts()
+        {
+            var blogPosts = _context.BlogPosts
+           .Select(p => new BlogPostModel
+           {
+               PostId = p.PostId,
+               Title = p.Title,
+               Slug = p.Slug,
+               Summary = p.Summary,
+               ThumbnailURL = p.ThumbnailURL,
+           })
+           .ToList();
+
+                return blogPosts;
+            }
+
+
     }
 }
 

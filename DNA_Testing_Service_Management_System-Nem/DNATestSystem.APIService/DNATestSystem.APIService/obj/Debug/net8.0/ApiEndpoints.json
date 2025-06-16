@@ -49,6 +49,26 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getAllBlogPsot",
+    "RelativePath": "blogPost",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DNATestSystem.BusinessObjects.Application.Dtos.Service.BlogPostModel, DNATestSystem.BusinessObjects, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Login",
     "RelativePath": "login",
     "HttpMethod": "POST",
