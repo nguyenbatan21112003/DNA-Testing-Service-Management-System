@@ -4853,11 +4853,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+      "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
       "projectName": "DNATestSystem.Repositories",
-      "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+      "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
       "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-      "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Repositories\\obj\\",
+      "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -4879,8 +4879,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
-              "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNA_Testing_Service_Management_System\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
+            "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
+              "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
             }
           }
         }

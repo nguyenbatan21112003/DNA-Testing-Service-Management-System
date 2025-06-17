@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using DNATestSystem.Application.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -9,6 +8,10 @@ using DNATestSystem.Repositories;
 using DNATestSystem.Services.Hepler;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Models;
+using DNATestSystem.Services.Interface;
+using DNATestSystem.BusinessObjects.Application.Dtos.User;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.Services.Service
 {
@@ -54,6 +57,7 @@ namespace DNATestSystem.Services.Service
                 Password = hashPassword,
                 Phone = user.PhoneNumber,
                 RoleId = (int)BusinessObjects.Entities.Enum.RoleNum.Customer, // Mặc định là User
+                Status = (int)BusinessObjects.Entities.Enum.StatusNum.Pending
                 //CreateAt = DateTime.Now
             };
 
@@ -70,8 +74,10 @@ namespace DNATestSystem.Services.Service
             {
                 new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
                 new Claim(ClaimTypes.Email , user.Email),
-                new Claim(ClaimTypes.Role , user.Role.ToString())
+               new Claim(ClaimTypes.Role , user.RoleId?.ToString() ?? "0")
             };
+
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
@@ -142,7 +148,92 @@ namespace DNATestSystem.Services.Service
             _context.RefreshTokens.RemoveRange(entity);
             _context.SaveChanges();
         }
-        
+
+        public List<ServiceSummaryDto> GetService()
+        {
+            var services = _context.Services
+                            .Include(s => s.PriceDetails)
+                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
+                            .Select(s => new ServiceSummaryDto
+                            {
+                                Id = s.ServiceId,
+                                Slug = s.Slug,
+                                ServiceName = s.ServiceName,
+                                Category = s.Category,
+                                IsUrgent = false, // gán cứng nếu chưa có
+                                IncludeVAT = true,
+                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
+                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
+                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
+                            }) .ToList();
+            return services;              
+        }
+
+        public ServiceSummaryDetailsModel GetServiceById(int id)
+        {
+            var service = _context.Services
+                .FirstOrDefault(s => s.ServiceId == id);
+
+            if (service == null) return null;
+
+            var priceDetail = service.PriceDetails.FirstOrDefault();
+
+            return new ServiceSummaryDetailsModel
+            {
+                Id = service.ServiceId,
+                Slug = service.Slug,
+                ServiceName = service.ServiceName,
+                Category = service.Category,
+                Description = service.Description,
+                IsUrgent = false, // hoặc true nếu bạn có trường này
+                IncludeVAT = true,
+                Price2Samples = priceDetail?.Price2Samples,
+                Price3Samples = priceDetail?.Price3Samples,
+                TimeToResult = priceDetail?.TimeToResult,
+                CreatedAt = service.CreatedAt
+            };
+        }
+
+        public List<BlogPostModel> GetAllBlogPosts()
+        {
+            var blogPosts = _context.BlogPosts
+                 .Include(p => p.Author)
+                 .Where(p => (bool)p.IsPublished)
+                 .Select(p => new BlogPostModel
+                 {
+                     PostId = p.PostId,
+                     Title = p.Title,
+                     Slug = p.Slug,
+                     Summary = p.Summary,
+                     ThumbnailURL = p.ThumbnailURL,
+                     AuthorName = p.Author.FullName
+                 })
+                 .ToList();
+            return blogPosts;
+            }
+
+        public BlogPostDetailsModel GetBlogPostDetailsModel(string Slug)
+        {
+            var blog = _context.BlogPosts
+               .FirstOrDefault(s => s.Slug == Slug);
+
+            if (blog == null) return null;
+
+
+            return new BlogPostDetailsModel
+            {
+               PostId = blog.PostId,
+               Title = blog.Title,  
+               Slug = blog.Slug,    
+               Summary = blog.Summary,  
+               ThumbnailURL = blog.ThumbnailURL,    
+               Content = blog.Content,
+               CreatedAt = blog.CreatedAt,
+               UpdatedAt = blog.UpdatedAt,
+               IsPublished = blog.IsPublished,
+               AuthorId = blog.AuthorId,
+            };
+        }
     }
 }
 

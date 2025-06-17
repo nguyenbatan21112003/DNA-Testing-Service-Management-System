@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
 public partial class ConsultRequest
 {
+    [Key]
     public int ConsultId { get; set; }
 
     public int? CustomerId { get; set; }

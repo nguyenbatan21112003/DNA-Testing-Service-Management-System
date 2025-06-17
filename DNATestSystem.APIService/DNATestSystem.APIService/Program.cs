@@ -11,6 +11,7 @@ using DNATestSystem.ModelValidation;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Service;
 using DNATestSystem.BusinessObjects.Entities;
+using DNATestSystem.Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,8 @@ builder.Services.AddControllers()
 
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -7,8 +7,9 @@ using Microsoft.VisualBasic;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.Services;
 using Microsoft.AspNetCore.Authorization;
-using DNATestSystem.Application.Dtos;
-using DNATestSystem.Services.Service;
+using DNATestSystem.Services.Interface;
+using DNATestSystem.BusinessObjects.Application.Dtos.User;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 
 namespace DNATestSystem.Controllers
 {
@@ -39,7 +40,7 @@ namespace DNATestSystem.Controllers
             return Ok(new { message = "Đăng ký thành công", id });
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginModel users)
         {
             //if (!ModelState.IsValid)
@@ -67,6 +68,7 @@ namespace DNATestSystem.Controllers
 
         }
         [HttpPost("refresh-token")]
+        
         public IActionResult RefreshToken()
         {
             var isExist = HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
@@ -95,14 +97,46 @@ namespace DNATestSystem.Controllers
             return Ok(accessToken);
         }
 
-        [HttpPost("/logout")]
+        [HttpPost("logout")]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            HttpContext.Response.Cookies.Delete("refreshToken");
             return Ok();
         }
+        [HttpGet("services")]
+        public IActionResult getAllService()
+        {
+            var data = _userService.GetService();
+            return Ok(data);
 
-      
+        }
+        [HttpGet("services/{id}")]
+        public IActionResult getServiceById(int id)
+        {
+            var service = _userService.GetServiceById(id);
+            if (service == null)
+                return NotFound(new { message = "Service không tồn tại" });
+
+            return Ok(service);
+        }
+        [HttpGet("blogPost")]
+        public IActionResult getAllBlogPsot()
+        {
+            var data = _userService.GetAllBlogPosts();   
+            return Ok(data);
+        }
+
+        [HttpGet("blogPost/{Slug}")]
+        public IActionResult getBlogPostBySlug(string Slug)
+        {
+            var Blog = _userService.GetBlogPostDetailsModel(Slug);
+            if(Blog == null)
+                return NotFound(new { message = "Blog không tồn tại" });
+            return Ok(Blog);
+        }
+
+
         //[Authorize]
         //[HttpPost("verify-current-password")]
         //public IActionResult VerifyCurrentPassword([FromBody] string currentPassword)

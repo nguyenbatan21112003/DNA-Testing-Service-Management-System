@@ -14,6 +14,8 @@ public partial class PriceDetail
     public decimal? Price3Samples { get; set; }
 
     public string? TimeToResult { get; set; }
+    
+    public bool? IncludeVAT { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DNATestSystem.BusinessObjects.Entities.Enum
 {
-    public enum Status
+    public enum StatusNum
     {
         Banned = -1,
         Pending = 0,

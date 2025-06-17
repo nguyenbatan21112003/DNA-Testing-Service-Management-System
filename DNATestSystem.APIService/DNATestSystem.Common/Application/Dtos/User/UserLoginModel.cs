@@ -1,4 +1,4 @@
-﻿namespace DNATestSystem.Application.Dtos
+﻿namespace DNATestSystem.BusinessObjects.Application.Dtos.User
 {
     public class UserLoginModel
     {

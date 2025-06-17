@@ -1,14 +1,11 @@
--- ===================== CREATE & USE DATABASE =====================
---USE master;
---ALTER DATABASE DNATestingSystem_V4 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
---DROP DATABASE DNATestingSystem_V4;
-
+﻿-- ===================== CREATE & USE DATABASE =====================
 IF DB_ID('DNATestingSystem_V4') IS NULL
 BEGIN
   CREATE DATABASE DNATestingSystem_V4;
 END;
 GO
-
+--DROP DATABASE DNATestingSystem_V4;
+GO
 USE DNATestingSystem_V4;
 GO
 
@@ -17,18 +14,21 @@ CREATE TABLE Roles (
   RoleID INT PRIMARY KEY IDENTITY(1,1),
   RoleName NVARCHAR(50)
 );
+GO
 
 CREATE TABLE Features (
   FeatureID INT PRIMARY KEY IDENTITY(1,1),
   Name VARCHAR(100),
   Description TEXT
 );
+GO
 
 CREATE TABLE RoleFeatures (
   RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
   FeatureID INT FOREIGN KEY REFERENCES Features(FeatureID),
   PRIMARY KEY (RoleID, FeatureID)
 );
+GO
 
 -- ===================== USERS =====================
 CREATE TABLE Users (
@@ -40,8 +40,9 @@ CREATE TABLE Users (
   RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
   CreatedAt DATETIME,
   UpdatedAt DATETIME,
-  Status int
+  Status INT
 );
+GO
 
 CREATE TABLE UserProfiles (
   ProfileID INT PRIMARY KEY IDENTITY(1,1),
@@ -53,6 +54,7 @@ CREATE TABLE UserProfiles (
   Fingerfile VARCHAR(100),
   UpdatedAt DATETIME
 );
+GO
 
 -- ===================== BLOG POSTS =====================
 CREATE TABLE BlogPosts (
@@ -60,12 +62,17 @@ CREATE TABLE BlogPosts (
   Title NVARCHAR(255),
   Slug NVARCHAR(100) UNIQUE,
   Summary NVARCHAR(500),
-  Content TEXT,
+  Content NVARCHAR(500),
   AuthorID INT FOREIGN KEY REFERENCES Users(UserID),
   IsPublished BIT DEFAULT 1,
-  CreatedAt DATETIME,
-  UpdatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE(),
+  UpdatedAt DATETIME,
+  ThumbnailURL NVARCHAR(255)
 );
+GO
+
+--ALTER TABLE BlogPosts ADD ThumbnailURL NVARCHAR(255);
+GO
 
 -- ===================== SYSTEM LOGS =====================
 CREATE TABLE SystemLogs (
@@ -75,18 +82,26 @@ CREATE TABLE SystemLogs (
   Description TEXT,
   CreatedAt DATETIME DEFAULT GETDATE()
 );
+GO
 
 -- ===================== SERVICES =====================
 CREATE TABLE Services (
   ServiceID INT PRIMARY KEY IDENTITY(1,1),
   ServiceName NVARCHAR(100),
   Description NVARCHAR(255),
+  Slug NVARCHAR(100),
   Category NVARCHAR(50),
   NumberSample TINYINT DEFAULT 1,
+  IsUrgent BIT DEFAULT 0,
   CreatedAt DATETIME DEFAULT GETDATE(),
-  UpdatedAt DATETIME
+  UpdatedAt DATETIME,
+  IsPublished BIT DEFAULT 0
 );
-
+GO
+--ALTER TABLE Services ADD Slug NVARCHAR(100);
+--ALTER TABLE Services ADD IsUrgent BIT DEFAULT 0;
+--AlTER TABLE Services ADD IsPublished BIT DEFAULT 0 ;
+GO
 
 CREATE TABLE PriceDetails (
   PriceID INT PRIMARY KEY IDENTITY(1,1),
@@ -94,9 +109,11 @@ CREATE TABLE PriceDetails (
   Price2Samples DECIMAL(18,2),
   Price3Samples DECIMAL(18,2),
   TimeToResult NVARCHAR(50),
-  CreatedAt DATETIME,
-  UpdatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE(),
+  UpdatedAt DATETIME,
+  IncludeVAT BIT DEFAULT 0
 );
+GO
 
 -- ===================== SERVICE REGISTRATION =====================
 CREATE TABLE UserSelectedServices (
@@ -105,14 +122,17 @@ CREATE TABLE UserSelectedServices (
   ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
   SelectedAt DATETIME,
   Note TEXT,
-  ConvertedToRequest BIT DEFAULT 0
+  ConvertedToRequest BIT DEFAULT 0,
+  IncludeVAT BIT DEFAULT 0
 );
+GO
 
 -- ===================== TEST REQUESTS =====================
 CREATE TABLE TestType (
   TypeID INT PRIMARY KEY IDENTITY(1,1),
   TypeName VARCHAR(20)
 );
+GO
 
 CREATE TABLE TestRequests (
   RequestID INT PRIMARY KEY IDENTITY(1,1),
@@ -124,6 +144,7 @@ CREATE TABLE TestRequests (
   Status NVARCHAR(50),
   CreatedAt DATETIME
 );
+GO
 
 CREATE TABLE TestProcesses (
   ProcessID INT PRIMARY KEY IDENTITY(1,1),
@@ -136,6 +157,7 @@ CREATE TABLE TestProcesses (
   Notes TEXT,
   UpdatedAt DATETIME
 );
+GO
 
 -- ===================== SAMPLE DATA =====================
 CREATE TABLE TestSamples (
@@ -148,6 +170,7 @@ CREATE TABLE TestSamples (
   SampleType NVARCHAR(50),
   YOB INT
 );
+GO
 
 CREATE TABLE SampleCollectionRecords (
   RecordID INT PRIMARY KEY IDENTITY(1,1),
@@ -159,6 +182,7 @@ CREATE TABLE SampleCollectionRecords (
   ConfirmedBy NVARCHAR(100),
   Note TEXT
 );
+GO
 
 CREATE TABLE SampleCollectionSamples (
   CollectedSampleID INT PRIMARY KEY IDENTITY(1,1),
@@ -177,6 +201,7 @@ CREATE TABLE SampleCollectionSamples (
   CollectedBy NVARCHAR(100),
   HasGeneticDiseaseHistory BIT
 );
+GO
 
 -- ===================== TEST RESULTS =====================
 CREATE TABLE TestResults (
@@ -184,11 +209,13 @@ CREATE TABLE TestResults (
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
   EnteredBy INT FOREIGN KEY REFERENCES Users(UserID),
   VerifiedBy INT FOREIGN KEY REFERENCES Users(UserID),
-  ResultData TEXT,
+  ResultData NVARCHAR(MAX),
   Status NVARCHAR(50),
   EnteredAt DATETIME,
-  VerifiedAt DATETIME
+  VerifiedAt DATETIME,
+  CONSTRAINT CHK_TestResults_Status CHECK (Status IN ('Pending', 'Verified'))
 );
+GO
 
 -- ===================== PAYMENTS =====================
 CREATE TABLE Payments (
@@ -198,6 +225,7 @@ CREATE TABLE Payments (
   PaymentMethod NVARCHAR(50),
   PaidAt DATETIME
 );
+GO
 
 -- ===================== FEEDBACK & CONSULT =====================
 CREATE TABLE Feedbacks (
@@ -208,6 +236,7 @@ CREATE TABLE Feedbacks (
   Comment NVARCHAR(1000),
   CreatedAt DATETIME
 );
+GO
 
 CREATE TABLE ConsultRequests (
   ConsultID INT PRIMARY KEY IDENTITY(1,1),
@@ -220,6 +249,7 @@ CREATE TABLE ConsultRequests (
   CreatedAt DATETIME,
   RepliedAt DATETIME
 );
+GO
 
 -- ===================== TOKENS =====================
 CREATE TABLE RefreshTokens (
@@ -230,3 +260,77 @@ CREATE TABLE RefreshTokens (
   CreatedAt DATETIME,
   Revoked BIT
 );
+GO
+
+-- ===================== SEED DATA =====================
+
+-- Roles
+SET IDENTITY_INSERT Roles ON;
+INSERT INTO Roles (RoleID, RoleName) VALUES
+(0, 'Guest'),
+(1, 'Customer'),
+(2, 'Staff'),
+(3, 'Manager'),
+(4, 'Admin');
+SET IDENTITY_INSERT Roles OFF;
+GO
+
+-- Users
+INSERT INTO Users (FullName, Phone, Email, Password, RoleID, CreatedAt, UpdatedAt, Status)
+VALUES 
+(N'Nguyễn Văn A', '0909123456', 'admin@adn.vn', 'hashed_password_1', 1, GETDATE(), GETDATE(), 1),
+(N'Lê Thị B', '0911123456', 'staff@adn.vn', 'hashed_password_2', 2, GETDATE(), GETDATE(), 1),
+(N'Trần Văn C', '0922123456', 'khachhang1@gmail.com', 'hashed_password_3', 3, GETDATE(), GETDATE(), 1),
+(N'Phạm Thị D', '0933123456', 'khachhang2@gmail.com', 'hashed_password_4', 3, GETDATE(), GETDATE(), 0);
+GO
+
+-- Services
+INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent)
+VALUES
+(N'Xét nghiệm ADN cha con', N'Xác định quan hệ huyết thống giữa cha và con', 'xet-nghiem-adn-cha-con', N'Dân sự', 2, 0),
+(N'Xét nghiệm ADN mẹ con', N'Xác định quan hệ giữa mẹ và con', 'xet-nghiem-adn-me-con', N'Dân sự', 2, 0),
+(N'Xét nghiệm ADN anh/chị em', N'Xác định quan hệ giữa anh/chị và em', 'xet-nghiem-adn-anh-chi-em', N'Dân sự', 2, 0),
+(N'Xét nghiệm ADN họ hàng', N'Xác định quan hệ giữa các thành viên trong gia đình', 'xet-nghiem-adn-ho-hang', N'Dân sự', 2, 0),
+(N'Xét nghiệm ADN làm giấy khai sinh', N'Dùng cho thủ tục khai sinh', 'xet-nghiem-adn-lam-giay-khai-sinh', N'Hành chính', 2, 0),
+(N'Xét nghiệm ADN thẻ ADN cá nhân', N'Dùng làm thẻ ADN cá nhân', 'xet-nghiem-adn-the-ca-nhan', N'Hành chính', 2, 0),
+(N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Dân sự', 2, 1),
+(N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Hành chính', 2, 1);
+GO
+
+SELECT * FROM Services
+--SELECT * FROM Services
+--DROP TABLE Services
+SELECT * FROM PriceDetails
+
+-- PriceDetails
+INSERT INTO PriceDetails (ServiceID, Price2Samples, Price3Samples, TimeToResult, IncludeVAT)
+VALUES
+(1, 4500000, 1800000, N'3-5 ngày', 0),
+(2, 4500000, 1800000, N'3-5 ngày', 0),
+(3, 6000000, 2000000, N'5-7 ngày', 0),
+(4, 7500000, 2000000, N'7-10 ngày', 0),
+(5, 6500000, 2000000, N'5-7 ngày', 0),
+(6, 10000000, 3000000, N'48-72 giờ', 0),
+(7, 6500000, 3000000, N'24-48 giờ', 0),
+(8, 10000000, 3000000, N'48-72 giờ', 0);
+GO
+
+-- Blog Posts
+INSERT INTO BlogPosts (Title, Slug, Summary, Content, AuthorID, ThumbnailURL) VALUES
+(N'Quy trình xét nghiệm ADN tại ADNVietnam', N'quy-trinh-xet-nghiem-adn', 
+N'Chi tiết từng bước trong quy trình xét nghiệm ADN tại ADNVietnam, đảm bảo độ chính xác và bảo mật cao.',
+N'Quy trình xét nghiệm ADN tại ADNVietnam gồm 4 bước: Đăng ký, lấy mẫu, phân tích mẫu và trả kết quả.', 
+2, N'https://adnvietnam.vn/wp-content/uploads/2021/08/quy-trinh-xet-nghiem.jpg'),
+(N'Câu hỏi thường gặp khi xét nghiệm ADN', N'cau-hoi-thuong-gap',
+N'Tổng hợp các thắc mắc phổ biến về quy trình, thời gian, chi phí và tính pháp lý của xét nghiệm ADN.',
+N'Câu hỏi: Xét nghiệm ADN mất bao lâu? – Thường từ 3-5 ngày làm việc. Có chính xác không? – Độ chính xác đến 99.999%.',
+3, N'https://adnvietnam.vn/wp-content/uploads/2022/06/faq-xet-nghiem.jpg'),
+(N'Các trường hợp nên xét nghiệm ADN', N'cac-truong-hop-xet-nghiem-adn',
+N'Xét nghiệm ADN cần thiết trong các trường hợp cha/mẹ con nghi ngờ huyết thống, làm giấy khai sinh, nhập tịch...',
+N'Các trường hợp thường gặp: Nghi ngờ huyết thống, xác minh thân nhân trong pháp lý, nhập tịch, thừa kế tài sản,...',
+3, N'https://adnvietnam.vn/wp-content/uploads/2023/02/doi-tuong-xet-nghiem.jpg'),
+(N'Thẻ ADN cá nhân là gì?', N'the-adn-ca-nhan',
+N'Thẻ ADN là một dạng xác thực sinh học cá nhân hóa, giúp lưu trữ và xác minh danh tính qua phân tích gen.',
+N'Thẻ ADN cá nhân do ADNVietnam cung cấp được mã hóa và lưu trữ an toàn.',
+2, N'https://adnvietnam.vn/wp-content/uploads/2022/04/the-adn.jpg');
+GO

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
 public partial class BlogPost
 {
+    [Key]
     public int PostId { get; set; }
 
     public string? Title { get; set; }
@@ -18,6 +20,8 @@ public partial class BlogPost
     public int? AuthorId { get; set; }
 
     public bool? IsPublished { get; set; }
+
+    public string? ThumbnailURL { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

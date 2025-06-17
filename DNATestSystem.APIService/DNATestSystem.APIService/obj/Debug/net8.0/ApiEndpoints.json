@@ -1,15 +1,105 @@
 [
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "CreateManager",
+    "RelativePath": "Admin/create-manager",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Admin.ManagerCreateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "CreateNewService",
+    "RelativePath": "Admin/create-service",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "CreateStaff",
+    "RelativePath": "Admin/create-staff",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Admin.StaffCreateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "UpdateUserRoleAndStatus",
+    "RelativePath": "Admin/update-role-status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Admin.UpdateStatusAndRoleModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getAllBlogPsot",
+    "RelativePath": "user/blogPost",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getBlogPostBySlug",
+    "RelativePath": "user/blogPost/{Slug}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Slug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Login",
-    "RelativePath": "login",
+    "RelativePath": "user/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "users",
-        "Type": "DNATestSystem.Application.Dtos.UserLoginModel",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.User.UserLoginModel",
         "IsRequired": true
       }
     ],
@@ -18,7 +108,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Logout",
-    "RelativePath": "logout",
+    "RelativePath": "user/logout",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -45,7 +135,33 @@
     "Parameters": [
       {
         "Name": "users",
-        "Type": "DNATestSystem.Application.Dtos.UserRegisterModel",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getAllService",
+    "RelativePath": "user/services",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getServiceById",
+    "RelativePath": "user/services/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
