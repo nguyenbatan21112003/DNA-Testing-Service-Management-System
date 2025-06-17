@@ -511,3 +511,53 @@ const CustomerFeedbackManager = () => {
                                 >
                                     📞 Gọi
                                 </button>
+                                <button
+                                    onClick={() => window.open(`mailto:${feedback.email}`)}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "#1890ff",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        fontWeight: "600",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    📧 Email
+                                </button>
+
+                                {feedback.responseStatus === "Đã phản hồi" && (
+                                    <div
+                                        style={{
+                                            padding: "8px 12px",
+                                            background: "#f6ffed",
+                                            color: "#52c41a",
+                                            borderRadius: "6px",
+                                            fontSize: "12px",
+                                            fontWeight: "600",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        ✅ Đã xử lý
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {getFilteredFeedbacks().length === 0 && (
+                <div
+                    style={{
+                        textAlign: "center",
+                        padding: "60px 20px",
+                        color: "#666",
+                    }}
+                >
+                    <div style={{ fontSize: "48px", marginBottom: "16px" }}>💬</div>
+                    <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "8px" }}>Không có phản hồi nào</div>
+                    <div style={{ fontSize: "14px" }}>Chưa có phản hồi nào trong danh mục này</div>
+                </div>
+            )}
