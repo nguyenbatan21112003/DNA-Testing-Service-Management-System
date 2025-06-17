@@ -16,10 +16,7 @@ namespace DNATestSystem.Services.Interface
         //Service
         int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
         int DeleteServiceMethod(int id);
-        //PriceDetails
-        int CreatePriceDetailMethod(PriceDetailsModel priceDetailModel);
-        void UpdatePriceDetailMethod(int id , PriceDetailsModel priceDetailsModel);
-        void DeletePriceDetailMethod(int id);
+        
     }
 }
             

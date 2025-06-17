@@ -58,27 +58,7 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
-        [HttpPost]
-        public IActionResult CreatePriceDetail([FromBody] PriceDetailsModel model)
-        {
-            var id = _adminService.CreatePriceDetailMethod(model);
-            return Ok(new { message = "Tạo bảng giá thành công", id });
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult UpdatePriceDetail(int id, [FromBody] PriceDetailsModel model)
-        {
-            _adminService.UpdatePriceDetailMethod(id, model);
-            return Ok(new { message = "Cập nhật bảng giá thành công" });
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeletePriceDetail(int id)
-        {
-            _adminService.DeletePriceDetailMethod(id);
-            return Ok(new { message = "Xoá bảng giá thành công" });
-        }
+       
 
     }
 }
