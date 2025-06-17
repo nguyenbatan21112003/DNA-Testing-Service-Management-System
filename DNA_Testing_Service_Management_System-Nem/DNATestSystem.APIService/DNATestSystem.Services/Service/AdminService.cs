@@ -91,6 +91,8 @@ namespace DNATestSystem.Services.Service
             return data.UserId;             
         }
 
+        
+
         public void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserId == modelUpdate.Id);
@@ -101,10 +103,38 @@ namespace DNATestSystem.Services.Service
 
             user.RoleId = (int)modelUpdate.Role;
             user.Status = (int)modelUpdate.Status;
-
+            user.UpdatedAt = DateTime.UtcNow;
             _context.SaveChanges();
         }
-        
+        //public int DeleteServiceMethod(int id)
+        //{
+        //    var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+        //    if (user == null)
+        //        throw new Exception("Người dùng không tồn tại");
+        //    if (user.RoleId == (int)RoleNum.Admin)
+        //        throw new Exception("Không thể chỉnh sửa quyền của Admin khác.");
+        //    _context.Users.Remove(user);
+        //    _context.SaveChanges();
+        //    return 1;
+        //}
+        public int DeleteServiceMethod(int service_id)
+        {
+            var service = _context.Services
+                          .Include(u => u.PriceDetails)
+                          .Include(s => s.TestRequests)
+                          .Include(a => a.UserSelectedServices)
+                          .FirstOrDefault(s => s.ServiceId == service_id);
+            if (service == null)
+                throw new Exception("Service không tồn tại");
+
+            _context.PriceDetails.RemoveRange(service.PriceDetails);
+            _context.TestRequests.RemoveRange(service.TestRequests);
+            _context.UserSelectedServices.RemoveRange(service.UserSelectedServices);
+            _context.Services.Remove(service);
+
+            _context.SaveChanges();
+            return 1;
+        }
 
     }
 }

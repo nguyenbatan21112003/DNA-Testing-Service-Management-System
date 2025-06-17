@@ -15,6 +15,7 @@ namespace DNATestSystem.Services.Interface
         void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate);
         //Service
         int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
+        int DeleteServiceMethod(int id);
     }
 }
             

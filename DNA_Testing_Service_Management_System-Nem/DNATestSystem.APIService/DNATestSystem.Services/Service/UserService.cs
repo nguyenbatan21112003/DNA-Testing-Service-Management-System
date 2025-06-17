@@ -215,6 +215,7 @@ namespace DNATestSystem.Services.Service
         public BlogPostDetailsModel GetBlogPostDetailsModel(string Slug)
         {
             var blog = _context.BlogPosts
+                .Where(s => s.IsPublished == true)
                .FirstOrDefault(s => s.Slug == Slug);
 
             if (blog == null) return null;

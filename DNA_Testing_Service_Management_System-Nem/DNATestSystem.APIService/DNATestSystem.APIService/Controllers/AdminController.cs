@@ -45,11 +45,39 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpDelete("delete-user/{id}")]
+        public IActionResult DeleteAccountById(int id)
+        {
+            try
+            {
+                var result = _adminService.DeleteServiceMethod(id);
+                return Ok(new { message = "Xoá người dùng thành công", result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
         [HttpPost("create-service")]
         public IActionResult CreateNewService([FromBody] ServiceCreateModel model)
         {
             var serviceId = _adminService.CreateServiceMethod(model);
             return Ok(new { message = "Tạo service thành công", serviceId } );
         }
+
+        [HttpDelete("delete-service/{id}")]
+        public IActionResult DeleteService(int id)
+        {
+            try
+            {
+                var result = _adminService.DeleteServiceMethod(id);
+                return Ok(new { message = "Xoá dịch vụ thành công", result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
