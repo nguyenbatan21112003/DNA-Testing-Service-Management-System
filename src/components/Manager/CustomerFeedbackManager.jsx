@@ -561,3 +561,81 @@ const CustomerFeedbackManager = () => {
                     <div style={{ fontSize: "14px" }}>Chưa có phản hồi nào trong danh mục này</div>
                 </div>
             )}
+            {/* Response Modal */}
+            {showModal && selectedFeedback && (
+                <ResponseModal
+                    feedback={selectedFeedback}
+                    onSubmit={handleSubmitResponse}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
+        </div>
+    )
+}
+
+const ResponseModal = ({ feedback, onSubmit, onClose }) => {
+    const [formData, setFormData] = useState({
+        response: "",
+        actionPlan: "",
+        contactMethod: "email",
+        status: "Đã giải quyết",
+    })
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        onSubmit(formData)
+    }
+
+    return (
+        <div
+            style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0,0,0,0.5)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+            }}
+        >
+            <div
+                style={{
+                    background: "#fff",
+                    padding: "32px",
+                    borderRadius: "12px",
+                    width: "90%",
+                    maxWidth: "700px",
+                    maxHeight: "80vh",
+                    overflowY: "auto",
+                }}
+            >
+                <h2 style={{ margin: "0 0 24px 0", color: "#722ed1" }}>💬 Phản hồi khách hàng</h2>
+
+                <div style={{ marginBottom: "20px", padding: "16px", background: "#f9f9f9", borderRadius: "8px" }}>
+                    <div style={{ fontWeight: "600", marginBottom: "8px" }}>{feedback.customerName}</div>
+                    <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>{feedback.orderType}</div>
+                    <div style={{ fontSize: "14px", fontStyle: "italic" }}>"{feedback.comment}"</div>
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: "20px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Nội dung phản hồi *</label>
+                        <textarea
+                            value={formData.response}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, response: e.target.value }))}
+                            placeholder="Nhập nội dung phản hồi cho khách hàng..."
+                            style={{
+                                width: "100%",
+                                minHeight: "120px",
+                                padding: "12px",
+                                border: "1px solid #d9d9d9",
+                                borderRadius: "6px",
+                                fontSize: "14px",
+                                resize: "vertical",
+                            }}
+                            required
+                        />
+                    </div>
