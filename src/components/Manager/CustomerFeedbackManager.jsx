@@ -97,6 +97,7 @@ const CustomerFeedbackManager = () => {
         ]
 
         setFeedbacks(sampleFeedbacks)
+
         // Tính toán thống kê
         const totalFeedbacks = sampleFeedbacks.length
         const avgRating = sampleFeedbacks.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
@@ -136,6 +137,7 @@ const CustomerFeedbackManager = () => {
                 return feedbacks
         }
     }
+
     const handleResponseFeedback = (feedback) => {
         setSelectedFeedback(feedback)
         setShowModal(true)
@@ -193,6 +195,7 @@ const CustomerFeedbackManager = () => {
                     Xem, phân loại và phản hồi đánh giá, khiếu nại của khách hàng
                 </p>
             </div>
+
             {/* Stats Cards */}
             <div
                 style={{
@@ -258,6 +261,7 @@ const CustomerFeedbackManager = () => {
                     <div style={{ fontSize: "14px", opacity: 0.8 }}>Cần ưu tiên</div>
                 </div>
             </div>
+
             {/* Tabs */}
             <div
                 style={{
@@ -304,6 +308,7 @@ const CustomerFeedbackManager = () => {
                     </button>
                 ))}
             </div>
+
             {/* Feedbacks List */}
             <div style={{ display: "grid", gap: "16px" }}>
                 {getFilteredFeedbacks().map((feedback) => (
@@ -421,6 +426,7 @@ const CustomerFeedbackManager = () => {
                                         </span>
                                     </div>
                                 </div>
+
                                 <div style={{ marginBottom: "16px" }}>
                                     <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>Nội dung phản hồi</div>
                                     <div
@@ -511,6 +517,7 @@ const CustomerFeedbackManager = () => {
                                 >
                                     📞 Gọi
                                 </button>
+
                                 <button
                                     onClick={() => window.open(`mailto:${feedback.email}`)}
                                     style={{
@@ -561,6 +568,7 @@ const CustomerFeedbackManager = () => {
                     <div style={{ fontSize: "14px" }}>Chưa có phản hồi nào trong danh mục này</div>
                 </div>
             )}
+
             {/* Response Modal */}
             {showModal && selectedFeedback && (
                 <ResponseModal
@@ -639,3 +647,100 @@ const ResponseModal = ({ feedback, onSubmit, onClose }) => {
                             required
                         />
                     </div>
+
+                    <div style={{ marginBottom: "20px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+                            Kế hoạch hành động (nếu có)
+                        </label>
+                        <textarea
+                            value={formData.actionPlan}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, actionPlan: e.target.value }))}
+                            placeholder="Mô tả các bước cụ thể để giải quyết vấn đề..."
+                            style={{
+                                width: "100%",
+                                minHeight: "80px",
+                                padding: "12px",
+                                border: "1px solid #d9d9d9",
+                                borderRadius: "6px",
+                                fontSize: "14px",
+                                resize: "vertical",
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
+                        <div>
+                            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Phương thức liên hệ</label>
+                            <select
+                                value={formData.contactMethod}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, contactMethod: e.target.value }))}
+                                style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    border: "1px solid #d9d9d9",
+                                    borderRadius: "6px",
+                                    fontSize: "14px",
+                                }}
+                            >
+                                <option value="email">📧 Email</option>
+                                <option value="phone">📞 Điện thoại</option>
+                                <option value="meeting">🤝 Gặp trực tiếp</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Trạng thái</label>
+                            <select
+                                value={formData.status}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
+                                style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    border: "1px solid #d9d9d9",
+                                    borderRadius: "6px",
+                                    fontSize: "14px",
+                                }}
+                            >
+                                <option value="Đã giải quyết">✅ Đã giải quyết</option>
+                                <option value="Đang xử lý">⏳ Đang xử lý</option>
+                                <option value="Cần theo dõi">👀 Cần theo dõi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            style={{
+                                padding: "10px 20px",
+                                border: "1px solid #d9d9d9",
+                                background: "#fff",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            type="submit"
+                            style={{
+                                padding: "10px 20px",
+                                background: "#722ed1",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                fontWeight: "600",
+                            }}
+                        >
+                            Gửi phản hồi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export default CustomerFeedbackManager
