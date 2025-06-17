@@ -8,6 +8,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Admin;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Entities.Enum;
+using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Hepler;
 using DNATestSystem.Services.Interface;
@@ -106,8 +107,9 @@ namespace DNATestSystem.Services.Service
             user.UpdatedAt = DateTime.UtcNow;
             _context.SaveChanges();
         }
-        //public int DeleteServiceMethod(int id)
+        //public int DeleteUserMethod(int id)
         //{
+        // sẽ xem xét lại xem có nên xóa kiểu này hay là chỉ nên ban
         //    var user = _context.Users.FirstOrDefault(u => u.UserId == id);
         //    if (user == null)
         //        throw new Exception("Người dùng không tồn tại");
@@ -134,6 +136,22 @@ namespace DNATestSystem.Services.Service
 
             _context.SaveChanges();
             return 1;
+        }
+        public int CreatePriceDetail(PriceDetailsModel model)
+        {
+            var price = new PriceDetail
+            {
+                ServiceId = model.ServiceId,
+                Price2Samples = model.Price2Samples,
+                Price3Samples = model.Price3Samples,
+                TimeToResult = model.TimeToResult,
+                IncludeVAT = model.IncludeVAT,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.PriceDetails.Add(price);
+            _context.SaveChanges();
+            return price.PriceId;
         }
 
     }
