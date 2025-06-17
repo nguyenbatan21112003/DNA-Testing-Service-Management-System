@@ -50,6 +50,25 @@ namespace DNATestSystem.Services.Service
             return data.UserId;
         }
 
+        public int CreateServiceMethod(ServiceCreateModel serviceCreateModel)
+        {
+            var newService = new BusinessObjects.Models.Service
+            {
+                ServiceName = serviceCreateModel.ServiceName,
+                Slug = serviceCreateModel.Slug,
+                Description = serviceCreateModel.Description,
+                Category = serviceCreateModel.Category,
+                NumberSample = serviceCreateModel.NumberSample,
+                IsUrgent = serviceCreateModel.IsUrgent,
+                IsPublished = serviceCreateModel.IsPublished,
+                CreatedAt = DateTime.UtcNow,
+            };
+            _context.Services.Add(newService);
+            _context.SaveChanges();
+
+            return newService.ServiceId;
+        }
+
         public int CreateStaff(StaffCreateModel staff)
         {
             var password = staff.Password;
@@ -85,27 +104,7 @@ namespace DNATestSystem.Services.Service
 
             _context.SaveChanges();
         }
-        public List<ServiceSummaryDto> GetPublishedService()
-        {
-            var services = _context.Services
-                .Include(s => s.PriceDetails)
-                 .Where(s => s.IsPublished)
-                .Select(s => new ServiceSummaryDto
-                {
-                    Id = s.ServiceId,
-                    Slug = s.Slug,
-                    ServiceName = s.ServiceName,
-                    Category = s.Category,
-                    IsUrgent = s.IsUrgent,
-                    IncludeVAT = true, // nếu bạn chưa có cột, gán mặc định
-                    Price2Samples = s.PriceDetails.FirstOrDefault().Price2Samples,
-                    Price3Samples = s.PriceDetails.FirstOrDefault().Price3Samples,
-                    TimeToResult = s.PriceDetails.FirstOrDefault().TimeToResult
-                })
-                .ToList();
-
-            return services;
-        }
+        
 
     }
 }

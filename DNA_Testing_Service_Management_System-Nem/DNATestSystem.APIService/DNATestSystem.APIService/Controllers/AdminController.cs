@@ -45,11 +45,11 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpGet("getIsPublishedService")]
-        public List<ServiceSummaryDto> GetServiceSummaries()
+        [HttpPost("create-service")]
+        public IActionResult CreateNewService([FromBody] ServiceCreateModel model)
         {
-            var data = _adminService.GetPublishedService();
-            return data;
+            var serviceId = _adminService.CreateServiceMethod(model);
+            return Ok(new { message = "Tạo service thành công", serviceId } );
         }
     }
 }

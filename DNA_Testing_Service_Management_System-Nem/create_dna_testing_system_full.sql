@@ -39,7 +39,7 @@ CREATE TABLE Users (
   RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
   CreatedAt DATETIME,
   UpdatedAt DATETIME,
-  Status varchar(50)
+  Status INT
 );
 GO
 
@@ -92,8 +92,9 @@ CREATE TABLE Services (
   Category NVARCHAR(50),
   NumberSample TINYINT DEFAULT 1,
   IsUrgent BIT DEFAULT 0,
-  CreatedAt DATETIME DEFAULT GETDATE(),+
-  UpdatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE(),
+  UpdatedAt DATETIME,
+  IsPublished BIT DEFAULT 0
 );
 GO
 --ALTER TABLE Services ADD Slug NVARCHAR(100);
@@ -108,7 +109,8 @@ CREATE TABLE PriceDetails (
   Price3Samples DECIMAL(18,2),
   TimeToResult NVARCHAR(50),
   CreatedAt DATETIME DEFAULT GETDATE(),
-  UpdatedAt DATETIME
+  UpdatedAt DATETIME,
+  IncludeVAT BIT DEFAULT 0
 );
 GO
 

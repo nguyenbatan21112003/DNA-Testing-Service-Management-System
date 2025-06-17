@@ -40,7 +40,7 @@ namespace DNATestSystem.Controllers
             return Ok(new { message = "Đăng ký thành công", id });
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginModel users)
         {
             //if (!ModelState.IsValid)
@@ -68,6 +68,7 @@ namespace DNATestSystem.Controllers
 
         }
         [HttpPost("refresh-token")]
+        
         public IActionResult RefreshToken()
         {
             var isExist = HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
@@ -96,20 +97,21 @@ namespace DNATestSystem.Controllers
             return Ok(accessToken);
         }
 
-        [HttpPost("/logout")]
+        [HttpPost("logout")]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            HttpContext.Response.Cookies.Delete("refreshToken");
             return Ok();
         }
-        [HttpGet("/services")]
-        public List<ServiceSummaryDto> getAllService()
+        [HttpGet("services")]
+        public IActionResult getAllService()
         {
             var data = _userService.GetService();
-            return data;
+            return Ok(data);
 
         }
-        [HttpGet("/services{id}")]
+        [HttpGet("services/{id}")]
         public IActionResult getServiceById(int id)
         {
             var service = _userService.GetServiceById(id);
@@ -118,13 +120,14 @@ namespace DNATestSystem.Controllers
 
             return Ok(service);
         }
-        [HttpGet("/blogPost")]
-        public List<BlogPostModel> getAllBlogPsot()
+        [HttpGet("blogPost")]
+        public IActionResult getAllBlogPsot()
         {
             var data = _userService.GetAllBlogPosts();   
-            return data;
+            return Ok(data);
         }
-        [HttpGet("/blogPost{Slug}")]
+
+        [HttpGet("blogPost/{Slug}")]
         public IActionResult getBlogPostBySlug(string Slug)
         {
             var Blog = _userService.GetBlogPostDetailsModel(Slug);

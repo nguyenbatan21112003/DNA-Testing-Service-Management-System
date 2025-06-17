@@ -74,8 +74,10 @@ namespace DNATestSystem.Services.Service
             {
                 new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
                 new Claim(ClaimTypes.Email , user.Email),
-                new Claim(ClaimTypes.Role , user.RoleId.ToString())
+               new Claim(ClaimTypes.Role , user.RoleId?.ToString() ?? "0")
             };
+
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var token = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
@@ -164,7 +166,7 @@ namespace DNATestSystem.Services.Service
                                 Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
                                 TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
                             }) .ToList();
-            return services;                     
+            return services;              
         }
 
         public ServiceSummaryDetailsModel GetServiceById(int id)

@@ -17,6 +17,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "CreateNewService",
+    "RelativePath": "Admin/create-service",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
     "Method": "CreateStaff",
     "RelativePath": "Admin/create-staff",
     "HttpMethod": "POST",
@@ -50,27 +66,17 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "getAllBlogPsot",
-    "RelativePath": "blogPost",
+    "RelativePath": "user/blogPost",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[DNATestSystem.BusinessObjects.Application.Dtos.Service.BlogPostModel, DNATestSystem.BusinessObjects, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "getBlogPostBySlug",
-    "RelativePath": "blogPost{Slug}",
+    "RelativePath": "user/blogPost/{Slug}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -86,7 +92,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Login",
-    "RelativePath": "login",
+    "RelativePath": "user/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -102,47 +108,11 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "Logout",
-    "RelativePath": "logout",
+    "RelativePath": "user/logout",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "getAllService",
-    "RelativePath": "services",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceSummaryDto, DNATestSystem.BusinessObjects, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "DNATestSystem.Controllers.UserController",
-    "Method": "getServiceById",
-    "RelativePath": "services{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
     "ReturnTypes": []
   },
   {
@@ -166,6 +136,32 @@
       {
         "Name": "users",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getAllService",
+    "RelativePath": "user/services",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "getServiceById",
+    "RelativePath": "user/services/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],

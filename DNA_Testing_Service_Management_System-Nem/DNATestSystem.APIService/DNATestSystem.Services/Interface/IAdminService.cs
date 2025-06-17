@@ -13,8 +13,8 @@ namespace DNATestSystem.Services.Interface
         int CreateStaff(StaffCreateModel staff);
         int CreateManager(ManagerCreateModel manager);
         void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate);
-
-        List<ServiceSummaryDto> GetPublishedService();
+        //Service
+        int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
     }
 }
             

@@ -99,6 +99,37 @@
         }
       }
     },
+    "/Admin/create-service": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCreateModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCreateModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceCreateModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/user/register": {
       "post": {
         "tags": [
@@ -130,7 +161,7 @@
         }
       }
     },
-    "/login": {
+    "/user/login": {
       "post": {
         "tags": [
           "User"
@@ -173,7 +204,7 @@
         }
       }
     },
-    "/logout": {
+    "/user/logout": {
       "post": {
         "tags": [
           "User"
@@ -185,45 +216,19 @@
         }
       }
     },
-    "/services": {
+    "/user/services": {
       "get": {
         "tags": [
           "User"
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceSummaryDto"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceSummaryDto"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceSummaryDto"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/services{id}": {
+    "/user/services/{id}": {
       "get": {
         "tags": [
           "User"
@@ -246,45 +251,19 @@
         }
       }
     },
-    "/blogPost": {
+    "/user/blogPost": {
       "get": {
         "tags": [
           "User"
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BlogPostModel"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BlogPostModel"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BlogPostModel"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
     },
-    "/blogPost{Slug}": {
+    "/user/blogPost/{Slug}": {
       "get": {
         "tags": [
           "User"
@@ -309,36 +288,6 @@
   },
   "components": {
     "schemas": {
-      "BlogPostModel": {
-        "type": "object",
-        "properties": {
-          "postId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "slug": {
-            "type": "string",
-            "nullable": true
-          },
-          "summary": {
-            "type": "string",
-            "nullable": true
-          },
-          "thumbnailURL": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "ManagerCreateModel": {
         "type": "object",
         "properties": {
@@ -375,18 +324,18 @@
         "type": "integer",
         "format": "int32"
       },
-      "ServiceSummaryDto": {
+      "ServiceCreateModel": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+          "serviceName": {
+            "type": "string",
+            "nullable": true
           },
           "slug": {
             "type": "string",
             "nullable": true
           },
-          "serviceName": {
+          "description": {
             "type": "string",
             "nullable": true
           },
@@ -394,25 +343,16 @@
             "type": "string",
             "nullable": true
           },
+          "numberSample": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "isUrgent": {
             "type": "boolean"
           },
-          "includeVAT": {
+          "isPublished": {
             "type": "boolean"
-          },
-          "price2Samples": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "price3Samples": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "timeToResult": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
