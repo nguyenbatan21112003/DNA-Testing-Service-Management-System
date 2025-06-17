@@ -421,3 +421,93 @@ const CustomerFeedbackManager = () => {
                                         </span>
                                     </div>
                                 </div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>Nội dung phản hồi</div>
+                                    <div
+                                        style={{
+                                            padding: "12px",
+                                            background: "#f9f9f9",
+                                            borderRadius: "8px",
+                                            border: "1px solid #e8e8e8",
+                                            fontSize: "14px",
+                                            lineHeight: "1.5",
+                                        }}
+                                    >
+                                        {feedback.comment}
+                                    </div>
+                                </div>
+
+                                {feedback.response && (
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>Phản hồi của chúng tôi</div>
+                                        <div
+                                            style={{
+                                                padding: "12px",
+                                                background: "#f0f5ff",
+                                                borderRadius: "8px",
+                                                border: "1px solid #d6e4ff",
+                                                fontSize: "14px",
+                                                lineHeight: "1.5",
+                                            }}
+                                        >
+                                            {feedback.response}
+                                        </div>
+                                        <div style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>
+                                            Phản hồi bởi: <strong>{feedback.responseBy}</strong> vào {feedback.responseDate}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {feedback.actionPlan && (
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "8px" }}>Kế hoạch hành động</div>
+                                        <div
+                                            style={{
+                                                padding: "12px",
+                                                background: "#fff7e6",
+                                                borderRadius: "8px",
+                                                border: "1px solid #ffe58f",
+                                                fontSize: "14px",
+                                                lineHeight: "1.5",
+                                            }}
+                                        >
+                                            {feedback.actionPlan}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                {feedback.responseStatus === "Chưa phản hồi" && (
+                                    <button
+                                        onClick={() => handleResponseFeedback(feedback)}
+                                        style={{
+                                            padding: "8px 16px",
+                                            background: "#722ed1",
+                                            color: "#fff",
+                                            border: "none",
+                                            borderRadius: "6px",
+                                            cursor: "pointer",
+                                            fontWeight: "600",
+                                            fontSize: "14px",
+                                        }}
+                                    >
+                                        💬 Phản hồi
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => window.open(`tel:${feedback.phone}`)}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "#52c41a",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        fontWeight: "600",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    📞 Gọi
+                                </button>
