@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects;
 using DNATestSystem.BusinessObjects.Application.Dtos.Admin;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Entities.Enum;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Hepler;
 using DNATestSystem.Services.Interface;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 
@@ -83,5 +85,27 @@ namespace DNATestSystem.Services.Service
 
             _context.SaveChanges();
         }
+        public List<ServiceSummaryDto> GetPublishedService()
+        {
+            var services = _context.Services
+                .Include(s => s.PriceDetails)
+                 .Where(s => s.IsPublished)
+                .Select(s => new ServiceSummaryDto
+                {
+                    Id = s.ServiceId,
+                    Slug = s.Slug,
+                    ServiceName = s.ServiceName,
+                    Category = s.Category,
+                    IsUrgent = s.IsUrgent,
+                    IncludeVAT = true, // nếu bạn chưa có cột, gán mặc định
+                    Price2Samples = s.PriceDetails.FirstOrDefault().Price2Samples,
+                    Price3Samples = s.PriceDetails.FirstOrDefault().Price3Samples,
+                    TimeToResult = s.PriceDetails.FirstOrDefault().TimeToResult
+                })
+                .ToList();
+
+            return services;
+        }
+
     }
 }

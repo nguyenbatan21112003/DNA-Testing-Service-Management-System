@@ -1,7 +1,9 @@
 ﻿using DNATestSystem.APIService.ActionFilter;
 using DNATestSystem.BusinessObjects.Application.Dtos.Admin;
+using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Entities.Enum;
 using DNATestSystem.Services.Interface;
+using DNATestSystem.Services.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace DNATestSystem.APIService.Controllers
@@ -42,6 +44,12 @@ namespace DNATestSystem.APIService.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+        [HttpGet("getIsPublishedService")]
+        public List<ServiceSummaryDto> GetServiceSummaries()
+        {
+            var data = _adminService.GetPublishedService();
+            return data;
         }
     }
 }

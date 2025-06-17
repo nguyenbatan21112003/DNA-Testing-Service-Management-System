@@ -19,6 +19,8 @@ public partial class Service
 
     public bool IsUrgent { get; set; }
 
+    public bool IsPublished {  get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

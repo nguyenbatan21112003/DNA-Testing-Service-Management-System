@@ -98,6 +98,7 @@ CREATE TABLE Services (
 GO
 --ALTER TABLE Services ADD Slug NVARCHAR(100);
 --ALTER TABLE Services ADD IsUrgent BIT DEFAULT 0;
+--AlTER TABLE Services ADD IsPublished BIT DEFAULT 0 ;
 GO
 
 CREATE TABLE PriceDetails (
