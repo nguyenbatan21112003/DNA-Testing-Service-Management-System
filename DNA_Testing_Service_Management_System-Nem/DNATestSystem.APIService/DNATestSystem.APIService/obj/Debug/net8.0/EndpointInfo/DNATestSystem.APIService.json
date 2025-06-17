@@ -122,6 +122,18 @@
         }
       }
     },
+    "/Admin/getUser": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/PriceDetailConoller": {
       "post": {
         "tags": [

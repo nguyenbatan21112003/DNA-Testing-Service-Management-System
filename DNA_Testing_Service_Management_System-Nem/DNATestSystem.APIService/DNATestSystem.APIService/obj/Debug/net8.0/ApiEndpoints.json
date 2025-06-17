@@ -49,6 +49,16 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
+    "Method": "GetAllUser",
+    "RelativePath": "Admin/getUser",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
     "Method": "UpdateUserRoleAndStatus",
     "RelativePath": "Admin/update-role-status",
     "HttpMethod": "PUT",
