@@ -304,3 +304,120 @@ const CustomerFeedbackManager = () => {
                     </button>
                 ))}
             </div>
+            {/* Feedbacks List */}
+            <div style={{ display: "grid", gap: "16px" }}>
+                {getFilteredFeedbacks().map((feedback) => (
+                    <div
+                        key={feedback.id}
+                        style={{
+                            background: "#fff",
+                            padding: "24px",
+                            borderRadius: "12px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            border: "1px solid #f0f0f0",
+                            borderLeft: `4px solid ${getPriorityColor(feedback.priority)}`,
+                        }}
+                    >
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "20px", alignItems: "start" }}>
+                            <div>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                                    <h3 style={{ margin: 0, color: "#722ed1", fontSize: "18px" }}>{feedback.customerName}</h3>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                        {"⭐".repeat(feedback.rating)}
+                                        <span
+                                            style={{
+                                                marginLeft: "8px",
+                                                color: getRatingColor(feedback.rating),
+                                                fontWeight: "600",
+                                            }}
+                                        >
+                                            {feedback.rating}/5
+                                        </span>
+                                    </div>
+                                    <span
+                                        style={{
+                                            padding: "4px 12px",
+                                            borderRadius: "16px",
+                                            fontSize: "12px",
+                                            fontWeight: "600",
+                                            background:
+                                                feedback.priority === "Cao"
+                                                    ? "#fff2f0"
+                                                    : feedback.priority === "Trung bình"
+                                                        ? "#fff7e6"
+                                                        : "#f6ffed",
+                                            color: getPriorityColor(feedback.priority),
+                                        }}
+                                    >
+                                        {feedback.priority}
+                                    </span>
+                                    <span
+                                        style={{
+                                            padding: "4px 12px",
+                                            borderRadius: "16px",
+                                            fontSize: "12px",
+                                            fontWeight: "600",
+                                            background:
+                                                feedback.category === "Khiếu nại"
+                                                    ? "#fff2f0"
+                                                    : feedback.category === "Khen ngợi"
+                                                        ? "#f6ffed"
+                                                        : "#f0f5ff",
+                                            color:
+                                                feedback.category === "Khiếu nại"
+                                                    ? "#ff4d4f"
+                                                    : feedback.category === "Khen ngợi"
+                                                        ? "#52c41a"
+                                                        : "#1890ff",
+                                        }}
+                                    >
+                                        {feedback.category}
+                                    </span>
+                                </div>
+
+                                <div
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                                        gap: "16px",
+                                        marginBottom: "16px",
+                                    }}
+                                >
+                                    <div>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Loại dịch vụ</div>
+                                        <div style={{ fontWeight: "600" }}>{feedback.orderType}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Liên hệ</div>
+                                        <div style={{ fontWeight: "600" }}>{feedback.phone}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Ngày phản hồi</div>
+                                        <div style={{ fontWeight: "600" }}>{feedback.date}</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Trạng thái</div>
+                                        <span
+                                            style={{
+                                                padding: "4px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "600",
+                                                background:
+                                                    feedback.status === "Đã giải quyết"
+                                                        ? "#f6ffed"
+                                                        : feedback.status === "Đang xử lý"
+                                                            ? "#fff7e6"
+                                                            : "#f0f5ff",
+                                                color:
+                                                    feedback.status === "Đã giải quyết"
+                                                        ? "#52c41a"
+                                                        : feedback.status === "Đang xử lý"
+                                                            ? "#faad14"
+                                                            : "#1890ff",
+                                            }}
+                                        >
+                                            {feedback.status}
+                                        </span>
+                                    </div>
+                                </div>
