@@ -22,10 +22,10 @@ namespace DNATestSystem.Services.Service
     {
         private readonly IApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
-        public AdminService(IApplicationDbContext applicationDbContext 
-                            , IOptions<JwtSettings> jwtSettings) 
+        public AdminService(IApplicationDbContext applicationDbContext
+                            , IOptions<JwtSettings> jwtSettings)
         {
-            _context = applicationDbContext;    
+            _context = applicationDbContext;
             _jwtSettings = jwtSettings.Value;
         }
 
@@ -86,13 +86,11 @@ namespace DNATestSystem.Services.Service
                 Status = (int)StatusNum.Verified
             };
 
-            _context.Users.Add(data);               
+            _context.Users.Add(data);
             _context.SaveChanges();
 
-            return data.UserId;             
+            return data.UserId;
         }
-
-        
 
         public void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate)
         {
@@ -137,6 +135,7 @@ namespace DNATestSystem.Services.Service
             _context.SaveChanges();
             return 1;
         }
+
         public int CreatePriceDetail(PriceDetailsModel model)
         {
             var price = new PriceDetail
@@ -153,6 +152,20 @@ namespace DNATestSystem.Services.Service
             _context.SaveChanges();
             return price.PriceId;
         }
+
+        public void UpdatePriceDetailMethod(int id, PriceDetailsModel priceDetailsModel)
+        {
+            var price = _context.PriceDetails.FirstOrDefault(p => p.PriceId == id);
+            if (price == null) throw new Exception("PriceDetail not found");
+
+            price.Price2Samples = priceDetailsModel.Price2Samples;
+            price.Price3Samples = priceDetailsModel.Price3Samples;
+            price.TimeToResult = priceDetailsModel.TimeToResult;
+            price.IncludeVAT = priceDetailsModel.IncludeVAT;
+            price.UpdatedAt = DateTime.UtcNow;
+
+            _context.SaveChanges();
+        } 
 
     }
 }
