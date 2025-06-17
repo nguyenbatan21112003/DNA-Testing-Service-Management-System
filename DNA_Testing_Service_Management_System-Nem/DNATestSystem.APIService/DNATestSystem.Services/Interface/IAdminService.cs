@@ -19,7 +19,7 @@ namespace DNATestSystem.Services.Interface
         //PriceDetails
         int CreatePriceDetailMethod(PriceDetailsModel priceDetailModel);
         void UpdatePriceDetailMethod(int id , PriceDetailsModel priceDetailsModel);
-
+        void DeletePriceDetailMethod(int id);
     }
 }
             

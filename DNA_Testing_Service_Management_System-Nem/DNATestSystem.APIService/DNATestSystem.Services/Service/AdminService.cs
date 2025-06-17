@@ -136,15 +136,15 @@ namespace DNATestSystem.Services.Service
             return 1;
         }
 
-        public int CreatePriceDetail(PriceDetailsModel model)
+        public int CreatePriceDetailMethod(PriceDetailsModel priceDetailModel)
         {
             var price = new PriceDetail
             {
-                ServiceId = model.ServiceId,
-                Price2Samples = model.Price2Samples,
-                Price3Samples = model.Price3Samples,
-                TimeToResult = model.TimeToResult,
-                IncludeVAT = model.IncludeVAT,
+                ServiceId = priceDetailModel.ServiceId,
+                Price2Samples = priceDetailModel.Price2Samples,
+                Price3Samples = priceDetailModel.Price3Samples,
+                TimeToResult = priceDetailModel.TimeToResult,
+                IncludeVAT = priceDetailModel.IncludeVAT,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -165,7 +165,15 @@ namespace DNATestSystem.Services.Service
             price.UpdatedAt = DateTime.UtcNow;
 
             _context.SaveChanges();
-        } 
+        }
 
+        public void DeletePriceDetailMethod(int id)
+        {
+            var priceDetails = _context.PriceDetails.FirstOrDefault(p => p.PriceId==id);
+            if (priceDetails == null) throw new Exception("PriceDetail not found");
+
+            _context.PriceDetails.Remove(priceDetails);
+            _context.SaveChanges();
+        }
     }
 }
