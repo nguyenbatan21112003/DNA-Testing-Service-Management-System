@@ -107,7 +107,7 @@ namespace DNATestSystem.Controllers
         [HttpGet("services")]
         public IActionResult getAllService()
         {
-            var data = _userService.GetService();
+            var data = _userService.GetServiceForUser();
             return Ok(data);
 
         }
@@ -123,7 +123,7 @@ namespace DNATestSystem.Controllers
         [HttpGet("blogPost")]
         public IActionResult getAllBlogPsot()
         {
-            var data = _userService.GetAllBlogPosts();   
+            var data = _userService.GetServiceForUser();   
             return Ok(data);
         }
 

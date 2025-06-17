@@ -149,16 +149,18 @@ namespace DNATestSystem.Services.Service
             _context.SaveChanges();
         }
 
-        public List<ServiceSummaryDto> GetService()
+        public List<ServiceSummaryDto> GetServiceForUser()
         {
             var services = _context.Services
                             .Include(s => s.PriceDetails)
                             .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
+                            .Where(x => x.IsPublished == true)
                             .Select(s => new ServiceSummaryDto
                             {
                                 Id = s.ServiceId,
                                 Slug = s.Slug,
                                 ServiceName = s.ServiceName,
+                                Description = s.Description,
                                 Category = s.Category,
                                 IsUrgent = false, // gán cứng nếu chưa có
                                 IncludeVAT = true,
@@ -194,11 +196,11 @@ namespace DNATestSystem.Services.Service
             };
         }
 
-        public List<BlogPostModel> GetAllBlogPosts()
+        public List<BlogPostModel> GetAllBlogForUser()
         {
             var blogPosts = _context.BlogPosts
                  .Include(p => p.Author)
-                 .Where(p => (bool)p.IsPublished)
+                 .Where(p => (bool)p.IsPublished == true)
                  .Select(p => new BlogPostModel
                  {
                      PostId = p.PostId,

@@ -260,7 +260,7 @@
       }
     },
     "/Service/delete-service/{id}": {
-      "delete": {
+      "put": {
         "tags": [
           "Service"
         ],
@@ -532,6 +532,21 @@
             "type": "boolean"
           },
           "isPublished": {
+            "type": "boolean"
+          },
+          "price2Samples": {
+            "type": "number",
+            "format": "double"
+          },
+          "price3Samples": {
+            "type": "number",
+            "format": "double"
+          },
+          "timeToResult": {
+            "type": "string",
+            "nullable": true
+          },
+          "includeVAT": {
             "type": "boolean"
           }
         },

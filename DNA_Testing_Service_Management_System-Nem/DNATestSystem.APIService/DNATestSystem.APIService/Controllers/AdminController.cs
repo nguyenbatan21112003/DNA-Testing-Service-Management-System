@@ -66,5 +66,8 @@ namespace DNATestSystem.APIService.Controllers
             var users = _adminService.getAllUser();
             return Ok(users);
         }
+
+        
+
     }
 }

@@ -144,9 +144,9 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ServiceController",
-    "Method": "DeleteService",
+    "Method": "SoftDeleteService",
     "RelativePath": "Service/delete-service/{id}",
-    "HttpMethod": "DELETE",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [

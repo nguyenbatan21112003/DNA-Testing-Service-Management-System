@@ -11,6 +11,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Service
         public int Id { get; set; }
         public string? Slug { get; set; }
         public string? ServiceName { get; set; }
+        public string? Description { get; set; }
         public string? Category { get; set; }
         public bool IsUrgent { get; set; }
         public bool IncludeVAT { get; set; } = true;

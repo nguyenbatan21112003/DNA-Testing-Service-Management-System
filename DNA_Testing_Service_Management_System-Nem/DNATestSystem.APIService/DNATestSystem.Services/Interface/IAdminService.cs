@@ -11,13 +11,17 @@ namespace DNATestSystem.Services.Interface
 {
     public interface IAdminService
     {
+        //Staff and manager
         int CreateStaff(StaffCreateModel staff);
         int CreateManager(ManagerCreateModel manager);
         void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate);
         //Service
         int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
         int DeleteServiceMethod(int id);
+        int DeleteServiceMethodByIsPublished(int serviceId);
         int BanUserById(int id);
+        List<ServiceSummaryDto> GetServiceForAdmin();
+        //User
         List<UserShowModel> getAllUser();
     }
 }

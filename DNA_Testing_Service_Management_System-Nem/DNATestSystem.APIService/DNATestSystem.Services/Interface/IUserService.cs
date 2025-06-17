@@ -19,10 +19,10 @@ namespace DNATestSystem.Services.Interface
         User GetUserByRefreshToken(string refreshToken);
         void DeleteOldRefreshToken(string refreshToken);
         void DeleteOldRefreshToken(int userId);
-        List<ServiceSummaryDto> GetService();
+        List<ServiceSummaryDto> GetServiceForUser();
         ServiceSummaryDetailsModel  GetServiceById(int id);
 
-        List<BlogPostModel> GetAllBlogPosts();
+        List<BlogPostModel> GetAllBlogForUser();
         BlogPostDetailsModel GetBlogPostDetailsModel(string Slug);
     }
 }

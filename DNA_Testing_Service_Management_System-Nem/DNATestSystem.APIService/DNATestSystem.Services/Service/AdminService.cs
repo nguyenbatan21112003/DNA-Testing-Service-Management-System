@@ -65,7 +65,21 @@ namespace DNATestSystem.Services.Service
                 IsPublished = serviceCreateModel.IsPublished,
                 CreatedAt = DateTime.UtcNow,
             };
+
             _context.Services.Add(newService);
+            _context.SaveChanges(); // Lưu trước để có ServiceId
+
+            var priceDetail = new PriceDetail
+            {
+                ServiceId = newService.ServiceId,
+                Price2Samples = serviceCreateModel.Price2Samples,
+                Price3Samples = serviceCreateModel.Price3Samples,
+                TimeToResult = serviceCreateModel.TimeToResult,
+                IncludeVAT = serviceCreateModel.IncludeVAT,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.PriceDetails.Add(priceDetail);
             _context.SaveChanges();
 
             return newService.ServiceId;
@@ -155,6 +169,41 @@ namespace DNATestSystem.Services.Service
                 Status = u.Status,
                 CreatedAt = u.CreatedAt
             }).ToList();
+        }
+
+        public int DeleteServiceMethodByIsPublished(int serviceId)
+        {
+            var service = _context.Services
+               .FirstOrDefault(x => x.ServiceId == serviceId);
+            if (service == null)
+            {
+                return -2;
+            }
+            service.IsPublished = false;
+            service.UpdatedAt = DateTime.UtcNow;
+
+            _context.SaveChanges();
+            return service.ServiceId;
+        }
+        //hàm này để in hết service, bao gốm những tk bị xóa isPublished = false
+        public List<ServiceSummaryDto> GetServiceForAdmin()
+        {
+            var services = _context.Services
+                            .Include(s => s.PriceDetails)
+                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
+                            .Select(s => new ServiceSummaryDto
+                            {
+                                Id = s.ServiceId,
+                                Slug = s.Slug,
+                                ServiceName = s.ServiceName,
+                                Category = s.Category,
+                                IsUrgent = false, // gán cứng nếu chưa có
+                                IncludeVAT = true,
+                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
+                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
+                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
+                            }).ToList();
+            return services;
         }
     }
 }
