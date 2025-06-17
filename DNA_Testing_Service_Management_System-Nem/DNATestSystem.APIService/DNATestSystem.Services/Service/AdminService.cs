@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects;
 using DNATestSystem.BusinessObjects.Application.Dtos.Admin;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Entities.Enum;
 using DNATestSystem.BusinessObjects.Models;
@@ -105,18 +106,7 @@ namespace DNATestSystem.Services.Service
             user.UpdatedAt = DateTime.UtcNow;
             _context.SaveChanges();
         }
-        //public int DeleteUserMethod(int id)
-        //{
-        // sẽ xem xét lại xem có nên xóa kiểu này hay là chỉ nên ban
-        //    var user = _context.Users.FirstOrDefault(u => u.UserId == id);
-        //    if (user == null)
-        //        throw new Exception("Người dùng không tồn tại");
-        //    if (user.RoleId == (int)RoleNum.Admin)
-        //        throw new Exception("Không thể chỉnh sửa quyền của Admin khác.");
-        //    _context.Users.Remove(user);
-        //    _context.SaveChanges();
-        //    return 1;
-        //}
+   
         public int DeleteServiceMethod(int service_id)
         {
             var service = _context.Services
@@ -136,6 +126,35 @@ namespace DNATestSystem.Services.Service
             return 1;
         }
 
-       
+        public int BanUserById(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.UserId == id);
+            if (user == null)
+            {
+                return -2;
+            }
+            user.Status = (int)StatusNum.Banned;
+            user.UpdatedAt = DateTime.UtcNow;
+
+
+            _context.SaveChanges();
+            return user.UserId;
+        }
+
+        public List<UserShowModel> getAllUser()
+        {
+            return _context.Users
+            .Select(u => new UserShowModel
+            {
+                UserId = u.UserId,
+                FullName = u.FullName,
+                RoleId = u.RoleId,
+                Phone = u.Phone,
+                Email = u.Email,
+                Status = u.Status,
+                CreatedAt = u.CreatedAt
+            }).ToList();
+        }
     }
 }

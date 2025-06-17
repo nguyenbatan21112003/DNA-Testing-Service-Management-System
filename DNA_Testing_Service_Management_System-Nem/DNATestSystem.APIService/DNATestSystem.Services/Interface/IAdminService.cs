@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.BusinessObjects.Application.Dtos.Admin;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.User;
 namespace DNATestSystem.Services.Interface
 {
     public interface IAdminService
@@ -16,7 +17,8 @@ namespace DNATestSystem.Services.Interface
         //Service
         int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
         int DeleteServiceMethod(int id);
-        
+        int BanUserById(int id);
+        List<UserShowModel> getAllUser();
     }
 }
             

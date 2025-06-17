@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNATestSystem.Repositories")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3f0d29bf16d83ad3ee7dd5997b586dcb0614e2a8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0345067b4799e2a5d82e8f21a34116e3582331ba")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNATestSystem.Repositories")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNATestSystem.Repositories")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

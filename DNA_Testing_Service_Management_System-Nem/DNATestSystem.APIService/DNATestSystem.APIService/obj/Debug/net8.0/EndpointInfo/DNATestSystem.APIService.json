@@ -99,10 +99,127 @@
         }
       }
     },
-    "/Admin/create-service": {
-      "post": {
+    "/Admin/ban-user/{id}": {
+      "put": {
         "tags": [
           "Admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/PriceDetailConoller": {
+      "post": {
+        "tags": [
+          "PriceDetailConoller"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/PriceDetailConoller/{id}": {
+      "put": {
+        "tags": [
+          "PriceDetailConoller"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceDetailsModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "PriceDetailConoller"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Service/create-service": {
+      "post": {
+        "tags": [
+          "Service"
         ],
         "requestBody": {
           "content": {
@@ -123,6 +240,29 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Service/delete-service/{id}": {
+      "delete": {
+        "tags": [
+          "Service"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -309,6 +449,34 @@
           },
           "status": {
             "$ref": "#/components/schemas/StatusNum"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PriceDetailsModel": {
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price2Samples": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "price3Samples": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "timeToResult": {
+            "type": "string",
+            "nullable": true
+          },
+          "includeVAT": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false

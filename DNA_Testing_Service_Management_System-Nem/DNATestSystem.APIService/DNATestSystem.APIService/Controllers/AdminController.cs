@@ -45,20 +45,21 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpDelete("delete-user/{id}")]
-        public IActionResult DeleteAccountById(int id)
+
+        [HttpPut("ban-user/{id}")]
+        public IActionResult BanUser(int id)
         {
             try
             {
-                var result = _adminService.DeleteServiceMethod(id);
-                return Ok(new { message = "Xoá người dùng thành công", result });
+                var userId = _adminService.BanUserById(id);
+                return Ok(new { message = "Đã khóa tài khoản thành công", userId });
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
-       
+
 
     }
 }
