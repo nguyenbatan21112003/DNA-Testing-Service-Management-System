@@ -54,15 +54,19 @@ const UserProfile = () => {
   const [otpInput, setOtpInput] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("Tất cả");
+  const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const [ratingInput, setRatingInput] = useState(0);
   const [feedbackInput, setFeedbackInput] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState("");
 
+  const [kitToast, setKitToast] = useState("");
+  const [fileToast, setFileToast] = useState("");
   const [collapsed, setCollapsed] = useState(false);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
 
   // Thêm state cho modal feedback
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -169,6 +173,7 @@ const UserProfile = () => {
         background: "#f5f6fa",
         margin: 0,
         padding: 0,
+
       }}
     >
       {/* Sidebar giống admin */}
@@ -257,6 +262,7 @@ const UserProfile = () => {
             )}
           </span>
         </div>
+
         {/* Tabs + Logout */}
         <div
           style={{

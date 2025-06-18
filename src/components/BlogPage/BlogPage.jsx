@@ -6,7 +6,6 @@ import { Search, Calendar, User, Tag, ChevronRight } from "lucide-react";
 import "../../Css/Blog.css";
 
 const POSTS_PER_PAGE = 6;
-
 const BlogPage = ({ blogData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -37,6 +36,7 @@ const BlogPage = ({ blogData }) => {
 
   // Lấy danh sách các danh mục duy nhất
   const categories = ["all", ...new Set(blogData.map((post) => post.category))];
+
 
   // Phân trang
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
@@ -86,6 +86,17 @@ const BlogPage = ({ blogData }) => {
         <div className="blog-content">
           {/* Thanh tìm kiếm và lọc */}
           <div className="blog-filters">
+
+            <div className="search-box">
+              <Search size={20} />
+              <input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
             <div className="category-filters">
               {categories.map((category, index) => (
                 <button
@@ -113,18 +124,53 @@ const BlogPage = ({ blogData }) => {
                   onClick={() => navigate(`/tintuc/${post.id}`)}
                 >
                   <div className="blog-card-image">
+
                     <img
                       src={post.image || "/placeholder.svg"}
                       alt={post.title}
                     />
                   </div>
-                  <div className="blog-card-title">{post.title}</div>
-                  <div className="blog-card-excerpt">{post.excerpt}</div>
+
+                  <div className="blog-item-content">
+                    <div className="blog-item-meta">
+                      <span className="blog-category">{post.category}</span>
+                      <span className="blog-date">
+                        <Calendar size={14} />
+                        {post.date}
+                      </span>
+                      <span className="blog-author">
+                        <User size={14} />
+                        {post.author}
+                      </span>
+                    </div>
+                    <h2
+                      className="blog-item-title"
+                      onClick={() => navigate(`/tintuc/${post.id}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {post.title}
+                    </h2>
+                    <p className="blog-item-excerpt">{post.excerpt}</p>
+                    <div className="blog-item-tags">
+                      {post.tags.map((tag, index) => (
+                        <span key={index} className="blog-tag">
+                          <Tag size={14} />
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <button
+                      className="read-more-button"
+                      onClick={() => navigate(`/tintuc/${post.id}`)}
+                    >
+                      Đọc thêm <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
-              <div className="blog-no-results">
-                Không tìm thấy bài viết phù hợp với tìm kiếm của bạn.
+              <div className="no-results">
+                <p>Không tìm thấy bài viết phù hợp với tìm kiếm của bạn.</p>
               </div>
             )}
           </div>

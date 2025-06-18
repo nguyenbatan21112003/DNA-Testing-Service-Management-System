@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext, useRef, useEffect } from "react";
@@ -64,6 +65,7 @@ const Header = () => {
                 className={`nav-link ${
                   location.pathname === "/" ? "active" : ""
                 }`}
+
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trang chủ
@@ -115,7 +117,6 @@ const Header = () => {
             </li>
           </ul>
         </nav>
-
         <div className="header-buttons">
           {user ? (
             <div
@@ -157,6 +158,21 @@ const Header = () => {
                       onClick={() => setShowDropdown(false)}
                     >
                       Trang quản trị
+                    </Link>
+                  )}
+                  {user.role_id === 4 && (
+                    <Link
+                      to="/quanly"
+                      style={{
+                        display: "block",
+                        padding: "12px 20px",
+                        color: "#222",
+                        textDecoration: "none",
+                        fontWeight: 500,
+                      }}
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Quản lý
                     </Link>
                   )}
                   {user.role_id === 2 ? (

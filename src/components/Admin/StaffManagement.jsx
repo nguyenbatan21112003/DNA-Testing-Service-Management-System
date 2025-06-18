@@ -34,6 +34,7 @@ const StaffManagement = () => {
   const [editError, setEditError] = useState("");
   const [filterType, setFilterType] = useState("all"); // "all", "staff", "manager"
 
+
   useEffect(() => {
     fetchStaffs();
   }, []);
@@ -42,6 +43,7 @@ const StaffManagement = () => {
     setLoading(true);
     try {
       const res = await axios.get(API_URL);
+      
       // Lọc staff (role_id === 2) và manager (role_id === 4)
       setStaffs(res.data.filter((u) => u.role_id === 2 || u.role_id === 4));
     } catch {
@@ -167,6 +169,7 @@ const StaffManagement = () => {
     setEditError("");
     setEditModal(true);
   };
+
 
   const getModalTitle = (roleId) => {
     return roleId === 4 ? "Chỉnh sửa thông tin quản lý" : "Chỉnh sửa thông tin nhân viên";
@@ -389,6 +392,7 @@ const StaffManagement = () => {
         onCancel={() => setModalOpen(false)}
         footer={null}
         title={selectedStaff ? getDetailTitle(selectedStaff.role_id) : "Chi tiết"}
+
       >
         {selectedStaff && (
           <div style={{ lineHeight: 2 }}>
@@ -413,6 +417,7 @@ const StaffManagement = () => {
                 {selectedStaff.role_id === 4 ? "Quản lý" : "Nhân viên"}
               </span>
             </div>
+
             {/* Thêm các trường khác nếu có */}
           </div>
         )}
@@ -493,6 +498,7 @@ const StaffManagement = () => {
         okText="Lưu thay đổi"
         confirmLoading={editLoading}
         title={getModalTitle(editForm.role_id)}
+
         okButtonProps={{
           style: {
             background: "#1677ff",
