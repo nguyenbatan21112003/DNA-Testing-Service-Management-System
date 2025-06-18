@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Dna,
   FileText,
@@ -11,6 +10,10 @@ import {
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { useOrderContext } from "../../context/OrderContext";
+import { AuthContext } from "../../context/AuthContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const ServicesPage = () => {
   const [activeTab, setActiveTab] = useState("civil");
@@ -18,10 +21,13 @@ const ServicesPage = () => {
   const [category, setCategory] = useState("civil");
   const [serviceType, setServiceType] = useState("");
   const [sampleMethod, setSampleMethod] = useState("");
-  const { addOrder } = useOrderContext();
+  const { addOrder, pricingData } = useOrderContext();
+  const { user } = useContext(AuthContext);
   const [showToast, setShowToast] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [readGuide, setReadGuide] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState(null);
+
 
   const serviceOptions = {
     civil: [
@@ -65,6 +71,7 @@ const ServicesPage = () => {
     ],
     admin: [{ value: "center", label: "Tại trung tâm" }],
   };
+
 
   // Lấy ngày hôm nay theo định dạng yyyy-mm-dd
   const today = new Date();
@@ -114,14 +121,15 @@ const ServicesPage = () => {
       date: new Date().toLocaleDateString("vi-VN"),
       price: 0, // Có thể lấy giá từ bảng giá nếu muốn
       status: "Chờ xử lý",
-      name: form.fullName.value,
+      name: user ? user.fullName : form.fullName.value,
       phone: form.phone.value,
-      email: form.email.value,
+      email: user ? user.email : form.email.value,
       address: form.address.value,
-      appointmentDate: form.appointmentDate.value,
+      appointmentDate: appointmentDate ? appointmentDate.toLocaleDateString("vi-VN") : "",
       category: form.category.value,
       sampleMethod: form.sampleMethod.value,
       note: form.message.value,
+      userId: user ? user.user_id : null, // Lưu ID người dùng nếu đã đăng nhập
     };
     addOrder(newOrder);
     form.reset();
@@ -158,15 +166,17 @@ const ServicesPage = () => {
             <div className="services-tabs">
               <div className="tabs-header">
                 <button
-                  className={`tab-button ${activeTab === "civil" ? "active" : ""
-                    }`}
+                  className={`tab-button ${
+                    activeTab === "civil" ? "active" : ""
+                  }`}
                   onClick={() => handleTabChange("civil")}
                 >
                   Xét nghiệm ADN dân sự
                 </button>
                 <button
-                  className={`tab-button ${activeTab === "administrative" ? "active" : ""
-                    }`}
+                  className={`tab-button ${
+                    activeTab === "administrative" ? "active" : ""
+                  }`}
                   onClick={() => handleTabChange("administrative")}
                 >
                   Xét nghiệm ADN hành chính
@@ -492,48 +502,14 @@ const ServicesPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Xét nghiệm cha con</td>
-                        <td>4.500.000</td>
-                        <td>1.800.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm mẹ con</td>
-                        <td>4.500.000</td>
-                        <td>1.800.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm anh chị em ruột</td>
-                        <td>6.000.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm họ hàng</td>
-                        <td>7.500.000</td>
-                        <td>2.000.000</td>
-                        <td>7-10 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm nguồn gốc</td>
-                        <td>4.500.000</td>
-                        <td>2.000.000</td>
-                        <td>3-5 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm sức khỏe di truyền</td>
-                        <td>6.000.000</td>
-                        <td>2.000.000</td>
-                        <td>4-6 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm nhanh</td>
-                        <td>6.500.000</td>
-                        <td>3.000.000</td>
-                        <td>24-48 giờ</td>
-                      </tr>
+                      {pricingData && pricingData.civil && pricingData.civil.map((service) => (
+                        <tr key={service.id}>
+                          <td>{service.name}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.price)}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.additionalPrice)}</td>
+                          <td>{service.time}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <div className="pricing-note">
@@ -556,36 +532,14 @@ const ServicesPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Xét nghiệm ADN khai sinh</td>
-                        <td>6.500.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN di trú</td>
-                        <td>8.500.000</td>
-                        <td>2.000.000</td>
-                        <td>7-10 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN thừa kế</td>
-                        <td>7.500.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm ADN tranh chấp</td>
-                        <td>8.000.000</td>
-                        <td>2.000.000</td>
-                        <td>5-7 ngày</td>
-                      </tr>
-                      <tr>
-                        <td>Xét nghiệm hành chính nhanh</td>
-                        <td>10.000.000</td>
-                        <td>3.000.000</td>
-                        <td>48-72 giờ</td>
-                      </tr>
+                      {pricingData && pricingData.admin && pricingData.admin.map((service) => (
+                        <tr key={service.id}>
+                          <td>{service.name}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.price)}</td>
+                          <td>{new Intl.NumberFormat("vi-VN").format(service.additionalPrice)}</td>
+                          <td>{service.time}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <div className="pricing-note">
@@ -610,6 +564,28 @@ const ServicesPage = () => {
                 vụ xét nghiệm ADN. Chúng tôi sẽ liên hệ với bạn trong thời gian
                 sớm nhất.
               </p>
+              {!user && (
+                <div style={{ 
+                  background: "#f0f7ff", 
+                  border: "1px solid #d0e3ff", 
+                  borderRadius: "8px", 
+                  padding: "12px 16px", 
+                  marginTop: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px"
+                }}>
+                  <div style={{ color: "#0a66c2", fontSize: "18px" }}>ℹ️</div>
+                  <div>
+                    <p style={{ margin: 0, color: "#0a66c2", fontWeight: 500 }}>
+                      Đăng nhập để trải nghiệm tốt hơn
+                    </p>
+                    <p style={{ margin: "4px 0 0 0", fontSize: "14px" }}>
+                      Đăng nhập để thông tin của bạn được tự động điền vào biểu mẫu và dễ dàng theo dõi đơn đăng ký.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="service-form-container">
               {showToast && (
@@ -636,17 +612,48 @@ const ServicesPage = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="fullName">Họ và tên</label>
-                    <input type="text" id="fullName" name="fullName" required />
+                    <input 
+                      type="text" 
+                      id="fullName" 
+                      name="fullName" 
+                      required 
+                      defaultValue={user ? user.fullName : ""}
+                      style={user ? { backgroundColor: "#f9f9f9", color: "#333" } : {}}
+                    />
+                    {user && (
+                      <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                        Tự động điền từ tài khoản của bạn (có thể chỉnh sửa)
+                      </small>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="phone">Số điện thoại</label>
-                    <input type="tel" id="phone" name="phone" required />
+                    <input 
+                      type="tel" 
+                      id="phone" 
+                      name="phone" 
+                      required 
+                      defaultValue={user ? user.phone : ""}
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" required />
+                    <input 
+                      type="email" 
+                      id="email" 
+                      name="email" 
+                      required 
+                      defaultValue={user ? user.email : ""}
+                      readOnly={user ? true : false}
+                      style={user ? { backgroundColor: "#f5f5f5", color: "#333" } : {}}
+                    />
+                    {user && (
+                      <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                        Tự động điền từ tài khoản của bạn
+                      </small>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="address">Địa chỉ</label>
@@ -655,6 +662,7 @@ const ServicesPage = () => {
                       id="address"
                       name="address"
                       placeholder="Càng chi tiết càng tốt"
+                      defaultValue={user && user.address ? user.address : ""}
                     />
                   </div>
                 </div>
@@ -741,51 +749,23 @@ const ServicesPage = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="appointmentDate">Ngày xét nghiệm</label>
-                    <input
-                      type="date"
+                    <DatePicker
+                      selected={appointmentDate}
+                      onChange={date => setAppointmentDate(date)}
+                      minDate={new Date()}
+                      filterDate={date => date.getDay() !== 0}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Chọn ngày"
                       id="appointmentDate"
                       name="appointmentDate"
                       required
-                      min={minDate}
+                      className="form-control"
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <label htmlFor="message">Ghi chú thêm</label>
                   <textarea id="message" name="message" rows="4"></textarea>
-                </div>
-                {/* Link tải Đơn Yêu Cầu Xét Nghiệm luôn hiển thị */}
-                <div
-                  style={{
-                    margin: "18px 0 10px 0",
-                    background: "#f6f8fa",
-                    border: "1px solid #cce3d3",
-                    borderRadius: 8,
-                    padding: 20,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: "#009e74",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Tải Đơn Yêu Cầu Xét Nghiệm và hướng dẫn:
-                  </div>
-                  <div style={{ marginBottom: 6 }}>
-                    <a
-                      href="/DonYeuCauXetNghiem.docx"
-                      download
-                      style={{
-                        color: "#0a7cff",
-                        textDecoration: "underline",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Tải Đơn Yêu Cầu Xét Nghiệm
-                    </a>
-                  </div>
                 </div>
                 {/* Hướng dẫn tự thu mẫu tại nhà */}
                 {category === "civil" && sampleMethod === "home" && (

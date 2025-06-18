@@ -1,0 +1,49 @@
+{
+"name": "Jack Wilderman",
+"email": "Lorenz18@example.org",
+"phone": "544-335-688 x7352",
+"password": "0kcbgSDN4FhvAZz",
+"role_id": 1,
+"id": "1"
+},
+{
+"name": "Krystal Vandervort",
+"email": "Demario.Willms8k@example.org",
+"phone": "528-884-7157",
+"password": "ULF2EP00o64w0rH",
+"role_id": 1,
+"fullName": "An",
+"id": "2"
+},
+{
+"name": "Garrett Stroman",
+"email": "Daph_Kozey-Beahan36@example.com",
+"phone": "364.858.0683",
+"password": "xGbcPhm0prJ6O3j",
+"role_id": 1,
+"id": "3"
+},
+
+{
+"name": "Tân Nguyễn",
+"email": "tan@gmail.com",
+"phone": "(729) 878-9608 x237",
+"password": "1234567890",
+"role_id": 5,
+"id": "14"
+},
+{
+"name": "Tân Nguyễn",
+"email": "tannguyen@gmail.com",
+"phone": "0825362157",
+"password": "1234567890",
+"role_id": 2,
+"id": "15"
+},{
+"name": "Tân Nguyễn",
+"email": "nguyentan@gmail.com",
+"phone": "802-570-3707 x331",
+"password": "1234567890",
+"role_id": 4,
+"id": "17"
+},

@@ -1,58 +1,45 @@
-"use client"
 
-import { useState, useContext, useRef, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
-import LoginModal from "./LoginModal"
-import RegisterModal from "./RegisterModal"
-import { AuthContext } from "../../context/AuthContext"
-import { Modal } from "antd"
-import "../../css/Header.css"
+"use client";
+
+import { useState, useContext, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { Modal } from "antd";
+import "../../css/Header.css";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
-  const location = useLocation()
-  const { user, logout } = useContext(AuthContext)
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef()
-  const [logoutModal, setLogoutModal] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const { user, logout } = useContext(AuthContext);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
+  const [logoutModal, setLogoutModal] = useState(false);
 
   // Đóng dropdown khi click ngoài
   useEffect(() => {
     function handleClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false)
+        setShowDropdown(false);
       }
     }
-    if (showDropdown) document.addEventListener("mousedown", handleClick)
-    return () => document.removeEventListener("mousedown", handleClick)
-  }, [showDropdown])
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true)
-    setIsRegisterModalOpen(false)
-  }
-
-  const openRegisterModal = () => {
-    setIsRegisterModalOpen(true)
-    setIsLoginModalOpen(false)
-  }
+    if (showDropdown) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showDropdown]);
 
   const handleLogout = () => {
-    setLogoutModal(true)
-  }
+    setLogoutModal(true);
+  };
 
   const confirmLogout = () => {
-    logout()
-    setLogoutModal(false)
-    setShowDropdown(false)
-    window.location.href = "/"
-  }
+    logout();
+    setLogoutModal(false);
+    setShowDropdown(false);
+    window.location.href = "/";
+  };
 
   const cancelLogout = () => {
-    setLogoutModal(false)
-  }
+    setLogoutModal(false);
+  };
 
   return (
     <header className="header">
@@ -62,7 +49,11 @@ const Header = () => {
           <span className="logo-text">DNA Lab</span>
         </Link>
 
-        <button className="mobile-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+        <button
+          className="mobile-menu-button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
           <span className="menu-icon"></span>
         </button>
 
@@ -71,7 +62,10 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/"
-                className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
+                className={`nav-link ${
+                  location.pathname === "/" ? "active" : ""
+                }`}
+
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trang chủ
@@ -80,7 +74,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/dichvu"
-                className={`nav-link ${location.pathname === "/dichvu" ? "active" : ""}`}
+                className={`nav-link ${
+                  location.pathname === "/dichvu" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dịch vụ
@@ -89,7 +85,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/vechungtoi"
-                className={`nav-link ${location.pathname === "/vechungtoi" ? "active" : ""}`}
+                className={`nav-link ${
+                  location.pathname === "/vechungtoi" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Về chúng tôi
@@ -98,7 +96,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/tintuc"
-                className={`nav-link ${location.pathname === "/tintuc" ? "active" : ""}`}
+                className={`nav-link ${
+                  location.pathname === "/tintuc" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Tin tức
@@ -107,7 +107,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/lienhe"
-                className={`nav-link ${location.pathname === "/lienhe" ? "active" : ""}`}
+                className={`nav-link ${
+                  location.pathname === "/lienhe" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Liên hệ
@@ -115,16 +117,20 @@ const Header = () => {
             </li>
           </ul>
         </nav>
-
         <div className="header-buttons">
           {user ? (
-            <div style={{ position: "relative", display: "inline-block" }} ref={dropdownRef}>
+            <div
+              style={{ position: "relative", display: "inline-block" }}
+              ref={dropdownRef}
+            >
               <span
                 style={{ marginRight: 12, cursor: "pointer", fontWeight: 500 }}
                 onClick={() => setShowDropdown((v) => !v)}
               >
                 {user.name || user.fullName || user.email}{" "}
-                <span style={{ fontSize: 18, verticalAlign: "middle" }}>&#x25BC;</span>
+                <span style={{ fontSize: 18, verticalAlign: "middle" }}>
+                  &#x25BC;
+                </span>
               </span>
               {showDropdown && (
                 <div
@@ -222,28 +228,12 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <button className="login-button" onClick={openLoginModal}>
-                Đăng nhập
-              </button>
-              <button className="register-button" onClick={openRegisterModal}>
-                Đăng ký
-              </button>
+              <Link to="/login" className="login-button">Đăng nhập</Link>
+              <Link to="/register" className="register-button">Đăng ký</Link>
             </>
           )}
         </div>
       </div>
-
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSwitchToRegister={openRegisterModal}
-      />
-
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
-        onSwitchToLogin={openLoginModal}
-      />
 
       <Modal
         open={logoutModal}
@@ -257,7 +247,7 @@ const Header = () => {
         <p>Bạn có chắc muốn đăng xuất không?</p>
       </Modal>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

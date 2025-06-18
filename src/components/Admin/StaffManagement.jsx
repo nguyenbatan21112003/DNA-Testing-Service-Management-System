@@ -32,6 +32,8 @@ const StaffManagement = () => {
   const [editForm, setEditForm] = useState({});
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState("");
+  const [filterType, setFilterType] = useState("all"); // "all", "staff", "manager"
+
 
   useEffect(() => {
     fetchStaffs();
@@ -41,12 +43,30 @@ const StaffManagement = () => {
     setLoading(true);
     try {
       const res = await axios.get(API_URL);
-      // Lọc staff (role_id === 2)
-      setStaffs(res.data.filter((u) => u.role_id === 2));
+      
+      // Lọc staff (role_id === 2) và manager (role_id === 4)
+      setStaffs(res.data.filter((u) => u.role_id === 2 || u.role_id === 4));
     } catch {
       setStaffs([]);
     }
     setLoading(false);
+  };
+
+  // Lọc dữ liệu theo filterType
+  const filteredStaffs = React.useMemo(() => {
+    switch (filterType) {
+      case "staff":
+        return staffs.filter(s => s.role_id === 2);
+      case "manager":
+        return staffs.filter(s => s.role_id === 4);
+      default:
+        return staffs;
+    }
+  }, [staffs, filterType]);
+
+  // Xử lý khi nhấn vào thẻ
+  const handleFilterClick = (type) => {
+    setFilterType(type === filterType ? "all" : type);
   };
 
   const columns = [
@@ -54,6 +74,18 @@ const StaffManagement = () => {
     { title: "Họ tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
+    { 
+      title: "Vai trò", 
+      key: "role", 
+      render: (_, record) => (
+        <span style={{ 
+          color: record.role_id === 4 ? "#ff6b01" : "#2196f3",
+          fontWeight: 600 
+        }}>
+          {record.role_id === 4 ? "Quản lý" : "Nhân viên"}
+        </span>
+      )
+    },
     {
       title: "Chi tiết",
       key: "action",
@@ -138,6 +170,15 @@ const StaffManagement = () => {
     setEditModal(true);
   };
 
+
+  const getModalTitle = (roleId) => {
+    return roleId === 4 ? "Chỉnh sửa thông tin quản lý" : "Chỉnh sửa thông tin nhân viên";
+  };
+
+  const getDetailTitle = (roleId) => {
+    return roleId === 4 ? "Chi tiết quản lý" : "Chi tiết nhân viên";
+  };
+
   const handleEditSubmit = async () => {
     setEditLoading(true);
     setEditError("");
@@ -153,9 +194,10 @@ const StaffManagement = () => {
 
   const handleDelete = async (staff) => {
     console.log("Staff to delete:", staff); // debug
+    const roleText = staff.role_id === 4 ? "quản lý" : "nhân viên";
     if (
       !window.confirm(
-        `Bạn có chắc muốn xóa tài khoản nhân viên/manager: ${staff.name} (ID: ${staff.id})?`
+        `Bạn có chắc muốn xóa tài khoản ${roleText}: ${staff.name} (ID: ${staff.id})?`
       )
     )
       return;
@@ -169,28 +211,178 @@ const StaffManagement = () => {
     }
   };
 
+  const styles = {
+    topBar: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    statsContainer: {
+      display: "flex",
+      gap: 16,
+    },
+    countCard: {
+      width: 140,
+      background: "#fff",
+      borderRadius: 12,
+      boxShadow: "0 2px 8px #0000001a",
+      padding: "12px",
+      textAlign: "center",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      position: "relative",
+    },
+    activeCard: {
+      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+      transform: "translateY(-2px)",
+    },
+    filterIndicator: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: 4,
+      borderRadius: "0 0 12px 12px",
+    },
+    totalNumber: {
+      fontSize: 28,
+      fontWeight: 700,
+      marginTop: 4,
+    },
+    staffNumber: {
+      fontSize: 28,
+      color: "#2196f3",
+      fontWeight: 700,
+      marginTop: 4,
+    },
+    managerNumber: {
+      fontSize: 28,
+      color: "#ff6b01",
+      fontWeight: 700,
+      marginTop: 4,
+    },
+    countLabel: {
+      fontSize: 14,
+      color: "#666",
+    },
+    addButton: {
+      fontWeight: 700,
+      fontSize: 16,
+      background: "#1677ff",
+      borderRadius: 8,
+    },
+    roleTag: {
+      display: "inline-block",
+      padding: "2px 8px",
+      borderRadius: 4,
+      fontWeight: 600,
+      fontSize: 12,
+    },
+    filterBadge: {
+      position: "absolute",
+      top: -6,
+      right: -6,
+      background: "#52c41a",
+      color: "#fff",
+      borderRadius: "50%",
+      width: 20,
+      height: 20,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+  };
+
   return (
     <div style={{ padding: 24 }}>
-      <h2 style={{ marginBottom: 16 }}>Quản lý nhân viên</h2>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={handleAdd}
-        style={{
-          marginBottom: 16,
-          fontWeight: 700,
-          fontSize: 16,
-          background: "#1677ff",
-        }}
-      >
-        Thêm nhân viên/manager
-      </Button>
-      <div style={{ marginBottom: 16, fontWeight: 500 }}>
-        Tổng số nhân viên: {staffs.length}
+      <h2 style={{ marginBottom: 16 }}>
+        Quản lý nhân viên & quản lý
+        {filterType !== "all" && (
+          <span style={{ fontSize: 16, fontWeight: 400, color: "#666", marginLeft: 12 }}>
+            (Đang lọc: {filterType === "staff" ? "Nhân viên" : "Quản lý"})
+          </span>
+        )}
+      </h2>
+      <div style={styles.topBar}>
+        <div style={styles.statsContainer}>
+          <div 
+            style={{
+              ...styles.countCard,
+              ...(filterType === "all" ? styles.activeCard : {}),
+            }}
+            onClick={() => handleFilterClick("all")}
+          >
+            <div style={styles.countLabel}>Tổng số</div>
+            <div style={styles.totalNumber}>
+              {staffs.length}
+            </div>
+            {filterType === "all" && (
+              <div 
+                style={{
+                  ...styles.filterIndicator,
+                  background: "#888",
+                }}
+              />
+            )}
+          </div>
+          
+          <div 
+            style={{
+              ...styles.countCard,
+              ...(filterType === "staff" ? styles.activeCard : {}),
+            }}
+            onClick={() => handleFilterClick("staff")}
+          >
+            <div style={styles.countLabel}>Nhân viên</div>
+            <div style={styles.staffNumber}>
+              {staffs.filter(s => s.role_id === 2).length}
+            </div>
+            {filterType === "staff" && (
+              <div 
+                style={{
+                  ...styles.filterIndicator,
+                  background: "#2196f3",
+                }}
+              />
+            )}
+          </div>
+          
+          <div 
+            style={{
+              ...styles.countCard,
+              ...(filterType === "manager" ? styles.activeCard : {}),
+            }}
+            onClick={() => handleFilterClick("manager")}
+          >
+            <div style={styles.countLabel}>Quản lý</div>
+            <div style={styles.managerNumber}>
+              {staffs.filter(s => s.role_id === 4).length}
+            </div>
+            {filterType === "manager" && (
+              <div 
+                style={{
+                  ...styles.filterIndicator,
+                  background: "#ff6b01",
+                }}
+              />
+            )}
+          </div>
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleAdd}
+          style={styles.addButton}
+        >
+          Thêm nhân viên/quản lý
+        </Button>
       </div>
       <Table
         columns={columns}
-        dataSource={staffs}
+        dataSource={filteredStaffs}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 8 }}
@@ -199,7 +391,8 @@ const StaffManagement = () => {
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
-        title="Chi tiết nhân viên"
+        title={selectedStaff ? getDetailTitle(selectedStaff.role_id) : "Chi tiết"}
+
       >
         {selectedStaff && (
           <div style={{ lineHeight: 2 }}>
@@ -215,6 +408,16 @@ const StaffManagement = () => {
             <div>
               <b>Số điện thoại:</b> {selectedStaff.phone}
             </div>
+            <div>
+              <b>Vai trò:</b>{" "}
+              <span style={{ 
+                color: selectedStaff.role_id === 4 ? "#ff6b01" : "#2196f3",
+                fontWeight: 600 
+              }}>
+                {selectedStaff.role_id === 4 ? "Quản lý" : "Nhân viên"}
+              </span>
+            </div>
+
             {/* Thêm các trường khác nếu có */}
           </div>
         )}
@@ -225,7 +428,7 @@ const StaffManagement = () => {
         onOk={handleAddSubmit}
         okText="Tạo mới"
         confirmLoading={addLoading}
-        title="Tạo tài khoản nhân viên/manager"
+        title="Tạo tài khoản nhân viên/quản lý"
         okButtonProps={{
           style: {
             background: "#1677ff",
@@ -294,7 +497,8 @@ const StaffManagement = () => {
         onOk={handleEditSubmit}
         okText="Lưu thay đổi"
         confirmLoading={editLoading}
-        title="Chỉnh sửa thông tin nhân viên/manager"
+        title={getModalTitle(editForm.role_id)}
+
         okButtonProps={{
           style: {
             background: "#1677ff",

@@ -1,16 +1,26 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { Eye, EyeOff, Star } from "lucide-react";
+import { Eye, EyeOff, Star, FileText } from "lucide-react";
 import { useOrderContext } from "../../context/OrderContext";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import React from "react";
+import TimelineProgress from "./TimelineProgress";
+import NewOrderButton from "./NewOrderButton";
+import RequestFormModal from "./RequestFormModal";
 
 const sidebarTabs = [
-  { key: "profile", label: "Hồ sơ cá nhân" },
-  { key: "orders", label: "Đơn đăng ký" },
-  { key: "settings", label: "Cài đặt" },
+  { key: "profile", label: "Hồ sơ cá nhân", icon: <UserOutlined /> },
+  { key: "orders", label: "Đơn đăng ký", icon: <FileTextOutlined /> },
+  { key: "settings", label: "Cài đặt", icon: <SettingOutlined /> },
 ];
 
 const UserProfile = () => {
@@ -53,10 +63,30 @@ const UserProfile = () => {
 
   const [kitToast, setKitToast] = useState("");
   const [fileToast, setFileToast] = useState("");
-
   const [collapsed, setCollapsed] = useState(false);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+
+  // Thêm state cho modal feedback
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackOrder, setFeedbackOrder] = useState(null);
+
+  // State cho 2 modal riêng biệt
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
+
+  const [searchOrder, setSearchOrder] = useState("");
+
+  const [showTimeline, setShowTimeline] = useState({});
+
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [selectedOrderForForm, setSelectedOrderForForm] = useState(null);
+
+  // Lọc đơn đăng ký của user hiện tại
+  const userOrders = orders.filter(
+    (order) => order.userId === user.id || order.email === user.email
+  );
 
   if (!user)
     return (
@@ -138,61 +168,38 @@ const UserProfile = () => {
         display: "flex",
         height: "calc(100vh - 56px)",
         minHeight: 0,
-        minWidth: "97%",
-        background: "#f7fafd",
+        width: "100vw",
+        maxWidth: "100vw",
+        background: "#f5f6fa",
+        margin: 0,
+        padding: 0,
+
       }}
     >
       {/* Sidebar giống admin */}
       <div
         className="profile-sidebar"
         style={{
-          minWidth: collapsed ? 80 : 220,
-          width: collapsed ? 80 : 220,
-          background: "#fff",
-          boxShadow: "0 2px 8px #e6e6e6",
+          minWidth: collapsed ? 80 : 240,
+          width: collapsed ? 80 : 240,
+          background: "linear-gradient(135deg, #00a67e 60%, #2196f3 100%)",
+          boxShadow: "2px 0 12px #e6e6e6",
           display: "flex",
           flexDirection: "column",
           alignItems: collapsed ? "center" : "flex-start",
-          padding: "0",
+          padding: 0,
           borderRadius: 0,
-          height: "calc(100vh - 56px)",
+          height: "100%",
           position: "relative",
           transition: "width 0.2s",
+          gap: 0,
         }}
       >
-        {/* Nút thu gọn/mở rộng */}
-        <span
-          style={{
-            position: "absolute",
-            top: 18,
-            right: collapsed ? -24 : -24,
-            background: "#00a67e",
-            borderRadius: 12,
-            width: 48,
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 100,
-            color: "#fff",
-            fontSize: 28,
-            boxShadow: "0 2px 8px #00a67e55",
-            border: "2px solid #fff",
-            transition: "right 0.2s",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setCollapsed((c) => !c);
-          }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
         {/* Logo DNA Lab */}
         <div
           style={{
             height: 64,
-            margin: 16,
+            margin: 0,
             fontWeight: 700,
             fontSize: 22,
             textAlign: "center",
@@ -203,15 +210,60 @@ const UserProfile = () => {
             cursor: "pointer",
             userSelect: "none",
             width: "100%",
+            background: "rgba(255,255,255,0.08)",
+            borderBottom: "1px solid #fff2",
           }}
           onClick={() => navigate("/")}
         >
-          <span style={{ fontSize: 28 }}>🧬</span>
+          <span style={{ fontSize: 28, color: "#fff" }}>🧬</span>
           {!collapsed && (
-            <span style={{ color: "#00a67e", fontWeight: 800 }}>DNA Lab</span>
+            <span style={{ color: "#fff", fontWeight: 800, letterSpacing: 1 }}>
+              DNA Lab
+            </span>
           )}
         </div>
-        {/* Tabs */}
+        {/* Collapse button below logo */}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <span
+            style={{
+              width: "100%",
+              background: "#00a67e",
+              borderRadius: 8,
+              height: 48,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: collapsed ? "center" : "flex-start",
+              cursor: "pointer",
+              color: "#fff",
+              fontSize: 28,
+              boxShadow: "0 2px 8px #00a67e55",
+              border: "2px solid #fff",
+              paddingLeft: collapsed ? 0 : 32,
+              paddingRight: collapsed ? 0 : 0,
+              transition: "all 0.2s",
+              fontWeight: 600,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCollapsed((c) => !c);
+            }}
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {!collapsed && (
+              <span style={{ marginLeft: 16, fontSize: 17 }}>Menu</span>
+            )}
+          </span>
+        </div>
+
+        {/* Tabs + Logout */}
         <div
           style={{
             width: "100%",
@@ -220,6 +272,7 @@ const UserProfile = () => {
             gap: 0,
             paddingTop: 12,
             flex: 1,
+            alignItems: "stretch",
           }}
         >
           {sidebarTabs.map((tabItem, idx) => (
@@ -231,18 +284,39 @@ const UserProfile = () => {
                   cursor: "pointer",
                   padding: collapsed ? "18px 0" : "18px 32px",
                   fontWeight: 600,
-                  background: tab === tabItem.key ? "#e6f7f1" : "transparent",
-                  color: tab === tabItem.key ? "#009e74" : "#222",
+                  background:
+                    tab === tabItem.key
+                      ? "rgba(255,255,255,0.18)"
+                      : "transparent",
+                  color: tab === tabItem.key ? "#fff" : "#fff9",
                   borderLeft:
                     tab === tabItem.key
-                      ? "4px solid #009e74"
+                      ? "4px solid #fff"
                       : "4px solid transparent",
                   textAlign: collapsed ? "center" : "left",
-                  fontSize: 16,
+                  fontSize: 17,
                   transition: "all 0.2s",
+                  borderRadius: 0,
+                  margin: 0,
+                  minHeight: 48,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                {collapsed ? tabItem.label.charAt(0) : tabItem.label}
+                {tabItem.icon && (
+                  <span
+                    style={{
+                      marginRight: collapsed ? 0 : 12,
+                      fontSize: 20,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {tabItem.icon}
+                  </span>
+                )}
+                {collapsed ? "" : tabItem.label}
               </div>
               {idx === sidebarTabs.length - 1 && (
                 <div
@@ -252,20 +326,24 @@ const UserProfile = () => {
                     cursor: "pointer",
                     padding: collapsed ? "18px 0" : "18px 32px",
                     fontWeight: 700,
-                    color: "#e74c3c",
+                    color: "#fff",
                     borderLeft: "4px solid transparent",
                     textAlign: collapsed ? "center" : "left",
-                    fontSize: 16,
+                    fontSize: 17,
                     transition: "all 0.2s",
                     display: "flex",
                     alignItems: "center",
                     gap: 10,
-                    background: "#fff",
-                    borderTop: "1px solid #f0f0f0",
+                    background: "rgba(255,255,255,0.08)",
+                    borderTop: "1px solid #fff2",
+                    minHeight: 48,
+                    margin: 0,
                   }}
                 >
-                  <span style={{ fontSize: 20 }}>⎋</span>
-                  {!collapsed && <span>Đăng xuất</span>}
+                  <LogoutOutlined
+                    style={{ fontSize: 20, marginRight: collapsed ? 0 : 12 }}
+                  />
+                  {collapsed ? "" : "Đăng xuất"}
                 </div>
               )}
             </React.Fragment>
@@ -278,26 +356,43 @@ const UserProfile = () => {
         style={{
           flex: 1,
           margin: 0,
-          background: "#f4f6fb",
+          background: "#fff",
           borderRadius: 0,
-          boxShadow: "none",
-          padding: "32px 8px 0 8px",
+          boxShadow: "0 2px 12px #e6e6e6",
+          padding: "0 0 0 0",
           minWidth: 0,
           width: "100%",
           height: "100%",
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "stretch",
+          justifyContent: "flex-start",
           overflow: "auto",
         }}
       >
+        {/* Header nhỏ cho nội dung */}
+        <div
+          style={{
+            width: "100%",
+            padding: "28px 36px 0 36px",
+            fontWeight: 800,
+            fontSize: 28,
+            color: "#222",
+            letterSpacing: -1,
+            marginBottom: 0,
+          }}
+        >
+          {tab === "profile" && "Hồ sơ cá nhân"}
+          {tab === "orders" && "Đơn đăng ký"}
+          {tab === "settings" && "Cài đặt tài khoản"}
+        </div>
         <div
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            padding: "12px 36px 36px 36px",
           }}
         >
           {tab === "profile" && (
@@ -314,16 +409,6 @@ const UserProfile = () => {
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Hồ sơ cá nhân
-              </h2>
               <div className="form-row">
                 <div className="form-group">
                   <label>Họ và tên</label>
@@ -369,25 +454,34 @@ const UserProfile = () => {
             <div
               style={{
                 width: "100%",
-                background: "#fff",
-                borderRadius: 14,
+                background: "#f8fefd",
+                borderRadius: 16,
                 boxShadow: "0 2px 12px #e6e6e6",
-                padding: 48,
+                padding: 32,
                 margin: 0,
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Đơn đăng ký của bạn
-              </h2>
               <div className="orders-section" style={{ gap: 32 }}>
+                {/* Ô tìm kiếm đơn đăng ký */}
+                <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 16 }}>
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm theo mã đơn hoặc loại xét nghiệm..."
+                    value={searchOrder}
+                    onChange={e => setSearchOrder(e.target.value)}
+                    style={{
+                      padding: "10px 16px",
+                      borderRadius: 8,
+                      border: "1px solid #cce3d3",
+                      fontSize: 16,
+                      width: 340,
+                      background: "#fff",
+                      outline: "none"
+                    }}
+                  />
+                  <NewOrderButton />
+                </div>
                 <div
                   className="orders-filter"
                   style={{ display: "flex", gap: 40, marginBottom: 32 }}
@@ -457,7 +551,7 @@ const UserProfile = () => {
                     Hoàn thành
                   </span>
                 </div>
-                {orders.filter(
+                {userOrders.filter(
                   (order) =>
                     filterStatus === "Tất cả" || order.status === filterStatus
                 ).length === 0 && (
@@ -472,10 +566,14 @@ const UserProfile = () => {
                     Chưa có đơn đăng ký nào.
                   </div>
                 )}
-                {orders
+                {userOrders
                   .filter(
                     (order) =>
-                      filterStatus === "Tất cả" || order.status === filterStatus
+                      (filterStatus === "Tất cả" || order.status === filterStatus) &&
+                      (searchOrder.trim() === "" ||
+                        order.id.toLowerCase().includes(searchOrder.trim().toLowerCase()) ||
+                        (order.type && order.type.toLowerCase().includes(searchOrder.trim().toLowerCase()))
+                      )
                   )
                   .map((order) => (
                     <div
@@ -491,50 +589,58 @@ const UserProfile = () => {
                         alignItems: "center",
                         justifyContent: "space-between",
                         gap: 40,
+                        flexDirection: "column"
                       }}
                     >
-                      <div className="order-info">
-                        <div
-                          className="order-id"
-                          style={{
-                            fontWeight: 600,
-                            fontSize: 18,
-                            marginBottom: 8,
-                          }}
-                        >
-                          Mã đơn đăng ký:{" "}
-                          <span
-                            className="order-id-highlight"
-                            style={{ color: "#009e74", fontWeight: 700 }}
-                          >
-                            #{order.id}
-                          </span>
-                          <span
+                      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 40 }}>
+                        <div className="order-info">
+                          <div
+                            className="order-id"
                             style={{
-                              marginLeft: 16,
-                              padding: "2px 12px",
-                              borderRadius: 8,
-                              background:
-                                order.status === "Hoàn thành"
-                                  ? "#c6f6d5"
-                                  : order.status === "Chờ xử lý"
-                                  ? "#ffe6b0"
-                                  : "#e6f7f1",
-                              color:
-                                order.status === "Hoàn thành"
-                                  ? "#009e74"
-                                  : order.status === "Chờ xử lý"
-                                  ? "#b88900"
-                                  : "#009e74",
                               fontWeight: 600,
-                              fontSize: 14,
+                              fontSize: 18,
+                              marginBottom: 8,
                             }}
                           >
-                            {order.status}
-                          </span>
-                          {/* Badge trạng thái nhận kit */}
-                          {order.sampleMethod === "home" &&
-                            order.kitStatus === "da_gui" && (
+                            Mã đơn đăng ký:{" "}
+                            <span
+                              className="order-id-highlight"
+                              style={{ color: "#009e74", fontWeight: 700 }}
+                            >
+                              #{order.id}
+                            </span>
+                            <span
+                              style={{
+                                marginLeft: 16,
+                                padding: "2px 12px",
+                                borderRadius: 8,
+                                background:
+                                  order.status === "Hoàn thành"
+                                    ? "#c6f6d5"
+                                    : order.status === "Chờ xử lý"
+                                    ? "#ffe6b0"
+                                    : "#e6f7f1",
+                                color:
+                                  order.status === "Hoàn thành"
+                                    ? "#009e74"
+                                    : order.status === "Chờ xử lý"
+                                    ? "#b88900"
+                                    : "#009e74",
+                                fontWeight: 600,
+                                fontSize: 14,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                whiteSpace: "nowrap",
+                                minWidth: 80,
+                                maxWidth: 120,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                              }}
+                            >
+                              {order.status}
+                            </span>
+                            {/* Badge trạng thái nhận kit */}
+                            {order.sampleMethod === "home" && order.kitStatus === "da_gui" && (
                               <span
                                 style={{
                                   marginLeft: 10,
@@ -545,13 +651,19 @@ const UserProfile = () => {
                                   fontWeight: 600,
                                   fontSize: 13,
                                   verticalAlign: "middle",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  whiteSpace: "nowrap",
+                                  minWidth: 60,
+                                  maxWidth: 100,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
                                 }}
                               >
                                 Chờ nhận kit
                               </span>
                             )}
-                          {order.sampleMethod === "home" &&
-                            order.kitStatus === "da_nhan" && (
+                            {order.sampleMethod === "home" && order.kitStatus === "da_nhan" && (
                               <span
                                 style={{
                                   marginLeft: 10,
@@ -562,614 +674,214 @@ const UserProfile = () => {
                                   fontWeight: 600,
                                   fontSize: 13,
                                   verticalAlign: "middle",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  whiteSpace: "nowrap",
+                                  minWidth: 60,
+                                  maxWidth: 100,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
                                 }}
                               >
                                 Đã nhận kit
                               </span>
                             )}
+                          </div>
+                          <div className="order-type" style={{ marginBottom: 8 }}>
+                            {order.type}
+                          </div>
+                          <div style={{ color: '#888', fontSize: 15, marginBottom: 2 }}>
+                            <b>Thể loại:</b> {order.category === 'civil' ? 'Dân sự' : order.category === 'admin' ? 'Hành chính' : order.category}
+                          </div>
+                          <div style={{ color: '#888', fontSize: 15, marginBottom: 8 }}>
+                            <b>Hình thức thu mẫu:</b> {getSampleMethodLabel(order.sampleMethod)}
+                          </div>
+                          <div
+                            className="order-date"
+                            style={{ color: "#888", fontSize: 15 }}
+                          >
+                            Ngày đăng ký: {order.date}
+                          </div>
                         </div>
-                        <div className="order-type" style={{ marginBottom: 8 }}>
-                          {order.type}
-                        </div>
-                        <div
-                          className="order-date"
-                          style={{ color: "#888", fontSize: 15 }}
-                        >
-                          Ngày đăng ký: {order.date}
+                        <div style={{ width: "100%", display: "flex", flexDirection: "row", gap: 16, justifyContent: "flex-end", marginBottom: 16 }}>
+                          {/* Nhóm trái: Xem chi tiết, Nhập form */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "1px solid #16a34a",
+                                color: "#16a34a",
+                                background: "#fff",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "border 0.2s, color 0.2s, background 0.2s",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                              onMouseOver={e => {
+                                e.currentTarget.style.background = "#e6f7ef";
+                                e.currentTarget.style.color = "#15803d";
+                                e.currentTarget.style.border = "1px solid #15803d";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#fff";
+                                e.currentTarget.style.color = "#16a34a";
+                                e.currentTarget.style.border = "1px solid #16a34a";
+                              }}
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowDetailModal(true);
+                              }}
+                            >
+                              <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
+                            </button>
+                            {order.category === 'civil' && (
+                              <button
+                                style={{
+                                  border: "1px solid #bbb",
+                                  color: "#444",
+                                  background: "#fff",
+                                  borderRadius: 10,
+                                  padding: "10px 24px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  marginBottom: 0,
+                                  transition: "border 0.2s, color 0.2s, background 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer"
+                                }}
+                                onClick={() => {
+                                  setSelectedOrderForForm(order);
+                                  setShowFormModal(true);
+                                }}
+                              >
+                                <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
+                              </button>
+                            )}
+                          </div>
+                          {/* Nhóm phải: Xem kết quả, Đánh giá */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "1px solid #2563eb",
+                                color: "#2563eb",
+                                background: "#fff",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "border 0.2s, color 0.2s, background 0.2s",
+                                outline: "none",
+                                cursor: "pointer"
+                              }}
+                              onMouseOver={e => {
+                                e.currentTarget.style.background = "#e0edff";
+                                e.currentTarget.style.color = "#1d4ed8";
+                                e.currentTarget.style.border = "1px solid #1d4ed8";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#fff";
+                                e.currentTarget.style.color = "#2563eb";
+                                e.currentTarget.style.border = "1px solid #2563eb";
+                              }}
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setShowResultModal(true);
+                              }}
+                            >
+                              <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
+                            </button>
+                            <button
+                              className="order-btn"
+                              style={{
+                                border: "none",
+                                color: "#fff",
+                                background: "#fbbf24",
+                                borderRadius: 10,
+                                padding: "10px 24px",
+                                fontWeight: 600,
+                                fontSize: 16,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 0,
+                                transition: "background 0.2s, color 0.2s",
+                                outline: "none",
+                                cursor:
+                                  order.status === "Có kết quả" || order.status === "Hoàn thành"
+                                    ? "pointer"
+                                    : "not-allowed",
+                                opacity:
+                                  order.status === "Có kết quả" || order.status === "Hoàn thành"
+                                    ? 1
+                                    : 0.6,
+                              }}
+                              disabled={
+                                !(
+                                  order.status === "Có kết quả" ||
+                                  order.status === "Hoàn thành"
+                                )
+                              }
+                              onMouseOver={e => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành")
+                                  e.currentTarget.style.background = "#f59e1b";
+                              }}
+                              onMouseOut={e => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành")
+                                  e.currentTarget.style.background = "#fbbf24";
+                              }}
+                              onClick={() => {
+                                if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
+                                  setFeedbackOrder(order);
+                                  setRatingInput(0);
+                                  setFeedbackInput("");
+                                  setFeedbackSuccess("");
+                                  setShowFeedbackModal(true);
+                                }
+                              }}
+                            >
+                              <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div
-                        className="order-actions"
+                      {/* Nút ẩn/hiện timeline */}
+                      <button
                         style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-end",
-                          gap: 12,
+                          marginTop: 12,
+                          background: showTimeline[order.id] ? "#e6f7f1" : "#fff",
+                          color: "#009e74",
+                          border: "1px solid #009e74",
+                          borderRadius: 8,
+                          padding: "6px 18px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontSize: 15
                         }}
+                        onClick={() => setShowTimeline(prev => ({ ...prev, [order.id]: !prev[order.id] }))}
                       >
-                        <div
-                          className="order-price"
-                          style={{
-                            color: "#009e74",
-                            fontWeight: 700,
-                            fontSize: 20,
-                          }}
-                        >
-                          {order.price
-                            ? order.price.toLocaleString() + " đ"
-                            : ""}
-                        </div>
-                        <button
-                          className="order-btn"
-                          style={{
-                            border: "1px solid #009e74",
-                            color: "#009e74",
-                            background: "#fff",
-                            borderRadius: 8,
-                            padding: "6px 18px",
-                            fontWeight: 600,
-                            marginBottom: 4,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                          }}
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowDetail(true);
-                          }}
-                        >
-                          <Eye size={16} /> Xem chi tiết
-                        </button>
-                        <button
-                          className="order-btn"
-                          style={{
-                            border: "1px solid #009e74",
-                            color: "#009e74",
-                            background: "#fff",
-                            borderRadius: 8,
-                            padding: "6px 18px",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                          }}
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowDetail(true);
-                            setTimeout(() => {
-                              const el = document.getElementById(
-                                "order-result-section"
-                              );
-                              if (el)
-                                el.scrollIntoView({
-                                  behavior: "smooth",
-                                  block: "center",
-                                });
-                            }, 200);
-                          }}
-                        >
-                          <EyeOff size={16} /> Xem kết quả
-                        </button>
-                      </div>
+                        {showTimeline[order.id] ? "Ẩn timeline" : "Xem tiến độ & timeline xử lý"}
+                      </button>
+                      {showTimeline[order.id] && (
+                        <TimelineProgress order={order} />
+                      )}
                     </div>
                   ))}
               </div>
-              {/* Modal chi tiết đơn đăng ký */}
-              {showDetail && selectedOrder && (
-                <div
-                  style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: "rgba(0,0,0,0.18)",
-                    zIndex: 9999,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onClick={() => setShowDetail(false)}
-                >
-                  <div
-                    style={{
-                      background: "#fff",
-                      borderRadius: 18,
-                      minWidth: 340,
-                      maxWidth: 480,
-                      maxHeight: "90vh",
-                      padding: 32,
-                      boxShadow: "0 8px 32px #0002",
-                      position: "relative",
-                      fontSize: 17,
-                      overflowY: "auto",
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setShowDetail(false)}
-                      style={{
-                        position: "absolute",
-                        top: 14,
-                        right: 18,
-                        background: "none",
-                        border: "none",
-                        fontSize: 26,
-                        color: "#888",
-                        cursor: "pointer",
-                      }}
-                    >
-                      &times;
-                    </button>
-                    <h3
-                      style={{
-                        fontWeight: 800,
-                        fontSize: 26,
-                        marginBottom: 18,
-                        color: "#009e74",
-                        letterSpacing: -1,
-                        textAlign: "center",
-                      }}
-                    >
-                      Chi tiết đơn đăng ký
-                    </h3>
-                    <div
-                      style={{
-                        borderTop: "1px solid #e6e6e6",
-                        marginBottom: 18,
-                      }}
-                    />
-                    {/* Thông tin cơ bản dạng 1 cột */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 10,
-                      }}
-                    >
-                      <div>
-                        <span style={{ fontWeight: 700, color: "#009e74" }}>
-                          Mã đơn:
-                        </span>{" "}
-                        <span style={{ color: "#009e74", fontWeight: 700 }}>
-                          #{selectedOrder.id}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
-                        <span>{selectedOrder.status}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
-                        <span>{selectedOrder.type}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
-                        <span>{selectedOrder.date}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
-                        <span>{selectedOrder.name}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
-                        <span>{selectedOrder.phone}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Email:</span>{" "}
-                        <span>{selectedOrder.email}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
-                        <span>{selectedOrder.address}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>
-                          Ngày xét nghiệm:
-                        </span>{" "}
-                        <span>{selectedOrder.appointmentDate}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>
-                          Hình thức lấy mẫu:
-                        </span>{" "}
-                        <span>
-                          {getSampleMethodLabel(selectedOrder.sampleMethod)}
-                        </span>
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
-                        <span>{selectedOrder.note}</span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <span style={{ fontWeight: 600 }}>
-                          File Đơn Yêu Cầu Xét Nghiệm:
-                        </span>
-                        {selectedOrder.requestFormFile ? (
-                          <a
-                            href={
-                              selectedOrder.requestFormFile.startsWith("data:")
-                                ? selectedOrder.requestFormFile
-                                : selectedOrder.requestFormFile
-                            }
-                            download={
-                              selectedOrder.requestFormFileName ||
-                              "DonYeuCauXetNghiem"
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              color: "#0a7cff",
-                              textDecoration: "underline",
-                              fontWeight: 500,
-                              marginLeft: 8,
-                            }}
-                          >
-                            Tải file đã nộp
-                          </a>
-                        ) : (
-                          <>
-                            <input
-                              type="file"
-                              accept=".pdf,.doc,.docx"
-                              onChange={async (e) => {
-                                const file = e.target.files[0];
-                                if (!file) return;
-                                // Đọc file thành base64
-                                const reader = new FileReader();
-                                reader.onload = function (evt) {
-                                  const base64 = evt.target.result;
-                                  // Lưu vào localStorage (update order)
-                                  const allOrders = JSON.parse(
-                                    localStorage.getItem("dna_orders") || "[]"
-                                  );
-                                  const idx = allOrders.findIndex(
-                                    (o) => o.id === selectedOrder.id
-                                  );
-                                  if (idx !== -1) {
-                                    allOrders[idx] = {
-                                      ...allOrders[idx],
-                                      requestFormFile: base64,
-                                      requestFormFileName: file.name,
-                                    };
-                                    localStorage.setItem(
-                                      "dna_orders",
-                                      JSON.stringify(allOrders)
-                                    );
-                                  }
-                                  setSelectedOrder({
-                                    ...selectedOrder,
-                                    requestFormFile: base64,
-                                    requestFormFileName: file.name,
-                                  });
-                                  setFileToast("Đã nộp file thành công!");
-                                  setTimeout(() => setFileToast(""), 2000);
-                                };
-                                reader.readAsDataURL(file);
-                              }}
-                              style={{
-                                marginLeft: 8,
-                                fontSize: 13,
-                                padding: 2,
-                              }}
-                            />
-                            <span
-                              style={{
-                                color: "#888",
-                                marginLeft: 8,
-                                fontSize: 13,
-                              }}
-                            >
-                              (PDF, DOC, DOCX)
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        borderTop: "1px solid #e6e6e6",
-                        margin: "18px 0 18px 0",
-                      }}
-                    />
-                    {/* Thông báo đã nhận kit (nếu có) - chuyển lên trên phần kết quả */}
-                    {selectedOrder.sampleMethod === "home" &&
-                      selectedOrder.kitStatus === "da_nhan" && (
-                        <div
-                          style={{
-                            margin: "18px 0",
-                            padding: 14,
-                            background: "#e6f7f1",
-                            borderRadius: 8,
-                            border: "1px solid #b2e2d6",
-                            textAlign: "center",
-                            color: "#009e74",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Bạn đã xác nhận đã nhận kit. Nhân viên sẽ tiếp tục xử
-                          lý đơn của bạn.
-                        </div>
-                      )}
-                    {/* Kết quả xét nghiệm */}
-                    {(selectedOrder.status === "Có kết quả" ||
-                      selectedOrder.status === "Hoàn thành") && (
-                      <div
-                        id="order-result-section"
-                        style={{ margin: "18px 0 10px 0" }}
-                      >
-                        <b style={{ color: "#009e74" }}>Kết quả xét nghiệm:</b>
-                        <div style={{ margin: "10px 0" }}>
-                          {selectedOrder.result ? (
-                            <div
-                              style={{
-                                background: "#f6f8fa",
-                                border: "1px solid #cce3d3",
-                                borderRadius: 8,
-                                padding: 12,
-                              }}
-                            >
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: selectedOrder.result,
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <span style={{ color: "#888" }}>
-                              Chưa có bảng kết quả.
-                            </span>
-                          )}
-                        </div>
-                        {/* File kết quả xét nghiệm nếu có */}
-                        {selectedOrder.resultFile && (
-                          <div
-                            style={{
-                              margin: "14px 0 10px 0",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <span style={{ fontWeight: 600, marginRight: 8 }}>
-                              File kết quả xét nghiệm:
-                            </span>
-                            <a
-                              href={
-                                selectedOrder.resultFile.startsWith("data:")
-                                  ? selectedOrder.resultFile
-                                  : selectedOrder.resultFile
-                              }
-                              download={
-                                selectedOrder.resultFileName ||
-                                "KetQuaXetNghiem"
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                color: "#0a7cff",
-                                textDecoration: "underline",
-                                fontWeight: 500,
-                              }}
-                            >
-                              Tải file kết quả
-                            </a>
-                          </div>
-                        )}
-                        <div style={{ marginTop: 10 }}>
-                          <b>Nhân viên thực hiện:</b>{" "}
-                          {selectedOrder.staffName || (
-                            <span style={{ color: "#888" }}>Chưa cập nhật</span>
-                          )}
-                        </div>
-                        <div style={{ marginTop: 6 }}>
-                          <b>Xác nhận của Manager:</b>{" "}
-                          {selectedOrder.managerConfirm ? (
-                            <span style={{ color: "#009e74" }}>
-                              Đã xác nhận
-                            </span>
-                          ) : (
-                            <span style={{ color: "#888" }}>Chưa xác nhận</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {/* Đánh giá dịch vụ */}
-                    {selectedOrder.status === "Có kết quả" &&
-                      !selectedOrder.feedback && (
-                        <div style={{ margin: "18px 0 10px 0" }}>
-                          <b>Đánh giá dịch vụ:</b>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              margin: "8px 0",
-                            }}
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={22}
-                                color={ratingInput >= star ? "#ffc107" : "#ddd"}
-                                style={{ cursor: "pointer" }}
-                                onClick={() => setRatingInput(star)}
-                              />
-                            ))}
-                            <span
-                              style={{
-                                color: "#888",
-                                fontSize: 15,
-                                marginLeft: 8,
-                              }}
-                            >
-                              {ratingInput > 0 ? `${ratingInput}/5` : ""}
-                            </span>
-                          </div>
-                          <textarea
-                            rows={3}
-                            placeholder="Nhận xét của bạn về dịch vụ..."
-                            value={feedbackInput}
-                            onChange={(e) => setFeedbackInput(e.target.value)}
-                            style={{
-                              width: "100%",
-                              borderRadius: 6,
-                              margin: "8px 0",
-                              padding: 8,
-                              border: "1px solid #ccc",
-                            }}
-                          />
-                          <button
-                            onClick={() => {
-                              if (ratingInput === 0) {
-                                setFeedbackSuccess("Vui lòng chọn số sao!");
-                                return;
-                              }
-                              addFeedback(
-                                selectedOrder.id,
-                                feedbackInput,
-                                ratingInput
-                              );
-                              setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-                              setTimeout(() => setFeedbackSuccess(""), 2000);
-                            }}
-                            style={{
-                              background: "#009e74",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: 6,
-                              padding: "8px 24px",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Gửi đánh giá
-                          </button>
-                          {feedbackSuccess && (
-                            <div style={{ color: "#009e74", marginTop: 6 }}>
-                              {feedbackSuccess}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    {/* Hiển thị đánh giá đã gửi */}
-                    {selectedOrder.status === "Có kết quả" &&
-                      selectedOrder.feedback && (
-                        <div style={{ margin: "18px 0 10px 0" }}>
-                          <b>Đánh giá của bạn:</b>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 6,
-                              margin: "8px 0",
-                            }}
-                          >
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                size={22}
-                                color={
-                                  selectedOrder.rating >= star
-                                    ? "#ffc107"
-                                    : "#ddd"
-                                }
-                              />
-                            ))}
-                            <span
-                              style={{
-                                color: "#888",
-                                fontSize: 15,
-                                marginLeft: 8,
-                              }}
-                            >
-                              {selectedOrder.rating}/5
-                            </span>
-                          </div>
-                          <div
-                            style={{
-                              background: "#f6f8fa",
-                              borderRadius: 6,
-                              padding: 10,
-                              color: "#333",
-                            }}
-                          >
-                            {selectedOrder.feedback}
-                          </div>
-                        </div>
-                      )}
-                    {/* Xác nhận nhận kit tại nhà */}
-                    {selectedOrder.sampleMethod === "home" &&
-                      selectedOrder.kitStatus === "da_gui" && (
-                        <div
-                          style={{
-                            margin: "18px 0",
-                            padding: 14,
-                            background: "#f6f8fa",
-                            borderRadius: 8,
-                            border: "1px solid #cce3d3",
-                            textAlign: "center",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              color: "#b88900",
-                              marginBottom: 10,
-                            }}
-                          >
-                            Bạn đã nhận được bộ kit xét nghiệm chưa?
-                          </div>
-                          <button
-                            style={{
-                              background: "#009e74",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: 6,
-                              padding: "8px 24px",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              // Cập nhật kitStatus thành 'da_nhan'
-                              const allOrders = JSON.parse(
-                                localStorage.getItem("dna_orders") || "[]"
-                              );
-                              const idx = allOrders.findIndex(
-                                (o) => o.id === selectedOrder.id
-                              );
-                              if (idx !== -1) {
-                                allOrders[idx] = {
-                                  ...allOrders[idx],
-                                  kitStatus: "da_nhan",
-                                };
-                                localStorage.setItem(
-                                  "dna_orders",
-                                  JSON.stringify(allOrders)
-                                );
-                              }
-                              setSelectedOrder({
-                                ...selectedOrder,
-                                kitStatus: "da_nhan",
-                              });
-                              setKitToast("Xác nhận nhận kit thành công!");
-                              setTimeout(() => setKitToast(""), 2000);
-                            }}
-                          >
-                            Tôi đã nhận kit
-                          </button>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              )}
             </div>
           )}
           {tab === "settings" && (
@@ -1184,16 +896,6 @@ const UserProfile = () => {
                 marginBottom: 0,
               }}
             >
-              <h2
-                style={{
-                  fontWeight: 800,
-                  fontSize: 32,
-                  marginBottom: 32,
-                  letterSpacing: -1,
-                }}
-              >
-                Cài đặt tài khoản
-              </h2>
               <form
                 className="change-password-form"
                 onSubmit={pwStep === 1 ? handleSendOtp : handleVerifyOtp}
@@ -1209,11 +911,16 @@ const UserProfile = () => {
                         value={pwForm.current}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, current: !p.current }))
+                        }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                         }
                       >
                         {showPw.current ? (
@@ -1221,7 +928,7 @@ const UserProfile = () => {
                         ) : (
                           <Eye size={18} />
                         )}
-                      </span>
+                      </button>
                     </div>
                     <div className="form-group password-group">
                       <label>Mật khẩu mới</label>
@@ -1231,15 +938,20 @@ const UserProfile = () => {
                         value={pwForm.new}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, new: !p.new }))
                         }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                        }
                       >
                         {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </span>
+                      </button>
                     </div>
                     <div className="form-group password-group">
                       <label>Xác nhận mật khẩu mới</label>
@@ -1249,11 +961,16 @@ const UserProfile = () => {
                         value={pwForm.confirm}
                         onChange={handlePwChange}
                         required
+                        style={{ paddingRight: 40 }}
                       />
-                      <span
-                        className="pw-eye"
+                      <button
+                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
                         onClick={() =>
                           setShowPw((p) => ({ ...p, confirm: !p.confirm }))
+                        }
+                        tabIndex={0}
+                        aria-label={
+                          showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                         }
                       >
                         {showPw.confirm ? (
@@ -1261,7 +978,7 @@ const UserProfile = () => {
                         ) : (
                           <Eye size={18} />
                         )}
-                      </span>
+                      </button>
                     </div>
                     <button className="submit-button" type="submit">
                       Gửi mã xác thực
@@ -1311,46 +1028,6 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-      {/* Toast xác nhận nhận kit */}
-      {kitToast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 32,
-            right: 32,
-            background: "#009e74",
-            color: "#fff",
-            padding: "14px 32px",
-            borderRadius: 12,
-            fontWeight: 700,
-            fontSize: 18,
-            zIndex: 9999,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-          }}
-        >
-          {kitToast}
-        </div>
-      )}
-      {/* Toast nộp file */}
-      {fileToast && (
-        <div
-          style={{
-            position: "fixed",
-            top: 80,
-            right: 32,
-            background: "#009e74",
-            color: "#fff",
-            padding: "14px 32px",
-            borderRadius: 12,
-            fontWeight: 700,
-            fontSize: 18,
-            zIndex: 9999,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-          }}
-        >
-          {fileToast}
-        </div>
-      )}
       {/* Modal xác nhận đăng xuất */}
       <Modal
         open={showLogoutModal}
@@ -1363,11 +1040,361 @@ const UserProfile = () => {
         okText="Đăng xuất"
         cancelText="Hủy"
         title="Xác nhận đăng xuất"
+        okButtonProps={{
+          style: {
+            background: "#e74c3c",
+            borderColor: "#e74c3c",
+            color: "#fff",
+          },
+          className: "custom-logout-btn",
+        }}
       >
         <p>Bạn có chắc muốn đăng xuất không?</p>
       </Modal>
+      {/* Modal feedback */}
+      {showFeedbackModal &&
+        feedbackOrder &&
+        (feedbackOrder.status === "Hoàn thành" ||
+          feedbackOrder.status === "Có kết quả") && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.18)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowFeedbackModal(false)}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 18,
+                minWidth: 340,
+                maxWidth: 420,
+                padding: 32,
+                boxShadow: "0 8px 32px #0002",
+                position: "relative",
+                fontSize: 17,
+                overflowY: "auto",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                style={{
+                  position: "absolute",
+                  top: 14,
+                  right: 18,
+                  background: "none",
+                  border: "none",
+                  fontSize: 26,
+                  color: "#888",
+                  cursor: "pointer",
+                }}
+              >
+                &times;
+              </button>
+              <h3
+                style={{
+                  fontWeight: 800,
+                  fontSize: 22,
+                  marginBottom: 18,
+                  color: "#b88900",
+                  letterSpacing: -1,
+                  textAlign: "center",
+                }}
+              >
+                Đánh giá dịch vụ
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  margin: "8px 0",
+                  justifyContent: "center",
+                }}
+              >
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={28}
+                    color={ratingInput >= star ? "#ffc107" : "#ddd"}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setRatingInput(star)}
+                  />
+                ))}
+                <span
+                  style={{
+                    color: "#888",
+                    fontSize: 15,
+                    marginLeft: 8,
+                  }}
+                >
+                  {ratingInput > 0 ? `${ratingInput}/5` : ""}
+                </span>
+              </div>
+              <textarea
+                rows={3}
+                placeholder="Nhận xét của bạn về dịch vụ..."
+                value={feedbackInput}
+                onChange={(e) => setFeedbackInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  borderRadius: 6,
+                  margin: "8px 0",
+                  padding: 8,
+                  border: "1px solid #ccc",
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (ratingInput === 0) {
+                    setFeedbackSuccess("Vui lòng chọn số sao!");
+                    return;
+                  }
+                  addFeedback(feedbackOrder.id, feedbackInput, ratingInput);
+                  setShowFeedbackModal(false);
+                  setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
+                  setTimeout(() => setFeedbackSuccess(""), 2000);
+                }}
+                style={{
+                  background: "#009e74",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "8px 24px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  width: "100%",
+                  marginTop: 8,
+                }}
+              >
+                Gửi đánh giá
+              </button>
+              {feedbackSuccess && (
+                <div
+                  style={{
+                    color: "#009e74",
+                    marginTop: 6,
+                    textAlign: "center",
+                  }}
+                >
+                  {feedbackSuccess}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      {showDetailModal && selectedOrder && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.18)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowDetailModal(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 18,
+              minWidth: 340,
+              maxWidth: 480,
+              maxHeight: "90vh",
+              padding: 32,
+              boxShadow: "0 8px 32px #0002",
+              position: "relative",
+              fontSize: 17,
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowDetailModal(false)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 18,
+                background: "none",
+                border: "none",
+                fontSize: 26,
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              &times;
+            </button>
+            <h3
+              style={{
+                fontWeight: 800,
+                fontSize: 26,
+                marginBottom: 18,
+                color: "#009e74",
+                letterSpacing: -1,
+                textAlign: "center",
+              }}
+            >
+              Chi tiết đơn đăng ký
+            </h3>
+            <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <span style={{ fontWeight: 700, color: "#009e74" }}>
+                  Mã đơn:
+                </span>{" "}
+                <span style={{ color: "#009e74", fontWeight: 700 }}>
+                  #{selectedOrder.id}
+                </span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
+                <span>{selectedOrder.status}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
+                <span>{selectedOrder.type}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Thể loại:</span>{" "}
+                <span>{selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
+                <span>{selectedOrder.date}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
+                <span>{selectedOrder.name}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
+                <span>{selectedOrder.phone}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Email:</span>{" "}
+                <span>{selectedOrder.email}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
+                <span>{selectedOrder.address}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày xét nghiệm:</span>{" "}
+                <span>{selectedOrder.appointmentDate}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
+                <span>{selectedOrder.note}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal xem kết quả (chỉ kết quả và file kết quả) */}
+      {showResultModal && selectedOrder && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.18)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowResultModal(false)}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 18,
+              minWidth: 340,
+              maxWidth: 480,
+              maxHeight: "90vh",
+              padding: 32,
+              boxShadow: "0 8px 32px #0002",
+              position: "relative",
+              fontSize: 17,
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowResultModal(false)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 18,
+                background: "none",
+                border: "none",
+                fontSize: 26,
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              &times;
+            </button>
+            <h3
+              style={{
+                fontWeight: 800,
+                fontSize: 26,
+                marginBottom: 18,
+                color: "#009e74",
+                letterSpacing: -1,
+                textAlign: "center",
+              }}
+            >
+              Kết quả xét nghiệm
+            </h3>
+            <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
+            <div style={{ margin: "10px 0" }}>
+              {selectedOrder.result ? (
+                <div
+                  style={{
+                    background: "#f6f8fa",
+                    border: "1px solid #cce3d3",
+                    borderRadius: 8,
+                    padding: 12,
+                  }}
+                >
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: selectedOrder.result,
+                    }}
+                  />
+                </div>
+              ) : (
+                <span style={{ color: "#888" }}>Chưa có bảng kết quả.</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {showFormModal && selectedOrderForForm && selectedOrderForForm.category === 'civil' && (
+        <RequestFormModal open={showFormModal} onClose={() => setShowFormModal(false)} order={selectedOrderForForm} category={selectedOrderForForm.category} />
+      )}
     </div>
   );
 };
-
 export default UserProfile;
