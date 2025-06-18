@@ -49,6 +49,7 @@ function orderReducer(state, action) {
       localStorage.setItem("dna_pricing_data", JSON.stringify(updatedPricingData));
       return { ...state, pricingData: updatedPricingData };
     }
+
     default:
       return state;
   }
@@ -71,7 +72,6 @@ export function OrderProvider({ children }) {
     } else {
       dispatch({ type: "SET_ORDERS", payload: [] });
     }
-    
     // Load pricing data from localStorage or use default
     const savedPricingData = JSON.parse(localStorage.getItem("dna_pricing_data") || "null");
     if (savedPricingData) {
@@ -79,6 +79,7 @@ export function OrderProvider({ children }) {
     } else {
       localStorage.setItem("dna_pricing_data", JSON.stringify(defaultPricingData));
     }
+
   }, [user]);
 
   const addOrder = (order) => {
@@ -183,4 +184,3 @@ export function OrderProvider({ children }) {
   );
 }
 export const useOrderContext = () => useContext(OrderContext);
-

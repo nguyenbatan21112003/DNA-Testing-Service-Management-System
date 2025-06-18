@@ -1,3 +1,4 @@
+
 import "./Css/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/HomePage/Header";
@@ -30,6 +31,7 @@ import "./Css/Contact.css";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { useLocation } from "react-router-dom";
+
 
 const blogData = [
   {
@@ -70,6 +72,7 @@ const blogData = [
   },
 ];
 
+
 function HomePage() {
   return (
     <>
@@ -81,6 +84,7 @@ function HomePage() {
       <RegistrationForm />
       <FAQContact />
     </>
+
   );
 }
 
@@ -196,5 +200,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

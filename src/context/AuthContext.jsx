@@ -1,3 +1,4 @@
+
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }) => {
         phone,
         password,
       });
+
       if (res.data && res.data.success) {
         return {
           success: true,
@@ -58,6 +60,7 @@ export const AuthProvider = ({ children }) => {
           success: false,
           message: res.data?.message || "Đăng ký thất bại!",
         };
+
       }
     } catch (err) {
       return {
@@ -70,6 +73,7 @@ export const AuthProvider = ({ children }) => {
   // Cập nhật user
   const updateUser = async (data) => {
     if (!user) return;
+
     try {
       const updateRes = await axios.put(`${API_URL}/${user.user_id}`, {
         ...user,
@@ -102,6 +106,7 @@ export const AuthProvider = ({ children }) => {
     const otpData = JSON.parse(
       sessionStorage.getItem(`otp_${user.email}`) || "null"
     );
+
     if (!otpData)
       return {
         success: false,
@@ -113,6 +118,7 @@ export const AuthProvider = ({ children }) => {
     }
     if (otpInput !== otpData.otp) {
       return { success: false, message: "Mã xác thực không đúng!" };
+
     }
     // Đổi mật khẩu trên mockAPI
     try {
@@ -145,3 +151,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

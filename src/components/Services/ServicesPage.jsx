@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useContext } from "react";
 import {
   Dna,
@@ -15,6 +14,7 @@ import { AuthContext } from "../../context/AuthContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+
 const ServicesPage = () => {
   const [activeTab, setActiveTab] = useState("civil");
   const location = useLocation();
@@ -27,6 +27,7 @@ const ServicesPage = () => {
   const [agreed, setAgreed] = useState(false);
   const [readGuide, setReadGuide] = useState(false);
   const [appointmentDate, setAppointmentDate] = useState(null);
+
 
   const serviceOptions = {
     civil: [
@@ -70,6 +71,14 @@ const ServicesPage = () => {
     ],
     admin: [{ value: "center", label: "Tại trung tâm" }],
   };
+
+
+  // Lấy ngày hôm nay theo định dạng yyyy-mm-dd
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const minDate = `${yyyy}-${mm}-${dd}`;
 
   useEffect(() => {
     // Scroll đến phần dịch vụ theo hash trên URL
