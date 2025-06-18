@@ -102,34 +102,6 @@ const AdminDashboard = () => {
         collapsed={collapsed}
         trigger={null}
       >
-        <span
-          style={{
-            position: "absolute",
-            top: 18,
-            right: -24,
-            background: "#e74c3c",
-            borderRadius: 12,
-            width: 48,
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 100,
-            color: "#fff",
-            fontSize: 28,
-            boxShadow: "0 2px 8px #e74c3c55",
-            border: "2px solid #fff",
-            transition: "right 0.2s",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setCollapsed((c) => !c);
-          }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
-
         <div
           style={{
             height: 64,
@@ -286,7 +258,6 @@ const AdminDashboard = () => {
           <div style={{ padding: 24, minHeight: 360 }}>
             {activeTab === "user-management" && <UserManagement />}
             {activeTab === "staff-management" && <StaffManagement />}
-            {activeTab === "processing" && <ProcessingManagement />}
             {activeTab === "processing" && <PricingManagement />}
             {(activeTab === "test-types" || !activeTab) && (
               <AdminDNAStatsDashboard />
@@ -298,6 +269,7 @@ const AdminDashboard = () => {
         open={logoutModal}
         onOk={confirmLogout}
         onCancel={cancelLogout}
+        style={{color:"red"}}
         okText="Đăng xuất"
         cancelText="Hủy"
         okButtonProps={{ className: "custom-logout-btn" }}

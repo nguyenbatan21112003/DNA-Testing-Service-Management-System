@@ -26,6 +26,7 @@ const LoginPage = () => {
         if (result.role_id === 1) navigate("/taikhoan");
         else if (result.role_id === 2) navigate("/nhanvien");
         else if (result.role_id === 5) navigate("/admin");
+        else if (result.role_id === 4) navigate("/manager");
         else navigate("/");
       }, 1000);
     } else {

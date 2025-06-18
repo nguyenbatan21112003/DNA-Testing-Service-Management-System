@@ -54,15 +54,15 @@ const UserProfile = () => {
   const [otpInput, setOtpInput] = useState("");
 
   const [filterStatus, setFilterStatus] = useState("Tất cả");
-  const [showDetail, setShowDetail] = useState(false);
+  // const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const [ratingInput, setRatingInput] = useState(0);
   const [feedbackInput, setFeedbackInput] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState("");
 
-  const [kitToast, setKitToast] = useState("");
-  const [fileToast, setFileToast] = useState("");
+  // const [kitToast, setKitToast] = useState("");
+  // const [fileToast, setFileToast] = useState("");
   const [collapsed, setCollapsed] = useState(false);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);

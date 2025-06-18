@@ -1,4 +1,3 @@
-
 import "./Css/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/HomePage/Header";
@@ -22,6 +21,7 @@ import AdminDashboard from "./components/Admin/AdminDashboard";
 import Error404 from './components/Errors/Error404';
 import LoginPage from './components/HomePage/LoginPage';
 import RegisterPage from './components/HomePage/RegisterPage';
+import ManagerDashboard from "./components/Manager/ManagerDashboard";
 /*-----------------------------------------------------*/
 import "./Css/Services-page.css";
 import "./Css/About-us-page.css";
@@ -169,13 +169,15 @@ function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
   const isUserPage = location.pathname.startsWith("/taikhoan");
+  const isStaffPage = location.pathname.startsWith("/nhanvien");
+  const isManagerPage = location.pathname.startsWith("/manager");
   const isAdmin = user && user.role_id === 5;
   const is404 = location.pathname === '/404' || location.pathname === '*' || location.pathname.startsWith('/404');
   const isLoginOrRegister = location.pathname === '/login' || location.pathname === '/register';
   return (
     <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
       {isUserPage && !is404 && !isLoginOrRegister && <UserInfoBar user={user} />}
-      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && !isLoginOrRegister && <Header />}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && !is404 && !isLoginOrRegister && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -183,6 +185,7 @@ function App() {
           <Route path="/vechungtoi" element={<AboutUsPage />} />
           <Route path="/taikhoan" element={<UserProfile />} />
           <Route path="/nhanvien" element={<StaffOrderManager />} />
+          <Route path="/manager" element={<ManagerDashboard />} />
           <Route path="/tintuc" element={<BlogPage blogData={blogData} />} />
           <Route
             path="/tintuc/:id"
@@ -195,8 +198,8 @@ function App() {
           <Route path='*' element={<Error404 />} />
         </Routes>
       </main>
-      {!(isAdmin && isAdminPage) && !isUserPage && !is404 && !isLoginOrRegister && <Footer />}
-      {!is404 && !isLoginOrRegister && <ScrollToTop />}
+      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && !is404 && !isLoginOrRegister && <Footer />}
+      {!is404 && !isLoginOrRegister && !isStaffPage && !isManagerPage && <ScrollToTop />}
     </div>
   );
 }

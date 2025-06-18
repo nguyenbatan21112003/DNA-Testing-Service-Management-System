@@ -17,7 +17,6 @@ import "antd/dist/reset.css"
 
 // Import các component con
 import ManagerOverview from "./ManagerOverview"
-import TestResultVerification from "./TestResultVerification"
 import ManagerReports from "./ManagerReports"
 import CustomerFeedbackManager from "./CustomerFeedbackManager"
 
@@ -163,80 +162,74 @@ const ManagerDashboard = () => {
         <Layout style={{ minHeight: "100vh", height: "100vh", overflow: "hidden" }}>
             <Sider
                 width={220}
-                style={{ background: "#fff", position: "relative" }}
+                style={{ background: "#fff", position: "relative", display: "flex", flexDirection: "column", height: "100vh", paddingBottom: 0 }}
                 collapsible
                 collapsed={collapsed}
                 trigger={null}
             >
-                <span
-                    style={{
-                        position: "absolute",
-                        top: 18,
-                        right: -24,
-                        background: "#722ed1",
-                        borderRadius: 12,
-                        width: 48,
-                        height: 48,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        zIndex: 100,
-                        color: "#fff",
-                        fontSize: 28,
-                        boxShadow: "0 2px 8px #722ed155",
-                        border: "2px solid #fff",
-                        transition: "right 0.2s",
-                    }}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        setCollapsed((c) => !c)
-                    }}
-                >
-                    {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                </span>
-
-                <div
-                    style={{
-                        height: 64,
-                        margin: 16,
-                        fontWeight: 700,
-                        fontSize: 22,
-                        textAlign: "center",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: collapsed ? "center" : "flex-start",
-                        gap: 8,
-                        cursor: "pointer",
-                        userSelect: "none",
-                    }}
-                    onClick={() => navigate("/")}
-                >
-                    <span style={{ fontSize: 28 }}>🧬</span>
-                    {!collapsed && <span style={{ color: "#722ed1", fontWeight: 800 }}>DNA LAB</span>}
+                <div>
+                    <div
+                        style={{
+                            height: 56,
+                            margin: "16px 16px 8px 16px",
+                            fontWeight: 700,
+                            fontSize: 22,
+                            textAlign: "center",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: collapsed ? "center" : "flex-start",
+                            gap: 8,
+                            cursor: "pointer",
+                            userSelect: "none",
+                            color: "#722ed1",
+                        }}
+                        onClick={() => navigate("/")}
+                    >
+                        <span style={{ fontSize: 28 }}>🧬</span>
+                        {!collapsed && <span style={{ color: "#722ed1", fontWeight: 800 }}>DNA LAB</span>}
+                    </div>
+                    {/* Nút thu gọn sidebar */}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginBottom: 8,
+                        }}
+                    >
+                        <Button
+                            type="primary"
+                            onClick={() => setCollapsed(!collapsed)}
+                            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                            style={{
+                                background: "#722ed1",
+                                borderColor: "#722ed1",
+                                width: collapsed ? "80%" : "90%",
+                                minHeight: 40,
+                            }}
+                        >
+                            {!collapsed && "Menu"}
+                        </Button>
+                    </div>
                 </div>
-
-                <Menu
-                    mode="inline"
-                    selectedKeys={[activeTab]}
-                    style={{
-                        height: "calc(100vh - 200px)",
-                        borderRight: 0,
-                        paddingTop: 12,
-                    }}
-                    items={menuItems}
-                    onClick={handleMenuClick}
-                />
-
-                {/* Nút Đăng xuất */}
+                {/* Menu chiếm phần co giãn, có scroll nếu dài */}
+                <div style={{ flex: 1, overflowY: "auto", minHeight: 0, paddingTop: 0 }}>
+                    <Menu
+                        mode="inline"
+                        selectedKeys={[activeTab]}
+                        style={{ borderRight: 0, background: "#fff", paddingTop: 0 }}
+                        items={menuItems}
+                        onClick={handleMenuClick}
+                    />
+                </div>
+                {/* Nút Đăng xuất luôn ở dưới cùng */}
                 <div
                     style={{
-                        position: "absolute",
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
                         borderTop: "1px solid #f0f0f0",
-                        paddingTop: 16,
+                        padding: "12px 16px 12px 16px",
+                        background: "#fff",
+                        marginTop: "auto",
+                        minHeight: 56,
+                        boxSizing: "border-box",
                     }}
                 >
                     <Button
