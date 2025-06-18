@@ -1,4 +1,5 @@
-﻿using DNATestSystem.Services.Interface;
+﻿using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,12 @@ namespace DNATestSystem.APIService.Controllers
         {
             var results = _managerService.GetPendingTestResults();
             return Ok(results);
+        }
+        [HttpPut("verify")]
+        public IActionResult VerifyTestResult([FromBody] VertifyTestResult dto)
+        {
+            var success = _managerService.VerifyTestResult(dto);
+            return success ? Ok("Verified successfully.") : NotFound("TestResult not found or already verified.");
         }
 
     }

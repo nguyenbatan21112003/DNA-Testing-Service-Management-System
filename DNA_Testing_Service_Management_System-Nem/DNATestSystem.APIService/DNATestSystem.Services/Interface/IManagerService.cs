@@ -10,8 +10,8 @@ namespace DNATestSystem.Services.Interface
 {
     public interface IManagerService
     {
-        List<PendingTestResultDto> GetPendingTestResults();  
+        List<PendingTestResultDto> GetPendingTestResults();
 
-        
+        bool VerifyTestResult(VertifyTestResult dto);
     }
 }

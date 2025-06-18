@@ -237,6 +237,38 @@ namespace DNATestSystem.Services.Service
                AuthorId = blog.AuthorId,
             };
         }
+
+        public ProfileDetailModel? GetProfileUser(int Profile_Id)
+        {
+            var data = _context.Users
+                        .Include(x => x.UserProfiles)
+                        .FirstOrDefault(x => x.UserId == Profile_Id);
+
+            if (data == null)
+                return null;
+
+            var profile = data.UserProfiles.FirstOrDefault();
+
+            return new ProfileDetailModel
+            {
+                UserID = data.UserId,
+                FullName = data.FullName,
+                PhoneNumber = data.Phone,
+                Email = data.Email,
+                RoleID = data.RoleId,
+                CreatedAt = data.CreatedAt,
+                ProfileDto = profile == null ? null : new ProfileDto
+                {
+                    Gender = profile.Gender,
+                    Address = profile.Address,
+                    DateOfBirth = profile.DateOfBirth,
+                    IdentityFile = profile.IdentityFile,
+                    Fingerfile = profile.Fingerfile,
+                    UpdatedAt = profile.UpdatedAt,
+                }
+            };
+        }
+
     }
 }
 

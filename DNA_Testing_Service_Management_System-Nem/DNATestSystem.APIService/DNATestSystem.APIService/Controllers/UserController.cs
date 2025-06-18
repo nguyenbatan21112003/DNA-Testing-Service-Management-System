@@ -135,6 +135,16 @@ namespace DNATestSystem.Controllers
                 return NotFound(new { message = "Blog không tồn tại" });
             return Ok(Blog);
         }
+        [HttpGet("GetProfile/{profile_id}")] 
+        public IActionResult GetProfile(int profile_id)
+        {
+            var result = _userService.GetProfileUser(profile_id);
+
+            if (result == null)
+                return NotFound("User not found.");
+
+            return Ok(result);
+        }
 
 
         //[Authorize]

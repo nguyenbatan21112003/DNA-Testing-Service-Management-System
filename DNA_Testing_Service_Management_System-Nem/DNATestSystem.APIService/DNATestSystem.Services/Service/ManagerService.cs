@@ -42,6 +42,22 @@ namespace DNATestSystem.Services.Service
 
             return pendingResults;
         }
+        public bool VerifyTestResult(VertifyTestResult dto)
+        {
+            var result = _context.TestResults
+                .FirstOrDefault(tr => tr.ResultId == dto.ResultID && tr.Status == "Pending" && tr.VerifiedBy == null && tr.VerifiedAt == null);
+
+            if (result == null)
+                return false;
+
+            result.Status = "Verified";
+            result.VerifiedBy = dto.ManagerID;
+            result.VerifiedAt = DateTime.Now;
+
+            _context.SaveChanges();
+            return true;
+        }
+
 
 
 

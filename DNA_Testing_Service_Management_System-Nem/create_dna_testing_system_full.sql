@@ -286,6 +286,12 @@ VALUES
 (N'Phạm Thị D', '0933123456', 'khachhang2@gmail.com', 'hashed_password_4', 3, GETDATE(), GETDATE(), 0);
 GO
 
+INSERT INTO UserProfiles (UserID, Gender, Address, DateOfBirth, IdentityFile, Fingerfile, UpdatedAt)
+VALUES 
+(1, N'Nam', N'12 Nguyễn Huệ, Quận 1, TP.HCM', '1985-05-15', '/uploads/identity/nguyenvana.png', '/uploads/fingerprint/nguyenvana.fgp', GETDATE()),
+(2, N'Nữ', N'34 Hai Bà Trưng, Quận 3, TP.HCM', '1990-08-20', '/uploads/identity/lethib.png', '/uploads/fingerprint/lethib.fgp', GETDATE()),
+(3, N'Nam', N'56 Lý Thường Kiệt, Quận 10, TP.HCM', '1992-11-10', '/uploads/identity/tranvanc.png', '/uploads/fingerprint/tranvanc.fgp', GETDATE());
+
 SELECT * FROM Users
 -- Services
 INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent)
@@ -375,7 +381,7 @@ VALUES
 -- Yêu cầu 3: Đã xác minh huyết thống
 (5, 2, 3, N'Quan hệ huyết thống: Cha - Con (99.99%)', N'Verified', DATEADD(DAY, -2, GETDATE()), GETDATE());
 
-
+SELECT * FROM UserProfiles
 SELECT * FROM TestResults
 SELECT * FROM Users
 SELECT * FROM TestResults

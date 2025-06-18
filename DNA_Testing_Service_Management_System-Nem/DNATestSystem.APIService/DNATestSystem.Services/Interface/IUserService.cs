@@ -6,7 +6,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 namespace DNATestSystem.Services.Interface
 {
-    public interface IUserService
+    public interface  IUserService
     {
         //Sử dụng task
         //Task<IServiceResult>
@@ -24,5 +24,7 @@ namespace DNATestSystem.Services.Interface
 
         List<BlogPostModel> GetAllBlogForUser();
         BlogPostDetailsModel GetBlogPostDetailsModel(string Slug);
+        //
+        ProfileDetailModel GetProfileUser(int Profile_Id);
     }
 }
