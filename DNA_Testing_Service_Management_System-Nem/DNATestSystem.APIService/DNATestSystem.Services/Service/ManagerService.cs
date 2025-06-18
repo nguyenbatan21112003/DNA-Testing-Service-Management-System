@@ -15,33 +15,34 @@ namespace DNATestSystem.Services.Service
         private readonly IApplicationDbContext _context;
         public ManagerService(IApplicationDbContext context) 
         {
-            _context = _context;
+            _context = context;
         }
 
         public List<PendingTestResultDto> GetPendingTestResults()
         {
             var pendingResults = _context.TestResults
-                .Where(r => r.Status == "Pending")
-                .Include(r => r.Request)
-                    .ThenInclude(req => req.User)
-                .Include(r => r.Request)
-                    .ThenInclude(req => req.Service)
-                .Include(r => r.EnteredByNavigation)
-                .Select(r => new PendingTestResultDto
+                .Include(tr => tr.Request)
+                    .ThenInclude(r => r.User)
+                .Include(tr => tr.Request)
+                    .ThenInclude(r => r.Service)
+                .Include(tr => tr.EnteredByNavigation)
+                .Where(tr => tr.Status == "Pending")
+                .Select(tr => new PendingTestResultDto
                 {
-                    ResultID = r.ResultId,
-                    RequestID = r.RequestId,
-                    CustomerName = r.Request.User.FullName,
-                    ServiceName = r.Request.Service.ServiceName,
-                    EnteredBy = r.EnteredByNavigation.FullName,
-                    EnteredAt = r.EnteredAt,
-                    ResultData = r.ResultData,
-                    Status = r.Status
+                    ResultID = tr.ResultId,
+                    RequestID = tr.RequestId,
+                    CustomerName = tr.Request != null ? tr.Request.User.FullName : null,
+                    ServiceName = tr.Request != null ? tr.Request.Service.ServiceName : null,
+                    EnteredBy = tr.EnteredByNavigation != null ? tr.EnteredByNavigation.FullName : null,
+                    EnteredAt = tr.EnteredAt,
+                    ResultData = tr.ResultData,
+                    Status = tr.Status
                 })
                 .ToList();
 
             return pendingResults;
         }
+
 
 
     }

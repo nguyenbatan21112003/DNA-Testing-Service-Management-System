@@ -19,10 +19,13 @@ namespace DNATestSystem.Services.Interface
         int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
         int DeleteServiceMethod(int id);
         int DeleteServiceMethodByIsPublished(int serviceId);
-        int BanUserById(int id);
+        void updateServiceAndPrice(ServiceUpdateModel model);
+        
+        
         List<ServiceSummaryDto> GetServiceForAdmin();
         //User
         List<UserShowModel> getAllUser();
+        int BanUserById(int id);
     }
 }
             

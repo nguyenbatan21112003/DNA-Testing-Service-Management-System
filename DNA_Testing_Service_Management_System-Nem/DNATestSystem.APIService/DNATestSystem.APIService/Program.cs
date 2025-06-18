@@ -65,6 +65,8 @@ builder.Services.AddControllers()
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IManagerService, ManagerService>();
+builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(

@@ -60,14 +60,12 @@ namespace DNATestSystem.APIService.Controllers
             }
         }
 
-        [HttpGet("getUser")]
+        [HttpGet("getAllUser")]
         public IActionResult GetAllUser()
         {
             var users = _adminService.getAllUser();
             return Ok(users);
         }
-
-        
 
     }
 }

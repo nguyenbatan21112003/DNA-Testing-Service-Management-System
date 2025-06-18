@@ -61,5 +61,19 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(data);
 
         }
+
+        [HttpPut("update-service")]
+        public IActionResult UpdateService([FromBody] ServiceUpdateModel model)
+        {
+            try
+            {
+                _adminService.updateServiceAndPrice(model);
+                return Ok(new { message = "Cập nhật service thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

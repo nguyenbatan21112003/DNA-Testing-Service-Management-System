@@ -162,7 +162,7 @@ namespace DNATestSystem.Services.Service
                                 ServiceName = s.ServiceName,
                                 Description = s.Description,
                                 Category = s.Category,
-                                IsUrgent = false, // gán cứng nếu chưa có
+                                IsUrgent = s.IsUrgent, 
                                 IncludeVAT = true,
                                 Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
                                 Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,

@@ -122,10 +122,22 @@
         }
       }
     },
-    "/Admin/getUser": {
+    "/Admin/getAllUser": {
       "get": {
         "tags": [
           "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/test-results/pending": {
+      "get": {
+        "tags": [
+          "Manager"
         ],
         "responses": {
           "200": {
@@ -275,6 +287,49 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Service/all-services": {
+      "get": {
+        "tags": [
+          "Service"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Service/update-service": {
+      "put": {
+        "tags": [
+          "Service"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceUpdateModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceUpdateModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceUpdateModel"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -527,6 +582,53 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "isUrgent": {
+            "type": "boolean"
+          },
+          "isPublished": {
+            "type": "boolean"
+          },
+          "price2Samples": {
+            "type": "number",
+            "format": "double"
+          },
+          "price3Samples": {
+            "type": "number",
+            "format": "double"
+          },
+          "includeVAT": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ServiceUpdateModel": {
+        "type": "object",
+        "properties": {
+          "serviceID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "serviceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "numberSample": {
+            "type": "integer",
+            "format": "int32"
           },
           "isUrgent": {
             "type": "boolean"

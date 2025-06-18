@@ -74,7 +74,6 @@ namespace DNATestSystem.Services.Service
                 ServiceId = newService.ServiceId,
                 Price2Samples = serviceCreateModel.Price2Samples,
                 Price3Samples = serviceCreateModel.Price3Samples,
-                TimeToResult = serviceCreateModel.TimeToResult,
                 IncludeVAT = serviceCreateModel.IncludeVAT,
                 CreatedAt = DateTime.UtcNow
             };
@@ -205,5 +204,35 @@ namespace DNATestSystem.Services.Service
                             }).ToList();
             return services;
         }
+        public void updateServiceAndPrice(ServiceUpdateModel model)
+        {
+            var service = _context.Services
+                            .Include (s => s.PriceDetails)
+                            .FirstOrDefault(s => s.ServiceId == model.ServiceID);
+
+            // Cập nhật Service
+            service.ServiceName = model.ServiceName;
+            service.Description = model.Description;
+            service.Slug = model.Slug;
+            service.Category = model.Category;
+            service.NumberSample = model.NumberSample;
+            service.IsUrgent = model.IsUrgent;
+            service.IsPublished = model.IsPublished;
+            service.UpdatedAt = DateTime.UtcNow;
+
+            // Cập nhật PriceDetail
+            var priceDetail = _context.PriceDetails.FirstOrDefault(p => p.ServiceId == model.ServiceID);
+            if (priceDetail != null)
+            {
+                priceDetail.Price2Samples = model.Price2Samples;
+                priceDetail.Price3Samples = model.Price3Samples;
+                priceDetail.TimeToResult = model.TimeToResult;
+                priceDetail.IncludeVAT = model.IncludeVAT;
+                priceDetail.UpdatedAt = DateTime.UtcNow;
+            }
+
+            _context.SaveChanges();
+        }
+
     }
 }

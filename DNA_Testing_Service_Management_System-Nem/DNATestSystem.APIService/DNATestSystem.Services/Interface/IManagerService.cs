@@ -11,5 +11,7 @@ namespace DNATestSystem.Services.Interface
     public interface IManagerService
     {
         List<PendingTestResultDto> GetPendingTestResults();  
+
+        
     }
 }

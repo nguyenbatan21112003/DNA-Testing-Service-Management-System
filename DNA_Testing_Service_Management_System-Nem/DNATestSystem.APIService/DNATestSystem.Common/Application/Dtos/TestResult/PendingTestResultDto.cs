@@ -16,5 +16,6 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.TestResult
         public DateTime? EnteredAt { get; set; }
         public string? ResultData { get; set; }
         public string? Status { get; set; }
+
     }
 }

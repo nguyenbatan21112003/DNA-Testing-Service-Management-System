@@ -10,6 +10,10 @@ namespace DNATestSystem.APIService.Controllers
     public class ManagerController : Controller
     {
         private readonly IManagerService _managerService;
+        public ManagerController(IManagerService managerService)
+        {
+            _managerService = managerService;
+        }
         [HttpGet("test-results/pending")]
         public IActionResult GetPendingTestResults()
         {

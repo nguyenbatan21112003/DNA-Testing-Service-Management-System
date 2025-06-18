@@ -130,17 +130,18 @@ CREATE TABLE UserSelectedServices (
 GO
 
 -- ===================== TEST REQUESTS =====================
-CREATE TABLE TestType (
-  TypeID INT PRIMARY KEY IDENTITY(1,1),
-  TypeName VARCHAR(20)
+CREATE TABLE CollectType (
+  CollectID INT PRIMARY KEY IDENTITY(1,1),
+  CollectName NVARCHAR(20)
 );
 GO
+DROP TABLE CollectType
 
 CREATE TABLE TestRequests (
   RequestID INT PRIMARY KEY IDENTITY(1,1),
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
-  TypeID INT FOREIGN KEY REFERENCES TestType(TypeID),
+  TypeID INT FOREIGN KEY REFERENCES CollectType(CollectID),
   ScheduleDate DATE,
   Address NVARCHAR(255),
   Status NVARCHAR(50),
@@ -285,6 +286,7 @@ VALUES
 (N'Phạm Thị D', '0933123456', 'khachhang2@gmail.com', 'hashed_password_4', 3, GETDATE(), GETDATE(), 0);
 GO
 
+SELECT * FROM Users
 -- Services
 INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent)
 VALUES
@@ -335,3 +337,50 @@ N'Thẻ ADN là một dạng xác thực sinh học cá nhân hóa, giúp lưu t
 N'Thẻ ADN cá nhân do ADNVietnam cung cấp được mã hóa và lưu trữ an toàn.',
 2, N'https://adnvietnam.vn/wp-content/uploads/2022/04/the-adn.jpg');
 GO
+SELECT * FROM CollectType
+SET IDENTITY_INSERT CollectType ON;
+
+INSERT INTO CollectType  (CollectID , CollectName  ) VALUES
+(1, 'Cha - Con'),
+(2, 'Mẹ - Con'),
+(3, 'Anh - Em'),
+(4, 'Họ hàng'),
+(5, 'Khai sinh'),
+(6, 'Thẻ ADN cá nhân'),
+(7, 'Hành chính nhanh');
+
+SET IDENTITY_INSERT CollectType OFF;
+
+
+--TestRequest
+-- Ví dụ: UserID = 3, ServiceID = 1, TypeID = 1 (Cha - Con)
+INSERT INTO TestRequests (UserID, ServiceID, TypeID, ScheduleDate, Address, Status, CreatedAt)
+VALUES 
+(3, 1, 1, '2025-06-20', N'123 Đường Lê Lợi, Hà Nội', N'Pending', GETDATE()),
+(3, 2, 2, '2025-06-21', N'456 Nguyễn Huệ, Huế', N'Pending', GETDATE()),
+(4, 3, 3, '2025-06-22', N'789 Trần Hưng Đạo, TP.HCM', N'Pending', GETDATE()),
+(3, 4, 4, '2025-06-23', N'88 Lý Thường Kiệt, Đà Nẵng', N'Pending', GETDATE()),  -- RequestID = 4
+(3, 5, 5, '2025-06-24', N'99 Nguyễn Trãi, Hà Nội', N'Pending', GETDATE());      -- RequestID = 5
+SELECT * FROM TestRequests
+--TestResult
+-- Thêm 2 request để khớp với TestResults
+INSERT INTO TestResults (RequestID, EnteredBy, VerifiedBy, ResultData, Status, EnteredAt, VerifiedAt)
+VALUES
+-- Yêu cầu 1: Chưa xác nhận
+(3, 2, NULL, N'Kết quả xét nghiệm đang được xử lý...', N'Pending', GETDATE(), NULL),
+
+-- Yêu cầu 2: Đang phân tích
+(4, 2, NULL, N'Đang phân tích mẫu...', N'Pending', GETDATE(), NULL),
+
+-- Yêu cầu 3: Đã xác minh huyết thống
+(5, 2, 3, N'Quan hệ huyết thống: Cha - Con (99.99%)', N'Verified', DATEADD(DAY, -2, GETDATE()), GETDATE());
+
+
+SELECT * FROM TestResults
+SELECT * FROM Users
+SELECT * FROM TestResults
+WHERE Status = 'Pending' AND (RequestId IS NULL OR EnteredBy IS NULL)
+SELECT * FROM TestRequests
+WHERE UserId IS NULL OR ServiceId IS NULL
+
+SELECT * FROM TestResults WHERE RequestId IS NOT NULL AND RequestId NOT IN (SELECT RequestId FROM TestRequests);

@@ -50,7 +50,7 @@
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.AdminController",
     "Method": "GetAllUser",
-    "RelativePath": "Admin/getUser",
+    "RelativePath": "Admin/getAllUser",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -71,6 +71,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetPendingTestResults",
+    "RelativePath": "Manager/test-results/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -128,6 +138,16 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ServiceController",
+    "Method": "getAllService",
+    "RelativePath": "Service/all-services",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ServiceController",
     "Method": "CreateNewService",
     "RelativePath": "Service/create-service",
     "HttpMethod": "POST",
@@ -153,6 +173,22 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ServiceController",
+    "Method": "UpdateService",
+    "RelativePath": "Service/update-service",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceUpdateModel",
         "IsRequired": true
       }
     ],
