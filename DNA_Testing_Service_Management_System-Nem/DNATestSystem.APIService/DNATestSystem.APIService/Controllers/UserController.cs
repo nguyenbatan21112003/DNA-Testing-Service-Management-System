@@ -145,7 +145,12 @@ namespace DNATestSystem.Controllers
 
             return Ok(result);
         }
-
+        [HttpPut("UpdateUserProfile/{profile_id}")]
+        public IActionResult UpdateProfileUser([FromBody] UpdateProfileModel model)
+        {
+            var data = _userService.UpdateProfile(model);
+            return Ok(data);
+        }
 
         //[Authorize]
         //[HttpPost("verify-current-password")]

@@ -26,7 +26,6 @@ namespace DNATestSystem.Services.Service
             _jwtSettings = jwtSettings.Value;
         }
 
-        //Salting: đã mặn thêm muối
         public User? Login(UserLoginModel loginModel)
         {
             var user = _context.Users
@@ -269,6 +268,28 @@ namespace DNATestSystem.Services.Service
             };
         }
 
+        public UpdateProfileModel? UpdateProfile(UpdateProfileModel updateProfileModel)
+        {
+            var userProfile = _context.UserProfiles.FirstOrDefault(x => x.ProfileId == updateProfileModel.ProfileId);
+
+            if(userProfile == null)
+            {
+                return null;
+            }
+            var user = _context.Users.FirstOrDefault(x => x.UserId == userProfile.UserId);
+            var data = new UpdateProfileModel
+            {
+                Fullname = user.FullName,
+                Phone = user.Phone,
+
+                Gender = userProfile.Gender,
+                Address = userProfile.Address,
+                DateOfBirth = userProfile.DateOfBirth,
+                IdentityFile = userProfile.IdentityFile,
+                Fingerfile = userProfile.Fingerfile,
+            };
+            return data;
+        }
     }
 }
 

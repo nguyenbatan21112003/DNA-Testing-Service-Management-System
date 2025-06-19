@@ -24,7 +24,8 @@ namespace DNATestSystem.Services.Interface
 
         List<BlogPostModel> GetAllBlogForUser();
         BlogPostDetailsModel GetBlogPostDetailsModel(string Slug);
-        //
+        //UserProfile
         ProfileDetailModel GetProfileUser(int Profile_Id);
+        UpdateProfileModel UpdateProfile(UpdateProfileModel updateProfileModel);
     }
 }
