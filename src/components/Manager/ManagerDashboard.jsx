@@ -57,14 +57,14 @@ const ManagerDashboard = () => {
 
     // Tạo tài khoản Manager và dữ liệu mẫu tự động
     useEffect(() => {
-        if (!user || user.role_id !== 4) {
+        if (!user || user.role_id !== 3) {
             const tempManagerAccount = {
-                user_id: 4,
+                user_id: 3,
                 name: "Nguyễn Văn Quản",
                 email: "manager@dnalab.com",
                 phone: "0987654321",
                 password: "manager123",
-                role_id: 4,
+                role_id: 3,
                 avatar: null,
             }
 
@@ -86,7 +86,7 @@ const ManagerDashboard = () => {
                 return
             }
 
-            if (user.role_id !== 4) {
+            if (user.role_id !== 3) {
                 message.error("Bạn không có quyền truy cập trang này!")
                 setUnauthorized(true)
                 navigate("/", { replace: true })

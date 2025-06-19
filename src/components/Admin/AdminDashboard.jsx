@@ -34,11 +34,6 @@ const menuItems = [
     label: "Thời gian & Chi phí",
   },
   {
-    key: "rating-feedback",
-    icon: <StarOutlined />,
-    label: "Rating & Feedback",
-  },
-  {
     key: "policy-violation",
     icon: <ExclamationCircleOutlined />,
     label: "Vi phạm chính sách",
@@ -67,7 +62,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = React.useState("");
   const [collapsed, setCollapsed] = React.useState(false);
 
-  if (!user || user.role_id !== 5) {
+  if (!user || user.role_id !== 4) {
     return <Navigate to="/" replace />;
   }
 

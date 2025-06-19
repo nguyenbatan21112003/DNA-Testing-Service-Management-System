@@ -30,6 +30,7 @@ import {
   PrinterOutlined,
 } from "@ant-design/icons"
 import dayjs from "dayjs"
+import { useOrderContext } from "../../context/OrderContext"
 
 const { Option } = Select
 const { TextArea } = Input
@@ -38,6 +39,7 @@ const { Title, Text, Paragraph } = Typography
 const { TabPane } = Tabs
 
 const HomeSampling = () => {
+  const { getAllOrders } = useOrderContext()
   const [samplingRequests, setSamplingRequests] = useState([])
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -47,8 +49,8 @@ const HomeSampling = () => {
 
   useEffect(() => {
     // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại nhà
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    const homeSamplingOrders = savedOrders
+    const allOrders = getAllOrders()
+    const homeSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "home")
       .map((order) => ({
         ...order,

@@ -171,13 +171,14 @@ function App() {
   const isUserPage = location.pathname.startsWith("/taikhoan");
   const isStaffPage = location.pathname.startsWith("/nhanvien");
   const isManagerPage = location.pathname.startsWith("/manager");
-  const isAdmin = user && user.role_id === 5;
+  const isAdmin = user && user.role_id === 4;
+  const isManager = user && user.role_id === 3;
   const is404 = location.pathname === '/404' || location.pathname === '*' || location.pathname.startsWith('/404');
   const isLoginOrRegister = location.pathname === '/login' || location.pathname === '/register';
   return (
     <div className="app" style={isUserPage ? { paddingTop: 56 } : {}}>
       {isUserPage && !is404 && !isLoginOrRegister && <UserInfoBar user={user} />}
-      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && !is404 && !isLoginOrRegister && <Header />}
+      {!(isAdmin && isAdminPage) && !(isManager && isManagerPage) && !isUserPage && !isStaffPage && !is404 && !isLoginOrRegister && <Header />}
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -198,7 +199,7 @@ function App() {
           <Route path='*' element={<Error404 />} />
         </Routes>
       </main>
-      {!(isAdmin && isAdminPage) && !isUserPage && !isStaffPage && !isManagerPage && !is404 && !isLoginOrRegister && <Footer />}
+      {!(isAdmin && isAdminPage) && !(isManager && isManagerPage) && !isUserPage && !isStaffPage && !is404 && !isLoginOrRegister && <Footer />}
       {!is404 && !isLoginOrRegister && !isStaffPage && !isManagerPage && <ScrollToTop />}
     </div>
   );

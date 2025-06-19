@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, Table, Tag, Button, Modal, Form, Input, Select, message, Space, Tabs, Statistic, Row, Col } from "antd"
 import { FileTextOutlined, EyeOutlined, EditOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons"
+import { useOrderContext } from "../../context/OrderContext"
 
 const { Option } = Select
 const { Search } = Input
@@ -10,6 +11,7 @@ const { TextArea } = Input
 const { TabPane } = Tabs
 
 const OrderManagement = () => {
+  const { getAllOrders } = useOrderContext()
   const [orders, setOrders] = useState([])
   const [filteredOrders, setFilteredOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -20,9 +22,8 @@ const OrderManagement = () => {
   const [searchText, setSearchText] = useState("")
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    setOrders(savedOrders)
-    setFilteredOrders(savedOrders)
+    setOrders(getAllOrders())
+    setFilteredOrders(getAllOrders())
   }, [])
 
   useEffect(() => {

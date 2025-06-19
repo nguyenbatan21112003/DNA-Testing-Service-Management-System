@@ -2,6 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { useOrderContext } from "../../context/OrderContext";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const RegistrationForm = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const { addOrder } = useOrderContext();
 
   useEffect(() => {
     setIsLoggedIn(!!user);
@@ -49,6 +51,17 @@ const RegistrationForm = () => {
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
+    addOrder({
+      id: Date.now().toString(),
+      name: formData.fullName,
+      phone: formData.phone,
+      type: serviceOptions[formData.category].find(opt => opt.value === formData.serviceType)?.label || "",
+      category: formData.category,
+      message: formData.message,
+      date: new Date().toLocaleDateString("vi-VN"),
+      sampleMethod: "",
+      priority: "Trung bình"
+    });
     setShowSuccess(true);
     setFormData({ fullName: "", phone: "", serviceType: "", message: "" });
     setTimeout(() => setShowSuccess(false), 2500);

@@ -31,12 +31,14 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons"
 import dayjs from "dayjs"
+import { useOrderContext } from "../../context/OrderContext"
 
 const { Option } = Select
 const { TextArea } = Input
 const { TabPane } = Tabs
 
 const CenterSampling = () => {
+  const { getAllOrders } = useOrderContext()
   const [appointments, setAppointments] = useState([])
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -53,8 +55,8 @@ const CenterSampling = () => {
 
   useEffect(() => {
     // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại trung tâm
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    const centerSamplingOrders = savedOrders
+    const allOrders = getAllOrders()
+    const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center")
       .map((order) => ({
         ...order,
@@ -114,7 +116,7 @@ const CenterSampling = () => {
       setAppointments(updatedAppointments)
 
       // Cập nhật lại localStorage
-      const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
+      const allOrders = getAllOrders()
       const updatedAllOrders = allOrders.map((order) => {
         const updatedAppointment = updatedAppointments.find((apt) => apt.id === order.id)
         return updatedAppointment || order

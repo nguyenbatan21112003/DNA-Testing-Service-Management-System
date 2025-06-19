@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useContext, useRef, useEffect } from "react";
@@ -145,7 +144,7 @@ const Header = () => {
                     zIndex: 100,
                   }}
                 >
-                  {user.role_id === 5 && (
+                  {user.role_id === 4 && (
                     <Link
                       to="/admin"
                       style={{
@@ -160,9 +159,9 @@ const Header = () => {
                       Trang quản trị
                     </Link>
                   )}
-                  {user.role_id === 4 && (
+                  {user.role_id === 3 && (
                     <Link
-                      to="/quanly"
+                      to="/manager"
                       style={{
                         display: "block",
                         padding: "12px 20px",
@@ -190,7 +189,7 @@ const Header = () => {
                       Quản lý
                     </Link>
                   ) : (
-                    user.role_id !== 5 && (
+                    user.role_id === 1 && (
                       <Link
                         to="/taikhoan"
                         style={{
