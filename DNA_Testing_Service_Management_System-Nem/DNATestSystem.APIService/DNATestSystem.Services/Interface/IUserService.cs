@@ -4,28 +4,35 @@ using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
-namespace DNATestSystem.Services.Interface
+
+
+ namespace DNATestSystem.Services.Interface
 {
-    public interface  IUserService
+    public interface IUserService
     {
         //Sử dụng task
         //Task<IServiceResult>
         // chỉnh sửa Task<IServiceResult>
 
-        int Register(UserRegisterModel user);
-        User? Login(UserLoginModel user);
-        string GenerateJwt(User user);
-        string GenerateRefreshToken(int userId);
-        User GetUserByRefreshToken(string refreshToken);
-        void DeleteOldRefreshToken(string refreshToken);
-        void DeleteOldRefreshToken(int userId);
-        List<ServiceSummaryDto> GetServiceForUser();
-        ServiceSummaryDetailsModel  GetServiceById(int id);
+        // Tài khoản
+        Task<int> RegisterAsync(UserRegisterModel user);
+        Task<User?> LoginAsync(UserLoginModel user);
+        Task<string> GenerateJwtAsync(User user);
+        Task<string> GenerateRefreshTokenAsync(int userId);
+        Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
+        Task DeleteOldRefreshTokenAsync(string refreshToken);
+        Task DeleteOldRefreshTokenAsync(int userId);
 
-        List<BlogPostModel> GetAllBlogForUser();
-        BlogPostDetailsModel GetBlogPostDetailsModel(string Slug);
-        //UserProfile
-        ProfileDetailModel GetProfileUser(int Profile_Id);
-        UpdateProfileModel UpdateProfile(UpdateProfileModel updateProfileModel);
+        // Dịch vụ
+        Task<List<ServiceSummaryDto>> GetServiceForUserAsync();
+        Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id);
+
+        // Blog
+        Task<List<BlogPostModel>> GetAllBlogForUserAsync();
+        Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug);
+
+        // Hồ sơ cá nhân
+        Task<ProfileDetailModel?> GetProfileUserAsync(int profileId);
+        Task<UpdateProfileModel> UpdateProfileAsync(UpdateProfileModel updateProfileModel);
     }
 }

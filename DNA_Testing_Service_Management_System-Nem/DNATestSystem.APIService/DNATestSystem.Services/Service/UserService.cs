@@ -12,6 +12,7 @@ using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DNATestSystem.Services.Service
 {
@@ -26,24 +27,36 @@ namespace DNATestSystem.Services.Service
             _jwtSettings = jwtSettings.Value;
         }
 
-        public User? Login(UserLoginModel loginModel)
+        //public User? Login(UserLoginModel loginModel)
+        //{
+        //    var user = _context.Users
+        //        .FirstOrDefault(x => x.Email == loginModel.Email);
+        //    if (user == null)
+        //    {
+        //        return null;
+        //    }
+        //    var password = loginModel.Password;
+
+        //    if (HashHelper.BCriptVerify(password, user.Password))
+        //    {
+        //        return user;
+        //    }
+        //    return null;
+        //}
+
+        public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
-            var user = _context.Users
-                .FirstOrDefault(x => x.Email == loginModel.Email);
-            if (user == null)
-            {
-                return null;
-            }
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email == loginModel.Email);
+
+            if (user == null) return null;
+
             var password = loginModel.Password;
 
-            if (HashHelper.BCriptVerify(password, user.Password))
-            {
-                return user;
-            }
-            return null;
+            return HashHelper.BCriptVerify(password, user.Password) ? user : null;
         }
 
-        public int Register(UserRegisterModel user)
+        public async Task<int> RegisterAsync(UserRegisterModel user)
         {           
             var password = user.Password;
             var hashPassword = HashHelper.BCriptHash(password);
@@ -61,12 +74,12 @@ namespace DNATestSystem.Services.Service
             };
 
             _context.Users.Add(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return data.UserId;
         }
 
-        public string GenerateJwt(User user)
+        public Task<string> GenerateJwtAsync(User user)
         {
 
             var claims = new List<Claim>
@@ -87,10 +100,10 @@ namespace DNATestSystem.Services.Service
                         key,
                         SecurityAlgorithms.HmacSha256Signature
                         ));
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public string GenerateRefreshToken(int userId)
+        public async Task<string> GenerateRefreshTokenAsync(int userId)
         {
             string refreshToken = HashHelper.GenerateRandomString(64);
             //refresh Token nên hash lại
@@ -106,118 +119,128 @@ namespace DNATestSystem.Services.Service
 
             _context.RefreshTokens.Add(data);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return hashRefreshToken;
         }
 
-        public User GetUserByRefreshToken(string refreshToken)
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            var user = _context.RefreshTokens.
+             var user = await _context.RefreshTokens.
             Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
             .Select(x => x.User)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
             return user;
         }
 
-        public void DeleteOldRefreshToken(string refreshToken)
+        public async Task DeleteOldRefreshToken(string refreshToken)
         {
-            var entity = _context.RefreshTokens
-                        .FirstOrDefault(x => x.Token == refreshToken);
-
-
+            var entity = await _context.RefreshTokens
+                        .FirstOrDefaultAsync(x => x.Token == refreshToken);
             if (entity != null)
             {
                 return;
             }
             _context.RefreshTokens.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteOldRefreshToken(int userId)
+        public async Task DeleteOldRefreshTokenAsync(int userId)
         {
-            var entity = _context.RefreshTokens
+            var entity = await _context.RefreshTokens
                         .Where(x => x.UserId== userId)
-                        .ToList();
+                        .ToListAsync();
 
             if (entity != null)
             {
                 return;
             }
             _context.RefreshTokens.RemoveRange(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<ServiceSummaryDto> GetServiceForUser()
+        public async Task<List<ServiceSummaryDto>> GetServiceForUserAsync()
         {
-            var services = _context.Services
-                            .Include(s => s.PriceDetails)
-                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
-                            .Where(x => x.IsPublished == true)
-                            .Select(s => new ServiceSummaryDto
+            var priceDetails = await _context.Services
+                                    .Include(s => s.PriceDetails)
+                                    .Where(s => s.IsPublished == true)
+                                    .ToListAsync();
+            //tạo ra priceDetails khi đã join với Service
+            var service = priceDetails
+                            .Select(s => 
                             {
-                                Id = s.ServiceId,
-                                Slug = s.Slug,
-                                ServiceName = s.ServiceName,
-                                Description = s.Description,
-                                Category = s.Category,
-                                IsUrgent = s.IsUrgent, 
-                                IncludeVAT = true,
-                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
-                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
-                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
-                            }) .ToList();
-            return services;              
+                                var price = s.PriceDetails.FirstOrDefault();
+                                //lấy tk Price ra
+
+                                return new ServiceSummaryDto
+                                {
+                                    Id = s.ServiceId,
+                                    Slug = s.Slug,
+                                    ServiceName = s.ServiceName,
+                                    Description = s.Description,
+                                    Category = s.Category,
+                                    IsUrgent = s.IsUrgent,
+                                    IncludeVAT = true,
+                                    Price2Samples = price?.Price2Samples,
+                                    Price3Samples = price?.Price3Samples,
+                                    TimeToResult = price?.TimeToResult
+                                };
+                            }).ToList();
+            return service;                 
         }
 
-        public ServiceSummaryDetailsModel GetServiceById(int id)
+        public async Task<ProfileDetailModel?> GetProfileUserAsync(int profileId)
         {
-            var service = _context.Services
-                .FirstOrDefault(s => s.ServiceId == id);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(s => s.UserId == profileId);
 
-            if (service == null) return null;
+            if (user == null) return null;
 
-            var priceDetail = service.PriceDetails.FirstOrDefault();
+            var profile = user.UserProfiles.FirstOrDefault();
 
-            return new ServiceSummaryDetailsModel
+            return new ProfileDetailModel
             {
-                Id = service.ServiceId,
-                Slug = service.Slug,
-                ServiceName = service.ServiceName,
-                Category = service.Category,
-                Description = service.Description,
-                IsUrgent = false, // hoặc true nếu bạn có trường này
-                IncludeVAT = true,
-                Price2Samples = priceDetail?.Price2Samples,
-                Price3Samples = priceDetail?.Price3Samples,
-                TimeToResult = priceDetail?.TimeToResult,
-                CreatedAt = service.CreatedAt
+                UserID = user.UserId,
+                FullName = user.FullName,
+                PhoneNumber = user.Phone,
+                Email = user.Email,
+                RoleID = user.RoleId,
+                CreatedAt = user.CreatedAt,
+                ProfileDto = profile == null ? null : new ProfileDto
+                {
+                    Gender = profile.Gender,
+                    Address = profile.Address,
+                    DateOfBirth = profile.DateOfBirth,
+                    IdentityFile = profile.IdentityFile,
+                    Fingerfile = profile.Fingerfile,
+                    UpdatedAt = profile.UpdatedAt
+                }
             };
         }
 
-        public List<BlogPostModel> GetAllBlogForUser()
+        public async Task<List<BlogPostModel>> GetAllBlogForUserAsync()
         {
-            var blogPosts = _context.BlogPosts
+            var blogPosts = await _context.BlogPosts
                  .Include(p => p.Author)
                  .Where(p => (bool)p.IsPublished == true)
                  .Select(p => new BlogPostModel
                  {
                      PostId = p.PostId,
                      Title = p.Title,
-                     Slug = p.Slug,
+                     Slug = p.Slug, 
                      Summary = p.Summary,
                      ThumbnailURL = p.ThumbnailURL,
                      AuthorName = p.Author.FullName
                  })
-                 .ToList();
+                 .ToListAsync();
             return blogPosts;
             }
 
-        public BlogPostDetailsModel GetBlogPostDetailsModel(string Slug)
+        public async Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug)
         {
-            var blog = _context.BlogPosts
+            var blog = await _context.BlogPosts
                 .Where(s => s.IsPublished == true)
-               .FirstOrDefault(s => s.Slug == Slug);
+               .FirstOrDefaultAsync(s => s.Slug == slug);
 
             if (blog == null) return null;
 
@@ -235,48 +258,17 @@ namespace DNATestSystem.Services.Service
                IsPublished = blog.IsPublished,
                AuthorId = blog.AuthorId,
             };
-        }
+        }       
 
-        public ProfileDetailModel? GetProfileUser(int Profile_Id)
+        public async Task<UpdateProfileModel?> UpdateProfileAsync(UpdateProfileModel updateProfileModel)
         {
-            var data = _context.Users
-                        .Include(x => x.UserProfiles)
-                        .FirstOrDefault(x => x.UserId == Profile_Id);
-
-            if (data == null)
-                return null;
-
-            var profile = data.UserProfiles.FirstOrDefault();
-
-            return new ProfileDetailModel
-            {
-                UserID = data.UserId,
-                FullName = data.FullName,
-                PhoneNumber = data.Phone,
-                Email = data.Email,
-                RoleID = data.RoleId,
-                CreatedAt = data.CreatedAt,
-                ProfileDto = profile == null ? null : new ProfileDto
-                {
-                    Gender = profile.Gender,
-                    Address = profile.Address,
-                    DateOfBirth = profile.DateOfBirth,
-                    IdentityFile = profile.IdentityFile,
-                    Fingerfile = profile.Fingerfile,
-                    UpdatedAt = profile.UpdatedAt,
-                }
-            };
-        }
-
-        public UpdateProfileModel? UpdateProfile(UpdateProfileModel updateProfileModel)
-        {
-            var userProfile = _context.UserProfiles.FirstOrDefault(x => x.ProfileId == updateProfileModel.ProfileId);
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.ProfileId == updateProfileModel.ProfileId);
 
             if(userProfile == null)
             {
                 return null;
             }
-            var user = _context.Users.FirstOrDefault(x => x.UserId == userProfile.UserId);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userProfile.UserId);
             var data = new UpdateProfileModel
             {
                 Fullname = user.FullName,
@@ -289,6 +281,39 @@ namespace DNATestSystem.Services.Service
                 Fingerfile = userProfile.Fingerfile,
             };
             return data;
+        }
+
+        public async Task DeleteOldRefreshTokenAsync(string refreshToken)
+        {
+            var entity = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
+            if (entity != null)
+            {
+                _context.RefreshTokens.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id)
+        {
+            var service = await _context.Services.Include(s => s.PriceDetails).FirstOrDefaultAsync(s => s.ServiceId == id);
+            if (service == null) return null;
+
+            var priceDetail = service.PriceDetails.FirstOrDefault();
+
+            return new ServiceSummaryDetailsModel
+            {
+                Id = service.ServiceId,
+                Slug = service.Slug,
+                ServiceName = service.ServiceName,
+                Category = service.Category,
+                Description = service.Description,
+                IsUrgent = false,
+                IncludeVAT = true,
+                Price2Samples = priceDetail?.Price2Samples,
+                Price3Samples = priceDetail?.Price3Samples,
+                TimeToResult = priceDetail?.TimeToResult,
+                CreatedAt = service.CreatedAt
+            };
         }
     }
 }

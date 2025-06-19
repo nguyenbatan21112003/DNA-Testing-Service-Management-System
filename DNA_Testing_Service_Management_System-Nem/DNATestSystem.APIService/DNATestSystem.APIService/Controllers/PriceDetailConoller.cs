@@ -23,14 +23,14 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(new { message = "Tạo bảng giá thành công", id });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Update/{id}")]
         public IActionResult UpdatePriceDetail(int id, [FromBody] PriceDetailsModel model)
         {
             _priceDetails.UpdatePriceDetailMethod(id, model);
             return Ok(new { message = "Cập nhật bảng giá thành công" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public IActionResult DeletePriceDetail(int id)
         {
             _priceDetails.DeletePriceDetailMethod(id);

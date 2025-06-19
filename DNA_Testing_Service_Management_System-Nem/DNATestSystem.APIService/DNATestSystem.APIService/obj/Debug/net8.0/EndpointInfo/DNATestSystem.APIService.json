@@ -208,7 +208,7 @@
         }
       }
     },
-    "/PriceDetailConoller/{id}": {
+    "/PriceDetailConoller/Update/{id}": {
       "put": {
         "tags": [
           "PriceDetailConoller"
@@ -248,7 +248,9 @@
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/PriceDetailConoller/Delete/{id}": {
       "delete": {
         "tags": [
           "PriceDetailConoller"
@@ -523,14 +525,14 @@
         }
       }
     },
-    "/user/{userId}": {
+    "/user/GetProfile/{profile_id}": {
       "get": {
         "tags": [
           "User"
         ],
         "parameters": [
           {
-            "name": "userId",
+            "name": "profile_id",
             "in": "path",
             "required": true,
             "schema": {
@@ -539,6 +541,47 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/user/UpdateUserProfile/{profile_id}": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileModel"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -741,6 +784,45 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "UpdateProfileModel": {
+        "type": "object",
+        "properties": {
+          "profileId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fullname": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "identityFile": {
+            "type": "string",
+            "nullable": true
+          },
+          "fingerfile": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateStatusAndRoleModel": {
         "type": "object",
