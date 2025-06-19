@@ -30,7 +30,7 @@ namespace DNATestSystem.Services.Service
             _jwtSettings = jwtSettings.Value;
         }
 
-        public int CreateManager(ManagerCreateModel manager)
+        public async Task<int> CreateManagerAsync(ManagerCreateModel manager)
         {
             var password = manager.Password;
             var hashPassword = HashHelper.BCriptHash(password);
@@ -47,12 +47,12 @@ namespace DNATestSystem.Services.Service
             };
 
             _context.Users.Add(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return data.UserId;
         }
 
-        public int CreateServiceMethod(ServiceCreateModel serviceCreateModel)
+        public async Task<int> CreateServiceMethodAsync(ServiceCreateModel serviceCreateModel)
         {
             var newService = new BusinessObjects.Models.Service
             {
@@ -79,12 +79,12 @@ namespace DNATestSystem.Services.Service
             };
 
             _context.PriceDetails.Add(priceDetail);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return newService.ServiceId;
         }
 
-        public int CreateStaff(StaffCreateModel staff)
+        public async Task<int> CreateStaffAsync(StaffCreateModel staff)
         {
             var password = staff.Password;
             var hashPassword = HashHelper.BCriptHash(password);
@@ -101,14 +101,14 @@ namespace DNATestSystem.Services.Service
             };
 
             _context.Users.Add(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return data.UserId;
         }
 
-        public void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate)
+        public async Task UpdateStatusAndRoleAsync(UpdateStatusAndRoleModel modelUpdate)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserId == modelUpdate.Id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == modelUpdate.Id);
             if (user == null)
                 throw new Exception("Người dùng không tồn tại");
             if (user.RoleId == (int)RoleNum.Admin)
@@ -117,16 +117,16 @@ namespace DNATestSystem.Services.Service
             user.RoleId = (int)modelUpdate.Role;
             user.Status = (int)modelUpdate.Status;
             user.UpdatedAt = DateTime.UtcNow;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-   
-        public int DeleteServiceMethod(int service_id)
+
+        public async Task<int> DeleteServiceMethodAsync(int service_id)
         {
-            var service = _context.Services
+            var service = await _context.Services
                           .Include(u => u.PriceDetails)
                           .Include(s => s.TestRequests)
                           .Include(a => a.UserSelectedServices)
-                          .FirstOrDefault(s => s.ServiceId == service_id);
+                          .FirstOrDefaultAsync(s => s.ServiceId == service_id);
             if (service == null)
                 throw new Exception("Service không tồn tại");
 
@@ -135,14 +135,14 @@ namespace DNATestSystem.Services.Service
             _context.UserSelectedServices.RemoveRange(service.UserSelectedServices);
             _context.Services.Remove(service);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return 1;
         }
 
-        public int BanUserById(int id)
+        public async Task<int> BanUserByIdAsync(int id)
         {
-            var user = _context.Users
-                .FirstOrDefault(x => x.UserId == id);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == id);
             if (user == null)
             {
                 return -2;
@@ -151,13 +151,13 @@ namespace DNATestSystem.Services.Service
             user.UpdatedAt = DateTime.UtcNow;
 
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return user.UserId;
         }
 
-        public List<UserShowModel> getAllUser()
+        public async Task<List<UserShowModel>> GetAllUserAsync()
         {
-            return _context.Users
+            return await _context.Users
             .Select(u => new UserShowModel
             {
                 UserId = u.UserId,
@@ -167,13 +167,13 @@ namespace DNATestSystem.Services.Service
                 Email = u.Email,
                 Status = u.Status,
                 CreatedAt = u.CreatedAt
-            }).ToList();
+            }).ToListAsync();
         }
 
-        public int DeleteServiceMethodByIsPublished(int serviceId)
+        public async Task<int> DeleteServiceMethodByIsPublishedAsync(int serviceId)
         {
-            var service = _context.Services
-               .FirstOrDefault(x => x.ServiceId == serviceId);
+            var service = await _context.Services
+               .FirstOrDefaultAsync(x => x.ServiceId == serviceId);
             if (service == null)
             {
                 return -2;
@@ -181,34 +181,44 @@ namespace DNATestSystem.Services.Service
             service.IsPublished = false;
             service.UpdatedAt = DateTime.UtcNow;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return service.ServiceId;
         }
         //hàm này để in hết service, bao gốm những tk bị xóa isPublished = false
-        public List<ServiceSummaryDto> GetServiceForAdmin()
+        public async Task<List<ServiceSummaryDto>> GetServiceForAdminAsync()
         {
-            var services = _context.Services
-                            .Include(s => s.PriceDetails)
-                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
-                            .Select(s => new ServiceSummaryDto
+            var priceDetails = await _context.Services
+                                    .Include(s => s.PriceDetails)
+                                    .ToListAsync();
+            //tạo ra priceDetails khi đã join với Service
+            var service = priceDetails
+                            .Select(s =>
                             {
-                                Id = s.ServiceId,
-                                Slug = s.Slug,
-                                ServiceName = s.ServiceName,
-                                Category = s.Category,
-                                IsUrgent = false, // gán cứng nếu chưa có
-                                IncludeVAT = true,
-                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
-                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
-                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
+                                var price = s.PriceDetails.FirstOrDefault();
+                                //lấy tk Price ra
+
+                                return new ServiceSummaryDto
+                                {
+                                    Id = s.ServiceId,
+                                    Slug = s.Slug,
+                                    ServiceName = s.ServiceName,
+                                    Description = s.Description,
+                                    Category = s.Category,
+                                    IsUrgent = s.IsUrgent,
+                                    IncludeVAT = true,
+                                    Price2Samples = price?.Price2Samples,
+                                    Price3Samples = price?.Price3Samples,
+                                    TimeToResult = price?.TimeToResult
+                                };
                             }).ToList();
-            return services;
+            return service;
         }
-        public void updateServiceAndPrice(ServiceUpdateModel model)
+
+        public async Task UpdateServiceAndPriceAsync(ServiceUpdateModel model)
         {
-            var service = _context.Services
+            var service = await _context.Services
                             .Include (s => s.PriceDetails)
-                            .FirstOrDefault(s => s.ServiceId == model.ServiceID);
+                            .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceID);
 
             // Cập nhật Service
             service.ServiceName = model.ServiceName;
@@ -231,7 +241,7 @@ namespace DNATestSystem.Services.Service
                 priceDetail.UpdatedAt = DateTime.UtcNow;
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
     }

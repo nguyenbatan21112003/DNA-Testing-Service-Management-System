@@ -192,6 +192,7 @@ namespace DNATestSystem.Services.Service
         public async Task<ProfileDetailModel?> GetProfileUserAsync(int profileId)
         {
             var user = await _context.Users
+                .Include(x => x.UserProfiles)
                 .FirstOrDefaultAsync(s => s.UserId == profileId);
 
             if (user == null) return null;

@@ -11,21 +11,22 @@ namespace DNATestSystem.Services.Interface
 {
     public interface IAdminService
     {
-        //Staff and manager
-        int CreateStaff(StaffCreateModel staff);
-        int CreateManager(ManagerCreateModel manager);
-        void UpdateStatusAndRole(UpdateStatusAndRoleModel modelUpdate);
-        //Service
-        int CreateServiceMethod(ServiceCreateModel serviceCreateModel);
-        int DeleteServiceMethod(int id);
-        int DeleteServiceMethodByIsPublished(int serviceId);
-        void updateServiceAndPrice(ServiceUpdateModel model);
-        
-        
-        List<ServiceSummaryDto> GetServiceForAdmin();
-        //User
-        List<UserShowModel> getAllUser();
-        int BanUserById(int id);
+        // Staff and Manager
+        Task<int> CreateStaffAsync(StaffCreateModel staff);
+        Task<int> CreateManagerAsync(ManagerCreateModel manager);
+        Task UpdateStatusAndRoleAsync(UpdateStatusAndRoleModel modelUpdate);
+
+        // Service
+        Task<int> CreateServiceMethodAsync(ServiceCreateModel serviceCreateModel);
+        Task<int> DeleteServiceMethodAsync(int id);
+        Task<int> DeleteServiceMethodByIsPublishedAsync(int serviceId);
+        Task UpdateServiceAndPriceAsync(ServiceUpdateModel model);
+
+        Task<List<ServiceSummaryDto>> GetServiceForAdminAsync();
+
+        // User
+        Task<List<UserShowModel>> GetAllUserAsync();
+        Task<int> BanUserByIdAsync(int id);
     }
 }
             
