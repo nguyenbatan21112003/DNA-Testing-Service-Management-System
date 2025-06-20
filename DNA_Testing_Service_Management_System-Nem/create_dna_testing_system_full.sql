@@ -285,7 +285,7 @@ VALUES
 (N'Trần Văn C', '0922123456', 'khachhang1@gmail.com', 'hashed_password_3', 3, GETDATE(), GETDATE(), 1),
 (N'Phạm Thị D', '0933123456', 'khachhang2@gmail.com', 'hashed_password_4', 3, GETDATE(), GETDATE(), 0);
 GO
-
+SELECT * FROM Users
 INSERT INTO UserProfiles (UserID, Gender, Address, DateOfBirth, IdentityFile, Fingerfile, UpdatedAt)
 VALUES 
 (1, N'Nam', N'12 Nguyễn Huệ, Quận 1, TP.HCM', '1985-05-15', '/uploads/identity/nguyenvana.png', '/uploads/fingerprint/nguyenvana.fgp', GETDATE()),

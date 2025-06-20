@@ -11,7 +11,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.User
         public string? Gender { get; set; }
         public string? Address { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public string? IdentityFile { get; set; }
+        public string? IdentityID { get; set; }
         public string? Fingerfile { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

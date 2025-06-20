@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNATestSystem.BusinessObjects")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eec6485fc8a02784bb7eff98596af31d4e723755")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c58f91a09a488efe9b7bf11fc83e89d9ad64c436")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNATestSystem.BusinessObjects")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNATestSystem.BusinessObjects")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

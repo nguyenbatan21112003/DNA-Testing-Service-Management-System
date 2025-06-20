@@ -15,7 +15,7 @@ public partial class UserProfile
 
     public DateTime? DateOfBirth { get; set; }
 
-    public string? IdentityFile { get; set; }
+    public string? IdentityID { get; set; }
 
     public string? Fingerfile { get; set; }
 

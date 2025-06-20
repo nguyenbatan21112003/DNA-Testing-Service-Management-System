@@ -212,7 +212,7 @@ namespace DNATestSystem.Services.Service
                     Gender = profile.Gender,
                     Address = profile.Address,
                     DateOfBirth = profile.DateOfBirth,
-                    IdentityFile = profile.IdentityFile,
+                    IdentityID = profile.IdentityID,
                     Fingerfile = profile.Fingerfile,
                     UpdatedAt = profile.UpdatedAt
                 }
@@ -278,9 +278,10 @@ namespace DNATestSystem.Services.Service
                 Gender = userProfile.Gender,
                 Address = userProfile.Address,
                 DateOfBirth = userProfile.DateOfBirth,
-                IdentityFile = userProfile.IdentityFile,
+                IdentityID = userProfile.IdentityID,
                 Fingerfile = userProfile.Fingerfile,
             };
+            user.UpdatedAt = DateTime.UtcNow;
             return data;
         }
 
