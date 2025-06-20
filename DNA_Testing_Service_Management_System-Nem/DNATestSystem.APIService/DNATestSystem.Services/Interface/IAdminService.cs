@@ -10,6 +10,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 namespace DNATestSystem.Services.Interface
 {
     public interface IAdminService
+
     {
         // Staff and Manager
         Task<int> CreateStaffAsync(StaffCreateModel staff);

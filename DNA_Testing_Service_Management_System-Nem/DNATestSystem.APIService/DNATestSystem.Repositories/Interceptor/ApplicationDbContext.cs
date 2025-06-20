@@ -438,7 +438,7 @@ namespace DNATestSystem.Repositories
                     .HasMaxLength(100)
                     .IsUnicode(false);
                 entity.Property(e => e.Gender).HasMaxLength(10);
-                entity.Property(e => e.IdentityFile)
+                entity.Property(e => e.IdentityID)
                     .HasMaxLength(100)
                     .IsUnicode(false);
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");

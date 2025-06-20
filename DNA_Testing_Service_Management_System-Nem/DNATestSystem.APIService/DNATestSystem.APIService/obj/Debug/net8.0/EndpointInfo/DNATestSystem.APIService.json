@@ -813,7 +813,7 @@
             "format": "date-time",
             "nullable": true
           },
-          "identityFile": {
+          "identityID": {
             "type": "string",
             "nullable": true
           },

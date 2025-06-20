@@ -49,11 +49,14 @@ CREATE TABLE UserProfiles (
   Gender NVARCHAR(10),
   Address NVARCHAR(255),
   DateOfBirth DATETIME,
-  IdentityFile VARCHAR(100),
+  IdentityID VARCHAR(100),
   Fingerfile VARCHAR(100),
   UpdatedAt DATETIME
 );
 GO
+
+EXEC sp_rename 'UserProfiles.IdentityFile', 'IdentityID', 'COLUMN';
+SELECT * FROM UserProfiles
 
 -- ===================== BLOG POSTS =====================
 CREATE TABLE BlogPosts (
