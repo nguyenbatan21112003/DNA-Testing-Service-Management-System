@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Eye, EyeOff, Star, FileText } from "lucide-react";
 import { useOrderContext } from "../../context/OrderContext";
@@ -31,7 +31,7 @@ const UserProfile = () => {
     verifyPasswordChange,
     logout,
   } = useContext(AuthContext);
-  const { orders, addFeedback } = useOrderContext();
+  const { getAllOrders, addFeedback } = useOrderContext();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: user?.fullName || "",
@@ -57,7 +57,6 @@ const UserProfile = () => {
   // const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const [ratingInput, setRatingInput] = useState(0);
   const [feedbackInput, setFeedbackInput] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState("");
 
@@ -66,7 +65,6 @@ const UserProfile = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-
 
   // Thêm state cho modal feedback
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -79,17 +77,54 @@ const UserProfile = () => {
   const [searchOrder, setSearchOrder] = useState("");
 
   const [showTimeline, setShowTimeline] = useState({});
+  
+  // State cho đánh giá theo danh mục
+  const [selectedCategory, setSelectedCategory] = useState('quality');
+  const [categoryRatings, setCategoryRatings] = useState({
+    quality: 0,
+    price: 0,
+    time: 0,
+    staff: 0,
+    website: 0,
+    overall: 0
+  });
 
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedOrderForForm, setSelectedOrderForForm] = useState(null);
 
   const [showConfirmKitModal, setShowConfirmKitModal] = useState(false);
   const [kitInfo, setKitInfo] = useState(null);
+  
+  // State để lưu đơn hàng của user
+  const [userOrders, setUserOrders] = useState([]);
 
-  // Lọc đơn đăng ký của user hiện tại
-  const userOrders = orders.filter(
-    (order) => order.userId === user.id || order.email === user.email
-  );
+  // Lấy đơn đăng ký của user hiện tại
+  useEffect(() => {
+    const loadUserOrders = () => {
+      if (user) {
+        const allOrders = getAllOrders();
+        const filteredOrders = allOrders.filter(
+          (order) => order.userId === user.id || order.email === user.email
+        );
+        setUserOrders(filteredOrders);
+      }
+    };
+    
+    // Load orders khi component mount hoặc user thay đổi
+    loadUserOrders();
+    
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'dna_orders') {
+        loadUserOrders();
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', () => {});
+    };
+  }, [user, getAllOrders]);
 
   if (!user)
     return (
@@ -603,17 +638,15 @@ const UserProfile = () => {
                         background: "#f6fefd",
                         borderRadius: 12,
                         boxShadow: "0 1px 8px #e6e6e6",
-                        padding: 32,
+                        padding: 24,
                         marginBottom: 32,
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 40,
-                        flexDirection: "column"
+                        flexDirection: "column",
+                        gap: 16
                       }}
                     >
-                      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 40 }}>
-                        <div className="order-info">
+                      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20 }}>
+                        <div className="order-info" style={{ flex: 1 }}>
                           <div
                             className="order-id"
                             style={{
@@ -677,14 +710,11 @@ const UserProfile = () => {
                           </div>
                         </div>
                         <div style={{
-                          width: '100%',
-                          display: 'grid',
-                          gridTemplateColumns: '1fr 1fr',
-                          gridGap: 4,
-                          alignItems: 'center',
-                          justifyItems: 'center',
-                          marginBottom: 10,
-                          
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 10,
+                          alignItems: 'stretch',
+                          minWidth: 200,
                         }}>
                           <button
                             className="order-btn"
@@ -699,12 +729,11 @@ const UserProfile = () => {
                               display: "flex",
                               alignItems: "center",
                               gap: 8,
-                              width: '70%',
+                              width: '100%',
                               height: 48,
                               transition: "border 0.2s, color 0.2s, background 0.2s",
                               outline: "none",
                               cursor: "pointer",
-
                             }}
                             onMouseOver={e => {
                               e.currentTarget.style.background = "#e6f7ef";
@@ -736,7 +765,7 @@ const UserProfile = () => {
                               display: "flex",
                               alignItems: "center",
                               gap: 8,
-                              width: '70%',
+                              width: '100%',
                               height: 48,
                               transition: "border 0.2s, color 0.2s, background 0.2s",
                               outline: "none",
@@ -772,7 +801,7 @@ const UserProfile = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
-                                width: '70%',
+                                width: '100%',
                                 height: 48,
                                 transition: "border 0.2s, color 0.2s, background 0.2s",
                                 outline: "none",
@@ -799,7 +828,7 @@ const UserProfile = () => {
                               display: "flex",
                               alignItems: "center",
                               gap: 8,
-                              width: '70%',
+                              width: '100%',
                               height: 48,
                               transition: "background 0.2s, color 0.2s",
                               outline: "none",
@@ -829,7 +858,14 @@ const UserProfile = () => {
                             onClick={() => {
                               if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
                                 setFeedbackOrder(order);
-                                setRatingInput(0);
+                                setCategoryRatings({
+                                  quality: 0,
+                                  price: 0,
+                                  time: 0,
+                                  staff: 0,
+                                  website: 0,
+                                  overall: 0
+                                });
                                 setFeedbackInput("");
                                 setFeedbackSuccess("");
                                 setShowFeedbackModal(true);
@@ -838,11 +874,9 @@ const UserProfile = () => {
                           >
                             <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
                           </button>
-                          {/* Nút xác nhận nhận kit nằm ở dòng cuối, căn giữa 2 cột */}
                           {order.sampleMethod === "home" && order.kitStatus === "da_gui" && (
                             <button
                               style={{
-                                gridColumn: '1 / span 2',
                                 marginTop: 4,
                                 border: "1px solid #009e74",
                                 color: "#fff",
@@ -854,13 +888,12 @@ const UserProfile = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
-                                width: 220,
-                                maxWidth: '100%',
+                                width: '100%',
                                 height: 48,
                                 transition: "background 0.2s, color 0.2s",
                                 outline: "none",
                                 cursor: "pointer",
-                                justifySelf: 'center',
+                                justifyContent: 'center',
                               }}
                               onClick={() => handleUserConfirmKit(order)}
                             >
@@ -872,7 +905,6 @@ const UserProfile = () => {
                       {/* Nút ẩn/hiện timeline */}
                       <button
                         style={{
-                          marginTop: 12,
                           background: showTimeline[order.id] ? "#e6f7f1" : "#fff",
                           color: "#009e74",
                           border: "1px solid #009e74",
@@ -880,7 +912,9 @@ const UserProfile = () => {
                           padding: "6px 18px",
                           fontWeight: 600,
                           cursor: "pointer",
-                          fontSize: 15
+                          fontSize: 15,
+                          alignSelf: "center",
+                          width: "auto"
                         }}
                         onClick={() => setShowTimeline(prev => ({ ...prev, [order.id]: !prev[order.id] }))}
                       >
@@ -1085,120 +1119,226 @@ const UserProfile = () => {
               style={{
                 background: "#fff",
                 borderRadius: 18,
-                minWidth: 340,
-                maxWidth: 420,
-                padding: 32,
+                width: "90%",
+                maxWidth: 650,
+                padding: 40,
                 boxShadow: "0 8px 32px #0002",
                 position: "relative",
                 fontSize: 17,
+                maxHeight: "85vh", 
                 overflowY: "auto",
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setShowFeedbackModal(false)}
-                style={{
-                  position: "absolute",
-                  top: 14,
-                  right: 18,
-                  background: "none",
-                  border: "none",
-                  fontSize: 26,
-                  color: "#888",
-                  cursor: "pointer",
-                }}
-              >
-                &times;
-              </button>
-              <h3
-                style={{
-                  fontWeight: 800,
-                  fontSize: 22,
-                  marginBottom: 18,
-                  color: "#b88900",
-                  letterSpacing: -1,
-                  textAlign: "center",
-                }}
-              >
-                Đánh giá dịch vụ
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  margin: "8px 0",
-                  justifyContent: "center",
-                }}
-              >
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={28}
-                    color={ratingInput >= star ? "#ffc107" : "#ddd"}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setRatingInput(star)}
-                  />
-                ))}
-                <span
+              <style>{`
+                /* Custom scrollbar styling */
+                .feedback-modal-content::-webkit-scrollbar {
+                  width: 10px;
+                  background-color: #f5f5f5;
+                  border-radius: 5px;
+                }
+                
+                .feedback-modal-content::-webkit-scrollbar-thumb {
+                  background-color: #00a67e;
+                  border-radius: 5px;
+                  border: 2px solid #f5f5f5;
+                }
+                
+                .feedback-modal-content::-webkit-scrollbar-track {
+                  background-color: #f5f5f5;
+                  border-radius: 5px;
+                }
+
+                .category-selector {
+                  display: flex;
+                  justify-content: center;
+                  margin-bottom: 25px;
+                  flex-wrap: wrap;
+                  gap: 10px;
+                }
+                
+                .category-btn {
+                  padding: 8px 16px;
+                  border-radius: 20px;
+                  font-size: 15px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  border: 2px solid transparent;
+                }
+                
+                .category-btn.active {
+                  background: #f0f9f6;
+                  color: #009e74;
+                  border-color: #009e74;
+                  box-shadow: 0 2px 8px rgba(0, 158, 116, 0.15);
+                }
+                
+                .category-btn:not(.active) {
+                  background: #f5f5f5;
+                  color: #555;
+                  border-color: transparent;
+                }
+                
+                .category-btn:hover:not(.active) {
+                  background: #e9e9e9;
+                }
+                
+                .star-rating-container {
+                  display: flex;
+                  justify-content: center;
+                  margin: 25px 0;
+                  gap: 10px;
+                }
+              `}</style>
+              <div className="feedback-modal-content" style={{ maxHeight: "calc(85vh - 80px)", overflowY: "auto", paddingRight: 15 }}>
+                <button
+                  onClick={() => setShowFeedbackModal(false)}
                   style={{
+                    position: "absolute",
+                    top: 14,
+                    right: 18,
+                    background: "none",
+                    border: "none",
+                    fontSize: 26,
                     color: "#888",
-                    fontSize: 15,
-                    marginLeft: 8,
+                    cursor: "pointer",
                   }}
                 >
-                  {ratingInput > 0 ? `${ratingInput}/5` : ""}
-                </span>
-              </div>
-              <textarea
-                rows={3}
-                placeholder="Nhận xét của bạn về dịch vụ..."
-                value={feedbackInput}
-                onChange={(e) => setFeedbackInput(e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: 6,
-                  margin: "8px 0",
-                  padding: 8,
-                  border: "1px solid #ccc",
-                }}
-              />
-              <button
-                onClick={() => {
-                  if (ratingInput === 0) {
-                    setFeedbackSuccess("Vui lòng chọn số sao!");
-                    return;
-                  }
-                  addFeedback(feedbackOrder.id, feedbackInput, ratingInput);
-                  setShowFeedbackModal(false);
-                  setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-                  setTimeout(() => setFeedbackSuccess(""), 2000);
-                }}
-                style={{
-                  background: "#009e74",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "8px 24px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  width: "100%",
-                  marginTop: 8,
-                }}
-              >
-                Gửi đánh giá
-              </button>
-              {feedbackSuccess && (
-                <div
+                  &times;
+                </button>
+                <h3
                   style={{
-                    color: "#009e74",
-                    marginTop: 6,
+                    fontWeight: 800,
+                    fontSize: 26,
+                    marginBottom: 24,
+                    color: "#b88900",
+                    letterSpacing: -1,
                     textAlign: "center",
                   }}
                 >
-                  {feedbackSuccess}
+                  Đánh giá dịch vụ
+                </h3>
+                
+                {/* Category selector */}
+                <div className="category-selector">
+                  <button 
+                    className={`category-btn ${selectedCategory === 'quality' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('quality')}
+                  >
+                    Chất lượng dịch vụ
+                  </button>
+                  <button 
+                    className={`category-btn ${selectedCategory === 'price' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('price')}
+                  >
+                    Giá cả
+                  </button>
+                  <button 
+                    className={`category-btn ${selectedCategory === 'time' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('time')}
+                  >
+                    Thời gian xử lý
+                  </button>
+                  <button 
+                    className={`category-btn ${selectedCategory === 'staff' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('staff')}
+                  >
+                    Nhân viên
+                  </button>
+                  <button 
+                    className={`category-btn ${selectedCategory === 'website' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('website')}
+                  >
+                    Website
+                  </button>
+                  <button 
+                    className={`category-btn ${selectedCategory === 'overall' ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('overall')}
+                  >
+                    Tổng thể
+                  </button>
                 </div>
-              )}
+                
+                {/* Star rating for selected category */}
+                <div className="star-rating-container">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={36}
+                      color={categoryRatings[selectedCategory] >= star ? "#ffc107" : "#ddd"}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setCategoryRatings({
+                          ...categoryRatings,
+                          [selectedCategory]: star
+                        });
+                      }}
+                    />
+                  ))}
+                  <span style={{ color: "#888", fontSize: 16, marginLeft: 8, minWidth: 35 }}>
+                    {categoryRatings[selectedCategory] > 0 ? `${categoryRatings[selectedCategory]}/5` : ""}
+                  </span>
+                </div>
+                
+                <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 17 }}>Nhận xét của bạn</div>
+                <textarea
+                  rows={4}
+                  placeholder="Nhận xét của bạn về dịch vụ..."
+                  value={feedbackInput}
+                  onChange={(e) => setFeedbackInput(e.target.value)}
+                  style={{
+                    width: "100%",
+                    borderRadius: 8,
+                    margin: "8px 0 16px",
+                    padding: 12,
+                    border: "1px solid #ccc",
+                    fontSize: 16,
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    if (Object.values(categoryRatings).every(rating => rating === 0)) {
+                      setFeedbackSuccess("Vui lòng đánh giá ít nhất một danh mục!");
+                      return;
+                    }
+                    // Calculate average rating or use overall rating
+                    const finalRating = categoryRatings.overall || 
+                      Math.round(Object.values(categoryRatings).reduce((sum, val) => sum + val, 0) / 
+                      Object.values(categoryRatings).filter(val => val > 0).length);
+                    
+                    addFeedback(feedbackOrder.id, feedbackInput, finalRating, categoryRatings);
+                    setShowFeedbackModal(false);
+                    setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
+                    setTimeout(() => setFeedbackSuccess(""), 2000);
+                  }}
+                  style={{
+                    background: "#009e74",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "12px 24px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    width: "100%",
+                    marginTop: 8,
+                    fontSize: 16,
+                  }}
+                >
+                  Gửi đánh giá
+                </button>
+                {feedbackSuccess && (
+                  <div
+                    style={{
+                      color: "#009e74",
+                      marginTop: 6,
+                      textAlign: "center",
+                    }}
+                  >
+                    {feedbackSuccess}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

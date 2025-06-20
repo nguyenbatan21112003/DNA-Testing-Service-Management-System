@@ -140,7 +140,7 @@ const StaffOverview = () => {
           <li key={item.id}>
             <Badge
               status={item.priority === "Cao" ? "error" : item.priority === "Trung bình" ? "warning" : "success"}
-              text={`#${item.id} - ${item.name.substring(0, 10)}...`}
+              text={`${item.id} - ${item.name}`}
               style={{ fontSize: 12 }}
             />
           </li>

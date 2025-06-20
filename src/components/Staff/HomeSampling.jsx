@@ -39,7 +39,7 @@ const { Title, Text, Paragraph } = Typography
 const { TabPane } = Tabs
 
 const HomeSampling = () => {
-  const { getAllOrders } = useOrderContext()
+  const { getAllOrders, updateOrder } = useOrderContext()
   const [samplingRequests, setSamplingRequests] = useState([])
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -47,7 +47,8 @@ const HomeSampling = () => {
   const [reportModalVisible, setReportModalVisible] = useState(false)
   const [form] = Form.useForm()
 
-  useEffect(() => {
+  // Lấy dữ liệu đơn hàng từ context
+  const loadSamplingRequests = () => {
     // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại nhà
     const allOrders = getAllOrders()
     const homeSamplingOrders = allOrders
@@ -61,6 +62,23 @@ const HomeSampling = () => {
       }))
 
     setSamplingRequests(homeSamplingOrders)
+  }
+
+  useEffect(() => {
+    // Load orders khi component mount
+    loadSamplingRequests()
+    
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'dna_orders') {
+        loadSamplingRequests()
+      }
+    })
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', () => {})
+    }
   }, [])
 
   const handleViewRequest = (request) => {
@@ -93,44 +111,22 @@ const HomeSampling = () => {
 
   const handleSaveUpdate = async (values) => {
     try {
-      const updatedRequests = samplingRequests.map((request) =>
-        request.id === selectedRequest.id
-          ? {
-              ...request,
-              kitStatus: values.samplingStatus,
-              scheduledDate:
-                values.scheduledDate && values.scheduledTime
-                  ? `${values.scheduledDate.format("DD/MM/YYYY")} ${values.scheduledTime}`
-                  : null,
-              samplerName: values.samplerName,
-              kitId: values.kitId,
-              notes: values.notes,
-              updatedAt: new Date().toLocaleString("vi-VN"),
-            }
-          : request,
-      )
-
-      setSamplingRequests(updatedRequests)
-
-      // Cập nhật lại localStorage
-      const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-      const updatedAllOrders = allOrders.map((order) => {
-        const updatedRequest = updatedRequests.find((req) => req.id === order.id)
-        if (updatedRequest) {
-          return {
-            ...order,
-            kitStatus: updatedRequest.kitStatus,
-            scheduledDate: updatedRequest.scheduledDate,
-            samplerName: updatedRequest.samplerName,
-            kitId: updatedRequest.kitId,
-            notes: updatedRequest.notes,
-            updatedAt: updatedRequest.updatedAt,
-          }
-        }
-        return order
+      // Sử dụng updateOrder từ context để cập nhật đơn hàng
+      updateOrder(selectedRequest.id, {
+        kitStatus: values.samplingStatus,
+        scheduledDate:
+          values.scheduledDate && values.scheduledTime
+            ? `${values.scheduledDate.format("DD/MM/YYYY")} ${values.scheduledTime}`
+            : null,
+        samplerName: values.samplerName,
+        kitId: values.kitId,
+        notes: values.notes,
+        updatedAt: new Date().toLocaleString("vi-VN"),
       })
-      localStorage.setItem("dna_orders", JSON.stringify(updatedAllOrders))
-
+      
+      // Cập nhật lại danh sách đơn hàng
+      loadSamplingRequests()
+      
       setUpdateModalVisible(false)
       message.success("Cập nhật trạng thái thành công!")
     } catch {

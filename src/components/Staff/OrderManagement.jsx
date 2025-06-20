@@ -11,7 +11,7 @@ const { TextArea } = Input
 const { TabPane } = Tabs
 
 const OrderManagement = () => {
-  const { getAllOrders } = useOrderContext()
+  const { getAllOrders, updateOrder } = useOrderContext()
   const [orders, setOrders] = useState([])
   const [filteredOrders, setFilteredOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -21,9 +21,28 @@ const OrderManagement = () => {
   const [activeTab, setActiveTab] = useState("all")
   const [searchText, setSearchText] = useState("")
 
+  // Lấy dữ liệu đơn hàng từ context
+  const loadOrders = () => {
+    const allOrders = getAllOrders()
+    setOrders(allOrders)
+    setFilteredOrders(allOrders)
+  }
+
   useEffect(() => {
-    setOrders(getAllOrders())
-    setFilteredOrders(getAllOrders())
+    // Load orders khi component mount
+    loadOrders()
+    
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'dna_orders') {
+        loadOrders()
+      }
+    })
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', () => {})
+    }
   }, [])
 
   useEffect(() => {
@@ -38,9 +57,9 @@ const OrderManagement = () => {
     if (searchText) {
       filtered = filtered.filter(
         (order) =>
-          order.name.toLowerCase().includes(searchText.toLowerCase()) ||
-          order.email.toLowerCase().includes(searchText.toLowerCase()) ||
-          order.id.toString().includes(searchText),
+          order.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+          order.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+          order.id?.toString().includes(searchText),
       )
     }
 
@@ -64,19 +83,17 @@ const OrderManagement = () => {
 
   const handleSaveOrder = async (values) => {
     try {
-      const updatedOrders = orders.map((order) =>
-        order.id === selectedOrder.id
-          ? {
-              ...order,
-              status: values.status,
-              priority: values.priority,
-              notes: values.notes,
-              updatedAt: new Date().toLocaleString("vi-VN"),
-            }
-          : order,
-      )
-      setOrders(updatedOrders)
-      localStorage.setItem("dna_orders", JSON.stringify(updatedOrders))
+      // Sử dụng updateOrder từ context để cập nhật đơn hàng
+      updateOrder(selectedOrder.id, {
+        status: values.status,
+        priority: values.priority,
+        notes: values.notes,
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      })
+      
+      // Cập nhật lại danh sách đơn hàng
+      loadOrders()
+      
       setEditModalVisible(false)
       message.success("Cập nhật đơn hàng thành công!")
     } catch {

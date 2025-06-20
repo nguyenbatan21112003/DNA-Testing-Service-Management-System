@@ -61,17 +61,20 @@ export function OrderProvider({ children }) {
 
   // Khi load lần đầu hoặc user đổi, đọc orders từ localStorage và lọc theo user
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    if (user && user.email && user.role !== "staff") {
-      dispatch({
-        type: "SET_ORDERS",
-        payload: saved.filter((o) => o.email === user.email),
-      });
-    } else if (user && user.role === "staff") {
-      dispatch({ type: "SET_ORDERS", payload: saved });
-    } else {
-      dispatch({ type: "SET_ORDERS", payload: [] });
-    }
+    const loadOrders = () => {
+      const saved = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+      if (user && user.email && user.role_id !== 2) {
+        dispatch({
+          type: "SET_ORDERS",
+          payload: saved.filter((o) => o.email === user.email),
+        });
+      } else if (user && user.role_id === 2) {
+        dispatch({ type: "SET_ORDERS", payload: saved });
+      } else {
+        dispatch({ type: "SET_ORDERS", payload: [] });
+      }
+    };
+
     // Load pricing data from localStorage or use default
     const savedPricingData = JSON.parse(localStorage.getItem("dna_pricing_data") || "null");
     if (savedPricingData) {
@@ -80,7 +83,21 @@ export function OrderProvider({ children }) {
       localStorage.setItem("dna_pricing_data", JSON.stringify(defaultPricingData));
     }
 
-  }, [user]);
+    // Load orders khi component mount và khi user thay đổi
+    loadOrders();
+
+  //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
+  //   window.addEventListener('storage', (event) => {
+  //     if (event.key === 'dna_orders') {
+  //       loadOrders();
+  //     }
+  //   });
+
+  //   // Cleanup function
+  //   return () => {
+  //     window.removeEventListener('storage', () => {});
+  //   };
+   }, [user]);
 
   const addOrder = (order) => {
     if (!user || !user.email) return;
@@ -101,9 +118,10 @@ export function OrderProvider({ children }) {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const newOrders = [orderWithEmail, ...allOrders];
     localStorage.setItem("dna_orders", JSON.stringify(newOrders));
+    
     // Sau khi thêm, lọc lại toàn bộ đơn cho user hiện tại
     const filtered =
-      user.role === "staff"
+      user.role_id === 2
         ? newOrders
         : newOrders.filter((o) => o.email === user.email);
     dispatch({ type: "SET_ORDERS", payload: filtered });
@@ -130,7 +148,7 @@ export function OrderProvider({ children }) {
   };
 
   // Thêm/Chỉnh sửa feedback và rating
-  const addFeedback = (orderId, feedback, rating) => {
+  const addFeedback = (orderId, feedback, rating, categoryRatings = {}) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
@@ -144,6 +162,7 @@ export function OrderProvider({ children }) {
         rating,
         feedback,
         date,
+        categoryRatings,
         user: order.name || order.fullName || order.email || "Người dùng",
         email: order.email || "",
       });

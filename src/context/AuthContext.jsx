@@ -1,4 +1,3 @@
-
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -8,8 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Lấy user từ sessionStorage (nếu muốn giữ đăng nhập khi reload)
-    const storedUser = sessionStorage.getItem("user");
+    // Ưu tiên lấy user từ sessionStorage, nếu không có thì lấy từ localStorage
+    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("dna_user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
@@ -26,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       if (found) {
         setUser(found);
         sessionStorage.setItem("user", JSON.stringify(found));
+        localStorage.setItem("dna_user", JSON.stringify(found));
         return { success: true, role_id: found.role_id };
       }
       return { success: false, message: "Email hoặc mật khẩu không đúng!" };
@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem("user");
+    localStorage.removeItem("dna_user");
   };
 
   // Đăng ký
@@ -81,6 +82,7 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(updateRes.data);
       sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+      localStorage.setItem("dna_user", JSON.stringify(updateRes.data));
     } catch {
       // Có thể xử lý lỗi ở đây
     }
@@ -128,6 +130,7 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(updateRes.data);
       sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+      localStorage.setItem("dna_user", JSON.stringify(updateRes.data));
       sessionStorage.removeItem(`otp_${user.email}`);
       return { success: true };
     } catch {

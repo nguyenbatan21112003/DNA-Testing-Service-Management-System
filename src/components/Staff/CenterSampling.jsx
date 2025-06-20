@@ -38,7 +38,7 @@ const { TextArea } = Input
 const { TabPane } = Tabs
 
 const CenterSampling = () => {
-  const { getAllOrders } = useOrderContext()
+  const { getAllOrders, updateOrder } = useOrderContext()
   const [appointments, setAppointments] = useState([])
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -53,7 +53,8 @@ const CenterSampling = () => {
     canceled: 0,
   })
 
-  useEffect(() => {
+  // Lấy dữ liệu đơn hàng từ context
+  const loadAppointments = () => {
     // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại trung tâm
     const allOrders = getAllOrders()
     const centerSamplingOrders = allOrders
@@ -78,6 +79,23 @@ const CenterSampling = () => {
       canceled: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "huy").length,
     }
     setStats(newStats)
+  }
+
+  useEffect(() => {
+    // Load orders khi component mount
+    loadAppointments()
+    
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'dna_orders') {
+        loadAppointments()
+      }
+    })
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', () => {})
+    }
   }, [])
 
   const handleViewAppointment = (appointment) => {
@@ -99,40 +117,19 @@ const CenterSampling = () => {
 
   const handleSaveUpdate = async (values) => {
     try {
-      const updatedAppointments = appointments.map((appointment) =>
-        appointment.id === selectedAppointment.id
-          ? {
-              ...appointment,
-              appointmentStatus: values.appointmentStatus,
-              appointmentDate: values.appointmentDate ? values.appointmentDate.format("DD/MM/YYYY") : null,
-              timeSlot: values.timeSlot,
-              staffAssigned: values.staffAssigned,
-              notes: values.notes,
-              updatedAt: new Date().toLocaleString("vi-VN"),
-            }
-          : appointment,
-      )
-
-      setAppointments(updatedAppointments)
-
-      // Cập nhật lại localStorage
-      const allOrders = getAllOrders()
-      const updatedAllOrders = allOrders.map((order) => {
-        const updatedAppointment = updatedAppointments.find((apt) => apt.id === order.id)
-        return updatedAppointment || order
+      // Sử dụng updateOrder từ context để cập nhật đơn hàng
+      updateOrder(selectedAppointment.id, {
+        appointmentStatus: values.appointmentStatus,
+        appointmentDate: values.appointmentDate ? values.appointmentDate.format("DD/MM/YYYY") : null,
+        timeSlot: values.timeSlot,
+        staffAssigned: values.staffAssigned,
+        notes: values.notes,
+        updatedAt: new Date().toLocaleString("vi-VN"),
       })
-      localStorage.setItem("dna_orders", JSON.stringify(updatedAllOrders))
-
-      // Cập nhật thống kê
-      const newStats = {
-        total: updatedAppointments.length,
-        scheduled: updatedAppointments.filter((apt) => apt.appointmentStatus === "da_hen").length,
-        arrived: updatedAppointments.filter((apt) => apt.appointmentStatus === "da_den").length,
-        missed: updatedAppointments.filter((apt) => apt.appointmentStatus === "vang_mat").length,
-        canceled: updatedAppointments.filter((apt) => apt.appointmentStatus === "huy").length,
-      }
-      setStats(newStats)
-
+      
+      // Cập nhật lại danh sách đơn hàng
+      loadAppointments()
+      
       setUpdateModalVisible(false)
       message.success("Cập nhật lịch hẹn thành công!")
     } catch {

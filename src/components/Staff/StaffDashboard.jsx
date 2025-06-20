@@ -79,14 +79,14 @@ const StaffDashboard = () => {
   const [logoutModal, setLogoutModal] = useState(false)
   const [activeTab, setActiveTab] = useState("dashboard")
   const [collapsed, setCollapsed] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [unauthorized, setUnauthorized] = useState(false)
 
   const navigate = useNavigate()
 
   // Tạo tài khoản Staff và dữ liệu mẫu tự động
   useEffect(() => {
-    if (!user || user.role_id !== 2) {
+    const existingOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    if ((!user || user.role_id !== 2) && existingOrders.length === 0) {
       const tempStaffAccount = {
         user_id: 2,
         name: "Nguyễn Thị Lan",
@@ -95,10 +95,8 @@ const StaffDashboard = () => {
         password: "password123",
         role_id: 2,
         avatar: null,
-      }
-
-      localStorage.setItem("dna_user", JSON.stringify(tempStaffAccount))
-
+      };
+      localStorage.setItem("dna_user", JSON.stringify(tempStaffAccount));
       // Tạo dữ liệu mẫu phong phú
       const sampleOrders = [
         {
@@ -240,55 +238,28 @@ const StaffDashboard = () => {
           priority: "Trung bình",
         },
       ]
-
-      localStorage.setItem("dna_orders", JSON.stringify(sampleOrders))
-      window.location.reload()
-      return
+      localStorage.setItem("dna_orders", JSON.stringify(sampleOrders));
+      window.location.reload();
+      return;
     }
   }, [user])
 
   // Kiểm tra quyền truy cập
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
+    if (!user) {
+      message.error("Vui lòng đăng nhập để truy cập trang này!")
+      setUnauthorized(true)
+      navigate("/", { replace: true })
+      return
+    }
 
-      if (!user) {
-        message.error("Vui lòng đăng nhập để truy cập trang này!")
-        setUnauthorized(true)
-        navigate("/", { replace: true })
-        return
-      }
-
-      if (user.role_id !== 2) {
-        message.error("Bạn không có quyền truy cập trang này!")
-        setUnauthorized(true)
-        navigate("/", { replace: true })
-        return
-      }
-    }, 1000)
-
-    return () => clearTimeout(timer)
+    if (user.role_id !== 2) {
+      message.error("Bạn không có quyền truy cập trang này!")
+      setUnauthorized(true)
+      navigate("/", { replace: true })
+      return
+    }
   }, [user, navigate])
-
-  if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          flexDirection: "column",
-          background: "#f5f5f5",
-        }}
-      >
-        <div style={{ fontSize: 24, fontWeight: 600, marginBottom: 16, color: "#00a67e" }}>
-          Đang tải Dashboard Staff...
-        </div>
-        <div style={{ fontSize: 16, color: "#666" }}>Vui lòng đợi trong giây lát</div>
-      </div>
-    )
-  }
 
   if (unauthorized) {
     return null
