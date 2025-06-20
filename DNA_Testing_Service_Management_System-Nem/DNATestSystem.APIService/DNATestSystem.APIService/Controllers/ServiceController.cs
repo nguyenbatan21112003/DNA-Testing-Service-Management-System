@@ -21,9 +21,9 @@ namespace DNATestSystem.APIService.Controllers
         }
 
         [HttpPost("create-service")]
-        public IActionResult CreateNewService([FromBody] ServiceCreateModel model)
+        public async Task<IActionResult> CreateNewService([FromBody] ServiceCreateModel model)
         {
-            var serviceId = _adminService.CreateServiceMethod(model);
+            var serviceId = await _adminService.CreateServiceMethodAsync(model);
             return Ok(new { message = "Tạo service thành công", serviceId });
         }
 
@@ -42,11 +42,11 @@ namespace DNATestSystem.APIService.Controllers
         //}
        
         [HttpPut("delete-service/{id}")]
-        public IActionResult SoftDeleteService(int id)
+        public async Task<IActionResult> SoftDeleteService(int id)
         {
             try
             {
-                var deletedId = _adminService.DeleteServiceMethod(id);
+                var deletedId = await _adminService.DeleteServiceMethodAsync(id);
                 return Ok(new { message = "Xóa (ẩn) service thành công", serviceId = deletedId });
             }
             catch (Exception ex)
@@ -54,20 +54,20 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = "Xóa thất bại", error = ex.Message });
             }
         }
-        [HttpGet("all-services")]
-        public IActionResult getAllService()
-        {
-            var data = _adminService.GetServiceForAdmin();
-            return Ok(data);
 
+        [HttpGet("all-services")]
+        public async Task<IActionResult> GetAllService()
+        {
+            var data = await _adminService.GetServiceForAdminAsync();
+            return Ok(data);
         }
 
         [HttpPut("update-service")]
-        public IActionResult UpdateService([FromBody] ServiceUpdateModel model)
+        public async Task<IActionResult> UpdateService([FromBody] ServiceUpdateModel model)
         {
             try
             {
-                _adminService.updateServiceAndPrice(model);
+                await _adminService.UpdateServiceAndPriceAsync(model);
                 return Ok(new { message = "Cập nhật service thành công." });
             }
             catch (Exception ex)

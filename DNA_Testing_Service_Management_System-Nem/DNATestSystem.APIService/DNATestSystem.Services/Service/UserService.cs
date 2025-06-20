@@ -95,7 +95,7 @@ namespace DNATestSystem.Services.Service
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
+                expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpirationInHours),
                 signingCredentials: new SigningCredentials(
                         key,
                         SecurityAlgorithms.HmacSha256Signature

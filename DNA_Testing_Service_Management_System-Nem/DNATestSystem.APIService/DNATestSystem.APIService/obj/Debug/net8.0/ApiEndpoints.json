@@ -154,7 +154,7 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ServiceController",
-    "Method": "getAllService",
+    "Method": "GetAllService",
     "RelativePath": "Service/all-services",
     "HttpMethod": "GET",
     "IsController": true,

@@ -220,6 +220,10 @@ namespace DNATestSystem.Services.Service
                             .Include (s => s.PriceDetails)
                             .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceID);
 
+            if(service == null)
+            {
+                throw new Exception($"Service with ID {model.ServiceID} not found.");
+            }
             // Cập nhật Service
             service.ServiceName = model.ServiceName;
             service.Description = model.Description;
