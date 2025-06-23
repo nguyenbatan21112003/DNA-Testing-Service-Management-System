@@ -17,24 +17,24 @@ namespace DNATestSystem.APIService.Controllers
             _priceDetails = priceDetails;
         }
         [HttpPost]
-        public IActionResult CreatePriceDetail([FromBody] PriceDetailsModel model)
+        public async Task<IActionResult> CreatePriceDetail([FromBody] PriceDetailsModel model)
         {
-            var id = _priceDetails.CreatePriceDetailMethod(model);
+            var id = await _priceDetails.CreatePriceDetailMethodAsync(model);
             return Ok(new { message = "Tạo bảng giá thành công", id });
         }
 
         [HttpPut("Update/{id}")]
-        public IActionResult UpdatePriceDetail(int id, [FromBody] PriceDetailsModel model)
+        public async Task<IActionResult> UpdatePriceDetail(int id, [FromBody] PriceDetailsModel model)
         {
-            _priceDetails.UpdatePriceDetailMethod(id, model);
-            return Ok(new { message = "Cập nhật bảng giá thành công" });
+            await _priceDetails.UpdatePriceDetailMethodAsync(id, model);
+            return await Task.FromResult(Ok(new { message = "Cập nhật bảng giá thành công" }));
         }
 
         [HttpDelete("Delete/{id}")]
-        public IActionResult DeletePriceDetail(int id)
+        public async Task<IActionResult> DeletePriceDetailAsync(int id)
         {
-            _priceDetails.DeletePriceDetailMethod(id);
-            return Ok(new { message = "Xoá bảng giá thành công" });
+             await _priceDetails.DeletePriceDetailMethodAsync(id);
+            return await Task.FromResult(Ok(new { message = "Xoá bảng giá thành công" }));
         }
     }
 }

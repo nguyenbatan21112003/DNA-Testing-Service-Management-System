@@ -16,7 +16,6 @@ using DNATestSystem.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-
 namespace DNATestSystem.Services.Service
 {
     public class AdminService : IAdminService
@@ -158,6 +157,7 @@ namespace DNATestSystem.Services.Service
         public async Task<List<UserShowModel>> GetAllUserAsync()
         {
             return await _context.Users
+               
             .Select(u => new UserShowModel
             {
                 UserId = u.UserId,

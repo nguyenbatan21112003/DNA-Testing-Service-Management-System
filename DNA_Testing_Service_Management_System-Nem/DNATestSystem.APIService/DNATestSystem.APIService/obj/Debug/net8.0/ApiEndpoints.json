@@ -117,7 +117,7 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.PriceDetailConoller",
-    "Method": "DeletePriceDetail",
+    "Method": "DeletePriceDetailAsync",
     "RelativePath": "PriceDetailConoller/Delete/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,

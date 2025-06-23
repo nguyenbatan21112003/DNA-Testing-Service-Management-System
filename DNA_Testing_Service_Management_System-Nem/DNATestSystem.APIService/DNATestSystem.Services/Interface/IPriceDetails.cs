@@ -10,8 +10,8 @@ namespace DNATestSystem.Services.Interface
     public interface IPriceDetails
     {
         //PriceDetails
-        int CreatePriceDetailMethod(PriceDetailsModel priceDetailModel);
-        void UpdatePriceDetailMethod(int id, PriceDetailsModel priceDetailsModel);
-        void DeletePriceDetailMethod(int id);
+        Task<int> CreatePriceDetailMethodAsync(PriceDetailsModel priceDetailModel);
+        Task UpdatePriceDetailMethodAsync(int id, PriceDetailsModel priceDetailsModel);
+        Task DeletePriceDetailMethodAsync(int id);
     }
 }

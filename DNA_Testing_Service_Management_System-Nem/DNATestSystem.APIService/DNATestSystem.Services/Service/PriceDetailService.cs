@@ -19,7 +19,7 @@ namespace DNATestSystem.Services.Service
         {
             _context = applicationDbContext;
         }
-        public int CreatePriceDetailMethod(PriceDetailsModel priceDetailModel)
+        public async Task<int> CreatePriceDetailMethodAsync(PriceDetailsModel priceDetailModel)
         {
             var price = new BusinessObjects.Models.PriceDetail
             {
@@ -32,13 +32,13 @@ namespace DNATestSystem.Services.Service
             };
 
             _context.PriceDetails.Add(price);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return price.PriceId;
         }
 
-        public void UpdatePriceDetailMethod(int id, PriceDetailsModel priceDetailsModel)
+        public async Task UpdatePriceDetailMethodAsync(int id, PriceDetailsModel priceDetailsModel)
         {
-            var price = _context.PriceDetails.FirstOrDefault(p => p.PriceId == id);
+            var price =  _context.PriceDetails.FirstOrDefault(p => p.PriceId == id);
             if (price == null) throw new Exception("PriceDetail not found");
 
             price.Price2Samples = priceDetailsModel.Price2Samples;
@@ -47,16 +47,16 @@ namespace DNATestSystem.Services.Service
             price.IncludeVAT = priceDetailsModel.IncludeVAT;
             price.UpdatedAt = DateTime.UtcNow;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeletePriceDetailMethod(int id)
+        public async Task DeletePriceDetailMethodAsync(int id)
         {
             var priceDetails = _context.PriceDetails.FirstOrDefault(p => p.PriceId == id);
             if (priceDetails == null) throw new Exception("PriceDetail not found");
 
             _context.PriceDetails.Remove(priceDetails);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
