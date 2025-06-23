@@ -12,7 +12,6 @@ using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DNATestSystem.Services.Service
 {
@@ -21,7 +20,7 @@ namespace DNATestSystem.Services.Service
         private readonly IApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
 
-        public UserService(IApplicationDbContext context , IOptions<JwtSettings> jwtSettings)
+        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
@@ -57,7 +56,7 @@ namespace DNATestSystem.Services.Service
         }
 
         public async Task<int> RegisterAsync(UserRegisterModel user)
-        {           
+        {
             var password = user.Password;
             var hashPassword = HashHelper.BCriptHash(password);
 
@@ -126,10 +125,10 @@ namespace DNATestSystem.Services.Service
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-             var user = await _context.RefreshTokens.
-            Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
-            .Select(x => x.User)
-            .FirstOrDefaultAsync();
+            var user = await _context.RefreshTokens.
+           Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
+           .Select(x => x.User)
+           .FirstOrDefaultAsync();
             return user;
         }
 
@@ -148,7 +147,7 @@ namespace DNATestSystem.Services.Service
         public async Task DeleteOldRefreshTokenAsync(int userId)
         {
             var entity = await _context.RefreshTokens
-                        .Where(x => x.UserId== userId)
+                        .Where(x => x.UserId == userId)
                         .ToListAsync();
 
             if (entity != null)
@@ -167,7 +166,7 @@ namespace DNATestSystem.Services.Service
                                     .ToListAsync();
             //tạo ra priceDetails khi đã join với Service
             var service = priceDetails
-                            .Select(s => 
+                            .Select(s =>
                             {
                                 var price = s.PriceDetails.FirstOrDefault();
                                 //lấy tk Price ra
@@ -186,7 +185,7 @@ namespace DNATestSystem.Services.Service
                                     TimeToResult = price?.TimeToResult
                                 };
                             }).ToList();
-            return service;                 
+            return service;
         }
 
         public async Task<ProfileDetailModel?> GetProfileUserAsync(int profileId)
@@ -228,14 +227,14 @@ namespace DNATestSystem.Services.Service
                  {
                      PostId = p.PostId,
                      Title = p.Title,
-                     Slug = p.Slug, 
+                     Slug = p.Slug,
                      Summary = p.Summary,
                      ThumbnailURL = p.ThumbnailURL,
                      AuthorName = p.Author.FullName
                  })
                  .ToListAsync();
             return blogPosts;
-            }
+        }
 
         public async Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug)
         {
@@ -248,24 +247,24 @@ namespace DNATestSystem.Services.Service
 
             return new BlogPostDetailsModel
             {
-               PostId = blog.PostId,
-               Title = blog.Title,  
-               Slug = blog.Slug,    
-               Summary = blog.Summary,  
-               ThumbnailURL = blog.ThumbnailURL,    
-               Content = blog.Content,
-               CreatedAt = blog.CreatedAt,
-               UpdatedAt = blog.UpdatedAt,
-               IsPublished = blog.IsPublished,
-               AuthorId = blog.AuthorId,
+                PostId = blog.PostId,
+                Title = blog.Title,
+                Slug = blog.Slug,
+                Summary = blog.Summary,
+                ThumbnailURL = blog.ThumbnailURL,
+                Content = blog.Content,
+                CreatedAt = blog.CreatedAt,
+                UpdatedAt = blog.UpdatedAt,
+                IsPublished = blog.IsPublished,
+                AuthorId = blog.AuthorId,
             };
-        }       
+        }
 
         public async Task<UpdateProfileModel?> UpdateProfileAsync(UpdateProfileModel updateProfileModel)
         {
             var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.ProfileId == updateProfileModel.ProfileId);
 
-            if(userProfile == null)
+            if (userProfile == null)
             {
                 return null;
             }
@@ -316,6 +315,31 @@ namespace DNATestSystem.Services.Service
                 TimeToResult = priceDetail?.TimeToResult,
                 CreatedAt = service.CreatedAt
             };
+        }
+
+        public async Task<bool> VerifyCurrentPasswordAsync(UserVerifyCurrentPassword model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null) return false;
+
+
+             return HashHelper.BCriptVerify(model.CurrentPassword, user.Password);
+        }
+
+        public async Task ChangePasswordAsync(UserChangePasswordModel model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var isMatch = BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.Password);
+            if (!isMatch)
+                throw new Exception("Current password is incorrect.");
+            // Mã hóa mật khẩu mới
+            user.Password = HashHelper.BCriptHash(model.NewPassword);
+            user.UpdatedAt = DateTime.UtcNow;   
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -23,6 +23,10 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Service;
         Task DeleteOldRefreshTokenAsync(string refreshToken);
         Task DeleteOldRefreshTokenAsync(int userId);
 
+        //flow doi mat khau
+        Task<bool> VerifyCurrentPasswordAsync(UserVerifyCurrentPassword model);
+        Task ChangePasswordAsync(UserChangePasswordModel model);
+
         // Dịch vụ
         Task<List<ServiceSummaryDto>> GetServiceForUserAsync();
         Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id);

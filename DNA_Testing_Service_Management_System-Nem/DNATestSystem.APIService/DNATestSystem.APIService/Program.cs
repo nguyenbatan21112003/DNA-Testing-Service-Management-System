@@ -135,7 +135,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // khi các bạn luu cookie xuống browser, nó sẽ ko cho phép javastric đọc
     options.Cookie.IsEssential = true; // tự động add vào request xong r save vào browser
 });
-
+builder.Services.AddHttpContextAccessor();
 // Sau khi cấu hình xong, gọi builder.Build() một lần duy nhất
 var app = builder.Build();
 

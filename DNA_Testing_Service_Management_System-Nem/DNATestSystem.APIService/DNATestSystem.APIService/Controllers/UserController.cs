@@ -18,9 +18,13 @@ namespace DNATestSystem.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public UserController(IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
+
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterModel users)
@@ -144,21 +148,37 @@ namespace DNATestSystem.Controllers
             var data = await _userService.UpdateProfileAsync(model);
             return Ok(data);
         }
+        [HttpPost("verify-password")]
+        public async Task<IActionResult> VerifyPassword([FromBody] UserVerifyCurrentPassword model)
+        {
+            var result = await _userService.VerifyCurrentPasswordAsync(model);
+            return result ? Ok("Password verified.") : BadRequest("Incorrect password.");
+        }
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordModel model)
+        {
+            try
+            {
+                var data = new UserChangePasswordModel
+                {
+                    Email = User.FindFirstValue(ClaimTypes.Email),
+                    CurrentPassword = model.CurrentPassword,
+                    NewPassword = model.NewPassword
+                };
+                await _userService.ChangePasswordAsync(data);
+                return Ok("Password changed successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
-    //[Authorize]
-    //[HttpPost("verify-current-password")]
-    //public IActionResult VerifyCurrentPassword([FromBody] string currentPassword)
-    //{
-    //    var email = User.FindFirstValue(ClaimTypes.Email);
-    //    var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
-    //    if (user == null) return Unauthorized();
 
-    //    bool isValid = BCrypt.Net.BCrypt.Verify(currentPassword, user.Password);
-    //    if (!isValid) return BadRequest("Current password is incorrect.");
 
-    //    return Ok("Password verified. Continue.");
-    //}
 
 
 
