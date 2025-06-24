@@ -177,7 +177,7 @@ CREATE TABLE TestSamples (
   Relationship NVARCHAR(30),
   SampleType NVARCHAR(50), -- staff có thể cập nhật sau, customer có thể nhập hoặc ko nhập
   -- Không cần ProcessID (lấy gián tiếp qua Request)
-  YOB INT
+  YOB INT,
   CollectedAt DATETIME
 );
 GO

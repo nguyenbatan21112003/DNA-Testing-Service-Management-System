@@ -74,6 +74,19 @@ namespace DNATestSystem.Services.Service
 
             _context.Users.Add(data);
             await _context.SaveChangesAsync();
+            // Tạo user profile mặc định sau khi tạo user
+            var profile = new UserProfile
+            {
+                UserId = data.UserId,
+                Gender = "",
+                Address = "",
+                DateOfBirth = null,
+                IdentityId = "",
+                Fingerfile = "",
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.UserProfiles.Add(profile);
+            await _context.SaveChangesAsync();
 
             return data.UserId;
         }
@@ -178,7 +191,7 @@ namespace DNATestSystem.Services.Service
                                     ServiceName = s.ServiceName,
                                     Description = s.Description,
                                     Category = s.Category,
-                                    IsUrgent = s.IsUrgent,
+                                    IsUrgent = (bool)s.IsUrgent,
                                     IncludeVAT = true,
                                     Price2Samples = price?.Price2Samples,
                                     Price3Samples = price?.Price3Samples,
@@ -211,7 +224,7 @@ namespace DNATestSystem.Services.Service
                     Gender = profile.Gender,
                     Address = profile.Address,
                     DateOfBirth = profile.DateOfBirth,
-                    IdentityID = profile.IdentityID,
+                    IdentityID = profile.IdentityId,
                     Fingerfile = profile.Fingerfile,
                     UpdatedAt = profile.UpdatedAt
                 }
@@ -229,7 +242,7 @@ namespace DNATestSystem.Services.Service
                      Title = p.Title,
                      Slug = p.Slug,
                      Summary = p.Summary,
-                     ThumbnailURL = p.ThumbnailURL,
+                     ThumbnailURL = p.ThumbnailUrl,
                      AuthorName = p.Author.FullName
                  })
                  .ToListAsync();
@@ -251,7 +264,7 @@ namespace DNATestSystem.Services.Service
                 Title = blog.Title,
                 Slug = blog.Slug,
                 Summary = blog.Summary,
-                ThumbnailURL = blog.ThumbnailURL,
+                ThumbnailURL = blog.ThumbnailUrl,
                 Content = blog.Content,
                 CreatedAt = blog.CreatedAt,
                 UpdatedAt = blog.UpdatedAt,
@@ -277,7 +290,7 @@ namespace DNATestSystem.Services.Service
                 Gender = userProfile.Gender,
                 Address = userProfile.Address,
                 DateOfBirth = userProfile.DateOfBirth,
-                IdentityID = userProfile.IdentityID,
+                IdentityID = userProfile.IdentityId,
                 Fingerfile = userProfile.Fingerfile,
             };
             user.UpdatedAt = DateTime.UtcNow;
