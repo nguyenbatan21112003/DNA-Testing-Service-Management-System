@@ -134,6 +134,18 @@
         }
       }
     },
+    "/Checkout/PaymentCallbackVnpay": {
+      "get": {
+        "tags": [
+          "Checkout"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Manager/test-results/pending": {
       "get": {
         "tags": [
@@ -166,6 +178,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/VertifyTestResult"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Payment/create-vnpay-url": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInformationModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInformationModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentInformationModel"
               }
             }
           }
@@ -675,6 +718,28 @@
           },
           "status": {
             "$ref": "#/components/schemas/StatusNum"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentInformationModel": {
+        "type": "object",
+        "properties": {
+          "orderType": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "orderDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

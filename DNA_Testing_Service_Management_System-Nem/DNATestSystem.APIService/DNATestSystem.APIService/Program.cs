@@ -67,6 +67,7 @@ builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserSe
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(

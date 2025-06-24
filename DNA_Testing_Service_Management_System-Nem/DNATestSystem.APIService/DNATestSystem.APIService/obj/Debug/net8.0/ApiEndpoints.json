@@ -74,6 +74,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CheckoutController",
+    "Method": "PaymentCallbackVnpay",
+    "RelativePath": "Checkout/PaymentCallbackVnpay",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "GetPendingTestResults",
     "RelativePath": "Manager/test-results/pending",
@@ -94,6 +104,22 @@
       {
         "Name": "dto",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.VertifyTestResult",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.PaymentController",
+    "Method": "CreatePaymentUrlVnpay",
+    "RelativePath": "Payment/create-vnpay-url",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Models.Vnpay.PaymentInformationModel",
         "IsRequired": true
       }
     ],
