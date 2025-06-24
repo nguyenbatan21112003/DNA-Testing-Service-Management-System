@@ -178,8 +178,11 @@ CREATE TABLE TestSamples (
   SampleType NVARCHAR(50), -- staff có thể cập nhật sau, customer có thể nhập hoặc ko nhập
   -- Không cần ProcessID (lấy gián tiếp qua Request)
   YOB INT
+  CollectedAt DATETIME
 );
 GO
+ALTER TABLE TestSamples ADD CollectedAt DATETIME;
+
 
 CREATE TABLE SampleCollectionRecords (
   RecordID INT PRIMARY KEY IDENTITY(1,1),
