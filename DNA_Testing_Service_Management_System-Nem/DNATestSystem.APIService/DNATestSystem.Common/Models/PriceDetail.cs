@@ -14,12 +14,12 @@ public partial class PriceDetail
     public decimal? Price3Samples { get; set; }
 
     public string? TimeToResult { get; set; }
-    
-    public bool? IncludeVAT { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public bool? IncludeVat { get; set; }
 
     public virtual Service? Service { get; set; }
 }

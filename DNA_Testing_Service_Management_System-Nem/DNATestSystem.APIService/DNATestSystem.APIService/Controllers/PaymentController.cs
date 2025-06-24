@@ -1,4 +1,4 @@
-﻿using DNATestSystem.BusinessObjects.Models.Vnpay;
+﻿using DNATestSystem.BusinessObjects.Vnpay;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,4 +1,4 @@
-﻿-- ===================== CREATE & USE DATABASE =====================
+﻿﻿-- ===================== CREATE & USE DATABASE =====================
 IF DB_ID('DNATestingSystem_V4') IS NULL
 BEGIN
   CREATE DATABASE DNATestingSystem_V4;
@@ -15,19 +15,7 @@ CREATE TABLE Roles (
 );
 GO
 
-CREATE TABLE Features (
-  FeatureID INT PRIMARY KEY IDENTITY(1,1),
-  Name VARCHAR(100),
-  Description TEXT
-);
-GO
 
-CREATE TABLE RoleFeatures (
-  RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
-  FeatureID INT FOREIGN KEY REFERENCES Features(FeatureID),
-  PRIMARY KEY (RoleID, FeatureID)
-);
-GO
 
 -- ===================== USERS =====================
 CREATE TABLE Users (
@@ -145,6 +133,8 @@ CREATE TABLE TestRequests (
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
   TypeID INT FOREIGN KEY REFERENCES CollectType(CollectID),
+  Category NVARCHAR(50),
+  -- thêm bảng
   ScheduleDate DATE,
   Address NVARCHAR(255),
   Status NVARCHAR(50),
@@ -164,6 +154,18 @@ CREATE TABLE TestProcesses (
   UpdatedAt DATETIME
 );
 GO
+CREATE TABLE RequestDeclarants (
+  DeclarantID INT PRIMARY KEY IDENTITY(1,1),
+  RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
+  FullName NVARCHAR(100),
+ Gender NVARCHAR(10),
+  Address NVARCHAR(255),
+  IdentityNumber NVARCHAR(50),
+IdentityIssuedDate DATE,
+ IdentityIssuedPlace NVARCHAR(100),
+  Phone NVARCHAR(20),
+  Email NVARCHAR(100)
+);
 
 -- ===================== SAMPLE DATA =====================
 CREATE TABLE TestSamples (
@@ -173,7 +175,8 @@ CREATE TABLE TestSamples (
   OwnerName NVARCHAR(100),
   Gender VARCHAR(10),
   Relationship NVARCHAR(30),
-  SampleType NVARCHAR(50),
+  SampleType NVARCHAR(50), -- staff có thể cập nhật sau, customer có thể nhập hoặc ko nhập
+  -- Không cần ProcessID (lấy gián tiếp qua Request)
   YOB INT
 );
 GO
@@ -218,9 +221,11 @@ CREATE TABLE TestResults (
   ResultData TEXT,
   Status NVARCHAR(50),
   EnteredAt DATETIME,
-  VerifiedAt DATETIME
+  VerifiedAt DATETIME,
+  CollectedAt DATETIME,
 );
 GO
+ALTER TABLE TestResults ADD CollectedAt DATETIME;
 
 -- ===================== PAYMENTS =====================
 CREATE TABLE Payments (
@@ -245,11 +250,15 @@ GO
 
 CREATE TABLE ConsultRequests (
   ConsultID INT PRIMARY KEY IDENTITY(1,1),
-  CustomerID INT FOREIGN KEY REFERENCES Users(UserID),
+--  CustomerID INT FOREIGN KEY REFERENCES Users(UserID),
   StaffID INT FOREIGN KEY REFERENCES Users(UserID),
-  Subject NVARCHAR(255),
+  FullName NVARCHAR(100),
+  Phone NVARCHAR(20),
+  Category NVARCHAR(50),
+  ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
+--  Subject NVARCHAR(255),
   Message TEXT,
-  ReplyMessage TEXT,
+--  ReplyMessage TEXT,
   Status NVARCHAR(50),
   CreatedAt DATETIME,
   RepliedAt DATETIME
@@ -289,7 +298,7 @@ VALUES
 (N'Phạm Thị D', '0933123456', 'khachhang2@gmail.com', 'hashed_password_4', 3, GETDATE(), GETDATE(), 0);
 GO
 SELECT * FROM Users
-INSERT INTO UserProfiles (UserID, Gender, Address, DateOfBirth, IdentityFile, Fingerfile, UpdatedAt)
+INSERT INTO UserProfiles (UserID, Gender, Address, DateOfBirth, IdentityId, Fingerfile, UpdatedAt)
 VALUES 
 (1, N'Nam', N'12 Nguyễn Huệ, Quận 1, TP.HCM', '1985-05-15', '/uploads/identity/nguyenvana.png', '/uploads/fingerprint/nguyenvana.fgp', GETDATE()),
 (2, N'Nữ', N'34 Hai Bà Trưng, Quận 3, TP.HCM', '1990-08-20', '/uploads/identity/lethib.png', '/uploads/fingerprint/lethib.fgp', GETDATE()),

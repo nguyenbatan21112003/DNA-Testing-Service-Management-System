@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DNATestSystem.BusinessObjects.Models.Vnpay;
+using DNATestSystem.BusinessObjects.Vnpay;
 using Microsoft.AspNetCore.Http;
 
 namespace DNATestSystem.Services.Interface

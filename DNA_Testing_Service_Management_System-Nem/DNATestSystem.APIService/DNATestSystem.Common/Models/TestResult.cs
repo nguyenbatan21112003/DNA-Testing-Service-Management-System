@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
@@ -22,13 +21,11 @@ public partial class TestResult
 
     public DateTime? VerifiedAt { get; set; }
 
-    [ForeignKey("EnteredBy")]
     public virtual User? EnteredByNavigation { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual TestRequest? Request { get; set; }
 
-    [ForeignKey("VerifiedBy")]
     public virtual User? VerifiedByNavigation { get; set; }
 }

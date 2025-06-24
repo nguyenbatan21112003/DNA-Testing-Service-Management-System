@@ -13,6 +13,8 @@ public partial class TestRequest
 
     public int? TypeId { get; set; }
 
+    public string? Category { get; set; }
+
     public DateOnly? ScheduleDate { get; set; }
 
     public string? Address { get; set; }
@@ -22,6 +24,8 @@ public partial class TestRequest
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual ICollection<RequestDeclarant> RequestDeclarants { get; set; } = new List<RequestDeclarant>();
 
     public virtual ICollection<SampleCollectionRecord> SampleCollectionRecords { get; set; } = new List<SampleCollectionRecord>();
 
@@ -33,7 +37,7 @@ public partial class TestRequest
 
     public virtual ICollection<TestSample> TestSamples { get; set; } = new List<TestSample>();
 
-    public virtual TestType? Type { get; set; }
+    public virtual CollectType? Type { get; set; }
 
     public virtual User? User { get; set; }
 }

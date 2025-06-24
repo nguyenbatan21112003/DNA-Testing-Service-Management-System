@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNATestSystem.BusinessObjects.Models.Vnpay
+namespace DNATestSystem.BusinessObjects.Vnpay
 {
     public class PaymentResponseModel
     {

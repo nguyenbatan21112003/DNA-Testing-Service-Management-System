@@ -17,7 +17,7 @@ public partial class User
 
     public int? RoleId { get; set; }
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
@@ -25,9 +25,7 @@ public partial class User
 
     public virtual ICollection<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
 
-    public virtual ICollection<ConsultRequest> ConsultRequestCustomers { get; set; } = new List<ConsultRequest>();
-
-    public virtual ICollection<ConsultRequest> ConsultRequestStaffs { get; set; } = new List<ConsultRequest>();
+    public virtual ICollection<ConsultRequest> ConsultRequests { get; set; } = new List<ConsultRequest>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
