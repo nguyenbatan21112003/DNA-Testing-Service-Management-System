@@ -130,7 +130,6 @@ const RequestFormModal = ({ open, onClose }) => {
                 <th style={{ border: '1px solid #ccc', padding: 6 }}>Giới tính</th>
                 <th style={{ border: '1px solid #ccc', padding: 6 }}>Mối quan hệ</th>
                 <th style={{ border: '1px solid #ccc', padding: 6 }}>Loại mẫu</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Ngày thu mẫu</th>
               </tr>
             </thead>
             <tbody>
@@ -147,7 +146,6 @@ const RequestFormModal = ({ open, onClose }) => {
                   </td>
                   <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
                   <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input type="date" style={inputStyle} /></td>
                 </tr>
               ))}
             </tbody>

@@ -328,7 +328,7 @@ const StaffOverview = () => {
       {/* Đơn hàng ưu tiên cao và Lịch hẹn hôm nay */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="Đơn hàng ưu tiên cao cần xử lý" extra={<AlertOutlined style={{ color: "#ff4d4f" }} />}>
+          <Card title="Những đơn hàng đang cần xử lý" extra={<AlertOutlined style={{ color: "#ff4d4f" }} />}>
             <Table
               columns={[
                 {

@@ -1480,7 +1480,7 @@ const UserProfile = () => {
               background: "#fff",
               borderRadius: 18,
               minWidth: 340,
-              maxWidth: 480,
+              maxWidth: 800,
               maxHeight: "90vh",
               padding: 32,
               boxShadow: "0 8px 32px #0002",
@@ -1519,24 +1519,144 @@ const UserProfile = () => {
             </h3>
             <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
             <div style={{ margin: "10px 0" }}>
-              {selectedOrder.result ? (
-                <div
-                  style={{
-                    background: "#f6f8fa",
-                    border: "1px solid #cce3d3",
-                    borderRadius: 8,
-                    padding: 12,
-                  }}
-                >
+              {(() => {
+                // Try to get the table data from either resultTableData or by parsing result
+                let tableData = null;
+                console.log("selectedOrder", selectedOrder);
+                
+                // First, try directly from resultTableData if it exists
+                if (selectedOrder.resultTableData && Array.isArray(selectedOrder.resultTableData)) {
+                  tableData = selectedOrder.resultTableData;
+                }
+                // If not found, try parsing from result string
+                else if (typeof selectedOrder.result === "string" && selectedOrder.result) {
+                  try {
+                    const parsedData = JSON.parse(selectedOrder.result);
+                    if (Array.isArray(parsedData)) {
+                      tableData = parsedData;
+                    }
+                  } catch (err) {
+                    // Not a JSON string or not an array, so we'll show as regular result later
+                    console.error("Failed to parse result as JSON array:", err);
+                  }
+                }
+
+                // Show table data if we have it
+                if (tableData && tableData.length > 0) {
+                  return (
+                    <div>
+                      <div
+                        style={{
+                          background: "#f6f8fa",
+                          border: "1px solid #cce3d3",
+                          borderRadius: 8,
+                          padding: 12,
+                          marginBottom: 16,
+                          overflowX: "auto", // Add horizontal scroll if needed
+                        }}
+                      >
+                        <table
+                          style={{
+                            width: "100%",
+                            borderCollapse: "collapse",
+                          }}
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>STT</th>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>Họ và tên</th>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>Năm sinh</th>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>Giới tính</th>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>Mối quan hệ</th>
+                              <th style={{ border: "1px solid #cce3d3", padding: "8px 12px", background: "#f0f9f6" }}>Loại mẫu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(Array.isArray(tableData) ? tableData : []).map((row, index) => (
+                              <tr key={row.key || `row-${index}`}>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px", textAlign: "center" }}>{index + 1}</td>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px" }}>{row.name || ""}</td>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px" }}>{row.birthYear || ""}</td>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px" }}>{row.gender || ""}</td>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px" }}>{row.relationship || ""}</td>
+                                <td style={{ border: "1px solid #cce3d3", padding: "8px 12px" }}>{row.sampleType || ""}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      {selectedOrder.conclusion && (
+                        <div
+                          style={{
+                            background: "#f6ffed",
+                            border: "1px solid #b7eb8f",
+                            padding: 16,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Kết luận:</div>
+                          <div>{selectedOrder.conclusion}</div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
+                
+                // Standard text result display
+                if (selectedOrder.result && typeof selectedOrder.result === "string") {
+                  return (
+                    <div
+                      style={{
+                        background: "#f6f8fa",
+                        border: "1px solid #cce3d3",
+                        borderRadius: 8,
+                        padding: 12,
+                      }}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: selectedOrder.result,
+                        }}
+                      />
+                    </div>
+                  )
+                }
+
+                // No results available
+                return (
                   <div
-                    dangerouslySetInnerHTML={{
-                      __html: selectedOrder.result,
+                    style={{
+                      background: "#fff7e6",
+                      border: "1px solid #ffd591",
+                      padding: 16,
+                      borderRadius: 6,
+                      textAlign: "center",
+                      color: "#d48806",
                     }}
-                  />
-                </div>
-              ) : (
-                <span style={{ color: "#888" }}>Chưa có bảng kết quả.</span>
-              )}
+                  >
+                    Chưa có kết quả xét nghiệm
+                  </div>
+                )
+              })()}
+            </div>
+            
+            <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+              <button
+                onClick={() => setShowResultModal(false)}
+                style={{
+                  background: "#009e74",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "10px 24px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: 16,
+                }}
+              >
+                Đóng
+              </button>
             </div>
           </div>
         </div>

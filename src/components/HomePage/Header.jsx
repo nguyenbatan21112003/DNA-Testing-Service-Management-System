@@ -83,6 +83,17 @@ const Header = () => {
             </li>
             <li className="nav-item">
               <Link
+                to="/dangki"
+                className={`nav-link ${
+                  location.pathname === "/dangki" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Đăng kí
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
                 to="/vechungtoi"
                 className={`nav-link ${
                   location.pathname === "/vechungtoi" ? "active" : ""

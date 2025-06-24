@@ -22,6 +22,7 @@ import Error404 from './components/Errors/Error404';
 import LoginPage from './components/HomePage/LoginPage';
 import RegisterPage from './components/HomePage/RegisterPage';
 import ManagerDashboard from "./components/Manager/ManagerDashboard";
+import ServiceRegister from './components/ServiceRegister/ServiceRegister';
 /*-----------------------------------------------------*/
 import "./Css/Services-page.css";
 import "./Css/About-us-page.css";
@@ -183,6 +184,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/dichvu" element={<ServicesPage />} />
+          <Route path="/dangki" element={<ServiceRegister />} />
           <Route path="/vechungtoi" element={<AboutUsPage />} />
           <Route path="/taikhoan" element={<UserProfile />} />
           <Route path="/nhanvien" element={<StaffOrderManager />} />

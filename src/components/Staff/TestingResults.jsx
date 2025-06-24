@@ -1,4 +1,4 @@
-"use client"
+
 
 import { useState, useEffect } from "react"
 import {
@@ -46,6 +46,9 @@ const TestingResults = () => {
   const [reportModalVisible, setReportModalVisible] = useState(false)
   const [form] = Form.useForm()
   const [filterStatus, setFilterStatus] = useState("all")
+  const [ setTableData] = useState([])
+  const [tempFormData, setTempFormData] = useState({})
+  const [currentEditOrderId, setCurrentEditOrderId] = useState(null)
 
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
@@ -61,6 +64,15 @@ const TestingResults = () => {
     }
   }, [filterStatus, orders])
 
+  useEffect(() => {
+    if (editModalVisible) {
+      const currentData = form.getFieldValue('resultTableData');
+      if (currentData) {
+        setTableData(currentData);
+      }
+    }
+  }, [editModalVisible, form]);
+
   const handleViewResult = (order) => {
     setSelectedOrder(order)
     setModalVisible(true)
@@ -68,12 +80,56 @@ const TestingResults = () => {
 
   const handleEditResult = (order) => {
     setSelectedOrder(order)
-    form.setFieldsValue({
+    
+    // If returning to the same order being edited, use the saved temp data
+    if (currentEditOrderId === order.id && tempFormData && Object.keys(tempFormData).length > 0) {
+      form.setFieldsValue(tempFormData)
+      if (tempFormData.resultTableData && Array.isArray(tempFormData.resultTableData)) {
+        setTableData(tempFormData.resultTableData)
+      }
+    } else {
+      // Initialize with default empty row if no data exists
+      let initialTableData = [];
+      
+      // Try to use existing result data in proper array format
+      if (order.resultTableData && Array.isArray(order.resultTableData)) {
+        initialTableData = [...order.resultTableData];
+      } 
+      // If no result table data but we have string result, try parsing it
+      else if (!order.resultTableData && order.result && typeof order.result === 'string') {
+        try {
+          const parsedData = JSON.parse(order.result);
+          if (Array.isArray(parsedData)) {
+            initialTableData = parsedData;
+          }
+        } catch (err) {
+          // Failed to parse, use empty array with one row
+          console.error("Failed to parse result data:", err);
+        }
+      }
+      
+      // Ensure we have at least one row
+      if (initialTableData.length === 0) {
+        initialTableData = [{ key: Date.now().toString() }];
+      }
+      
+      const formValues = {
       status: order.status,
       result: order.result || "",
       testingMethod: order.testingMethod || "STR",
       testingNotes: order.testingNotes || "",
-    })
+        resultTableData: initialTableData,
+        conclusion: order.conclusion || ""
+      };
+      
+      form.setFieldsValue(formValues)
+      setTableData(initialTableData)
+      
+      // Store the initial form state for this order
+      setTempFormData(formValues)
+    }
+    
+    setCurrentEditOrderId(order.id)
     setEditModalVisible(true)
   }
 
@@ -83,15 +139,27 @@ const TestingResults = () => {
   }
 
   const handleSaveResult = async (values) => {
+
+    console.log("Giá trị lưu:", values.resultTableData);
     try {
+      // Make a deep copy of the resultTableData to ensure it's properly serialized
+      let resultTableDataCopy = null;
+      if (values.resultTableData && Array.isArray(values.resultTableData)) {
+        resultTableDataCopy = JSON.parse(JSON.stringify(values.resultTableData));
+      }
+      
       const updatedOrders = orders.map((order) =>
         order.id === selectedOrder.id
           ? {
               ...order,
               status: values.status,
-              result: values.result,
+              // Store as string representation for backward compatibility
+              result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
               testingMethod: values.testingMethod,
               testingNotes: values.testingNotes,
+              conclusion: values.conclusion,
+              // Store the actual array for direct use
+              resultTableData: resultTableDataCopy,
               completedDate:
                 values.status === "Hoàn thành" ? new Date().toLocaleDateString("vi-VN") : order.completedDate,
               updatedAt: new Date().toLocaleString("vi-VN"),
@@ -100,11 +168,21 @@ const TestingResults = () => {
       )
       setOrders(updatedOrders)
       localStorage.setItem("dna_orders", JSON.stringify(updatedOrders))
+      
+      // Clear the temp form data since we've saved
+      setTempFormData({})
+      setCurrentEditOrderId(null)
+      
       setEditModalVisible(false)
       message.success("Cập nhật kết quả thành công!")
-    } catch {
+    } catch (error) {
+      console.error("Error updating result:", error)
       message.error("Có lỗi xảy ra khi cập nhật kết quả!")
     }
+  }
+
+  const handleFormValuesChange = (changedValues, allValues) => {
+    setTempFormData(allValues)
   }
 
   const columns = [
@@ -164,7 +242,11 @@ const TestingResults = () => {
       dataIndex: "result",
       key: "result",
       width: 120,
-      render: (result) => (result ? <Tag color="green">Đã có</Tag> : <Tag color="orange">Chưa có</Tag>),
+      render: (result, record) => {
+        // Check either result string or resultTableData array
+        const hasResults = result || (record.resultTableData && Array.isArray(record.resultTableData) && record.resultTableData.length > 0);
+        return hasResults ? <Tag color="green">Đã có</Tag> : <Tag color="orange">Chưa có</Tag>;
+      },
     },
     {
       title: "Thao tác",
@@ -290,12 +372,17 @@ const TestingResults = () => {
           </Space>
         </div>
 
-        <Tabs defaultActiveKey="all">
-          <TabPane tab="Tất cả đơn hàng" key="all">
+        <Tabs
+          defaultActiveKey="all"
+          items={[
+            {
+              key: "all",
+              label: "Tất cả đơn hàng",
+              children: (
             <Table
               columns={columns}
-              dataSource={filteredOrders}
-              rowKey="id"
+                  dataSource={Array.isArray(filteredOrders) ? filteredOrders : []}
+                  rowKey={record => record.id || String(Math.random())}
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
@@ -304,12 +391,16 @@ const TestingResults = () => {
               }}
               scroll={{ x: 1000 }}
             />
-          </TabPane>
-          <TabPane tab="Cần xử lý gấp" key="urgent">
+              ),
+            },
+            {
+              key: "urgent",
+              label: "Cần xử lý gấp",
+              children: (
             <Table
               columns={columns}
-              dataSource={filteredOrders.filter((order) => order.priority === "Cao" && order.status !== "Hoàn thành")}
-              rowKey="id"
+                  dataSource={Array.isArray(filteredOrders) ? filteredOrders.filter((order) => order.priority === "Cao" && order.status !== "Hoàn thành") : []}
+                  rowKey={record => record.id || String(Math.random())}
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
@@ -318,12 +409,16 @@ const TestingResults = () => {
               }}
               scroll={{ x: 1000 }}
             />
-          </TabPane>
-          <TabPane tab="Đã có kết quả" key="withResults">
+              ),
+            },
+            {
+              key: "withResults",
+              label: "Đã có kết quả",
+              children: (
             <Table
               columns={columns}
-              dataSource={filteredOrders.filter((order) => order.result)}
-              rowKey="id"
+                  dataSource={Array.isArray(filteredOrders) ? filteredOrders.filter((order) => order.result || (order.resultTableData && Array.isArray(order.resultTableData) && order.resultTableData.length > 0)) : []}
+                  rowKey={record => record.id || String(Math.random())}
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
@@ -332,8 +427,10 @@ const TestingResults = () => {
               }}
               scroll={{ x: 1000 }}
             />
-          </TabPane>
-        </Tabs>
+              ),
+            },
+          ]}
+        />
       </Card>
 
       {/* Modal xem kết quả */}
@@ -410,15 +507,54 @@ const TestingResults = () => {
 
             <div style={{ marginBottom: 16 }}>
               <h3>Kết quả xét nghiệm:</h3>
-              {selectedOrder.result ? (
+              {(() => {
+                // Check for valid table data
+                const hasTableData = selectedOrder.resultTableData && 
+                                    Array.isArray(selectedOrder.resultTableData) &&
+                                    selectedOrder.resultTableData.length > 0;
+                
+                if (hasTableData) {
+                  return (
+                    <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
+                      <Table
+                        bordered
+                        dataSource={Array.isArray(selectedOrder.resultTableData) ? selectedOrder.resultTableData : []}
+                        pagination={false}
+                        rowKey={record => record.key || String(Math.random())}
+                        size="small"
+                      >
+                        <Table.Column title="STT" key="index" render={(text, record, index) => index + 1} width={60} />
+                        <Table.Column title="Họ và tên" dataIndex="name" key="name" />
+                        <Table.Column title="Năm sinh" dataIndex="birthYear" key="birthYear" width={120} />
+                        <Table.Column title="Giới tính" dataIndex="gender" key="gender" width={120} />
+                        <Table.Column title="Mối quan hệ" dataIndex="relationship" key="relationship" />
+                        <Table.Column title="Loại mẫu" dataIndex="sampleType" key="sampleType" />
+                      </Table>
+                      
+                      {selectedOrder.conclusion && (
+                        <div style={{ marginTop: 16 }}>
+                          <h4>Kết luận:</h4>
+                          <div>{selectedOrder.conclusion}</div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                } 
+                
+                if (selectedOrder.result) {
+                  return (
                 <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
                   {selectedOrder.result}
                 </div>
-              ) : (
+                  );
+                }
+                
+                return (
                 <div style={{ background: "#fff7e6", border: "1px solid #ffd591", padding: 16, borderRadius: 6 }}>
                   Kết quả chưa có sẵn
                 </div>
-              )}
+                );
+              })()}
             </div>
 
             {selectedOrder.testingNotes && (
@@ -452,13 +588,24 @@ const TestingResults = () => {
       <Modal
         title={`Cập nhật kết quả - Đơn hàng #${selectedOrder?.id}`}
         open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
+        onCancel={() => {
+          // Store the current form values when modal is closed without saving
+          const currentValues = form.getFieldsValue();
+          setTempFormData(currentValues);
+          setEditModalVisible(false);
+        }}
         onOk={() => form.submit()}
         okText="Lưu"
         cancelText="Hủy"
         width={800}
+        destroyOnHidden={false}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveResult}>
+        <Form 
+          form={form} 
+          layout="vertical" 
+          onFinish={handleSaveResult}
+          onValuesChange={handleFormValuesChange}
+        >
           <Form.Item
             name="status"
             label="Trạng thái"
@@ -485,8 +632,158 @@ const TestingResults = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item name="result" label="Kết quả xét nghiệm">
-            <TextArea rows={6} placeholder="Nhập kết quả xét nghiệm chi tiết..." />
+          <Form.Item name="resultTableData" label="Kết quả xét nghiệm">
+            <div style={{ border: '1px solid #d9d9d9', borderRadius: '2px', padding: '16px', marginBottom: '16px' }}>
+              <Table
+                bordered
+                dataSource={Array.isArray(form.getFieldValue('resultTableData')) ? form.getFieldValue('resultTableData') : []}
+                pagination={false}
+                rowKey={record => record.key || record.id || String(Math.random())}
+              >
+                <Table.Column title="STT" dataIndex="key" key="key" width={60} 
+                  render={(text, record, index) => index + 1} />
+                <Table.Column 
+                  title="Họ và tên" 
+                  dataIndex="name" 
+                  key="name" 
+                  render={(text, record, index) => (
+                    <Input 
+                      placeholder="Nhập họ và tên" 
+                      value={text} 
+                      onChange={e => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].name = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column 
+                  title="Năm sinh" 
+                  dataIndex="birthYear" 
+                  key="birthYear"
+                  width={120}
+                  render={(text, record, index) => (
+                    <Input 
+                      placeholder="Năm sinh" 
+                      value={text} 
+                      onChange={e => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].birthYear = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column 
+                  title="Giới tính" 
+                  dataIndex="gender" 
+                  key="gender"
+                  width={120}
+                  render={(text, record, index) => (
+                    <Select 
+                      placeholder="Giới tính"
+                      value={text}
+                      style={{ width: '100%' }}
+                      onChange={value => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].gender = value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                    >
+                      <Option value="Nam">Nam</Option>
+                      <Option value="Nữ">Nữ</Option>
+                    </Select>
+                  )}
+                />
+                <Table.Column 
+                  title="Mối quan hệ" 
+                  dataIndex="relationship" 
+                  key="relationship"
+                  render={(text, record, index) => (
+                    <Input 
+                      placeholder="Mối quan hệ" 
+                      value={text} 
+                      onChange={e => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].relationship = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column 
+                  title="Loại mẫu" 
+                  dataIndex="sampleType" 
+                  key="sampleType"
+                  render={(text, record, index) => (
+                    <Input 
+                      placeholder="Loại mẫu" 
+                      value={text} 
+                      onChange={e => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].sampleType = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Thao tác"
+                  key="action"
+                  width={90}
+                  render={(_, record, index) => (
+                    <Button 
+                      type="link" 
+                      danger
+                      onClick={() => {
+                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        if (!newData[index]) newData[index] = {};
+                        newData.splice(index, 1);
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                      }}
+                      disabled={(Array.isArray(form.getFieldValue('resultTableData')) ? form.getFieldValue('resultTableData').length : 0) <= 1}
+                    >
+                      Xóa
+                    </Button>
+                  )}
+                />
+              </Table>
+              <Button 
+                type="dashed" 
+                style={{ width: '100%', marginTop: '16px' }}
+                onClick={() => {
+                  const newData = [...(form.getFieldValue('resultTableData') || [])];
+                  newData.push({ key: Date.now().toString() });
+                  form.setFieldsValue({ resultTableData: newData });
+                  setTableData(newData);
+                  setTempFormData(prev => ({ ...prev, resultTableData: newData }));
+                }}
+              >
+                + Thêm dòng
+              </Button>
+            </div>
+          </Form.Item>
+
+          <Form.Item name="conclusion" label="Kết luận">
+            <TextArea rows={4} placeholder="Nhập kết luận từ kết quả xét nghiệm..." />
           </Form.Item>
 
           <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
@@ -618,9 +915,47 @@ const TestingResults = () => {
 
             <div style={{ marginBottom: 24 }}>
               <Title level={5}>KẾT QUẢ XÉT NGHIỆM</Title>
+              {(() => {
+                // Check for table data
+                const tableData = selectedOrder.resultTableData && Array.isArray(selectedOrder.resultTableData) 
+                  ? selectedOrder.resultTableData
+                  : null;
+                
+                if (tableData && tableData.length > 0) {
+                  return (
+                    <div>
+                      <Table
+                        bordered
+                        dataSource={Array.isArray(tableData) ? tableData : []}
+                        pagination={false}
+                        rowKey={record => record.key || String(Math.random())}
+                        size="small"
+                      >
+                        <Table.Column title="STT" key="index" render={(text, record, index) => index + 1} width={60} />
+                        <Table.Column title="Họ và tên" dataIndex="name" key="name" />
+                        <Table.Column title="Năm sinh" dataIndex="birthYear" key="birthYear" width={120} />
+                        <Table.Column title="Giới tính" dataIndex="gender" key="gender" width={120} />
+                        <Table.Column title="Mối quan hệ" dataIndex="relationship" key="relationship" />
+                        <Table.Column title="Loại mẫu" dataIndex="sampleType" key="sampleType" />
+                      </Table>
+                      
+                      {selectedOrder.conclusion && (
+                        <div style={{ marginTop: 16, background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
+                          <Paragraph strong>Kết luận:</Paragraph>
+                          <Paragraph>{selectedOrder.conclusion}</Paragraph>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                
+                // Legacy text-only result
+                return (
               <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
                 <Paragraph>{selectedOrder.result}</Paragraph>
               </div>
+                );
+              })()}
             </div>
 
             {selectedOrder.testingNotes && (
