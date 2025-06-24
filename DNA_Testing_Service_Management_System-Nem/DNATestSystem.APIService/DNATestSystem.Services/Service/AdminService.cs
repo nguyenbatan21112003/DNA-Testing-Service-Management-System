@@ -73,7 +73,7 @@ namespace DNATestSystem.Services.Service
                 ServiceId = newService.ServiceId,
                 Price2Samples = serviceCreateModel.Price2Samples,
                 Price3Samples = serviceCreateModel.Price3Samples,
-                IncludeVAT = serviceCreateModel.IncludeVAT,
+                IncludeVat = serviceCreateModel.IncludeVAT,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -204,7 +204,7 @@ namespace DNATestSystem.Services.Service
                                     ServiceName = s.ServiceName,
                                     Description = s.Description,
                                     Category = s.Category,
-                                    IsUrgent = s.IsUrgent,
+                                    IsUrgent = (bool)s.IsUrgent,
                                     IncludeVAT = true,
                                     Price2Samples = price?.Price2Samples,
                                     Price3Samples = price?.Price3Samples,
@@ -241,7 +241,7 @@ namespace DNATestSystem.Services.Service
                 priceDetail.Price2Samples = model.Price2Samples;
                 priceDetail.Price3Samples = model.Price3Samples;
                 priceDetail.TimeToResult = model.TimeToResult;
-                priceDetail.IncludeVAT = model.IncludeVAT;
+                priceDetail.IncludeVat = model.IncludeVAT;
                 priceDetail.UpdatedAt = DateTime.UtcNow;
             }
 
