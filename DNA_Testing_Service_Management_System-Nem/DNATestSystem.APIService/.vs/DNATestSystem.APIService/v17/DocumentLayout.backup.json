@@ -313,8 +313,7 @@
               "RelativeToolTip": "DNATestSystem.Common\\Models\\Invoice.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T10:53:03.749Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-26T10:53:03.749Z"
             },
             {
               "$type": "Document",
@@ -326,8 +325,7 @@
               "RelativeToolTip": "DNATestSystem.Common\\Models\\DNAContext.cs",
               "ViewState": "AgIAAMEBAAAAAAAAAAAqwOABAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T10:46:06.021Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-26T10:46:06.021Z"
             },
             {
               "$type": "Document",
@@ -339,8 +337,7 @@
               "RelativeToolTip": "DNATestSystem.Repositories\\Contexts\\DNADbContext.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAuwJMBAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T14:06:02.907Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-24T14:06:02.907Z"
             },
             {
               "$type": "Document",
@@ -352,8 +349,7 @@
               "RelativeToolTip": "DNATestSystem.Common\\Models\\DnatestingSystemV4Context.cs",
               "ViewState": "AgIAACEAAAAAAAAAAAAAADMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T10:02:08.749Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T10:02:08.749Z"
             },
             {
               "$type": "Document",
@@ -365,8 +361,7 @@
               "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-13T12:28:33.45Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-13T12:28:33.45Z"
             },
             {
               "$type": "Document",
@@ -376,7 +371,7 @@
               "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
               "ToolTip": "D:\\FPT\\SWP\\DNA_Testing_Service_Management_System-Phi\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
               "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABAAAAAtAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-13T12:28:56.942Z",
               "EditorCaption": ""
@@ -391,8 +386,7 @@
               "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
               "ViewState": "AgIAAAwAAAAAAAAAAAAjwBoAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T08:27:03.292Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T08:27:03.292Z"
             },
             {
               "$type": "Document",
@@ -404,12 +398,7 @@
               "RelativeToolTip": "..\\DNATestSystem.BusinessObjects\\obj\\DNATestSystem.BusinessObjects.csproj.EntityFrameworkCore.targets",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-06-26T10:55:25.193Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
+              "WhenOpened": "2025-06-26T10:55:25.193Z"
             },
             {
               "$type": "Document",
@@ -421,8 +410,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-15T08:27:28.623Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T08:27:28.623Z"
             },
             {
               "$type": "Document",
@@ -446,8 +434,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\appsettings.Development.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-17T02:09:39.675Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-17T02:09:39.675Z"
             },
             {
               "$type": "Document",
@@ -519,8 +506,7 @@
               "RelativeToolTip": "DNATestSystem.Services\\Service\\UserService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFYAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-16T02:53:26.12Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-16T02:53:26.12Z"
             },
             {
               "$type": "Document",
@@ -616,8 +602,7 @@
               "RelativeToolTip": "DNATestSystem.Common\\Models\\TestRequest.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAqwBcAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-18T12:02:51.27Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-18T12:02:51.27Z"
             },
             {
               "$type": "Document",
@@ -797,8 +782,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-06-15T15:09:29.915Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T15:09:29.915Z"
             },
             {
               "$type": "Document",
@@ -810,8 +794,7 @@
               "RelativeToolTip": "DNATestSystem.Services\\Interface\\IAdminService.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAwAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T09:20:38.693Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T09:20:38.693Z"
             },
             {
               "$type": "Document",
@@ -1051,8 +1034,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\ActionFilter\\AuthorizationFilter.cs",
               "ViewState": "AgIAAAwAAAAAAAAAAAAAABAAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T11:03:56.701Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-15T11:03:56.701Z"
             },
             {
               "$type": "Document",
@@ -1173,6 +1155,10 @@
               "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
               "WhenOpened": "2025-06-15T08:48:13.574Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
             }
           ]
         }

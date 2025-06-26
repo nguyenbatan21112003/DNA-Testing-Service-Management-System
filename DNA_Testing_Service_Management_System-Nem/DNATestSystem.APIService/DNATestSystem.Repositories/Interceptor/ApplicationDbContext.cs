@@ -168,7 +168,9 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__RefreshTo__UserI__1332DBDC");
             });
-
+            modelBuilder.Entity<SampleCollectionForm>()
+            .HasKey(e => e.CollectionId);
+        
             modelBuilder.Entity<RequestDeclarant>(entity =>
             {
                 entity.HasKey(e => e.DeclarantId).HasName("PK__RequestD__761301B7886F2E3A");

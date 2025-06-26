@@ -38,5 +38,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Service;
         // Hồ sơ cá nhân
         Task<ProfileDetailModel?> GetProfileUserAsync(int profileId);
         Task<UpdateProfileModel> UpdateProfileAsync(UpdateProfileModel updateProfileModel);
+
+        //đăng ký tư vấn
+        //Task<>
     }
 }

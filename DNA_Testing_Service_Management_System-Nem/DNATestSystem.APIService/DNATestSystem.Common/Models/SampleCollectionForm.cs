@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
 public partial class SampleCollectionForm
 {
+    [Key]
     public int CollectionId { get; set; }
 
     public int? RequestId { get; set; }
