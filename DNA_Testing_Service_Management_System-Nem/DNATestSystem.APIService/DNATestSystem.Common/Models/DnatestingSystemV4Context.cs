@@ -23,17 +23,11 @@ public partial class DnatestingSystemV4Context : DbContext
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Payment> Payments { get; set; }
-
     public virtual DbSet<PriceDetail> PriceDetails { get; set; }
 
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<SampleCollectionRecord> SampleCollectionRecords { get; set; }
-
-    public virtual DbSet<SampleCollectionSample> SampleCollectionSamples { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
 
@@ -54,6 +48,8 @@ public partial class DnatestingSystemV4Context : DbContext
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
     public virtual DbSet<UserSelectedService> UserSelectedServices { get; set; }
+
+    public virtual DbSet<Invoice> Invoices { get; set; }    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -181,20 +177,20 @@ public partial class DnatestingSystemV4Context : DbContext
                 .HasConstraintName("FK__Feedbacks__UserI__6477ECF3");
         });
 
-        modelBuilder.Entity<Payment>(entity =>
-        {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A58C62259D1");
+        //modelBuilder.Entity<Payment>(entity =>
+        //{
+        //    entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A58C62259D1");
 
-            entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
-            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.PaidAt).HasColumnType("datetime");
-            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
-            entity.Property(e => e.RequestId).HasColumnName("RequestID");
+        //    entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
+        //    entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+        //    entity.Property(e => e.PaidAt).HasColumnType("datetime");
+        //    entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+        //    entity.Property(e => e.RequestId).HasColumnName("RequestID");
 
-            entity.HasOne(d => d.Request).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__Payments__Reques__60A75C0F");
-        });
+        //    entity.HasOne(d => d.Request).WithMany(p => p.Payments)
+        //        .HasForeignKey(d => d.RequestId)
+        //        .HasConstraintName("FK__Payments__Reques__60A75C0F");
+        //});
 
         modelBuilder.Entity<PriceDetail>(entity =>
         {
@@ -238,62 +234,62 @@ public partial class DnatestingSystemV4Context : DbContext
            
         });
 
-        modelBuilder.Entity<SampleCollectionRecord>(entity =>
-        {
-            entity.HasKey(e => e.RecordId).HasName("PK__SampleCo__FBDF78C9BC15D8F2");
+        //modelBuilder.Entity<SampleCollectionRecord>(entity =>
+        //{
+        //    entity.HasKey(e => e.RecordId).HasName("PK__SampleCo__FBDF78C9BC15D8F2");
 
-            entity.Property(e => e.RecordId).HasColumnName("RecordID");
-            entity.Property(e => e.CollectedAt).HasColumnType("datetime");
-            entity.Property(e => e.ConfirmedBy).HasMaxLength(100);
-            entity.Property(e => e.Location).HasMaxLength(255);
-            entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
-            entity.Property(e => e.RequestId).HasColumnName("RequestID");
+        //    entity.Property(e => e.RecordId).HasColumnName("RecordID");
+        //    entity.Property(e => e.CollectedAt).HasColumnType("datetime");
+        //    entity.Property(e => e.ConfirmedBy).HasMaxLength(100);
+        //    entity.Property(e => e.Location).HasMaxLength(255);
+        //    entity.Property(e => e.Note).HasColumnType("text");
+        //    entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
+        //    entity.Property(e => e.RequestId).HasColumnName("RequestID");
 
-            entity.HasOne(d => d.CollectedByNavigation).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.CollectedBy)
-                .HasConstraintName("FK__SampleCol__Colle__5629CD9C");
+        //    entity.HasOne(d => d.CollectedByNavigation).WithMany(p => p.SampleCollectionRecords)
+        //        .HasForeignKey(d => d.CollectedBy)
+        //        .HasConstraintName("FK__SampleCol__Colle__5629CD9C");
 
-            entity.HasOne(d => d.Process).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__SampleCol__Proce__5535A963");
+        //    entity.HasOne(d => d.Process).WithMany(p => p.SampleCollectionRecords)
+        //        .HasForeignKey(d => d.ProcessId)
+        //        .HasConstraintName("FK__SampleCol__Proce__5535A963");
 
-            entity.HasOne(d => d.Request).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__SampleCol__Reque__5441852A");
-        });
+        //    entity.HasOne(d => d.Request).WithMany(p => p.SampleCollectionRecords)
+        //        .HasForeignKey(d => d.RequestId)
+        //        .HasConstraintName("FK__SampleCol__Reque__5441852A");
+        //});
 
-        modelBuilder.Entity<SampleCollectionSample>(entity =>
-        {
-            entity.HasKey(e => e.CollectedSampleId).HasName("PK__SampleCo__98BC8F30615E9963");
+        //modelBuilder.Entity<SampleCollectionSample>(entity =>
+        //{
+        //    entity.HasKey(e => e.CollectedSampleId).HasName("PK__SampleCo__98BC8F30615E9963");
 
-            entity.Property(e => e.CollectedSampleId).HasColumnName("CollectedSampleID");
-            entity.Property(e => e.Address).HasMaxLength(255);
-            entity.Property(e => e.CollectedBy).HasMaxLength(100);
-            entity.Property(e => e.FullName).HasMaxLength(100);
-            entity.Property(e => e.Gender).HasMaxLength(10);
-            entity.Property(e => e.IdissuedDate).HasColumnName("IDIssuedDate");
-            entity.Property(e => e.IdissuedPlace)
-                .HasMaxLength(100)
-                .HasColumnName("IDIssuedPlace");
-            entity.Property(e => e.Idnumber)
-                .HasMaxLength(50)
-                .HasColumnName("IDNumber");
-            entity.Property(e => e.Idtype)
-                .HasMaxLength(30)
-                .HasColumnName("IDType");
-            entity.Property(e => e.Quantity)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.RecordId).HasColumnName("RecordID");
-            entity.Property(e => e.Relationship).HasMaxLength(30);
-            entity.Property(e => e.SampleType).HasMaxLength(50);
-            entity.Property(e => e.Yob).HasColumnName("YOB");
+        //    entity.Property(e => e.CollectedSampleId).HasColumnName("CollectedSampleID");
+        //    entity.Property(e => e.Address).HasMaxLength(255);
+        //    entity.Property(e => e.CollectedBy).HasMaxLength(100);
+        //    entity.Property(e => e.FullName).HasMaxLength(100);
+        //    entity.Property(e => e.Gender).HasMaxLength(10);
+        //    entity.Property(e => e.IdissuedDate).HasColumnName("IDIssuedDate");
+        //    entity.Property(e => e.IdissuedPlace)
+        //        .HasMaxLength(100)
+        //        .HasColumnName("IDIssuedPlace");
+        //    entity.Property(e => e.Idnumber)
+        //        .HasMaxLength(50)
+        //        .HasColumnName("IDNumber");
+        //    entity.Property(e => e.Idtype)
+        //        .HasMaxLength(30)
+        //        .HasColumnName("IDType");
+        //    entity.Property(e => e.Quantity)
+        //        .HasMaxLength(20)
+        //        .IsUnicode(false);
+        //    entity.Property(e => e.RecordId).HasColumnName("RecordID");
+        //    entity.Property(e => e.Relationship).HasMaxLength(30);
+        //    entity.Property(e => e.SampleType).HasMaxLength(50);
+        //    entity.Property(e => e.Yob).HasColumnName("YOB");
 
-            entity.HasOne(d => d.Record).WithMany(p => p.SampleCollectionSamples)
-                .HasForeignKey(d => d.RecordId)
-                .HasConstraintName("FK__SampleCol__Recor__59063A47");
-        });
+        //    entity.HasOne(d => d.Record).WithMany(p => p.SampleCollectionSamples)
+        //        .HasForeignKey(d => d.RecordId)
+        //        .HasConstraintName("FK__SampleCol__Recor__59063A47");
+        //});
 
         modelBuilder.Entity<Service>(entity =>
         {

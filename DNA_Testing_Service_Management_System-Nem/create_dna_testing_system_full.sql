@@ -147,7 +147,7 @@ CREATE TABLE TestProcesses (
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
   StaffID INT FOREIGN KEY REFERENCES Users(UserID),
   ClaimedAt DATETIME,
-  KitCode VARCHAR(20),
+  KitCode VARCHAR(50),
   CurrentStatus NVARCHAR(50),
   ProcessState NVARCHAR(50),
   Notes TEXT,
@@ -184,21 +184,18 @@ GO
 ALTER TABLE TestSamples ADD CollectedAt DATETIME;
 
 
-CREATE TABLE SampleCollectionRecords (
-  RecordID INT PRIMARY KEY IDENTITY(1,1),
+-- bỏ bảng ỏ bảng SampleCollectionRecords, SampleCollectionSamples
+--hợp thành bảng SampleCollectionForms
+
+CREATE TABLE SampleCollectionForms (
+  CollectionID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
   ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
-  CollectedBy INT FOREIGN KEY REFERENCES Users(UserID),
-  Location NVARCHAR(255),
-  CollectedAt DATETIME,
-  ConfirmedBy NVARCHAR(100),
-  Note TEXT
-);
-GO
 
-CREATE TABLE SampleCollectionSamples (
-  CollectedSampleID INT PRIMARY KEY IDENTITY(1,1),
-  RecordID INT FOREIGN KEY REFERENCES SampleCollectionRecords(RecordID),
+  -- Nơi thu mẫu
+  Location NVARCHAR(255), -- Có thể khác địa chỉ ban đầu
+
+  -- Thông tin người cung cấp mẫu
   FullName NVARCHAR(100),
   YOB INT,
   Gender NVARCHAR(10),
@@ -210,10 +207,16 @@ CREATE TABLE SampleCollectionSamples (
   SampleType NVARCHAR(50),
   Quantity VARCHAR(20),
   Relationship NVARCHAR(30),
-  CollectedBy NVARCHAR(100),
-  HasGeneticDiseaseHistory BIT
+  HasGeneticDiseaseHistory BIT,
+  FingerprintImage NVARCHAR(255),
+
+  -- Xác nhận
+  ConfirmedBy NVARCHAR(100),
+  Note NVARCHAR(1000)
 );
+
 GO
+
 
 -- ===================== TEST RESULTS =====================
 CREATE TABLE TestResults (
@@ -231,15 +234,21 @@ GO
 ALTER TABLE TestResults ADD CollectedAt DATETIME;
 
 -- ===================== PAYMENTS =====================
-CREATE TABLE Payments (
-  PaymentID INT PRIMARY KEY IDENTITY(1,1),
+--CREATE TABLE Payments (
+ -- PaymentID INT PRIMARY KEY IDENTITY(1,1),
+ -- RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
+ -- Amount DECIMAL(18,2),
+--  PaymentMethod NVARCHAR(50),
+ -- PaidAt DATETIME
+--);
+--GO
+CREATE TABLE Invoice (
+  InvoiceID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
-  Amount DECIMAL(18,2),
-  PaymentMethod NVARCHAR(50),
-  PaidAt DATETIME
+  PaidAt DATE Default GetDATE()
 );
 GO
-
+-- đổi bảng payments thành bảng invoice
 -- ===================== FEEDBACK & CONSULT =====================
 CREATE TABLE Feedbacks (
   FeedbackID INT PRIMARY KEY IDENTITY(1,1),

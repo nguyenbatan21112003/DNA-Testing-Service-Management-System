@@ -119,7 +119,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "DNATestSystem.BusinessObjects.Models.Vnpay.PaymentInformationModel",
+        "Type": "DNATestSystem.BusinessObjects.Vnpay.PaymentInformationModel",
         "IsRequired": true
       }
     ],

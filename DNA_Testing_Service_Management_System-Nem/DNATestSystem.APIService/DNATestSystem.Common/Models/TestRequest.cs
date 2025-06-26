@@ -23,11 +23,11 @@ public partial class TestRequest
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<RequestDeclarant> RequestDeclarants { get; set; } = new List<RequestDeclarant>();
 
-    public virtual ICollection<SampleCollectionRecord> SampleCollectionRecords { get; set; } = new List<SampleCollectionRecord>();
+    public virtual ICollection<SampleCollectionForm> SampleCollectionForms { get; set; } = new List<SampleCollectionForm>();
 
     public virtual Service? Service { get; set; }
 

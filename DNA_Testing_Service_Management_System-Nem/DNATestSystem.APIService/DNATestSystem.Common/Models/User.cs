@@ -33,8 +33,6 @@ public partial class User
 
     public virtual Role? Role { get; set; }
 
-    public virtual ICollection<SampleCollectionRecord> SampleCollectionRecords { get; set; } = new List<SampleCollectionRecord>();
-
     public virtual ICollection<SystemLog> SystemLogs { get; set; } = new List<SystemLog>();
 
     public virtual ICollection<TestProcess> TestProcesses { get; set; } = new List<TestProcess>();

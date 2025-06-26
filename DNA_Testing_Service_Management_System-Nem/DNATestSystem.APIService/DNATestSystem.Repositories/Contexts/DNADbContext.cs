@@ -20,8 +20,6 @@ public partial class DNADbContext : DbContext
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
-    public virtual DbSet<Payment> Payments { get; set; }
-
     public virtual DbSet<PriceDetail> PriceDetails { get; set; }
 
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -29,10 +27,6 @@ public partial class DNADbContext : DbContext
     public virtual DbSet<RequestDeclarant> RequestDeclarants { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<SampleCollectionRecord> SampleCollectionRecords { get; set; }
-
-    public virtual DbSet<SampleCollectionSample> SampleCollectionSamples { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
 
@@ -135,21 +129,7 @@ public partial class DNADbContext : DbContext
                 .HasConstraintName("FK__Feedbacks__UserI__0C85DE4D");
         });
 
-        modelBuilder.Entity<Payment>(entity =>
-        {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A580D2068FA");
-
-            entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
-            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.PaidAt).HasColumnType("datetime");
-            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
-            entity.Property(e => e.RequestId).HasColumnName("RequestID");
-
-            entity.HasOne(d => d.Request).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__Payments__Reques__08B54D69");
-        });
-
+        
         modelBuilder.Entity<PriceDetail>(entity =>
         {
             entity.HasKey(e => e.PriceId).HasName("PK__PriceDet__4957584F8B837A72");
@@ -214,62 +194,7 @@ public partial class DNADbContext : DbContext
             entity.Property(e => e.RoleName).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<SampleCollectionRecord>(entity =>
-        {
-            entity.HasKey(e => e.RecordId).HasName("PK__SampleCo__FBDF78C91F550C81");
-
-            entity.Property(e => e.RecordId).HasColumnName("RecordID");
-            entity.Property(e => e.CollectedAt).HasColumnType("datetime");
-            entity.Property(e => e.ConfirmedBy).HasMaxLength(100);
-            entity.Property(e => e.Location).HasMaxLength(255);
-            entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
-            entity.Property(e => e.RequestId).HasColumnName("RequestID");
-
-            entity.HasOne(d => d.CollectedByNavigation).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.CollectedBy)
-                .HasConstraintName("FK__SampleCol__Colle__7E37BEF6");
-
-            entity.HasOne(d => d.Process).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.ProcessId)
-                .HasConstraintName("FK__SampleCol__Proce__7D439ABD");
-
-            entity.HasOne(d => d.Request).WithMany(p => p.SampleCollectionRecords)
-                .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__SampleCol__Reque__7C4F7684");
-        });
-
-        modelBuilder.Entity<SampleCollectionSample>(entity =>
-        {
-            entity.HasKey(e => e.CollectedSampleId).HasName("PK__SampleCo__98BC8F30C35B653A");
-
-            entity.Property(e => e.CollectedSampleId).HasColumnName("CollectedSampleID");
-            entity.Property(e => e.Address).HasMaxLength(255);
-            entity.Property(e => e.CollectedBy).HasMaxLength(100);
-            entity.Property(e => e.FullName).HasMaxLength(100);
-            entity.Property(e => e.Gender).HasMaxLength(10);
-            entity.Property(e => e.IdissuedDate).HasColumnName("IDIssuedDate");
-            entity.Property(e => e.IdissuedPlace)
-                .HasMaxLength(100)
-                .HasColumnName("IDIssuedPlace");
-            entity.Property(e => e.Idnumber)
-                .HasMaxLength(50)
-                .HasColumnName("IDNumber");
-            entity.Property(e => e.Idtype)
-                .HasMaxLength(30)
-                .HasColumnName("IDType");
-            entity.Property(e => e.Quantity)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.RecordId).HasColumnName("RecordID");
-            entity.Property(e => e.Relationship).HasMaxLength(30);
-            entity.Property(e => e.SampleType).HasMaxLength(50);
-            entity.Property(e => e.Yob).HasColumnName("YOB");
-
-            entity.HasOne(d => d.Record).WithMany(p => p.SampleCollectionSamples)
-                .HasForeignKey(d => d.RecordId)
-                .HasConstraintName("FK__SampleCol__Recor__01142BA1");
-        });
+      
 
         modelBuilder.Entity<Service>(entity =>
         {
@@ -472,16 +397,6 @@ public partial class DNADbContext : DbContext
                 .HasConstraintName("FK__UserSelec__UserI__656C112C");
         });
 
-        modelBuilder.Entity<Weather>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("Weather");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.RecordDate).HasColumnName("recordDate");
-            entity.Property(e => e.Temperature).HasColumnName("temperature");
-        });
 
         OnModelCreatingPartial(modelBuilder);
     }

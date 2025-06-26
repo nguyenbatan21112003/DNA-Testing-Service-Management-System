@@ -3,11 +3,15 @@ using System.Collections.Generic;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
-public partial class SampleCollectionSample
+public partial class SampleCollectionForm
 {
-    public int CollectedSampleId { get; set; }
+    public int CollectionId { get; set; }
 
-    public int? RecordId { get; set; }
+    public int? RequestId { get; set; }
+
+    public int? ProcessId { get; set; }
+
+    public string? Location { get; set; }
 
     public string? FullName { get; set; }
 
@@ -31,9 +35,15 @@ public partial class SampleCollectionSample
 
     public string? Relationship { get; set; }
 
-    public string? CollectedBy { get; set; }
-
     public bool? HasGeneticDiseaseHistory { get; set; }
 
-    public virtual SampleCollectionRecord? Record { get; set; }
+    public string? FingerprintImage { get; set; }
+
+    public string? ConfirmedBy { get; set; }
+
+    public string? Note { get; set; }
+
+    public virtual TestProcess? Process { get; set; }
+
+    public virtual TestRequest? Request { get; set; }
 }

@@ -25,7 +25,7 @@ public partial class TestProcess
 
     public virtual TestRequest? Request { get; set; }
 
-    public virtual ICollection<SampleCollectionRecord> SampleCollectionRecords { get; set; } = new List<SampleCollectionRecord>();
+    public virtual ICollection<SampleCollectionForm> SampleCollectionForms { get; set; } = new List<SampleCollectionForm>();
 
     public virtual User? Staff { get; set; }
 

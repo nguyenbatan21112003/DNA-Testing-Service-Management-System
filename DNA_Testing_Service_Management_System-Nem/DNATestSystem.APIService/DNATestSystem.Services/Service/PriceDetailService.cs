@@ -27,7 +27,7 @@ namespace DNATestSystem.Services.Service
                 Price2Samples = priceDetailModel.Price2Samples,
                 Price3Samples = priceDetailModel.Price3Samples,
                 TimeToResult = priceDetailModel.TimeToResult,
-                IncludeVAT = priceDetailModel.IncludeVAT,
+                IncludeVat = priceDetailModel.IncludeVAT,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -44,7 +44,7 @@ namespace DNATestSystem.Services.Service
             price.Price2Samples = priceDetailsModel.Price2Samples;
             price.Price3Samples = priceDetailsModel.Price3Samples;
             price.TimeToResult = priceDetailsModel.TimeToResult;
-            price.IncludeVAT = priceDetailsModel.IncludeVAT;
+            price.IncludeVat = priceDetailsModel.IncludeVAT;
             price.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

@@ -21,6 +21,8 @@ public partial class TestResult
 
     public DateTime? VerifiedAt { get; set; }
 
+    public DateTime? CollectedAt { get; set; }
+
     public virtual User? EnteredByNavigation { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
