@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react"
 import {
   Card,
@@ -222,19 +220,6 @@ const TestingResults = () => {
         if (status === "Đang xử lý") color = "blue"
         if (status === "Hoàn thành") color = "green"
         return <Tag color={color}>{status}</Tag>
-      },
-    },
-    {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 120,
-      render: (priority) => {
-        let color = "default"
-        if (priority === "Cao") color = "red"
-        if (priority === "Trung bình") color = "orange"
-        if (priority === "Thấp") color = "green"
-        return <Tag color={color}>{priority}</Tag>
       },
     },
     {

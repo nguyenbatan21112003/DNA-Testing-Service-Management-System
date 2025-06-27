@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// import axios from 'axios'; // Bỏ comment khi dùng backend
 
 const inputStyle = {
   width: '100%',
@@ -22,6 +23,35 @@ const RequestFormModal = ({ open, onClose }) => {
   if (!open) return null;
   const handleSave = () => {
     if (!commitChecked) return;
+    // Lấy dữ liệu từ form (ví dụ đơn giản, bạn nên lấy đúng giá trị từng input nếu cần)
+    const form = document.querySelector('form');
+    const newOrder = {
+      id: 'DNA' + Date.now(),
+      name: form[0].value,
+      gender: form[1].value,
+      address: form[2].value,
+      cccd: form[3].value,
+      cccd_date: form[4].value,
+      cccd_place: form[5].value,
+      phone: form[6].value,
+      email: form[7].value,
+      // Có thể lấy thêm dữ liệu bảng thành viên nếu muốn
+      status: 'pending_staff',
+      createdAt: new Date().toISOString(),
+    };
+    // Lưu vào localStorage (hiện tại)
+    const allOrders = JSON.parse(localStorage.getItem('dna_orders') || '[]');
+    localStorage.setItem('dna_orders', JSON.stringify([newOrder, ...allOrders]));
+    // // Khi có backend, thay bằng đoạn này dùng axios:
+    /*
+    axios.post('https://your-backend-api.com/orders', newOrder)
+      .then(res => {
+        // Xử lý khi lưu thành công, ví dụ: thông báo thành công, đóng modal, v.v.
+      })
+      .catch(err => {
+        // Xử lý lỗi, ví dụ: thông báo lỗi cho người dùng
+      });
+    */
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);

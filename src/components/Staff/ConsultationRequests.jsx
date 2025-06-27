@@ -160,19 +160,6 @@ const ConsultationRequests = () => {
       },
     },
     {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 100,
-      render: (priority) => {
-        let color = "default"
-        if (priority === "Cao") color = "red"
-        if (priority === "Trung bình") color = "orange"
-        if (priority === "Thấp") color = "green"
-        return <Tag color={color}>{priority}</Tag>
-      },
-    },
-    {
       title: "Thời gian",
       dataIndex: "createdAt",
       key: "createdAt",

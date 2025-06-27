@@ -37,6 +37,9 @@ const UserProfile = () => {
     fullName: user?.fullName || "",
     phone: user?.phone || "",
     address: user?.address || "",
+    birthDate: user?.birthDate || "",
+    gender: user?.gender || "Nam",
+    fingerIdFile: user?.fingerIdFile || null,
   });
   const [success, setSuccess] = useState("");
   const [tab, setTab] = useState("profile");
@@ -78,16 +81,8 @@ const UserProfile = () => {
 
   const [showTimeline, setShowTimeline] = useState({});
   
-  // State cho đánh giá theo danh mục
-  const [selectedCategory, setSelectedCategory] = useState('quality');
-  const [categoryRatings, setCategoryRatings] = useState({
-    quality: 0,
-    price: 0,
-    time: 0,
-    staff: 0,
-    website: 0,
-    overall: 0
-  });
+  // State cho đánh giá tổng thể
+  const [overallRating, setOverallRating] = useState(0);
 
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedOrderForForm, setSelectedOrderForForm] = useState(null);
@@ -134,7 +129,12 @@ const UserProfile = () => {
     );
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, files } = e.target;
+    if (type === "file") {
+      setForm({ ...form, [name]: files[0] });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -499,6 +499,49 @@ const UserProfile = () => {
                   />
                 </div>
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Ngày sinh</label>
+                  <input
+                    type="date"
+                    name="birthDate"
+                    value={form.birthDate}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Giới tính</label>
+                  <select
+                    name="gender"
+                    value={form.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Tải file FingerID</label>
+                  <input
+                    type="file"
+                    name="fingerIdFile"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={handleChange}
+                  />
+                  {form.fingerIdFile && (typeof form.fingerIdFile === 'string' ? (
+                    <div style={{ marginTop: 6 }}>
+                      <a href={form.fingerIdFile} target="_blank" rel="noopener noreferrer">Xem file đã tải lên</a>
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: 6 }}>
+                      {form.fingerIdFile.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
               <button type="submit" className="profile-save-btn">
                 Lưu thay đổi
               </button>
@@ -858,14 +901,7 @@ const UserProfile = () => {
                             onClick={() => {
                               if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
                                 setFeedbackOrder(order);
-                                setCategoryRatings({
-                                  quality: 0,
-                                  price: 0,
-                                  time: 0,
-                                  staff: 0,
-                                  website: 0,
-                                  overall: 0
-                                });
+                                setOverallRating(0);
                                 setFeedbackInput("");
                                 setFeedbackSuccess("");
                                 setShowFeedbackModal(true);
@@ -1120,7 +1156,7 @@ const UserProfile = () => {
                 background: "#fff",
                 borderRadius: 18,
                 width: "90%",
-                maxWidth: 650,
+                maxWidth: 480,
                 padding: 40,
                 boxShadow: "0 8px 32px #0002",
                 position: "relative",
@@ -1130,215 +1166,101 @@ const UserProfile = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <style>{`
-                /* Custom scrollbar styling */
-                .feedback-modal-content::-webkit-scrollbar {
-                  width: 10px;
-                  background-color: #f5f5f5;
-                  border-radius: 5px;
-                }
-                
-                .feedback-modal-content::-webkit-scrollbar-thumb {
-                  background-color: #00a67e;
-                  border-radius: 5px;
-                  border: 2px solid #f5f5f5;
-                }
-                
-                .feedback-modal-content::-webkit-scrollbar-track {
-                  background-color: #f5f5f5;
-                  border-radius: 5px;
-                }
-
-                .category-selector {
-                  display: flex;
-                  justify-content: center;
-                  margin-bottom: 25px;
-                  flex-wrap: wrap;
-                  gap: 10px;
-                }
-                
-                .category-btn {
-                  padding: 8px 16px;
-                  border-radius: 20px;
-                  font-size: 15px;
-                  font-weight: 600;
-                  cursor: pointer;
-                  transition: all 0.2s;
-                  border: 2px solid transparent;
-                }
-                
-                .category-btn.active {
-                  background: #f0f9f6;
-                  color: #009e74;
-                  border-color: #009e74;
-                  box-shadow: 0 2px 8px rgba(0, 158, 116, 0.15);
-                }
-                
-                .category-btn:not(.active) {
-                  background: #f5f5f5;
-                  color: #555;
-                  border-color: transparent;
-                }
-                
-                .category-btn:hover:not(.active) {
-                  background: #e9e9e9;
-                }
-                
-                .star-rating-container {
-                  display: flex;
-                  justify-content: center;
-                  margin: 25px 0;
-                  gap: 10px;
-                }
-              `}</style>
-              <div className="feedback-modal-content" style={{ maxHeight: "calc(85vh - 80px)", overflowY: "auto", paddingRight: 15 }}>
-                <button
-                  onClick={() => setShowFeedbackModal(false)}
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                style={{
+                  position: "absolute",
+                  top: 14,
+                  right: 18,
+                  background: "none",
+                  border: "none",
+                  fontSize: 26,
+                  color: "#888",
+                  cursor: "pointer",
+                }}
+              >
+                &times;
+              </button>
+              <h3
+                style={{
+                  fontWeight: 800,
+                  fontSize: 26,
+                  marginBottom: 24,
+                  color: "#b88900",
+                  letterSpacing: -1,
+                  textAlign: "center",
+                }}
+              >
+                Đánh giá dịch vụ
+              </h3>
+              <p style={{textAlign:"center"}}>Bạn hãy đáng giá dịch vụ của chúng tôi</p>
+              {/* Star rating tổng thể */}
+              <div style={{ display: "flex", justifyContent: "center", margin: "25px 0", gap: 10 }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={36}
+                    color={overallRating >= star ? "#ffc107" : "#ddd"}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOverallRating(star)}
+                  />
+                ))}
+                <span style={{ color: "#888", fontSize: 16, marginLeft: 8, minWidth: 35 }}>
+                  {overallRating > 0 ? `${overallRating}/5` : ""}
+                </span>
+              </div>
+              <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 17 }}>Nhận xét của bạn</div>
+              <textarea
+                rows={4}
+                placeholder="Nhận xét của bạn về dịch vụ..."
+                value={feedbackInput}
+                onChange={(e) => setFeedbackInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  borderRadius: 8,
+                  margin: "8px 0 16px",
+                  padding: 12,
+                  border: "1px solid #ccc",
+                  fontSize: 16,
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (overallRating === 0) {
+                    setFeedbackSuccess("Vui lòng chọn số sao!");
+                    return;
+                  }
+                  addFeedback(feedbackOrder.id, feedbackInput, overallRating, { overall: overallRating });
+                  setShowFeedbackModal(false);
+                  setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
+                  setTimeout(() => setFeedbackSuccess(""), 2000);
+                }}
+                style={{
+                  background: "#009e74",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "12px 24px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  width: "100%",
+                  marginTop: 8,
+                  fontSize: 16,
+                }}
+              >
+                Gửi đánh giá
+              </button>
+              {feedbackSuccess && (
+                <div
                   style={{
-                    position: "absolute",
-                    top: 14,
-                    right: 18,
-                    background: "none",
-                    border: "none",
-                    fontSize: 26,
-                    color: "#888",
-                    cursor: "pointer",
-                  }}
-                >
-                  &times;
-                </button>
-                <h3
-                  style={{
-                    fontWeight: 800,
-                    fontSize: 26,
-                    marginBottom: 24,
-                    color: "#b88900",
-                    letterSpacing: -1,
+                    color: "#009e74",
+                    marginTop: 6,
                     textAlign: "center",
                   }}
                 >
-                  Đánh giá dịch vụ
-                </h3>
-                
-                {/* Category selector */}
-                <div className="category-selector">
-                  <button 
-                    className={`category-btn ${selectedCategory === 'quality' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('quality')}
-                  >
-                    Chất lượng dịch vụ
-                  </button>
-                  <button 
-                    className={`category-btn ${selectedCategory === 'price' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('price')}
-                  >
-                    Giá cả
-                  </button>
-                  <button 
-                    className={`category-btn ${selectedCategory === 'time' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('time')}
-                  >
-                    Thời gian xử lý
-                  </button>
-                  <button 
-                    className={`category-btn ${selectedCategory === 'staff' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('staff')}
-                  >
-                    Nhân viên
-                  </button>
-                  <button 
-                    className={`category-btn ${selectedCategory === 'website' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('website')}
-                  >
-                    Website
-                  </button>
-                  <button 
-                    className={`category-btn ${selectedCategory === 'overall' ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory('overall')}
-                  >
-                    Tổng thể
-                  </button>
+                  {feedbackSuccess}
                 </div>
-                
-                {/* Star rating for selected category */}
-                <div className="star-rating-container">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      size={36}
-                      color={categoryRatings[selectedCategory] >= star ? "#ffc107" : "#ddd"}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setCategoryRatings({
-                          ...categoryRatings,
-                          [selectedCategory]: star
-                        });
-                      }}
-                    />
-                  ))}
-                  <span style={{ color: "#888", fontSize: 16, marginLeft: 8, minWidth: 35 }}>
-                    {categoryRatings[selectedCategory] > 0 ? `${categoryRatings[selectedCategory]}/5` : ""}
-                  </span>
-                </div>
-                
-                <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 17 }}>Nhận xét của bạn</div>
-                <textarea
-                  rows={4}
-                  placeholder="Nhận xét của bạn về dịch vụ..."
-                  value={feedbackInput}
-                  onChange={(e) => setFeedbackInput(e.target.value)}
-                  style={{
-                    width: "100%",
-                    borderRadius: 8,
-                    margin: "8px 0 16px",
-                    padding: 12,
-                    border: "1px solid #ccc",
-                    fontSize: 16,
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    if (Object.values(categoryRatings).every(rating => rating === 0)) {
-                      setFeedbackSuccess("Vui lòng đánh giá ít nhất một danh mục!");
-                      return;
-                    }
-                    // Calculate average rating or use overall rating
-                    const finalRating = categoryRatings.overall || 
-                      Math.round(Object.values(categoryRatings).reduce((sum, val) => sum + val, 0) / 
-                      Object.values(categoryRatings).filter(val => val > 0).length);
-                    
-                    addFeedback(feedbackOrder.id, feedbackInput, finalRating, categoryRatings);
-                    setShowFeedbackModal(false);
-                    setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-                    setTimeout(() => setFeedbackSuccess(""), 2000);
-                  }}
-                  style={{
-                    background: "#009e74",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "12px 24px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    width: "100%",
-                    marginTop: 8,
-                    fontSize: 16,
-                  }}
-                >
-                  Gửi đánh giá
-                </button>
-                {feedbackSuccess && (
-                  <div
-                    style={{
-                      color: "#009e74",
-                      marginTop: 6,
-                      textAlign: "center",
-                    }}
-                  >
-                    {feedbackSuccess}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         )}

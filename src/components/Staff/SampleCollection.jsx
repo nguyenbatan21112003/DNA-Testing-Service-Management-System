@@ -159,7 +159,7 @@ const SampleCollection = () => {
 
   const getAdministrativeOrders = () => {
     const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    return orders.filter((order) => order.type.includes("hành chính") && !order.sampleCollected)
+    return orders.filter((order) => (order.type || "").includes("hành chính") && !order.sampleCollected)
   }
 
   const columns = [
@@ -704,7 +704,8 @@ const SampleCollection = () => {
               rẽ như sau:
             </Paragraph>
 
-            {selectedForm.donors.map((donor, index) => (
+            {Array.isArray(selectedForm.donors) && selectedForm.donors.length > 0 ? (
+              selectedForm.donors.map((donor, index) => (
               <div key={index} style={{ border: "1px solid #000", padding: 16, marginBottom: 16 }}>
                 <Row gutter={16}>
                   <Col span={18}>
@@ -772,7 +773,10 @@ const SampleCollection = () => {
                   ></div>
                 </div>
               </div>
-            ))}
+              ))
+            ) : (
+              <Paragraph>Không có thông tin người cho mẫu.</Paragraph>
+            )}
 
             <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
               * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể tách rời.
@@ -798,7 +802,7 @@ const SampleCollection = () => {
                   <Text>(Ký và ghi rõ họ tên)</Text>
                 </div>
                 <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.donors[0]?.name}</Text>
+                  <Text>{selectedForm.donors && selectedForm.donors[0]?.name}</Text>
                 </div>
               </Col>
               <Col span={8}>

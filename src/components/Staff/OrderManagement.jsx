@@ -24,8 +24,18 @@ const OrderManagement = () => {
   // Lấy dữ liệu đơn hàng từ context
   const loadOrders = () => {
     const allOrders = getAllOrders()
-    setOrders(allOrders)
-    setFilteredOrders(allOrders)
+    // Lọc chỉ lấy các đơn hàng thực sự (ví dụ: có type chứa 'xét nghiệm' hoặc có priority)
+    const realOrders = allOrders.filter(order => {
+      // Nếu có trường orderType thì ưu tiên lọc theo orderType === 'order'
+      if (order.orderType) return order.orderType === 'order';
+      // Nếu không có, lọc theo type hoặc priority
+      return (
+        (order.type && order.type.toLowerCase().includes('xét nghiệm')) ||
+        (order.priority && order.priority !== '')
+      );
+    });
+    setOrders(realOrders)
+    setFilteredOrders(realOrders)
   }
 
   useEffect(() => {
@@ -114,19 +124,6 @@ const OrderManagement = () => {
     }
   }
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "Cao":
-        return "red"
-      case "Trung bình":
-        return "orange"
-      case "Thấp":
-        return "green"
-      default:
-        return "default"
-    }
-  }
-
   const columns = [
     {
       title: "Mã đơn",
@@ -178,13 +175,6 @@ const OrderManagement = () => {
       render: (status) => <Tag color={getStatusColor(status)}>{status}</Tag>,
     },
     {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 100,
-      render: (priority) => <Tag color={getPriorityColor(priority)}>{priority}</Tag>,
-    },
-    {
       title: "Ngày tạo",
       dataIndex: "date",
       key: "date",
@@ -198,11 +188,11 @@ const OrderManagement = () => {
       width: 150,
       render: (_, record) => (
         <Space size="small">
-          <Button type="primary" size="small" icon={<EyeOutlined />} onClick={() => handleViewOrder(record)}>
+          <Button type="primary" icon={<EyeOutlined />} size="small" onClick={() => handleViewOrder(record)}>
             Xem
           </Button>
-          <Button type="default" size="small" icon={<EditOutlined />} onClick={() => handleEditOrder(record)}>
-            Sửa
+          <Button type="default" icon={<EditOutlined />} size="small" onClick={() => handleEditOrder(record)}>
+            Nhập kết quả
           </Button>
         </Space>
       ),
@@ -345,12 +335,6 @@ const OrderManagement = () => {
                 <strong>Trạng thái:</strong>
                 <Tag color={getStatusColor(selectedOrder.status)} style={{ marginLeft: 8 }}>
                   {selectedOrder.status}
-                </Tag>
-              </p>
-              <p>
-                <strong>Độ ưu tiên:</strong>
-                <Tag color={getPriorityColor(selectedOrder.priority)} style={{ marginLeft: 8 }}>
-                  {selectedOrder.priority}
                 </Tag>
               </p>
               <p>

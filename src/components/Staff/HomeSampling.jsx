@@ -251,19 +251,6 @@ const HomeSampling = () => {
       render: (name) => name || <span style={{ color: "#999" }}>Chưa phân công</span>,
     },
     {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 100,
-      render: (priority) => {
-        let color = "default"
-        if (priority === "Cao") color = "red"
-        if (priority === "Trung bình") color = "orange"
-        if (priority === "Thấp") color = "green"
-        return <Tag color={color}>{priority}</Tag>
-      },
-    },
-    {
       title: "Thao tác",
       key: "action",
       width: 250,
@@ -555,7 +542,7 @@ const HomeSampling = () => {
         ]}
         width={800}
       >
-        {selectedRequest && selectedRequest.sampleInfo && (
+        {selectedRequest && (
           <div style={{ background: "#fff", padding: 24, border: "1px solid #ddd" }}>
             <div style={{ textAlign: "center", marginBottom: 24 }}>
               <Title level={4}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Title>
@@ -564,133 +551,50 @@ const HomeSampling = () => {
               <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
             </div>
 
-            <Paragraph>
-              Hôm nay, ngày {selectedRequest.sampleInfo.collectionDate}, tại {selectedRequest.sampleInfo.location}
-            </Paragraph>
-            <Paragraph>Chúng tôi gồm có:</Paragraph>
-            <Paragraph>
-              1. Nhân viên thu mẫu: <strong>{selectedRequest.sampleInfo.collector}</strong>
-            </Paragraph>
-            <Paragraph>
-              2. Người yêu cầu xét nghiệm: <strong>{selectedRequest.name}</strong>, Địa chỉ hiện tại:{" "}
-              {selectedRequest.address}
-            </Paragraph>
+            {/* Thông tin user gửi từ form yêu cầu xét nghiệm */}
+            <div style={{ marginBottom: 24, background: "#f6f6f6", padding: 16, borderRadius: 6 }}>
+              <h3>Thông tin yêu cầu xét nghiệm từ khách hàng</h3>
+              <p><strong>Họ tên người yêu cầu:</strong> {selectedRequest.name}</p>
+              <p><strong>Số điện thoại:</strong> {selectedRequest.phone}</p>
+              <p><strong>Email:</strong> {selectedRequest.email}</p>
+              <p><strong>Địa chỉ:</strong> {selectedRequest.address}</p>
+              <p><strong>Loại xét nghiệm:</strong> {selectedRequest.type}</p>
+              {selectedRequest.date && (
+                <p><strong>Ngày đăng ký:</strong> {selectedRequest.date}</p>
+              )}
+              {selectedRequest.idNumber && (
+                <p><strong>Số CCCD:</strong> {selectedRequest.idNumber}</p>
+              )}
+              {/* Danh sách thành viên cung cấp mẫu */}
+              {selectedRequest.members && Array.isArray(selectedRequest.members) && selectedRequest.members.length > 0 ? (
+                <div style={{ marginTop: 16 }}>
+                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
+                  <ul>
+                    {selectedRequest.members.map((mem, idx) => (
+                      <li key={idx}>
+                        {mem.name} {mem.birth ? `- Năm sinh: ${mem.birth}` : ""}
+                        {mem.relation ? `- Mối quan hệ: ${mem.relation}` : ""}
+                        {mem.sampleType ? `- Loại mẫu: ${mem.sampleType}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (selectedRequest.sampleInfo && selectedRequest.sampleInfo.donors && Array.isArray(selectedRequest.sampleInfo.donors) && selectedRequest.sampleInfo.donors.length > 0) ? (
+                <div style={{ marginTop: 16 }}>
+                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
+                  <ul>
+                    {selectedRequest.sampleInfo.donors.map((donor, idx) => (
+                      <li key={idx}>
+                        {donor.name} {donor.dob ? `- Năm sinh: ${donor.dob}` : ""}
+                        {donor.relationship ? `- Mối quan hệ: ${donor.relationship}` : ""}
+                        {donor.sampleType ? `- Loại mẫu: ${donor.sampleType}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+                </div>
 
-            <Paragraph>
-              Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm ADN. Các mẫu của từng người được lấy riêng
-              rẽ như sau:
-            </Paragraph>
-
-            <div style={{ border: "1px solid #000", padding: 16, marginBottom: 16 }}>
-              {selectedRequest.sampleInfo.donors.map((donor, index) => (
-                <div
-                  key={index}
-                  style={{ marginBottom: index < selectedRequest.sampleInfo.donors.length - 1 ? 24 : 0 }}
-                >
-                  <Row gutter={16}>
-                    <Col span={18}>
-                      <Text strong>Họ và tên: {donor.name}</Text>
-                    </Col>
-                    <Col span={6} style={{ textAlign: "right" }}>
-                      <Text>Người cho mẫu thứ {index + 1}</Text>
-                    </Col>
-                  </Row>
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>Loại giấy tờ: {donor.idType}</Text>
-                    </Col>
-                    <Col span={16}>
-                      <Text>Số/quyển số: {donor.idNumber}</Text>
-                    </Col>
-                  </Row>
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>Ngày cấp: {donor.idIssueDate}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Nơi cấp: {donor.idIssuePlace}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Quốc tịch: {donor.nationality}</Text>
-                    </Col>
-                  </Row>
-                  {donor.address && (
-                    <Row style={{ marginTop: 8 }}>
-                      <Col span={24}>
-                        <Text>Địa chỉ: {donor.address}</Text>
-                      </Col>
-                    </Row>
-                  )}
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>Loại mẫu: {donor.sampleType}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Số lượng mẫu: {donor.sampleQuantity}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Mối quan hệ: {donor.relationship}</Text>
-                    </Col>
-                  </Row>
-                  <Row style={{ marginTop: 8 }}>
-                    <Col span={24}>
-                      <Text>Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng: {donor.healthIssues}</Text>
-                    </Col>
-                  </Row>
-                  <div style={{ textAlign: "right", marginTop: 16 }}>
-                    <Text>Vân tay ngón trỏ phải</Text>
-                    <div
-                      style={{
-                        width: 80,
-                        height: 80,
-                        border: "1px dashed #999",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        marginLeft: 8,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể tách rời.
-            </Paragraph>
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày trả kết quả. Sau thời gian đó người yêu
-              cầu xét nghiệm cung cấp và chịu trách nhiệm.
-            </Paragraph>
-
-            <Row gutter={24} style={{ marginTop: 24, textAlign: "center" }}>
-              <Col span={8}>
-                <Text strong>NGƯỜI THU MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký, ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedRequest.sampleInfo.collector}</Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI ĐƯỢC LẤY MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedRequest.sampleInfo.donors[0].name}</Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI YÊU CẦU XÉT NGHIỆM</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedRequest.name}</Text>
-                </div>
-              </Col>
-            </Row>
           </div>
         )}
       </Modal>
