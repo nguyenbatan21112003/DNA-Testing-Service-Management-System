@@ -29,6 +29,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons"
 import dayjs from "dayjs"
 import { useOrderContext } from "../../context/OrderContext"
@@ -108,8 +109,6 @@ const CenterSampling = () => {
     form.setFieldsValue({
       appointmentStatus: appointment.appointmentStatus,
       appointmentDate: appointment.appointmentDate ? dayjs(appointment.appointmentDate, "DD/MM/YYYY") : null,
-      timeSlot: appointment.timeSlot,
-      staffAssigned: appointment.staffAssigned || "",
       notes: appointment.notes || "",
     })
     setUpdateModalVisible(true)
@@ -121,15 +120,11 @@ const CenterSampling = () => {
       updateOrder(selectedAppointment.id, {
         appointmentStatus: values.appointmentStatus,
         appointmentDate: values.appointmentDate ? values.appointmentDate.format("DD/MM/YYYY") : null,
-        timeSlot: values.timeSlot,
-        staffAssigned: values.staffAssigned,
         notes: values.notes,
         updatedAt: new Date().toLocaleString("vi-VN"),
       })
-      
       // Cập nhật lại danh sách đơn hàng
       loadAppointments()
-      
       setUpdateModalVisible(false)
       message.success("Cập nhật lịch hẹn thành công!")
     } catch {
@@ -249,7 +244,23 @@ const CenterSampling = () => {
       width: 200,
       render: (_, record) => (
         <Space size="small">
-          <Button type="primary" size="small" icon={<BankOutlined />} onClick={() => handleViewAppointment(record)}>
+          <Button
+            type="primary"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewAppointment(record)}
+            style={{
+              background: "#1890ff",
+              color: "#fff",
+              fontWeight: 700,
+              borderRadius: 6,
+              border: "none",
+              boxShadow: "0 2px 8px #1890ff22",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
+            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
+          >
             Xem
           </Button>
           <Button
@@ -257,6 +268,17 @@ const CenterSampling = () => {
             size="small"
             icon={<CalendarOutlined />}
             onClick={() => handleUpdateAppointment(record)}
+            style={{
+              background: "#1890ff",
+              color: "#fff",
+              fontWeight: 700,
+              borderRadius: 6,
+              border: "none",
+              boxShadow: "0 2px 8px #1890ff22",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
+            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
           >
             Cập nhật
           </Button>
@@ -266,6 +288,11 @@ const CenterSampling = () => {
   ]
 
   const todayAppointments = appointments.filter((apt) => apt.appointmentDate === dayjs().format("DD/MM/YYYY"))
+
+  // Hàm disableDate: chỉ cho chọn ngày từ hôm nay trở đi và không cho chọn Chủ nhật
+  const disableDate = (current) => {
+    return current && (current < dayjs().startOf('day') || current.day() === 0)
+  }
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
@@ -480,11 +507,22 @@ const CenterSampling = () => {
               setModalVisible(false)
               handleUpdateAppointment(selectedAppointment)
             }}
+            style={{
+              background: "#1890ff",
+              color: "#fff",
+              fontWeight: 700,
+              borderRadius: 6,
+              border: "none",
+              boxShadow: "0 2px 8px #1890ff22",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
+            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
           >
             Cập nhật lịch hẹn
           </Button>,
         ]}
-        width={600}
+        width={800}
       >
         {selectedAppointment && (
           <div>
@@ -510,16 +548,10 @@ const CenterSampling = () => {
                 <strong>Ngày hẹn:</strong> {selectedAppointment.appointmentDate || "Chưa hẹn"}
               </p>
               <p>
-                <strong>Giờ hẹn:</strong> {selectedAppointment.timeSlot}
-              </p>
-              <p>
                 <strong>Trạng thái:</strong>{" "}
                 <Tag color={getStatusColor(selectedAppointment.appointmentStatus)}>
                   {getStatusText(selectedAppointment.appointmentStatus)}
                 </Tag>
-              </p>
-              <p>
-                <strong>Nhân viên phụ trách:</strong> {selectedAppointment.staffAssigned || "Chưa phân công"}
               </p>
             </div>
 
@@ -538,9 +570,29 @@ const CenterSampling = () => {
         title={`Cập nhật lịch hẹn #${selectedAppointment?.id}`}
         open={updateModalVisible}
         onCancel={() => setUpdateModalVisible(false)}
-        onOk={() => form.submit()}
-        okText="Cập nhật"
-        cancelText="Hủy"
+        footer={[
+          <Button key="cancel" onClick={() => setUpdateModalVisible(false)}>
+            Hủy
+          </Button>,
+          <Button
+            key="update"
+            type="primary"
+            onClick={() => form.submit()}
+            style={{
+              background: "#1890ff",
+              color: "#fff",
+              fontWeight: 700,
+              borderRadius: 6,
+              border: "none",
+              boxShadow: "0 2px 8px #1890ff22",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
+            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
+          >
+            Cập nhật
+          </Button>,
+        ]}
         width={600}
       >
         <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
@@ -558,30 +610,12 @@ const CenterSampling = () => {
           </Form.Item>
 
           <Form.Item name="appointmentDate" label="Ngày hẹn">
-            <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày hẹn" style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item name="timeSlot" label="Giờ hẹn">
-            <Select placeholder="Chọn khung giờ">
-              <Option value="08:00-09:00">08:00 - 09:00</Option>
-              <Option value="09:00-10:00">09:00 - 10:00</Option>
-              <Option value="10:00-11:00">10:00 - 11:00</Option>
-              <Option value="11:00-12:00">11:00 - 12:00</Option>
-              <Option value="13:00-14:00">13:00 - 14:00</Option>
-              <Option value="14:00-15:00">14:00 - 15:00</Option>
-              <Option value="15:00-16:00">15:00 - 16:00</Option>
-              <Option value="16:00-17:00">16:00 - 17:00</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="staffAssigned" label="Nhân viên phụ trách">
-            <Select placeholder="Chọn nhân viên">
-              <Option value="Trần Trung Tâm">Trần Trung Tâm</Option>
-              <Option value="Nguyễn Thị Lan">Nguyễn Thị Lan</Option>
-              <Option value="Trần Văn Minh">Trần Văn Minh</Option>
-              <Option value="Lê Thị Hoa">Lê Thị Hoa</Option>
-              <Option value="Phạm Văn Đức">Phạm Văn Đức</Option>
-            </Select>
+            <DatePicker 
+              format="DD/MM/YYYY" 
+              placeholder="Chọn ngày hẹn" 
+              style={{ width: "100%" }} 
+              disabledDate={disableDate}
+            />
           </Form.Item>
 
           <Form.Item name="notes" label="Ghi chú">
