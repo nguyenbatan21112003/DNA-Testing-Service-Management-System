@@ -668,13 +668,13 @@ const UserProfile = () => {
                                 padding: "2px 12px",
                                 borderRadius: 8,
                                 background:
-                                  order.status === "Hoàn thành"
+                                  (order.status === "Hoàn thành" || order.appointmentStatus === "Xác nhận" || order.status === "Xác nhận")
                                     ? "#c6f6d5"
                                     : order.status === "Chờ xử lý"
                                       ? "#ffe6b0"
                                       : "#e6f7f1",
                                 color:
-                                  order.status === "Hoàn thành"
+                                  (order.status === "Hoàn thành" || order.appointmentStatus === "Xác nhận" || order.status === "Xác nhận")
                                     ? "#009e74"
                                     : order.status === "Chờ xử lý"
                                       ? "#b88900"
@@ -690,7 +690,7 @@ const UserProfile = () => {
                                 textOverflow: "ellipsis"
                               }}
                             >
-                              {order.status}
+                              {(order.status === "Xác nhận" || order.appointmentStatus === "Xác nhận") ? "Xác nhận" : order.status}
                             </span>
                           </div>
                           <div className="order-type" style={{ marginBottom: 8 }}>
@@ -708,6 +708,27 @@ const UserProfile = () => {
                           >
                             Ngày đăng ký: {order.date}
                           </div>
+                          {order.appointmentDate && order.sampleMethod === 'center' && (
+                            <div style={{
+                              background: '#e0edff',
+                              color: '#2563eb',
+                              fontWeight: 700,
+                              border: '1.5px solid #1d4ed8',
+                              borderRadius: 8,
+                              padding: '8px 18px',
+                              margin: '10px 0 0 0',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              fontSize: 17,
+                              gap: 8,
+                              boxShadow: '0 2px 8px #2563eb22',
+                            }}>
+                              <span style={{ fontSize: 20, marginRight: 6 }}>
+                                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              </span>
+                              Ngày lấy mẫu: {order.appointmentDate}
+                            </div>
+                          )}
                         </div>
                         <div style={{
                           display: 'flex',
@@ -1428,6 +1449,27 @@ const UserProfile = () => {
                 <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
                 <span>{selectedOrder.date}</span>
               </div>
+              {selectedOrder.appointmentDate && selectedOrder.sampleMethod === 'center' && (
+                <div style={{
+                  background: '#e0edff',
+                  color: '#2563eb',
+                  fontWeight: 700,
+                  border: '1.5px solid #1d4ed8',
+                  borderRadius: 8,
+                  padding: '8px 18px',
+                  margin: '10px 0 16px 0',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  fontSize: 17,
+                  gap: 8,
+                  boxShadow: '0 2px 8px #2563eb22',
+                }}>
+                  <span style={{ fontSize: 20, marginRight: 6 }}>
+                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                  Ngày lấy mẫu: {selectedOrder.appointmentDate}
+                </div>
+              )}
               <div>
                 <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
                 <span>{selectedOrder.name}</span>

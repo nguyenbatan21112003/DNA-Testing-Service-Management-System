@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import {
   Card,
   Form,
@@ -28,6 +28,9 @@ import {
   SaveOutlined,
   EyeOutlined,
 } from "@ant-design/icons"
+import { useLocation } from "react-router-dom"
+import dayjs from "dayjs"
+import { AuthContext } from "../../context/AuthContext"
 
 const { Title, Text, Paragraph } = Typography
 const { Option } = Select
@@ -35,6 +38,7 @@ const { TextArea } = Input
 const { TabPane } = Tabs
 
 const SampleCollection = () => {
+  const location = useLocation();
   const [form] = Form.useForm()
   const [sampleForms, setSampleForms] = useState([])
   const [selectedForm, setSelectedForm] = useState(null)
@@ -56,11 +60,76 @@ const SampleCollection = () => {
       fingerprint: null,
     },
   ])
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     const savedForms = JSON.parse(localStorage.getItem("sample_collection_forms") || "[]")
     setSampleForms(savedForms)
   }, [])
+
+  useEffect(() => {
+    // Chỉ tự động điền orderId và requesterName nếu có, KHÔNG tự động điền collectionDate
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId');
+    const requesterName = params.get('requesterName');
+    if (orderId) {
+      form.setFieldsValue({ orderId: orderId.toString() });
+    }
+    if (requesterName) {
+      form.setFieldsValue({ requesterName });
+    }
+  }, [location.search, form]);
+
+  useEffect(() => {
+    // Tự động điền thông tin nếu có prefill trong localStorage, chỉ điền orderId và requesterName
+    const prefill = localStorage.getItem("dna_sample_collection_prefill")
+    if (prefill) {
+      const data = JSON.parse(prefill)
+      if (data.orderId) {
+        form.setFieldsValue({ orderId: data.orderId.toString() })
+      }
+      if (data.requesterName) {
+        form.setFieldsValue({ requesterName: data.requesterName })
+      }
+      localStorage.removeItem("dna_sample_collection_prefill")
+    }
+    // Tự động điền tên nhân viên thu mẫu
+    if (user && user.name) {
+      form.setFieldsValue({ collector: user.name })
+    }
+  }, [form, user])
+
+  // Auto-save form draft mỗi khi form thay đổi
+  const handleAutoSave = (changedValues, allValues) => {
+    localStorage.setItem("sample_collection_draft", JSON.stringify({
+      form: allValues,
+      donors: donors
+    }))
+  }
+  // Auto-save khi donors thay đổi
+  useEffect(() => {
+    const values = form.getFieldsValue();
+    localStorage.setItem("sample_collection_draft", JSON.stringify({
+      form: values,
+      donors: donors
+    }))
+  }, [donors])
+
+  // Khi mở tab, nếu có draft thì tự động điền lại
+  useEffect(() => {
+    const draft = localStorage.getItem("sample_collection_draft")
+    if (draft) {
+      try {
+        const data = JSON.parse(draft)
+        if (data.form) {
+          form.setFieldsValue(data.form)
+        }
+        if (data.donors) {
+          setDonors(data.donors)
+        }
+      } catch { }
+    }
+  }, [form])
 
   const addDonor = () => {
     const newDonor = {
@@ -78,17 +147,26 @@ const SampleCollection = () => {
       healthIssues: "không",
       fingerprint: null,
     }
-    setDonors([...donors, newDonor])
+    const newDonors = [...donors, newDonor]
+    setDonors(newDonors)
+    const values = form.getFieldsValue();
+    localStorage.setItem("sample_collection_draft", JSON.stringify({ form: values, donors: newDonors }))
   }
 
   const removeDonor = (id) => {
     if (donors.length > 1) {
-      setDonors(donors.filter((donor) => donor.id !== id))
+      const newDonors = donors.filter((donor) => donor.id !== id)
+      setDonors(newDonors)
+      const values = form.getFieldsValue();
+      localStorage.setItem("sample_collection_draft", JSON.stringify({ form: values, donors: newDonors }))
     }
   }
 
   const updateDonor = (id, field, value) => {
-    setDonors(donors.map((donor) => (donor.id === id ? { ...donor, [field]: value } : donor)))
+    const newDonors = donors.map((donor) => (donor.id === id ? { ...donor, [field]: value } : donor))
+    setDonors(newDonors)
+    const values = form.getFieldsValue();
+    localStorage.setItem("sample_collection_draft", JSON.stringify({ form: values, donors: newDonors }))
   }
 
   const handleSave = async (values) => {
@@ -145,6 +223,7 @@ const SampleCollection = () => {
           fingerprint: null,
         },
       ])
+      localStorage.removeItem("sample_collection_draft")
 
       message.success("Lưu biên bản lấy mẫu thành công!")
     } catch {
@@ -222,6 +301,13 @@ const SampleCollection = () => {
     },
   ]
 
+  // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
+  const disabledDate = (current) => {
+    const today = dayjs().startOf('day');
+    if (!current) return false;
+    return current < today || current.day() === 0;
+  };
+
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
@@ -234,7 +320,7 @@ const SampleCollection = () => {
       <Tabs defaultActiveKey="create">
         <TabPane tab="Tạo biên bản mới" key="create">
           <Card>
-            <Form form={form} layout="vertical" onFinish={handleSave}>
+            <Form form={form} layout="vertical" onFinish={handleSave} onValuesChange={handleAutoSave}>
               <Title level={4} style={{ textAlign: "center", color: "#00a67e" }}>
                 BIÊN BẢN LẤY MẪU XÉT NGHIỆM
               </Title>
@@ -246,7 +332,7 @@ const SampleCollection = () => {
                     label="Ngày lấy mẫu"
                     rules={[{ required: true, message: "Vui lòng chọn ngày lấy mẫu!" }]}
                   >
-                    <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+                    <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} disabledDate={disabledDate} />
                   </Form.Item>
                 </Col>
                 <Col span={16}>
@@ -267,12 +353,7 @@ const SampleCollection = () => {
                     label="Nhân viên thu mẫu"
                     rules={[{ required: true, message: "Vui lòng chọn nhân viên!" }]}
                   >
-                    <Select placeholder="Chọn nhân viên thu mẫu">
-                      <Option value="Trần Trung Tâm">Trần Trung Tâm</Option>
-                      <Option value="Nguyễn Văn A">Nguyễn Văn A</Option>
-                      <Option value="Trần Thị B">Trần Thị B</Option>
-                      <Option value="Lê Văn C">Lê Văn C</Option>
-                    </Select>
+                    <Input value={user?.name || ""} disabled style={{ fontWeight: 700, color: '#00a67e' }} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>

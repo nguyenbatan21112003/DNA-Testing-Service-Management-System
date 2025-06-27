@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import {
   Card,
   Table,
@@ -30,9 +30,12 @@ import {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
   EyeOutlined,
+  ExperimentOutlined,
 } from "@ant-design/icons"
 import dayjs from "dayjs"
 import { useOrderContext } from "../../context/OrderContext"
+import { StaffDashboardContext } from "./StaffDashboard"
+import { AuthContext } from "../../context/AuthContext"
 
 const { Option } = Select
 const { TextArea } = Input
@@ -43,7 +46,6 @@ const CenterSampling = () => {
   const [appointments, setAppointments] = useState([])
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
-  const [updateModalVisible, setUpdateModalVisible] = useState(false)
   const [calendarModalVisible, setCalendarModalVisible] = useState(false)
   const [form] = Form.useForm()
   const [stats, setStats] = useState({
@@ -53,6 +55,8 @@ const CenterSampling = () => {
     missed: 0,
     canceled: 0,
   })
+  const dashboardCtx = useContext(StaffDashboardContext)
+  const { user } = useContext(AuthContext)
 
   // Lấy dữ liệu đơn hàng từ context
   const loadAppointments = () => {
@@ -118,25 +122,6 @@ const CenterSampling = () => {
       appointmentDate: dateValue,
       notes: appointment.notes || "",
     })
-    setUpdateModalVisible(true)
-  }
-
-  const handleSaveUpdate = async (values) => {
-    try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedAppointment.id, {
-        appointmentStatus: values.appointmentStatus,
-        appointmentDate: values.appointmentDate ? values.appointmentDate.format("DD/MM/YYYY") : null,
-        notes: values.notes,
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      })
-      // Cập nhật lại danh sách đơn hàng
-      loadAppointments()
-      setUpdateModalVisible(false)
-      message.success("Cập nhật lịch hẹn thành công!")
-    } catch {
-      message.error("Có lỗi xảy ra khi cập nhật!")
-    }
   }
 
   const getStatusColor = (status) => {
@@ -270,34 +255,81 @@ const CenterSampling = () => {
           >
             Xem
           </Button>
-          <Button
-            size="small"
-            icon={<CalendarOutlined />}
-            onClick={() => handleUpdateAppointment(record)}
-            style={{
-              background: "#fa8c16",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s"
-            }}
-            onMouseOver={e => (e.currentTarget.style.background = '#d46b08')}
-            onMouseOut={e => (e.currentTarget.style.background = '#fa8c16')}
-          >
-            Cập nhật
-          </Button>
+          {!record.confirmed && (
+            <Button
+              size="small"
+              icon={<CheckCircleOutlined />}
+              style={{
+                background: "#52c41a",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #52c41a22",
+                transition: "background 0.2s"
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = '#389e0d')}
+              onMouseOut={e => (e.currentTarget.style.background = '#52c41a')}
+              onClick={() => handleConfirmAppointment(record)}
+            >
+              Xác nhận
+            </Button>
+          )}
+          {record.confirmed && (
+            <Button
+              size="small"
+              icon={<ExperimentOutlined />}
+              style={{
+                background: "#fa8c16",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #fa8c1622",
+                transition: "background 0.2s"
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = '#d46b08')}
+              onMouseOut={e => (e.currentTarget.style.background = '#fa8c16')}
+              onClick={() => handleGoToSampleCollection(record)}
+            >
+              Lấy mẫu
+            </Button>
+          )}
         </Space>
       ),
     },
   ]
 
-  const todayAppointments = appointments.filter((apt) => apt.appointmentDate === dayjs().format("DD/MM/YYYY"))
+  const today = dayjs().format("DD/MM/YYYY");
+  const todayAppointments = appointments.filter(
+    (apt) => dayjs(apt.appointmentDate, ["D/M/YYYY", "DD/MM/YYYY"]).format("DD/MM/YYYY") === today
+  )
 
-  // Hàm disableDate: chỉ cho chọn ngày từ hôm nay trở đi và không cho chọn Chủ nhật
-  const disableDate = (current) => {
-    return current && (current < dayjs().startOf('day') || current.day() === 0)
+  const handleConfirmAppointment = (record) => {
+    // Cập nhật trạng thái xác nhận, giữ nguyên ngày hẹn cũ, gán người phân công là staff hiện tại
+    updateOrder(record.id, {
+      confirmed: true,
+      status: 'Xác nhận',
+      appointmentStatus: 'Xác nhận',
+      appointmentDate: record.appointmentDate, // giữ nguyên ngày hẹn
+      staffAssigned: user?.name || '',
+      updatedAt: new Date().toLocaleString('vi-VN'),
+    })
+    loadAppointments()
+    message.success('Đã xác nhận lịch hẹn!')
+  }
+
+  const handleGoToSampleCollection = (record) => {
+    // Lưu thông tin đơn hàng vào localStorage để SampleCollection lấy ra điền tự động
+    localStorage.setItem("dna_sample_collection_prefill", JSON.stringify({
+      orderId: record.id,
+      collectionDate: record.appointmentDate || '',
+      requesterName: record.name || '',
+    }))
+    // Chuyển tab sang Lấy mẫu xét nghiệm
+    if (dashboardCtx?.setActiveTab) {
+      dashboardCtx.setActiveTab("sample-collection")
+    }
   }
 
   return (
@@ -409,17 +441,20 @@ const CenterSampling = () => {
                     </strong>
                     <Tag color={getStatusColor(apt.appointmentStatus)}>{getStatusText(apt.appointmentStatus)}</Tag>
                   </div>
-                  <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
-                    <ClockCircleOutlined style={{ marginRight: 4 }} />
-                    {apt.timeSlot} | {apt.type}
-                  </p>
+                  {apt.type && (
+                    <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
+                      {apt.type}
+                    </p>
+                  )}
                   <p style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}>
                     <PhoneOutlined style={{ marginRight: 4 }} />
                     {apt.phone}
                   </p>
                   <p style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}>
                     <UserOutlined style={{ marginRight: 4 }} />
-                    {apt.staffAssigned || "Chưa phân công"}
+                    {(apt.staffAssigned || (apt.appointmentStatus === "Xác nhận" && user?.name))
+                      ? `Nhân viên: ${apt.staffAssigned || user?.name}`
+                      : "Chưa phân công"}
                   </p>
                 </div>
               ))}
@@ -569,65 +604,6 @@ const CenterSampling = () => {
             )}
           </div>
         )}
-      </Modal>
-
-      {/* Modal cập nhật lịch hẹn */}
-      <Modal
-        title={`Cập nhật lịch hẹn #${selectedAppointment?.id}`}
-        open={updateModalVisible}
-        onCancel={() => setUpdateModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setUpdateModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Button
-            key="update"
-            type="primary"
-            onClick={() => form.submit()}
-            style={{
-              background: "#1890ff",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #1890ff22",
-              transition: "background 0.2s"
-            }}
-            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
-          >
-            Cập nhật
-          </Button>,
-        ]}
-        width={600}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
-          <Form.Item
-            name="appointmentStatus"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="da_hen">Đã hẹn</Option>
-              <Option value="da_den">Đã đến</Option>
-              <Option value="vang_mat">Vắng mặt</Option>
-              <Option value="huy">Đã hủy</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="appointmentDate" label="Ngày hẹn">
-            <DatePicker
-              format="DD/MM/YYYY"
-              placeholder="Chọn ngày hẹn"
-              style={{ width: "100%" }}
-              disabledDate={disableDate}
-            />
-          </Form.Item>
-
-          <Form.Item name="notes" label="Ghi chú">
-            <TextArea rows={3} placeholder="Nhập ghi chú về lịch hẹn..." />
-          </Form.Item>
-        </Form>
       </Modal>
 
       {/* Modal lịch tháng */}
