@@ -18,7 +18,6 @@ import {
   FormOutlined,
 } from "@ant-design/icons"
 import "antd/dist/reset.css"
-import NotificationBell from "../HomePage/NotificationBell"
 
 // Import các component con
 import StaffOverview from "./StaffOverview"
@@ -428,7 +427,6 @@ const StaffDashboard = () => {
               gap: 16,
             }}
           >
-            <NotificationBell />
             {user && (
               <>
                 {user.avatar || user.image ? (
