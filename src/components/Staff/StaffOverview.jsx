@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, Row, Col, Statistic, Table, Tag, Progress, List, Avatar, Calendar, Badge } from "antd"
+import { Card, Row, Col, Statistic, Table, Tag, Progress, List, Avatar } from "antd"
 import {
   FileTextOutlined,
   ClockCircleOutlined,
@@ -121,37 +121,6 @@ const StaffOverview = () => {
     // Sắp xếp hoạt động theo thời gian
     activities.sort(() => Math.random() - 0.5)
     setRecentActivities(activities.slice(0, 6))
-  }
-
-  const getListData = (value) => {
-    const dateStr = value.format("DD/MM/YYYY")
-    return orders.filter(
-      (order) =>
-        (order.sampleMethod === "center" && order.appointmentDate === dateStr) ||
-        (order.sampleMethod === "home" && order.scheduledDate && order.scheduledDate.includes(dateStr)),
-    )
-  }
-
-  const dateCellRender = (value) => {
-    const listData = getListData(value)
-    return (
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        {listData.slice(0, 2).map((item) => (
-          <li key={item.id}>
-            <Badge
-              status={item.priority === "Cao" ? "error" : item.priority === "Trung bình" ? "warning" : "success"}
-              text={`${item.id} - ${item.name}`}
-              style={{ fontSize: 12 }}
-            />
-          </li>
-        ))}
-        {listData.length > 2 && (
-          <li>
-            <Badge status="default" text={`+${listData.length - 2} khác`} style={{ fontSize: 12 }} />
-          </li>
-        )}
-      </ul>
-    )
   }
 
   return (
@@ -416,11 +385,6 @@ const StaffOverview = () => {
           </Card>
         </Col>
       </Row>
-
-      {/* Lịch tháng */}
-      <Card title="Lịch hẹn tháng này" extra={<CalendarOutlined />}>
-        <Calendar dateCellRender={dateCellRender} fullscreen={false} />
-      </Card>
     </div>
   )
 }

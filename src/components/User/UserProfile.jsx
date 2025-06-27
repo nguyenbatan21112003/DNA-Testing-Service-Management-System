@@ -831,33 +831,6 @@ const UserProfile = () => {
                           >
                             <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
                           </button>
-                          {order.category === 'civil' && (
-                            <button
-                              style={{
-                                border: "1px solid #bbb",
-                                color: "#444",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                width: '100%',
-                                height: 48,
-                                transition: "border 0.2s, color 0.2s, background 0.2s",
-                                outline: "none",
-                                cursor: "pointer"
-                              }}
-                              onClick={() => {
-                                setSelectedOrderForForm(order);
-                                setShowFormModal(true);
-                              }}
-                            >
-                              <FileText size={20} style={{ marginRight: 6 }} /> Nhập form
-                            </button>
-                          )}
                           <button
                             className="order-btn"
                             style={{
@@ -901,8 +874,19 @@ const UserProfile = () => {
                             onClick={() => {
                               if (order.status === "Có kết quả" || order.status === "Hoàn thành") {
                                 setFeedbackOrder(order);
-                                setOverallRating(0);
-                                setFeedbackInput("");
+                                
+                                // Kiểm tra nếu đã đánh giá trước đó
+                                if (order.feedbacks && order.feedbacks.length > 0) {
+                                  // Lấy đánh giá mới nhất
+                                  const latestFeedback = order.feedbacks[order.feedbacks.length - 1];
+                                  setOverallRating(latestFeedback.rating || 0);
+                                  setFeedbackInput(latestFeedback.feedback || "");
+                                } else {
+                                  // Chưa đánh giá, reset form
+                                  setOverallRating(0);
+                                  setFeedbackInput("");
+                                }
+                                
                                 setFeedbackSuccess("");
                                 setShowFeedbackModal(true);
                               }
@@ -1191,9 +1175,13 @@ const UserProfile = () => {
                   textAlign: "center",
                 }}
               >
-                Đánh giá dịch vụ
+                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "Đánh giá của bạn" : "Đánh giá dịch vụ"}
               </h3>
-              <p style={{textAlign:"center"}}>Bạn hãy đáng giá dịch vụ của chúng tôi</p>
+              <p style={{textAlign:"center"}}>
+                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 
+                  ? "Bạn đã đánh giá dịch vụ này trước đó" 
+                  : "Bạn hãy đánh giá dịch vụ của chúng tôi"}
+              </p>
               {/* Star rating tổng thể */}
               <div style={{ display: "flex", justifyContent: "center", margin: "25px 0", gap: 10 }}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -1201,8 +1189,12 @@ const UserProfile = () => {
                     key={star}
                     size={36}
                     color={overallRating >= star ? "#ffc107" : "#ddd"}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setOverallRating(star)}
+                    style={{ cursor: feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "default" : "pointer" }}
+                    onClick={() => {
+                      if (!(feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0)) {
+                        setOverallRating(star);
+                      }
+                    }}
                   />
                 ))}
                 <span style={{ color: "#888", fontSize: 16, marginLeft: 8, minWidth: 35 }}>
@@ -1214,7 +1206,12 @@ const UserProfile = () => {
                 rows={4}
                 placeholder="Nhận xét của bạn về dịch vụ..."
                 value={feedbackInput}
-                onChange={(e) => setFeedbackInput(e.target.value)}
+                onChange={(e) => {
+                  if (!(feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0)) {
+                    setFeedbackInput(e.target.value);
+                  }
+                }}
+                readOnly={feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0}
                 style={{
                   width: "100%",
                   borderRadius: 8,
@@ -1222,34 +1219,53 @@ const UserProfile = () => {
                   padding: 12,
                   border: "1px solid #ccc",
                   fontSize: 16,
+                  background: feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "#f6f8fa" : "#fff",
                 }}
               />
-              <button
-                onClick={() => {
-                  if (overallRating === 0) {
-                    setFeedbackSuccess("Vui lòng chọn số sao!");
-                    return;
-                  }
-                  addFeedback(feedbackOrder.id, feedbackInput, overallRating, { overall: overallRating });
-                  setShowFeedbackModal(false);
-                  setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-                  setTimeout(() => setFeedbackSuccess(""), 2000);
-                }}
-                style={{
-                  background: "#009e74",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  padding: "12px 24px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  width: "100%",
-                  marginTop: 8,
-                  fontSize: 16,
-                }}
-              >
-                Gửi đánh giá
-              </button>
+              {/* Nút đánh giá hoặc đóng tùy theo đã đánh giá hay chưa */}
+              {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                  <div style={{ 
+                    background: "#f6f8fa", 
+                    border: "1px solid #e1e4e8", 
+                    borderRadius: 8, 
+                    padding: 12, 
+                    fontSize: 15, 
+                    color: "#666",
+                    marginBottom: 16,
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>Đánh giá vào ngày: {feedbackOrder.feedbacks[feedbackOrder.feedbacks.length - 1].date}</div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (overallRating === 0) {
+                      setFeedbackSuccess("Vui lòng chọn số sao!");
+                      return;
+                    }
+                    addFeedback(feedbackOrder.id, feedbackInput, overallRating, { overall: overallRating });
+                    setShowFeedbackModal(false);
+                    setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
+                    setTimeout(() => setFeedbackSuccess(""), 2000);
+                  }}
+                  style={{
+                    background: "#009e74",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "12px 24px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    width: "100%",
+                    marginTop: 8,
+                    fontSize: 16,
+                  }}
+                >
+                  Gửi đánh giá
+                </button>
+              )}
               {feedbackSuccess && (
                 <div
                   style={{
@@ -1261,6 +1277,23 @@ const UserProfile = () => {
                   {feedbackSuccess}
                 </div>
               )}
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                style={{
+                  background: feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "#009e74" : "#eee",
+                  color: feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "#fff" : "#666",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "12px 24px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  width: "100%",
+                  marginTop: 8,
+                  fontSize: 16,
+                }}
+              >
+                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? "Đóng" : "Hủy"}
+              </button>
             </div>
           </div>
         )}

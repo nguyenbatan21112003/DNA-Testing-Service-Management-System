@@ -29,6 +29,7 @@ import {
   ClockCircleOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons"
+import { useOrderContext } from "../../context/OrderContext"
 
 const { TextArea } = Input
 const { Option } = Select
@@ -44,14 +45,27 @@ const TestingResults = () => {
   const [reportModalVisible, setReportModalVisible] = useState(false)
   const [form] = Form.useForm()
   const [filterStatus, setFilterStatus] = useState("all")
-  const [ setTableData] = useState([])
   const [tempFormData, setTempFormData] = useState({})
   const [currentEditOrderId, setCurrentEditOrderId] = useState(null)
+  const [tableData, setTableData] = useState([])
+  const { updateOrder } = useOrderContext()
 
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    setOrders(savedOrders)
-    setFilteredOrders(savedOrders)
+    // Loại bỏ bản ghi trùng lặp theo id, giữ bản ghi xuất hiện đầu tiên (mới nhất)
+    const uniqueMap = new Map();
+    for (const order of savedOrders) {
+      if (!uniqueMap.has(order.id)) {
+        uniqueMap.set(order.id, order);
+      }
+    }
+    const uniqueOrders = Array.from(uniqueMap.values());
+    // Nếu có thay đổi về số lượng (nghĩa là đã xoá trùng), cập nhật localStorage lại
+    if (uniqueOrders.length !== savedOrders.length) {
+      localStorage.setItem("dna_orders", JSON.stringify(uniqueOrders));
+    }
+    setOrders(uniqueOrders)
+    setFilteredOrders(uniqueOrders)
   }, [])
 
   useEffect(() => {
@@ -137,14 +151,17 @@ const TestingResults = () => {
   }
 
   const handleSaveResult = async (values) => {
-
     console.log("Giá trị lưu:", values.resultTableData);
     try {
-      // Make a deep copy of the resultTableData to ensure it's properly serialized
-      let resultTableDataCopy = null;
-      if (values.resultTableData && Array.isArray(values.resultTableData)) {
-        resultTableDataCopy = JSON.parse(JSON.stringify(values.resultTableData));
-      }
+      // Lấy dữ liệu bảng: ưu tiên từ form, nếu không có thì dùng state tableData
+      let dataToSave = Array.isArray(values.resultTableData) && values.resultTableData.length > 0
+        ? values.resultTableData
+        : tableData;
+
+      // Make a deep copy for lưu trữ an toàn
+      const resultTableDataCopy = Array.isArray(dataToSave)
+        ? JSON.parse(JSON.stringify(dataToSave))
+        : null;
       
       const updatedOrders = orders.map((order) =>
         order.id === selectedOrder.id
@@ -166,6 +183,19 @@ const TestingResults = () => {
       )
       setOrders(updatedOrders)
       localStorage.setItem("dna_orders", JSON.stringify(updatedOrders))
+      
+      // Gọi context để cập nhật đơn hàng cho toàn bộ ứng dụng (bao gồm giao diện User)
+      updateOrder(selectedOrder.id, {
+        status: values.status,
+        result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+        testingMethod: values.testingMethod,
+        testingNotes: values.testingNotes,
+        conclusion: values.conclusion,
+        resultTableData: resultTableDataCopy,
+        completedDate:
+          values.status === "Hoàn thành" ? new Date().toLocaleDateString("vi-VN") : selectedOrder.completedDate,
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      });
       
       // Clear the temp form data since we've saved
       setTempFormData({})
@@ -621,7 +651,7 @@ const TestingResults = () => {
             <div style={{ border: '1px solid #d9d9d9', borderRadius: '2px', padding: '16px', marginBottom: '16px' }}>
               <Table
                 bordered
-                dataSource={Array.isArray(form.getFieldValue('resultTableData')) ? form.getFieldValue('resultTableData') : []}
+                dataSource={Array.isArray(tableData) ? tableData : []}
                 pagination={false}
                 rowKey={record => record.key || record.id || String(Math.random())}
               >
@@ -636,7 +666,7 @@ const TestingResults = () => {
                       placeholder="Nhập họ và tên" 
                       value={text} 
                       onChange={e => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData[index].name = e.target.value;
                         form.setFieldsValue({ resultTableData: newData });
@@ -656,7 +686,7 @@ const TestingResults = () => {
                       placeholder="Năm sinh" 
                       value={text} 
                       onChange={e => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData[index].birthYear = e.target.value;
                         form.setFieldsValue({ resultTableData: newData });
@@ -677,7 +707,7 @@ const TestingResults = () => {
                       value={text}
                       style={{ width: '100%' }}
                       onChange={value => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData[index].gender = value;
                         form.setFieldsValue({ resultTableData: newData });
@@ -699,7 +729,7 @@ const TestingResults = () => {
                       placeholder="Mối quan hệ" 
                       value={text} 
                       onChange={e => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData[index].relationship = e.target.value;
                         form.setFieldsValue({ resultTableData: newData });
@@ -718,7 +748,7 @@ const TestingResults = () => {
                       placeholder="Loại mẫu" 
                       value={text} 
                       onChange={e => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData[index].sampleType = e.target.value;
                         form.setFieldsValue({ resultTableData: newData });
@@ -737,14 +767,14 @@ const TestingResults = () => {
                       type="link" 
                       danger
                       onClick={() => {
-                        const newData = [...(form.getFieldValue('resultTableData') || [])];
+                        const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
                         newData.splice(index, 1);
                         form.setFieldsValue({ resultTableData: newData });
                         setTableData(newData);
                         setTempFormData(prev => ({ ...prev, resultTableData: newData }));
                       }}
-                      disabled={(Array.isArray(form.getFieldValue('resultTableData')) ? form.getFieldValue('resultTableData').length : 0) <= 1}
+                      disabled={tableData.length <= 1}
                     >
                       Xóa
                     </Button>
@@ -755,7 +785,7 @@ const TestingResults = () => {
                 type="dashed" 
                 style={{ width: '100%', marginTop: '16px' }}
                 onClick={() => {
-                  const newData = [...(form.getFieldValue('resultTableData') || [])];
+                  const newData = [...tableData];
                   newData.push({ key: Date.now().toString() });
                   form.setFieldsValue({ resultTableData: newData });
                   setTableData(newData);

@@ -82,10 +82,6 @@ const ServiceRegisterForm = () => {
     setShowToast(true);
     setReadGuide(false);
     setTimeout(() => setShowToast(false), 2500);
-
-    // Lưu vào localStorage (hiện tại)
-    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    localStorage.setItem("dna_orders", JSON.stringify([newOrder, ...allOrders]));
   };
 
   const handleMemberChange = (idx, field, value) => {
