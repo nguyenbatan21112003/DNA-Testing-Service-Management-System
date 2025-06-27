@@ -18,7 +18,7 @@ public partial class ConsultRequest
     public int? ServiceId { get; set; }
 
     public string? Message { get; set; }
-
+        
     public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }

@@ -237,6 +237,16 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetPendingConsults",
+    "RelativePath": "Staff/pending-consults",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "getAllBlogPsot",
     "RelativePath": "user/blogPost",
@@ -341,6 +351,22 @@
       {
         "Name": "users",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "SendConsultRequest",
+    "RelativePath": "user/send-conssult-request",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.SendConsultRequestModel",
         "IsRequired": true
       }
     ],

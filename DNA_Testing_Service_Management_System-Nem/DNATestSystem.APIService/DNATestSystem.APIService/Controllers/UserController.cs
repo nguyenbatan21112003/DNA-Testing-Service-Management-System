@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 
 namespace DNATestSystem.Controllers
 {
@@ -175,6 +176,15 @@ namespace DNATestSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("send-conssult-request")]
+        public async Task<IActionResult> SendConsultRequest([FromBody] SendConsultRequestModel model)
+        {
+            var data = _userService.SendConsultRequestAsync(model);
+            return Ok(data);
+        }
+
+
+
     }
 }
 

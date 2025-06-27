@@ -4,9 +4,10 @@ using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 
 
- namespace DNATestSystem.Services.Interface
+namespace DNATestSystem.Services.Interface
 {
     public interface IUserService
     {
@@ -40,6 +41,6 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Service;
         Task<UpdateProfileModel> UpdateProfileAsync(UpdateProfileModel updateProfileModel);
 
         //đăng ký tư vấn
-        //Task<>
+        Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model);
     }
 }

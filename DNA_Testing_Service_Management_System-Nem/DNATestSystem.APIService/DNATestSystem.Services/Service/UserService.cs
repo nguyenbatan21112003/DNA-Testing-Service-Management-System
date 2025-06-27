@@ -12,6 +12,7 @@ using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 
 namespace DNATestSystem.Services.Service
 {
@@ -353,6 +354,23 @@ namespace DNATestSystem.Services.Service
             user.UpdatedAt = DateTime.UtcNow;   
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model)
+        {
+            var consultRequest = new ConsultRequest
+            {
+                FullName = model.FullName,
+                Phone = model.Phone,
+                Category = model.Category,
+                ServiceId = model.ServiceId,
+                Message = model.Message,
+                CreatedAt = DateTime.UtcNow,
+                Status = "Pending"
+            };
+             _context.ConsultRequests.Add(consultRequest);
+            _context.SaveChangesAsync();
+            return Task.FromResult(consultRequest);
         }
     }
 }
