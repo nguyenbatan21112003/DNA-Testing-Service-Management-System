@@ -85,7 +85,7 @@ const CenterSampling = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadAppointments()
-    
+
     // Thêm event listener để cập nhật orders khi localStorage thay đổi
     window.addEventListener('storage', (event) => {
       if (event.key === 'dna_orders') {
@@ -95,7 +95,7 @@ const CenterSampling = () => {
 
     // Cleanup function
     return () => {
-      window.removeEventListener('storage', () => {})
+      window.removeEventListener('storage', () => { })
     }
   }, [])
 
@@ -106,9 +106,16 @@ const CenterSampling = () => {
 
   const handleUpdateAppointment = (appointment) => {
     setSelectedAppointment(appointment)
+    let dateValue = null
+    if (appointment.appointmentDate) {
+      // Tách lấy ngày nếu có cả giờ, và kiểm tra định dạng
+      const dateStr = appointment.appointmentDate.split(" ")[0]
+      const d = dayjs(dateStr, "DD/MM/YYYY", true)
+      dateValue = d.isValid() ? d : null
+    }
     form.setFieldsValue({
       appointmentStatus: appointment.appointmentStatus,
-      appointmentDate: appointment.appointmentDate ? dayjs(appointment.appointmentDate, "DD/MM/YYYY") : null,
+      appointmentDate: dateValue,
       notes: appointment.notes || "",
     })
     setUpdateModalVisible(true)
@@ -264,21 +271,20 @@ const CenterSampling = () => {
             Xem
           </Button>
           <Button
-            type="default"
             size="small"
             icon={<CalendarOutlined />}
             onClick={() => handleUpdateAppointment(record)}
             style={{
-              background: "#1890ff",
+              background: "#fa8c16",
               color: "#fff",
               fontWeight: 700,
               borderRadius: 6,
               border: "none",
-              boxShadow: "0 2px 8px #1890ff22",
+              boxShadow: "0 2px 8px #fa8c1622",
               transition: "background 0.2s"
             }}
-            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
+            onMouseOver={e => (e.currentTarget.style.background = '#d46b08')}
+            onMouseOut={e => (e.currentTarget.style.background = '#fa8c16')}
           >
             Cập nhật
           </Button>
@@ -610,10 +616,10 @@ const CenterSampling = () => {
           </Form.Item>
 
           <Form.Item name="appointmentDate" label="Ngày hẹn">
-            <DatePicker 
-              format="DD/MM/YYYY" 
-              placeholder="Chọn ngày hẹn" 
-              style={{ width: "100%" }} 
+            <DatePicker
+              format="DD/MM/YYYY"
+              placeholder="Chọn ngày hẹn"
+              style={{ width: "100%" }}
               disabledDate={disableDate}
             />
           </Form.Item>
