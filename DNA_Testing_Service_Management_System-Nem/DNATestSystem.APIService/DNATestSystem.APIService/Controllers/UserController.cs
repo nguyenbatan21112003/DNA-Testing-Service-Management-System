@@ -176,7 +176,8 @@ namespace DNATestSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("send-conssult-request")]
+        
+        [HttpPut("send-consult-request")]
         public async Task<IActionResult> SendConsultRequest([FromBody] SendConsultRequestModel model)
         {
             var data = _userService.SendConsultRequestAsync(model);

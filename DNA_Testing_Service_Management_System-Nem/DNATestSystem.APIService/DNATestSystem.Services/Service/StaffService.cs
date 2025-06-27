@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
@@ -19,7 +20,7 @@ namespace DNATestSystem.Services.Service
             _context = context;
         }
 
-        public async Task<List<PendingConsultDto>> PendingTestResultsAsync()
+        public async Task<List<PendingConsultDto>> PendingConsultResultsAsync()
         {
             var data = await _context.ConsultRequests
                             .Where(s => s.Status == "Pending")
@@ -36,6 +37,20 @@ namespace DNATestSystem.Services.Service
                             })
                             .ToListAsync();
             return data;
+        }
+
+        public async Task<bool> UpdateConsultResultAsync(UpdateConsultRequestDto updateConsultRequestDto)
+        {
+
+            var consult = await _context.ConsultRequests.FindAsync(updateConsultRequestDto.ConsultId);
+            if (consult == null) return false;
+
+            consult.StaffId = updateConsultRequestDto.StaffId;
+            consult.Status = updateConsultRequestDto.Status;
+            consult.RepliedAt = updateConsultRequestDto.RepliedAt;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
