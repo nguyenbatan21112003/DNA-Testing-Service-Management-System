@@ -118,15 +118,34 @@ const CenterSampling = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM": return "#FDE68A"
-      case "CONFIRMED": return "#A7F3D0"
-      case "WAITING_FOR_APPOINTMENT": return "#BFDBFE"
-      case "SAMPLE_COLLECTING": return "#E0E7FF"
-      case "SAMPLE_COLLECTING_WITH_DOC": return "#E0E7FF"
-      case "SAMPLE_RECEIVED": return "#86EFAC"
-      case "TESTING": return "#FBCFE8"
-      case "COMPLETED": return "#FCD34D"
-      default: return "#e5e7eb"
+      case "PENDING_CONFIRM":
+      case "WAITING_FOR_APPOINTMENT":
+      case "Chờ xác nhận":
+      case "Chờ đến ngày hẹn":
+        return "#fa8c16"; // Cam
+      case "CONFIRMED":
+      case "Xác nhận":
+      case "Đã xác nhận":
+        return "#1890ff"; // Xanh dương
+      case "SAMPLE_COLLECTING":
+      case "SAMPLE_COLLECTING_WITH_DOC":
+      case "Đang lấy mẫu":
+      case "Đang lấy mẫu và lập biên bản":
+        return "#722ed1"; // Tím
+      case "SAMPLE_RECEIVED":
+      case "COMPLETED":
+      case "Đã nhận mẫu":
+      case "Đã trả kết quả":
+        return "#52c41a"; // Xanh lá
+      case "CANCELLED":
+      case "Đã hủy":
+      case "Vắng mặt":
+        return "#ff4d4f"; // Đỏ
+      case "TESTING":
+      case "Đang xét nghiệm":
+        return "#1890ff"; // Xanh dương nhạt
+      default:
+        return "#d9d9d9";
     }
   }
 
