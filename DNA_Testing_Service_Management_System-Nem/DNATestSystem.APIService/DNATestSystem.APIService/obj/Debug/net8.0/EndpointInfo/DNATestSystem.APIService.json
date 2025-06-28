@@ -425,6 +425,37 @@
         }
       }
     },
+    "/Staff/consults/complete": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/user/register": {
       "post": {
         "tags": [
@@ -706,7 +737,7 @@
         }
       }
     },
-    "/user/send-conssult-request": {
+    "/user/send-consult-request": {
       "put": {
         "tags": [
           "User"
@@ -981,6 +1012,30 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "UpdateConsultRequestDto": {
+        "type": "object",
+        "properties": {
+          "consultId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "repliedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateProfileModel": {
         "type": "object",

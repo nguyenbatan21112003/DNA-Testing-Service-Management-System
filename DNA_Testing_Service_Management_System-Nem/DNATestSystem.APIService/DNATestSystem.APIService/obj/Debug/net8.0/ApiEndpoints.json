@@ -238,6 +238,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "CompleteConsult",
+    "RelativePath": "Staff/consults/complete",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetPendingConsults",
     "RelativePath": "Staff/pending-consults",
     "HttpMethod": "GET",
@@ -359,7 +375,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "SendConsultRequest",
-    "RelativePath": "user/send-conssult-request",
+    "RelativePath": "user/send-consult-request",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,

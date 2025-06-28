@@ -276,7 +276,7 @@ CREATE TABLE ConsultRequests (
   RepliedAt DATETIME
 );
 GO
-
+SELECT * FROM ConsultRequests
 -- ===================== TOKENS =====================
 CREATE TABLE RefreshTokens (
   TokenID INT PRIMARY KEY IDENTITY(1,1),
@@ -329,7 +329,7 @@ VALUES
 (N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Dân sự', 2, 1),
 (N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Hành chính', 2, 1);
 GO
-
+SELECT * FROM ConsultRequests
 SELECT * FROM Services
 --SELECT * FROM Services
 --DROP TABLE Services

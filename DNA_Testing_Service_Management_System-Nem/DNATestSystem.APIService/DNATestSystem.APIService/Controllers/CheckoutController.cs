@@ -1,4 +1,6 @@
-﻿using DNATestSystem.Services.Interface;
+﻿using DNATestSystem.BusinessObjects.Models;
+using DNATestSystem.Repositories;
+using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DNATestSystem.APIService.Controllers
@@ -8,46 +10,61 @@ namespace DNATestSystem.APIService.Controllers
     public class CheckoutController : ControllerBase
     {
         private readonly IVnPayService _vnPayService;
+        private readonly IApplicationDbContext _context;
 
-        public CheckoutController(IVnPayService vnPayService)
+        public CheckoutController(IVnPayService vnPayService , IApplicationDbContext dbContext)
         {
             _vnPayService = vnPayService;
+            _context = dbContext;
         }
 
         [HttpGet("PaymentCallbackVnpay")]
-
-        public IActionResult PaymentCallbackVnpay()
+        public async Task<IActionResult> PaymentCallbackVnpay()
         {
             try
             {
-                Console.WriteLine("✅ Callback started");
-
-                foreach (var item in Request.Query)
-                    Console.WriteLine($"🔍 {item.Key} = {item.Value}");
-
                 var response = _vnPayService.PaymentExecute(Request.Query);
 
                 if (!response.Success)
                 {
-                    return Content($@"
-                <html><body style='font-family:sans-serif;text-align:center;padding-top:50px;'>
-                <h2 style='color:red;'>❌ Thanh toán thất bại</h2>
-                <p>Mã lỗi: {response.VnPayResponseCode}</p>
-                </body></html>", "text/html");
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Thanh toán thất bại",
+                        vnPayResponseCode = response.VnPayResponseCode
+                    });
                 }
 
-                return Content($@"
-            <html><body style='font-family:sans-serif;text-align:center;padding-top:50px;'>
-            <h2 style='color:green;'>Thanh Toán thành công</h2>
-            <p>Mã giao dịch: {response.TransactionId}</p>
-            </body></html>", "text/html");
+                // ✅ Ghi nhận thanh toán vào bảng Invoice
+                var invoice = new Invoice
+                {
+                    RequestId = int.TryParse(response.OrderId, out var requestId) ? requestId : null,
+                    PaidAt = DateTime.UtcNow
+                };
+
+                _context.Invoices.Add(invoice);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Thanh toán thành công",
+                    transactionId = response.TransactionId,
+                    requestId = invoice.RequestId,
+                    paidAt = invoice.PaidAt
+                });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("🔥 EXCEPTION: " + ex.Message);
-                return Content("❌ Lỗi hệ thống: " + ex.Message, "text/html");
+                return StatusCode(500, new
+                {
+                     success = false,
+                    message = "Lỗi hệ thống",
+                    error = ex.Message
+                });
             }
         }
+
 
     }
 }

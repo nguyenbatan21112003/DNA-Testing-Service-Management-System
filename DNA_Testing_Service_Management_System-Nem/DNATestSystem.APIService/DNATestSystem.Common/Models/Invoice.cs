@@ -9,7 +9,7 @@ public partial class Invoice
 
     public int? RequestId { get; set; }
 
-    public DateOnly? PaidAt { get; set; }
+    public DateTime? PaidAt { get; set; }
 
     public virtual TestRequest? Request { get; set; }
 }

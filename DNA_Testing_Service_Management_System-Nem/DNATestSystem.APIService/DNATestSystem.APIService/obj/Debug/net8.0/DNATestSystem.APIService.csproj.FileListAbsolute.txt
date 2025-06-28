@@ -1006,10 +1006,10 @@ D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Managem
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.DNATestSystem.APIService.props
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.DNATestSystem.APIService.props
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets.pack.json
+D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestS.A70F8032.Up2Date
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestSystem.APIService.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\refint\DNATestSystem.APIService.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestSystem.APIService.pdb
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestSystem.APIService.genruntimeconfig.cache
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\ref\DNATestSystem.APIService.dll
-D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
