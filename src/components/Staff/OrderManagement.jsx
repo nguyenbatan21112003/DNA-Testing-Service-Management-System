@@ -1,66 +1,83 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, Table, Tag, Button, Modal, Form, Input, Select, message, Space, Tabs, Statistic, Row, Col } from "antd"
-import { FileTextOutlined, EyeOutlined, EditOutlined, ExportOutlined, PlusOutlined } from "@ant-design/icons"
-import { useOrderContext } from "../../context/OrderContext"
-
-const { Option } = Select
-const { Search } = Input
-const { TextArea } = Input
-const { TabPane } = Tabs
+import { useState, useEffect } from "react";
+import {
+  Card,
+  Table,
+  Tag,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  message,
+  Space,
+  Tabs,
+  Statistic,
+  Row,
+  Col,
+  Tooltip,
+} from "antd";
+import {
+  FileTextOutlined,
+  EyeOutlined,
+  EditOutlined,
+  ExportOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  UndoOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
+import { useOrderContext } from "../../context/OrderContext";
+const { Search } = Input;
+const { TabPane } = Tabs;
 
 const OrderManagement = () => {
-  const { getAllOrders, updateOrder } = useOrderContext()
-  const [orders, setOrders] = useState([])
-  const [filteredOrders, setFilteredOrders] = useState([])
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  const [form] = Form.useForm()
-  const [activeTab, setActiveTab] = useState("all")
-  const [searchText, setSearchText] = useState("")
+  const { getAllOrders, updateOrder } = useOrderContext();
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchText, setSearchText] = useState("");
+  const [confirmHideOrder, setConfirmHideOrder] = useState(null);
 
   // Lấy dữ liệu đơn hàng từ context
   const loadOrders = () => {
-    const allOrders = getAllOrders()
-    // Lọc chỉ lấy các đơn hàng thực sự (ví dụ: có type chứa 'xét nghiệm' hoặc có priority)
-    const realOrders = allOrders.filter(order => {
-      // Nếu có trường orderType thì ưu tiên lọc theo orderType === 'order'
-      if (order.orderType) return order.orderType === 'order';
-      // Nếu không có, lọc theo type hoặc priority
-      return (
-        (order.type && order.type.toLowerCase().includes('xét nghiệm')) ||
-        (order.priority && order.priority !== '')
-      );
-    });
-    setOrders(realOrders)
-    setFilteredOrders(realOrders)
-  }
+    const allOrders = getAllOrders();
+    setOrders(allOrders);
+    setFilteredOrders(allOrders.filter((order) => !order.isHidden));
+  };
 
   useEffect(() => {
     // Load orders khi component mount
-    loadOrders()
-    
-    // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'dna_orders') {
-        loadOrders()
-      }
-    })
+    loadOrders();
 
-    // Cleanup function
+    // Lắng nghe sự thay đổi của localStorage để reload orders khi có cập nhật từ manager
+    const handleStorageChange = (event) => {
+      if (event.key === "dna_orders") {
+        loadOrders();
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener('storage', () => {})
-    }
-  }, [])
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
-    let filtered = orders
+    let filtered = orders;
 
     // Lọc theo tab
-    if (activeTab !== "all") {
-      filtered = filtered.filter((order) => order.status === activeTab)
+    if (activeTab !== "all" && activeTab !== "hidden") {
+      filtered = filtered.filter(
+        (order) => order.status === activeTab && !order.isHidden
+      );
+    } else if (activeTab === "hidden") {
+      filtered = filtered.filter((order) => order.isHidden);
+    } else {
+      filtered = filtered.filter((order) => !order.isHidden);
     }
 
     // Tìm kiếm
@@ -69,60 +86,111 @@ const OrderManagement = () => {
         (order) =>
           order.name?.toLowerCase().includes(searchText.toLowerCase()) ||
           order.email?.toLowerCase().includes(searchText.toLowerCase()) ||
-          order.id?.toString().includes(searchText),
-      )
+          order.id?.toString().includes(searchText)
+      );
     }
 
-    setFilteredOrders(filtered)
-  }, [activeTab, searchText, orders])
+    setFilteredOrders(filtered);
+  }, [activeTab, searchText, orders]);
 
   const handleViewOrder = (order) => {
-    setSelectedOrder(order)
-    setModalVisible(true)
-  }
+    setSelectedOrder(order);
+    setModalVisible(true);
+  };
 
   const handleEditOrder = (order) => {
-    setSelectedOrder(order)
+    setSelectedOrder(order);
     form.setFieldsValue({
       status: order.status,
       priority: order.priority,
       notes: order.notes || "",
-    })
-    setEditModalVisible(true)
-  }
+    });
+  };
 
-  const handleSaveOrder = async (values) => {
-    try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedOrder.id, {
-        status: values.status,
-        priority: values.priority,
-        notes: values.notes,
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      })
-      
-      // Cập nhật lại danh sách đơn hàng
-      loadOrders()
-      
-      setEditModalVisible(false)
-      message.success("Cập nhật đơn hàng thành công!")
-    } catch {
-      message.error("Có lỗi xảy ra khi cập nhật đơn hàng!")
+  const handleDeleteOrder = (order) => {
+    setConfirmHideOrder(order);
+  };
+
+  const handleConfirmHide = async () => {
+    if (confirmHideOrder) {
+      await updateOrder(confirmHideOrder.id, { isHidden: true });
+      message.success("Đơn hàng đã được ẩn khỏi giao diện nhân viên!");
+      setConfirmHideOrder(null);
+      loadOrders();
+      setActiveTab("hidden");
     }
-  }
+  };
+
+  const handleCancelHide = () => {
+    setConfirmHideOrder(null);
+  };
+
+  const handleUnhideOrder = (order) => {
+    updateOrder(order.id, { isHidden: false });
+    message.success("Đơn hàng đã được hiện lại cho nhân viên!");
+    loadOrders();
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING":
+      case "PENDING_CONFIRM":
+        return "Chờ xử lý";
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "WAITING_APPROVAL":
+        return "Chờ xác thực";
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "REJECTED":
+        return "Từ chối";
+      case "KIT_SENT":
+        return "Đã gửi kit";
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu";
+      case "CANCELLED":
+        return "Đã hủy";
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý";
+        if (status === "Đang xử lý") return "Đang xử lý";
+        if (status === "Hoàn thành") return "Hoàn thành";
+        if (status === "Chờ xác thực") return "Chờ xác thực";
+        if (status === "Từ chối") return "Từ chối";
+        if (status === "Đã gửi kit") return "Đã gửi kit";
+        if (status === "Đã nhận mẫu") return "Đã nhận mẫu";
+        if (status === "Đã hủy") return "Đã hủy";
+        return status;
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
+      case "PENDING":
+      case "PENDING_CONFIRM":
       case "Chờ xử lý":
-        return "orange"
+        return "orange";
+      case "PROCESSING":
       case "Đang xử lý":
-        return "blue"
+        return "blue";
+      case "WAITING_APPROVAL":
+      case "Chờ xác thực":
+        return "purple";
+      case "COMPLETED":
       case "Hoàn thành":
-        return "green"
+        return "green";
+      case "REJECTED":
+      case "Từ chối":
+        return "red";
+      case "KIT_SENT":
+        return "#2563EB";
+      case "SAMPLE_RECEIVED":
+        return "#22C55E";
+      case "CANCELLED":
+        return "#EF4444";
       default:
-        return "default"
+        return "default";
     }
-  }
+  };
 
   const columns = [
     {
@@ -164,7 +232,9 @@ const OrderManagement = () => {
       key: "sampleMethod",
       width: 140,
       render: (method) => (
-        <Tag color={method === "home" ? "blue" : "green"}>{method === "home" ? "Tại nhà" : "Tại trung tâm"}</Tag>
+        <Tag color={method === "home" ? "blue" : "green"}>
+          {method === "home" ? "Tại nhà" : "Tại trung tâm"}
+        </Tag>
       ),
     },
     {
@@ -172,7 +242,9 @@ const OrderManagement = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{status}</Tag>,
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
     },
     {
       title: "Ngày tạo",
@@ -180,37 +252,95 @@ const OrderManagement = () => {
       key: "date",
       width: 120,
       sorter: (a, b) =>
-        new Date(a.date.split("/").reverse().join("-")) - new Date(b.date.split("/").reverse().join("-")),
+        new Date(a.date.split("/").reverse().join("-")) -
+        new Date(b.date.split("/").reverse().join("-")),
     },
     {
       title: "Thao tác",
       key: "action",
-      width: 150,
+      width: 200,
       render: (_, record) => (
         <Space size="small">
-          <Button type="primary" icon={<EyeOutlined />} size="small" onClick={() => handleViewOrder(record)}>
+          <Button
+            type="primary"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewOrder(record)}
+            style={{ background: "#1890ff", color: "#fff" }}
+          >
             Xem
           </Button>
-          <Button type="default" icon={<EditOutlined />} size="small" onClick={() => handleEditOrder(record)}>
-            Nhập kết quả
+          <Button
+            type="default"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEditOrder(record)}
+          >
+            Sửa
           </Button>
+          {record.isHidden ? (
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => handleUnhideOrder(record)}
+              style={{ background: "#52c41a", color: "#fff" }}
+            >
+              Hiện lại
+            </Button>
+          ) : (
+            <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+              <Button
+                icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
+                onClick={() => handleDeleteOrder(record)}
+                size="small"
+                style={{
+                  marginLeft: 8,
+                  borderColor: "#bfbfbf",
+                  color: "#595959",
+                  background: "#f5f5f5",
+                  fontWeight: 600,
+                }}
+              >
+                Ẩn
+              </Button>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
-  ]
+  ];
 
   const stats = {
-    total: orders.length,
-    pending: orders.filter((order) => order.status === "Chờ xử lý").length,
-    processing: orders.filter((order) => order.status === "Đang xử lý").length,
-    completed: orders.filter((order) => order.status === "Hoàn thành").length,
-  }
+    total: orders.filter((order) => !order.isHidden).length,
+    pending: orders.filter(
+      (order) => order.status === "Chờ xử lý" && !order.isHidden
+    ).length,
+    processing: orders.filter(
+      (order) => order.status === "Đang xử lý" && !order.isHidden
+    ).length,
+    completed: orders.filter(
+      (order) => order.status === "Hoàn thành" && !order.isHidden
+    ).length,
+    waitingApproval: orders.filter(
+      (order) => order.status === "Chờ xác thực" && !order.isHidden
+    ).length,
+    rejected: orders.filter(
+      (order) => order.status === "Từ chối" && !order.isHidden
+    ).length,
+    hidden: orders.filter((order) => order.isHidden).length,
+  };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Quản lý đơn hàng</h1>
-        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>Quản lý tất cả đơn hàng xét nghiệm ADN</p>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Quản lý đơn hàng
+        </h1>
+        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
+          Quản lý tất cả đơn hàng xét nghiệm ADN
+        </p>
       </div>
 
       {/* Thống kê tổng quan */}
@@ -227,23 +357,42 @@ const OrderManagement = () => {
         </Col>
         <Col xs={24} sm={6}>
           <Card>
-            <Statistic title="Chờ xử lý" value={stats.pending} valueStyle={{ color: "#fa8c16" }} />
+            <Statistic
+              title="Chờ xử lý"
+              value={stats.pending}
+              valueStyle={{ color: "#fa8c16" }}
+            />
           </Card>
         </Col>
         <Col xs={24} sm={6}>
           <Card>
-            <Statistic title="Đang xử lý" value={stats.processing} valueStyle={{ color: "#1890ff" }} />
+            <Statistic
+              title="Đang xử lý"
+              value={stats.processing}
+              valueStyle={{ color: "#1890ff" }}
+            />
           </Card>
         </Col>
         <Col xs={24} sm={6}>
           <Card>
-            <Statistic title="Hoàn thành" value={stats.completed} valueStyle={{ color: "#52c41a" }} />
+            <Statistic
+              title="Hoàn thành"
+              value={stats.completed}
+              valueStyle={{ color: "#52c41a" }}
+            />
           </Card>
         </Col>
       </Row>
 
       <Card>
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
             <Search
               placeholder="Tìm kiếm theo tên, email hoặc mã đơn"
@@ -255,7 +404,23 @@ const OrderManagement = () => {
           </div>
           <Space>
             <Button icon={<ExportOutlined />}>Xuất Excel</Button>
-            <Button type="primary" icon={<PlusOutlined />}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{
+                background: "#1890ff",
+                color: "#fff",
+                borderRadius: 6,
+                border: "none",
+                fontWeight: 600,
+                boxShadow: "0 2px 8px rgba(24,144,255,0.08)",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#1765ad")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
+            >
               Tạo đơn mới
             </Button>
           </Space>
@@ -263,9 +428,15 @@ const OrderManagement = () => {
 
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
           <TabPane tab={`Tất cả (${stats.total})`} key="all" />
-          <TabPane tab={`Chờ xử lý (${stats.pending})`} key="Chờ xử lý" />
-          <TabPane tab={`Đang xử lý (${stats.processing})`} key="Đang xử lý" />
-          <TabPane tab={`Hoàn thành (${stats.completed})`} key="Hoàn thành" />
+          <TabPane tab={`Chờ xử lý (${stats.pending})`} key="PENDING" />
+          <TabPane tab={`Đang xử lý (${stats.processing})`} key="PROCESSING" />
+          <TabPane
+            tab={`Chờ xác thực (${stats.waitingApproval || 0})`}
+            key="WAITING_APPROVAL"
+          />
+          <TabPane tab={`Hoàn thành (${stats.completed})`} key="COMPLETED" />
+          <TabPane tab={`Từ chối (${stats.rejected || 0})`} key="REJECTED" />
+          <TabPane tab={`Đơn đã ẩn (${stats.hidden})`} key="hidden" />
         </Tabs>
 
         <Table
@@ -276,7 +447,8 @@ const OrderManagement = () => {
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} của ${total} đơn hàng`,
           }}
           scroll={{ x: 1400 }}
         />
@@ -285,150 +457,26 @@ const OrderManagement = () => {
       {/* Modal xem chi tiết đơn hàng */}
       <Modal
         title={`Chi tiết đơn hàng #${selectedOrder?.id}`}
-        open={modalVisible}
+        visible={modalVisible}
         onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setModalVisible(false)}>
-            Đóng
-          </Button>,
-          <Button
-            key="edit"
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setModalVisible(false)
-              handleEditOrder(selectedOrder)
-            }}
-          >
-            Chỉnh sửa
-          </Button>,
-        ]}
-        width={800}
+        footer={null}
       >
-        {selectedOrder && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin khách hàng:</h3>
-              <p>
-                <strong>Họ tên:</strong> {selectedOrder.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedOrder.email}
-              </p>
-              <p>
-                <strong>Số điện thoại:</strong> {selectedOrder.phone}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin đơn hàng:</h3>
-              <p>
-                <strong>Loại xét nghiệm:</strong> {selectedOrder.type}
-              </p>
-              <p>
-                <strong>Phương thức lấy mẫu:</strong>
-                <Tag color={selectedOrder.sampleMethod === "home" ? "blue" : "green"} style={{ marginLeft: 8 }}>
-                  {selectedOrder.sampleMethod === "home" ? "Tại nhà" : "Tại trung tâm"}
-                </Tag>
-              </p>
-              <p>
-                <strong>Trạng thái:</strong>
-                <Tag color={getStatusColor(selectedOrder.status)} style={{ marginLeft: 8 }}>
-                  {selectedOrder.status}
-                </Tag>
-              </p>
-              <p>
-                <strong>Ngày tạo:</strong> {selectedOrder.date}
-              </p>
-            </div>
-
-            {selectedOrder.sampleMethod === "home" && selectedOrder.address && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Địa chỉ lấy mẫu:</h3>
-                <p>{selectedOrder.address}</p>
-                {selectedOrder.kitId && (
-                  <p>
-                    <strong>Mã kit:</strong> {selectedOrder.kitId}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {selectedOrder.sampleMethod === "center" && selectedOrder.appointmentDate && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Thông tin lịch hẹn:</h3>
-                <p>
-                  <strong>Ngày hẹn:</strong> {selectedOrder.appointmentDate}
-                </p>
-                {selectedOrder.timeSlot && (
-                  <p>
-                    <strong>Giờ hẹn:</strong> {selectedOrder.timeSlot}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {selectedOrder.result && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Kết quả xét nghiệm:</h3>
-                <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
-                  {selectedOrder.result}
-                </div>
-              </div>
-            )}
-
-            {selectedOrder.notes && (
-              <div>
-                <h3>Ghi chú:</h3>
-                <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4 }}>{selectedOrder.notes}</div>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Modal content */}
       </Modal>
 
-      {/* Modal chỉnh sửa đơn hàng */}
       <Modal
-        title={`Chỉnh sửa đơn hàng #${selectedOrder?.id}`}
-        open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
-        onOk={() => form.submit()}
-        okText="Lưu"
-        cancelText="Hủy"
-        width={600}
+        open={!!confirmHideOrder}
+        title={`Xác nhận ẩn đơn hàng #${confirmHideOrder?.id}`}
+        onOk={handleConfirmHide}
+        onCancel={handleCancelHide}
+        okText="Ẩn"
+        cancelText="Huỷ"
+        okButtonProps={{ danger: true }}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveOrder}>
-          <Form.Item
-            name="status"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="Chờ xử lý">Chờ xử lý</Option>
-              <Option value="Đang xử lý">Đang xử lý</Option>
-              <Option value="Hoàn thành">Hoàn thành</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="priority"
-            label="Độ ưu tiên"
-            rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên!" }]}
-          >
-            <Select placeholder="Chọn độ ưu tiên">
-              <Option value="Cao">Cao</Option>
-              <Option value="Trung bình">Trung bình</Option>
-              <Option value="Thấp">Thấp</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="notes" label="Ghi chú">
-            <TextArea rows={4} placeholder="Nhập ghi chú về đơn hàng..." />
-          </Form.Item>
-        </Form>
+        Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không?
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default OrderManagement
+export default OrderManagement;

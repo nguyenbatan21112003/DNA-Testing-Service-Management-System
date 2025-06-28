@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNotification } from "./NotificationContext";
 
 const OrderContext = createContext();
 
@@ -58,6 +59,17 @@ function orderReducer(state, action) {
 export function OrderProvider({ children }) {
   const [state, dispatch] = useReducer(orderReducer, initialState);
   const { user } = useContext(AuthContext);
+<<<<<<< HEAD
+=======
+  const {
+    notifyNewOrder,
+    notifyOrderStatusUpdate,
+    notifyOrderApproval,
+    notifyNewFeedback,
+    notifyFeedbackResponse,
+    notifyPricingUpdate
+  } = useNotification();
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
 
   // Khi load lần đầu hoặc user đổi, đọc orders từ localStorage và lọc theo user
   useEffect(() => {
@@ -86,6 +98,7 @@ export function OrderProvider({ children }) {
     // Load orders khi component mount và khi user thay đổi
     loadOrders();
 
+<<<<<<< HEAD
   //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
   //   window.addEventListener('storage', (event) => {
   //     if (event.key === 'dna_orders') {
@@ -101,6 +114,24 @@ export function OrderProvider({ children }) {
 
   const addOrder = (order) => {
     if (!user || !user.email) return;
+=======
+    //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
+    //   window.addEventListener('storage', (event) => {
+    //     if (event.key === 'dna_orders') {
+    //       loadOrders();
+    //     }
+    //   });
+
+    //   // Cleanup function
+    //   return () => {
+    //     window.removeEventListener('storage', () => {});
+    //   };
+  }, [user]);
+
+  const addOrder = (order) => {
+    if (!user || !user.email) return;
+
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
@@ -113,18 +144,35 @@ export function OrderProvider({ children }) {
       rating: 0,
       resultFile: "",
       kitStatus: order.sampleMethod === "home" ? "chua_gui" : undefined,
+<<<<<<< HEAD
     };
+=======
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Lưu vào localStorage (toàn bộ đơn)
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const newOrders = [orderWithEmail, ...allOrders];
     localStorage.setItem("dna_orders", JSON.stringify(newOrders));
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Sau khi thêm, lọc lại toàn bộ đơn cho user hiện tại
     const filtered =
       user.role_id === 2
         ? newOrders
         : newOrders.filter((o) => o.email === user.email);
     dispatch({ type: "SET_ORDERS", payload: filtered });
+<<<<<<< HEAD
+=======
+
+    // Tạo thông báo cho Staff và Manager
+    notifyNewOrder(orderWithEmail);
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Hàm cho staff lấy toàn bộ đơn
@@ -136,6 +184,7 @@ export function OrderProvider({ children }) {
     dispatch({ type: "SET_ORDERS", payload: orders });
   };
 
+<<<<<<< HEAD
   // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác nhận)
   const updateOrder = (orderId, updates) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
@@ -145,12 +194,61 @@ export function OrderProvider({ children }) {
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
     }
+=======
+  // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác thực)
+  const updateOrder = async (orderId, updates) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+
+    if (idx !== -1) {
+      const oldOrder = allOrders[idx];
+      const updatedOrder = {
+        ...oldOrder,
+        ...updates,
+        updatedAt: new Date().toISOString()
+      };
+
+      allOrders[idx] = updatedOrder;
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+
+      // Luôn gọi notifyOrderStatusUpdate nếu có thay đổi trạng thái
+      if (updates.status && updates.status !== oldOrder.status) {
+        const updatedBy = user?.name || user?.email || "Hệ thống";
+        notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
+      }
+
+      // Tạo thông báo khi Manager phê duyệt/từ chối
+      if (updates.managerConfirm !== undefined && updates.managerConfirm !== oldOrder.managerConfirm) {
+        const approvedBy = user?.name || user?.email || "Manager";
+        const approved = updates.managerConfirm;
+
+        if (approved) {
+          // Nếu được phê duyệt, cập nhật trạng thái thành "Hoàn thành"
+          const finalOrder = { ...updatedOrder, status: "Hoàn thành" };
+          allOrders[idx] = finalOrder;
+          localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+          setOrders(allOrders);
+          notifyOrderApproval(finalOrder, true, approvedBy);
+        } else {
+          // Nếu bị từ chối, cập nhật trạng thái thành "Từ chối"
+          const rejectedOrder = { ...updatedOrder, status: "Từ chối" };
+          allOrders[idx] = rejectedOrder;
+          localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+          setOrders(allOrders);
+          notifyOrderApproval(rejectedOrder, false, approvedBy);
+        }
+      }
+    }
+    return Promise.resolve();
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Thêm/Chỉnh sửa feedback và rating
   const addFeedback = (orderId, feedback, rating, categoryRatings = {}) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
+<<<<<<< HEAD
     if (idx !== -1) {
       const order = allOrders[idx];
       const now = new Date();
@@ -159,24 +257,86 @@ export function OrderProvider({ children }) {
       }/${now.getFullYear()}`;
       if (!order.feedbacks) order.feedbacks = [];
       order.feedbacks.push({
+=======
+
+    if (idx !== -1) {
+      const order = allOrders[idx];
+      const now = new Date();
+      const date = `${now.getDate()}/${now.getMonth() + 1
+        }/${now.getFullYear()}`;
+
+      if (!order.feedbacks) order.feedbacks = [];
+
+      const newFeedback = {
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
         rating,
         feedback,
         date,
         categoryRatings,
         user: order.name || order.fullName || order.email || "Người dùng",
         email: order.email || "",
+<<<<<<< HEAD
       });
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
+=======
+      };
+
+      order.feedbacks.push(newFeedback);
+      order.updatedAt = new Date().toISOString();
+
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+
+      // Tạo thông báo cho Staff và Manager
+      notifyNewFeedback(newFeedback, order);
+    }
+  };
+
+  // Phản hồi feedback (cho Staff)
+  const respondToFeedback = (orderId, response, respondedBy) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+
+    if (idx !== -1) {
+      const order = allOrders[idx];
+      if (!order.feedbackResponses) order.feedbackResponses = [];
+
+      const feedbackResponse = {
+        response,
+        respondedBy,
+        date: new Date().toISOString(),
+      };
+
+      order.feedbackResponses.push(feedbackResponse);
+      order.updatedAt = new Date().toISOString();
+
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+
+      // Tạo thông báo cho User
+      notifyFeedbackResponse(feedbackResponse, order, respondedBy);
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     }
   };
 
   // Cập nhật dữ liệu giá và thời gian
   const updatePricingData = (category, updatedServices) => {
+<<<<<<< HEAD
     dispatch({ 
       type: "UPDATE_PRICING_DATA", 
       payload: { [category]: updatedServices } 
     });
+=======
+    dispatch({
+      type: "UPDATE_PRICING_DATA",
+      payload: { [category]: updatedServices }
+    });
+
+    // Tạo thông báo cho Staff và Manager
+    const updatedBy = user?.name || user?.email || "Admin";
+    notifyPricingUpdate({ [category]: updatedServices }, updatedBy);
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Lấy dữ liệu giá và thời gian
@@ -184,6 +344,40 @@ export function OrderProvider({ children }) {
     return state.pricingData;
   };
 
+<<<<<<< HEAD
+=======
+  // Lấy đơn hàng theo trạng thái
+  const getOrdersByStatus = (status) => {
+    return state.orders.filter(order => order.status === status);
+  };
+
+  // Lấy đơn hàng cần xác thực (cho Manager)
+  const getOrdersNeedingApproval = () => {
+    const allOrders = getAllOrders();
+    return allOrders.filter(order => order.status === "Chờ xác thực");
+  };
+
+  // Lấy đơn hàng có feedback (cho Staff)
+  const getOrdersWithFeedback = () => {
+    const allOrders = getAllOrders();
+    return allOrders.filter(order => order.feedbacks && order.feedbacks.length > 0);
+  };
+
+  // Xoá đơn hàng theo id, trả về order vừa xoá để hoàn tác
+  const deleteOrder = (orderId) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      const deletedOrder = allOrders[idx];
+      allOrders.splice(idx, 1);
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+      return deletedOrder;
+    }
+    return null;
+  };
+
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   return (
     <OrderContext.Provider
       value={{
@@ -194,12 +388,26 @@ export function OrderProvider({ children }) {
         getAllOrders,
         updateOrder,
         addFeedback,
+<<<<<<< HEAD
         updatePricingData,
         getPricingData,
+=======
+        respondToFeedback,
+        updatePricingData,
+        getPricingData,
+        getOrdersByStatus,
+        getOrdersNeedingApproval,
+        getOrdersWithFeedback,
+        deleteOrder,
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
       }}
     >
       {children}
     </OrderContext.Provider>
   );
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
 export const useOrderContext = () => useContext(OrderContext);

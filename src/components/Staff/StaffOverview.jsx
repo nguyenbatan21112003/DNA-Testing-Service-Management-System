@@ -1,7 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, Row, Col, Statistic, Table, Tag, Progress, List, Avatar } from "antd"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Table,
+  Tag,
+  Progress,
+  List,
+  Avatar,
+  Badge,
+} from "antd";
 import {
   FileTextOutlined,
   ClockCircleOutlined,
@@ -14,11 +25,11 @@ import {
   HomeOutlined,
   BankOutlined,
   PhoneOutlined,
-} from "@ant-design/icons"
-import dayjs from "dayjs"
+} from "@ant-design/icons";
+import dayjs from "dayjs";
 
 const StaffOverview = () => {
-  const [orders, setOrders] = useState([])
+  const [setOrders] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -26,108 +37,227 @@ const StaffOverview = () => {
     completed: 0,
     homeSampling: 0,
     centerSampling: 0,
-  })
-  const [recentActivities, setRecentActivities] = useState([])
-  const [todayAppointments, setTodayAppointments] = useState([])
-  const [urgentOrders, setUrgentOrders] = useState([])
+  });
+  const [setRecentActivities] = useState([]);
+  const [setTodayAppointments] = useState([]);
+  const [urgentOrders, setUrgentOrders] = useState([]);
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    setOrders(savedOrders)
+    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    setOrders(savedOrders);
 
     // Tính toán thống kê
     const newStats = {
       total: savedOrders.length,
-      pending: savedOrders.filter((order) => order.status === "Chờ xử lý").length,
-      processing: savedOrders.filter((order) => order.status === "Đang xử lý").length,
-      completed: savedOrders.filter((order) => order.status === "Hoàn thành").length,
-      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home").length,
-      centerSampling: savedOrders.filter((order) => order.sampleMethod === "center").length,
-    }
-    setStats(newStats)
+      pending: savedOrders.filter((order) => order.status === "Chờ xử lý")
+        .length,
+      processing: savedOrders.filter((order) => order.status === "Đang xử lý")
+        .length,
+      completed: savedOrders.filter((order) => order.status === "Hoàn thành")
+        .length,
+      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home")
+        .length,
+      centerSampling: savedOrders.filter(
+        (order) => order.sampleMethod === "center"
+      ).length,
+    };
+    setStats(newStats);
 
     // Lọc các đơn hàng ưu tiên cao
     const highPriorityOrders = savedOrders
-      .filter((order) => order.priority === "Cao" && order.status !== "Hoàn thành")
-      .slice(0, 5)
-    setUrgentOrders(highPriorityOrders)
+      .filter(
+        (order) => order.priority === "Cao" && order.status !== "Hoàn thành"
+      )
+      .slice(0, 5);
+    setUrgentOrders(highPriorityOrders);
 
     // Lọc các cuộc hẹn hôm nay
-    const today = dayjs().format("DD/MM/YYYY")
+    const today = dayjs().format("DD/MM/YYYY");
     const appointments = savedOrders
       .filter(
         (order) =>
-          (order.sampleMethod === "center" && order.appointmentDate === today) ||
-          (order.sampleMethod === "home" && order.scheduledDate && order.scheduledDate.includes(today)),
+          (order.sampleMethod === "center" &&
+            order.appointmentDate === today) ||
+          (order.sampleMethod === "home" &&
+            order.scheduledDate &&
+            order.scheduledDate.includes(today))
       )
-      .slice(0, 5)
-    setTodayAppointments(appointments)
+      .slice(0, 5);
+    setTodayAppointments(appointments);
 
     // Tạo hoạt động gần đây
-    generateRecentActivities(savedOrders)
-  }, [])
+    generateRecentActivities(savedOrders);
+  }, []);
 
   const generateRecentActivities = (orders) => {
-    const activities = []
+    const activities = [];
 
     // Thêm hoạt động từ đơn hàng đã hoàn thành
-    const completedOrders = orders.filter((order) => order.status === "Hoàn thành").slice(0, 2)
+    const completedOrders = orders
+      .filter((order) => order.status === "Hoàn thành")
+      .slice(0, 2);
     completedOrders.forEach((order) => {
       activities.push({
         time: order.completedDate || "Gần đây",
         content: `Hoàn thành xét nghiệm cho đơn hàng #${order.id} - ${order.name}`,
         type: "success",
         icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      })
-    })
+      });
+    });
 
     // Thêm hoạt động từ đơn hàng đang xử lý
-    const processingOrders = orders.filter((order) => order.status === "Đang xử lý").slice(0, 2)
+    const processingOrders = orders
+      .filter((order) => order.status === "Đang xử lý")
+      .slice(0, 2);
     processingOrders.forEach((order) => {
       activities.push({
         time: order.date,
         content: `Bắt đầu xử lý đơn hàng #${order.id} - ${order.name}`,
         type: "processing",
         icon: <LoadingOutlined style={{ color: "#1890ff" }} />,
-      })
-    })
+      });
+    });
 
     // Thêm hoạt động từ đơn hàng lấy mẫu tại nhà
     const homeSamplingOrders = orders
-      .filter((order) => order.sampleMethod === "home" && order.kitStatus === "da_nhan")
-      .slice(0, 2)
+      .filter(
+        (order) =>
+          order.sampleMethod === "home" && order.kitStatus === "da_nhan"
+      )
+      .slice(0, 2);
     homeSamplingOrders.forEach((order) => {
       activities.push({
         time: order.date,
         content: `Đã nhận mẫu từ đơn hàng #${order.id} - ${order.name}`,
         type: "info",
         icon: <HomeOutlined style={{ color: "#13c2c2" }} />,
-      })
-    })
+      });
+    });
 
     // Thêm hoạt động từ đơn hàng lấy mẫu tại trung tâm
     const centerSamplingOrders = orders
-      .filter((order) => order.sampleMethod === "center" && order.appointmentStatus === "da_den")
-      .slice(0, 2)
+      .filter(
+        (order) =>
+          order.sampleMethod === "center" &&
+          order.appointmentStatus === "da_den"
+      )
+      .slice(0, 2);
     centerSamplingOrders.forEach((order) => {
       activities.push({
         time: order.appointmentDate,
         content: `Khách hàng ${order.name} đã đến lấy mẫu tại trung tâm`,
         type: "info",
         icon: <BankOutlined style={{ color: "#722ed1" }} />,
-      })
-    })
+      });
+    });
 
     // Sắp xếp hoạt động theo thời gian
-    activities.sort(() => Math.random() - 0.5)
-    setRecentActivities(activities.slice(0, 6))
-  }
+    activities.sort(() => Math.random() - 0.5);
+    setRecentActivities(activities.slice(0, 6));
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "Chờ xử lý";
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "COMPLETED":
+        return "Hoàn thành";
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý";
+        if (status === "Đang xử lý") return "Đang xử lý";
+        if (status === "Hoàn thành") return "Hoàn thành";
+        return status;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PENDING":
+      case "Chờ xử lý":
+        return "orange";
+      case "PROCESSING":
+      case "Đang xử lý":
+        return "blue";
+      case "COMPLETED":
+      case "Hoàn thành":
+        return "green";
+      default:
+        return "default";
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "Cao":
+        return "red";
+      case "Trung bình":
+        return "orange";
+      case "Thấp":
+        return "green";
+      default:
+        return "default";
+    }
+  };
+
+  const urgentColumns = [
+    {
+      title: "Mã đơn",
+      dataIndex: "id",
+      key: "id",
+      render: (id) => `#${id}`,
+      width: 100,
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: "name",
+      key: "name",
+      width: 150,
+    },
+    {
+      title: "Loại xét nghiệm",
+      dataIndex: "type",
+      key: "type",
+      width: 200,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
+    },
+    {
+      title: "Độ ưu tiên",
+      dataIndex: "priority",
+      key: "priority",
+      width: 100,
+      render: (priority) => (
+        <Tag color={getPriorityColor(priority)}>{priority}</Tag>
+      ),
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "date",
+      key: "date",
+      width: 120,
+    },
+  ];
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Dashboard Nhân viên</h1>
-        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>Tổng quan hoạt động và thống kê hôm nay</p>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Dashboard Nhân viên
+        </h1>
+        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
+          Tổng quan hoạt động và thống kê hôm nay
+        </p>
       </div>
 
       {/* Thống kê tổng quan */}
@@ -183,9 +313,19 @@ const StaffOverview = () => {
               prefix={<HomeOutlined style={{ color: "#13c2c2" }} />}
               valueStyle={{ color: "#13c2c2", fontWeight: 600 }}
             />
+            <Progress
+              percent={
+                stats.total > 0
+                  ? Math.round((stats.homeSampling / stats.total) * 100)
+                  : 0
+              }
+              strokeColor="#13c2c2"
+              showInfo={false}
+              style={{ marginTop: 8 }}
+            />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12}>
           <Card>
             <Statistic
               title="Thu mẫu tại trung tâm"
@@ -193,200 +333,41 @@ const StaffOverview = () => {
               prefix={<BankOutlined style={{ color: "#722ed1" }} />}
               valueStyle={{ color: "#722ed1", fontWeight: 600 }}
             />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Tỷ lệ hoàn thành"
-              value={stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}
-              suffix="%"
-              prefix={<TrophyOutlined style={{ color: "#eb2f96" }} />}
-              valueStyle={{ color: "#eb2f96", fontWeight: 600 }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Lịch hẹn hôm nay"
-              value={todayAppointments.length}
-              prefix={<CalendarOutlined style={{ color: "#faad14" }} />}
-              valueStyle={{ color: "#faad14", fontWeight: 600 }}
+            <Progress
+              percent={
+                stats.total > 0
+                  ? Math.round((stats.centerSampling / stats.total) * 100)
+                  : 0
+              }
+              strokeColor="#722ed1"
+              showInfo={false}
+              style={{ marginTop: 8 }}
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Tiến độ công việc và Hoạt động gần đây */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card title="Tiến độ công việc hôm nay" extra={<TrophyOutlined />}>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span>Đơn hàng đã xử lý</span>
-                <span>
-                  {stats.completed}/{stats.total}
-                </span>
-              </div>
-              <Progress
-                percent={stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}
-                strokeColor="#00a67e"
-              />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span>Mẫu đã thu thập</span>
-                <span>
-                  {
-                    orders.filter(
-                      (o) =>
-                        (o.sampleMethod === "home" && o.kitStatus === "da_nhan") ||
-                        (o.sampleMethod === "center" && o.appointmentStatus === "da_den"),
-                    ).length
-                  }
-                  /{stats.total}
-                </span>
-              </div>
-              <Progress
-                percent={
-                  stats.total > 0
-                    ? Math.round(
-                        (orders.filter(
-                          (o) =>
-                            (o.sampleMethod === "home" && o.kitStatus === "da_nhan") ||
-                            (o.sampleMethod === "center" && o.appointmentStatus === "da_den"),
-                        ).length /
-                          stats.total) *
-                          100,
-                      )
-                    : 0
-                }
-                strokeColor="#1890ff"
-              />
-            </div>
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span>Kết quả đã nhập</span>
-                <span>
-                  {orders.filter((o) => o.result).length}/{stats.total}
-                </span>
-              </div>
-              <Progress
-                percent={stats.total > 0 ? Math.round((orders.filter((o) => o.result).length / stats.total) * 100) : 0}
-                strokeColor="#52c41a"
-              />
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="Hoạt động gần đây" extra={<CalendarOutlined />}>
-            <List
-              itemLayout="horizontal"
-              dataSource={recentActivities}
-              renderItem={(item) => (
-                <List.Item>
-                  <List.Item.Meta avatar={<Avatar icon={item.icon} />} title={item.content} description={item.time} />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Đơn hàng ưu tiên cao và Lịch hẹn hôm nay */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card title="Những đơn hàng đang cần xử lý" extra={<AlertOutlined style={{ color: "#ff4d4f" }} />}>
-            <Table
-              columns={[
-                {
-                  title: "Mã đơn",
-                  dataIndex: "id",
-                  key: "id",
-                  render: (id) => `#${id}`,
-                },
-                {
-                  title: "Khách hàng",
-                  dataIndex: "name",
-                  key: "name",
-                },
-                {
-                  title: "Loại xét nghiệm",
-                  dataIndex: "type",
-                  key: "type",
-                  ellipsis: true,
-                },
-                {
-                  title: "Trạng thái",
-                  dataIndex: "status",
-                  key: "status",
-                  render: (status) => {
-                    let color = "default"
-                    if (status === "Chờ xử lý") color = "orange"
-                    if (status === "Đang xử lý") color = "blue"
-                    if (status === "Hoàn thành") color = "green"
-                    return <Tag color={color}>{status}</Tag>
-                  },
-                },
-              ]}
-              dataSource={urgentOrders}
-              rowKey="id"
-              pagination={false}
-              size="small"
-              locale={{ emptyText: "Không có đơn hàng ưu tiên cao nào" }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="Lịch hẹn hôm nay" extra={<CalendarOutlined style={{ color: "#faad14" }} />}>
-            {todayAppointments.length > 0 ? (
-              <List
-                itemLayout="horizontal"
-                dataSource={todayAppointments}
-                renderItem={(item) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar
-                          icon={item.sampleMethod === "home" ? <HomeOutlined /> : <BankOutlined />}
-                          style={{ backgroundColor: item.sampleMethod === "home" ? "#13c2c2" : "#722ed1" }}
-                        />
-                      }
-                      title={`#${item.id} - ${item.name}`}
-                      description={
-                        <div>
-                          <div>
-                            <PhoneOutlined style={{ marginRight: 4 }} /> {item.phone}
-                          </div>
-                          <div>
-                            <ClockCircleOutlined style={{ marginRight: 4 }} />
-                            {item.scheduledDate || item.appointmentDate}
-                            {item.timeSlot && ` (${item.timeSlot})`}
-                          </div>
-                          <div>
-                            <ExperimentOutlined style={{ marginRight: 4 }} /> {item.type}
-                          </div>
-                        </div>
-                      }
-                    />
-                    <Tag color={item.priority === "Cao" ? "red" : item.priority === "Trung bình" ? "orange" : "green"}>
-                      {item.priority}
-                    </Tag>
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <div style={{ textAlign: "center", padding: "20px 0" }}>
-                <CalendarOutlined style={{ fontSize: 24, color: "#d9d9d9" }} />
-                <p style={{ marginTop: 8, color: "#999" }}>Không có lịch hẹn nào hôm nay</p>
-              </div>
-            )}
-          </Card>
-        </Col>
-      </Row>
+      {/* Đơn hàng ưu tiên cao */}
+      <Card
+        title={
+          <span>
+            <AlertOutlined style={{ color: "#ff4d4f", marginRight: 8 }} />
+            Đơn hàng ưu tiên cao
+          </span>
+        }
+        style={{ marginBottom: 24 }}
+      >
+        <Table
+          dataSource={urgentOrders}
+          columns={urgentColumns}
+          pagination={false}
+          size="small"
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default StaffOverview
+export default StaffOverview;

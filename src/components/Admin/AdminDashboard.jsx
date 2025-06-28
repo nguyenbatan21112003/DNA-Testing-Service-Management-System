@@ -19,7 +19,6 @@ import StaffManagement from "./StaffManagement";
 import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
 import PricingManagement from "./PricingManagement";
 
-
 const { Sider, Content } = Layout;
 
 const menuItems = [
@@ -264,7 +263,7 @@ const AdminDashboard = () => {
         open={logoutModal}
         onOk={confirmLogout}
         onCancel={cancelLogout}
-        style={{color:"red"}}
+        style={{ color: "red" }}
         okText="Đăng xuất"
         cancelText="Hủy"
         okButtonProps={{ className: "custom-logout-btn" }}

@@ -37,25 +37,59 @@ const LoginPage = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'url("/ImgLogin/Leonida_Keys_01.jpg") center/cover no-repeat',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background:
+          'url("/ImgLogin/Leonida_Keys_01.jpg") center/cover no-repeat',
       }}
     >
       {showToast && (
-        <div style={{ position: 'fixed', top: 24, right: 24, background: '#00a67e', color: '#fff', padding: '12px 28px', borderRadius: 8, boxShadow: '0 2px 12px #0002', zIndex: 2000, fontWeight: 500, fontSize: 16 }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 24,
+            right: 24,
+            background: "#00a67e",
+            color: "#fff",
+            padding: "12px 28px",
+            borderRadius: 8,
+            boxShadow: "0 2px 12px #0002",
+            zIndex: 2000,
+            fontWeight: 500,
+            fontSize: 16,
+          }}
+        >
           Đăng nhập thành công!
         </div>
       )}
-      <div style={{ background: '#fff', borderRadius: 18, maxWidth: 420, width: '100%', boxShadow: '0 8px 32px #0002', padding: 36 }}>
-        <h2 style={{ textAlign: 'center', color: '#009e74', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Đăng nhập</h2>
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 18,
+          maxWidth: 420,
+          width: "100%",
+          boxShadow: "0 8px 32px #0002",
+          padding: 36,
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            color: "#009e74",
+            fontWeight: 800,
+            fontSize: 32,
+            marginBottom: 18,
+          }}
+        >
+          Đăng nhập
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="login-email">Email</label>
             <input
-            className="bg-white p-4"
+              className="bg-white p-4"
               type="email"
               id="login-email"
               value={email}
@@ -112,8 +146,11 @@ const LoginPage = () => {
             Đăng nhập
           </button>
         </form>
-        <div style={{ textAlign: 'center', marginTop: 18 }}>
-          Chưa có tài khoản? <Link to="/register" style={{ color: '#009e74', fontWeight: 600 }}>Đăng ký ngay</Link>
+        <div style={{ textAlign: "center", marginTop: 18 }}>
+          Chưa có tài khoản?{" "}
+          <Link to="/register" style={{ color: "#009e74", fontWeight: 600 }}>
+            Đăng ký ngay
+          </Link>
         </div>
       </div>
     </div>

@@ -4,7 +4,6 @@ import { AuthContext } from "../../context/AuthContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
 const serviceOptions = {
   civil: [
     { value: "civil-paternity", label: "Xét nghiệm ADN dân sự - Cha con" },
@@ -12,13 +11,19 @@ const serviceOptions = {
     { value: "civil-siblings", label: "Xét nghiệm ADN dân sự - Anh chị em" },
     { value: "civil-relatives", label: "Xét nghiệm ADN dân sự - Họ hàng" },
     { value: "civil-ancestry", label: "Xét nghiệm ADN dân sự - Nguồn gốc" },
-    { value: "civil-health", label: "Xét nghiệm ADN dân sự - Sức khỏe di truyền" },
+    {
+      value: "civil-health",
+      label: "Xét nghiệm ADN dân sự - Sức khỏe di truyền",
+    },
     { value: "civil-express", label: "Xét nghiệm ADN dân sự - Nhanh" },
   ],
   admin: [
     { value: "admin-birth", label: "Xét nghiệm ADN hành chính - Khai sinh" },
     { value: "admin-immigration", label: "Xét nghiệm ADN hành chính - Di trú" },
-    { value: "admin-inheritance", label: "Xét nghiệm ADN hành chính - Thừa kế" },
+    {
+      value: "admin-inheritance",
+      label: "Xét nghiệm ADN hành chính - Thừa kế",
+    },
     { value: "admin-dispute", label: "Xét nghiệm ADN hành chính - Tranh chấp" },
     { value: "admin-express", label: "Xét nghiệm ADN hành chính - Nhanh" },
   ],
@@ -43,8 +48,8 @@ const ServiceRegisterForm = () => {
   const [readGuide, setReadGuide] = useState(false);
   const [appointmentDate, setAppointmentDate] = useState(null);
   const [memberTable, setMemberTable] = useState([
-    { name: '', birth: '', gender: 'Nam', relation: '', sampleType: '' },
-    { name: '', birth: '', gender: 'Nam', relation: '', sampleType: '' },
+    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
   ]);
 
   const handleSubmit = (e) => {
@@ -63,18 +68,20 @@ const ServiceRegisterForm = () => {
       type: form.serviceType.options[form.serviceType.selectedIndex].text,
       date: new Date().toLocaleDateString("vi-VN"),
       price: 0,
-      status: "pending_staff",
-      name: user ? user.fullName : form.fullName.value,
+      status: "Chờ xử lý",
+      name: user ? user.fullName || user.name : form.fullName.value,
       phone: form.phone.value,
       email: user ? user.email : form.email.value,
       address: form.address.value,
-      appointmentDate: appointmentDate ? appointmentDate.toLocaleDateString("vi-VN") : "",
+      appointmentDate: appointmentDate
+        ? appointmentDate.toLocaleDateString("vi-VN")
+        : "",
       category: form.category.value,
       sampleMethod: form.sampleMethod.value,
       note: form.message.value,
       userId: user ? user.user_id : null,
       idNumber: form.cccd.value,
-      members: memberTable.filter(m => Object.values(m).some(v => v)),
+      members: memberTable.filter((m) => Object.values(m).some((v) => v)),
     };
     addOrder(newOrder);
     form.reset();
@@ -85,63 +92,73 @@ const ServiceRegisterForm = () => {
   };
 
   const handleMemberChange = (idx, field, value) => {
-    setMemberTable(prev => prev.map((row, i) => i === idx ? { ...row, [field]: value } : row));
+    setMemberTable((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, [field]: value } : row))
+    );
   };
 
   const handleAddMember = () => {
     if (memberTable.length < 5) {
-      setMemberTable(prev => ([...prev, { name: '', birth: '', gender: 'Nam', relation: '', sampleType: '' }]));
+      setMemberTable((prev) => [
+        ...prev,
+        { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+      ]);
     }
   };
 
   const handleRemoveMember = (idx) => {
     if (memberTable.length > 2) {
-      setMemberTable(prev => prev.filter((_, i) => i !== idx));
+      setMemberTable((prev) => prev.filter((_, i) => i !== idx));
     }
   };
 
   return (
     <section className="service-registration" id="registration">
-      
-      <div className="registration-description" style={{ textAlign: 'center' }}>
-      
-        <h2 > Đăng ký dịch vụ xét nghiệm</h2>
+      <div className="registration-description" style={{ textAlign: "center" }}>
+        <h2> Đăng ký dịch vụ xét nghiệm</h2>
         <p>
-          Vui lòng điền đầy đủ thông tin vào form dưới đây để đăng ký dịch vụ xét nghiệm ADN. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
+          Vui lòng điền đầy đủ thông tin vào form dưới đây để đăng ký dịch vụ
+          xét nghiệm ADN. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
         </p>
         {!user && (
-          <div style={{ 
-            background: "#f0f7ff", 
-            border: "1px solid #d0e3ff", 
-            borderRadius: "8px", 
-            padding: "12px 16px", 
-            marginTop: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px"
-          }}>
+          <div
+            style={{
+              background: "#f0f7ff",
+              border: "1px solid #d0e3ff",
+              borderRadius: "8px",
+              padding: "12px 16px",
+              marginTop: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
             <div style={{ color: "#0a66c2", fontSize: "18px" }}>ℹ️</div>
             <div>
               <p style={{ margin: 0, color: "#0a66c2", fontWeight: 500 }}>
                 Đăng nhập để trải nghiệm tốt hơn
               </p>
               <p style={{ margin: "4px 0 0 0", fontSize: "14px" }}>
-                Đăng nhập để thông tin của bạn được tự động điền vào biểu mẫu và dễ dàng theo dõi đơn đăng ký.
+                Đăng nhập để thông tin của bạn được tự động điền vào biểu mẫu và
+                dễ dàng theo dõi đơn đăng ký.
               </p>
             </div>
           </div>
         )}
       </div>
-      <div className="service-form-container" style={{
-        maxWidth: 1200,
-        margin: '32px auto 0 auto',
-        background: '#fff',
-        borderRadius: 18,
-        boxShadow: '0 8px 32px #0002',
-        padding: 36,
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
+      <div
+        className="service-form-container"
+        style={{
+          maxWidth: 1200,
+          margin: "32px auto 0 auto",
+          background: "#fff",
+          borderRadius: 18,
+          boxShadow: "0 8px 32px #0002",
+          padding: 36,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {showToast && (
           <div
             style={{
@@ -162,31 +179,43 @@ const ServiceRegisterForm = () => {
             🎉 Đăng ký dịch vụ thành công!
           </div>
         )}
-        <form className="service-form" onSubmit={handleSubmit} style={{ width: '100%' }}>
+        <form
+          className="service-form"
+          onSubmit={handleSubmit}
+          style={{ width: "100%" }}
+        >
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="fullName">Họ và tên</label>
-              <input 
-                type="text" 
-                id="fullName" 
-                name="fullName" 
-                required 
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                required
                 defaultValue={user ? user.fullName : ""}
-                style={user ? { backgroundColor: "#f9f9f9", color: "#333" } : {}}
+                style={
+                  user ? { backgroundColor: "#f9f9f9", color: "#333" } : {}
+                }
               />
               {user && (
-                <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                <small
+                  style={{
+                    color: "#009e74",
+                    display: "block",
+                    marginTop: "4px",
+                  }}
+                >
                   Tự động điền từ tài khoản của bạn (có thể chỉnh sửa)
                 </small>
               )}
             </div>
             <div className="form-group">
               <label htmlFor="phone">Số điện thoại</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                name="phone" 
-                required 
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required
                 defaultValue={user ? user.phone : ""}
               />
             </div>
@@ -194,17 +223,25 @@ const ServiceRegisterForm = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="email">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required 
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
                 defaultValue={user ? user.email : ""}
                 readOnly={user ? true : false}
-                style={user ? { backgroundColor: "#f5f5f5", color: "#333" } : {}}
+                style={
+                  user ? { backgroundColor: "#f5f5f5", color: "#333" } : {}
+                }
               />
               {user && (
-                <small style={{ color: "#009e74", display: "block", marginTop: "4px" }}>
+                <small
+                  style={{
+                    color: "#009e74",
+                    display: "block",
+                    marginTop: "4px",
+                  }}
+                >
                   Tự động điền từ tài khoản của bạn
                 </small>
               )}
@@ -314,9 +351,9 @@ const ServiceRegisterForm = () => {
               <label htmlFor="appointmentDate">Ngày xét nghiệm</label>
               <DatePicker
                 selected={appointmentDate}
-                onChange={date => setAppointmentDate(date)}
+                onChange={(date) => setAppointmentDate(date)}
                 minDate={new Date()}
-                filterDate={date => date.getDay() !== 0}
+                filterDate={(date) => date.getDay() !== 0}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Chọn ngày"
                 id="appointmentDate"
@@ -327,55 +364,133 @@ const ServiceRegisterForm = () => {
             </div>
           </div>
           {/* Bảng thông tin thành viên cung cấp mẫu */}
-          <div style={{ margin: '18px 0 10px 0', fontWeight: 600, color: '#009e74', textAlign: 'left' }}>
+          <div
+            style={{
+              margin: "18px 0 10px 0",
+              fontWeight: 600,
+              color: "#009e74",
+              textAlign: "left",
+            }}
+          >
             Bảng thông tin thành viên cung cấp mẫu:
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 18 }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              marginBottom: 18,
+            }}
+          >
             <thead>
-              <tr style={{ background: '#f6f8fa' }}>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>STT</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Họ và tên</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Năm sinh</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Giới tính</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Mối quan hệ</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Loại mẫu</th>
+              <tr style={{ background: "#f6f8fa" }}>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>STT</th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Họ và tên
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Năm sinh
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Giới tính
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Mối quan hệ
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Loại mẫu
+                </th>
               </tr>
             </thead>
             <tbody>
               {memberTable.map((row, i) => (
                 <tr key={i}>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{i + 1}</td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
-                    <input style={{ width: '100%', border: '1px solid #bbb', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    {i + 1}
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input
+                      style={{
+                        width: "100%",
+                        border: "1px solid #bbb",
+                        borderRadius: 6,
+                        padding: 8,
+                        fontSize: 16,
+                      }}
                       value={row.name}
-                      onChange={e => handleMemberChange(i, 'name', e.target.value)}
+                      onChange={(e) =>
+                        handleMemberChange(i, "name", e.target.value)
+                      }
                     />
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
-                    <input style={{ width: '100%', border: '1px solid #bbb', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input
+                      style={{
+                        width: "100%",
+                        border: "1px solid #bbb",
+                        borderRadius: 6,
+                        padding: 8,
+                        fontSize: 16,
+                      }}
                       value={row.birth}
-                      onChange={e => handleMemberChange(i, 'birth', e.target.value)}
+                      onChange={(e) =>
+                        handleMemberChange(i, "birth", e.target.value)
+                      }
                     />
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
-                    <select style={{ width: '100%', border: '1px solid #bbb', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <select
+                      style={{
+                        width: "100%",
+                        border: "1px solid #bbb",
+                        borderRadius: 6,
+                        padding: 8,
+                        fontSize: 16,
+                      }}
                       value={row.gender}
-                      onChange={e => handleMemberChange(i, 'gender', e.target.value)}
+                      onChange={(e) =>
+                        handleMemberChange(i, "gender", e.target.value)
+                      }
                     >
                       <option>Nam</option>
                       <option>Nữ</option>
                     </select>
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
-                    <input style={{ width: '100%', border: '1px solid #bbb', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input
+                      style={{
+                        width: "100%",
+                        border: "1px solid #bbb",
+                        borderRadius: 6,
+                        padding: 8,
+                        fontSize: 16,
+                      }}
                       value={row.relation}
-                      onChange={e => handleMemberChange(i, 'relation', e.target.value)}
+                      onChange={(e) =>
+                        handleMemberChange(i, "relation", e.target.value)
+                      }
                     />
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <select style={{ width: '100%', border: '1px solid #bbb', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  <td
+                    style={{
+                      border: "1px solid #ccc",
+                      padding: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <select
+                      style={{
+                        width: "100%",
+                        border: "1px solid #bbb",
+                        borderRadius: 6,
+                        padding: 8,
+                        fontSize: 16,
+                      }}
                       value={row.sampleType}
-                      onChange={e => handleMemberChange(i, 'sampleType', e.target.value)}
+                      onChange={(e) =>
+                        handleMemberChange(i, "sampleType", e.target.value)
+                      }
                     >
                       <option value="">Chọn loại mẫu</option>
                       <option value="Nước bọt">Nước bọt</option>
@@ -385,9 +500,23 @@ const ServiceRegisterForm = () => {
                       <option value="Niêm mạc">Niêm mạc</option>
                     </select>
                     {memberTable.length > 2 && i >= 2 && (
-                      <button type="button" onClick={() => handleRemoveMember(i)} style={{
-                        marginLeft: 4, background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 10px', fontWeight: 600, cursor: 'pointer', fontSize: 14
-                      }}>Xóa</button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMember(i)}
+                        style={{
+                          marginLeft: 4,
+                          background: "#e74c3c",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: "4px 10px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontSize: 14,
+                        }}
+                      >
+                        Xóa
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -395,10 +524,21 @@ const ServiceRegisterForm = () => {
             </tbody>
           </table>
           {memberTable.length < 3 && (
-            <div style={{ textAlign: 'right', marginBottom: 18 }}>
-              <button type="button" onClick={handleAddMember} style={{
-                background: '#009e74', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 18px', fontWeight: 600, fontSize: 15, cursor: 'pointer'
-              }}>
+            <div style={{ textAlign: "right", marginBottom: 18 }}>
+              <button
+                type="button"
+                onClick={handleAddMember}
+                style={{
+                  background: "#009e74",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "8px 18px",
+                  fontWeight: 600,
+                  fontSize: 15,
+                  cursor: "pointer",
+                }}
+              >
                 + Thêm thành viên
               </button>
             </div>
@@ -441,7 +581,8 @@ const ServiceRegisterForm = () => {
                   Tự thu mẫu theo hướng dẫn, điền đầy đủ Đơn Yêu Cầu Xét Nghiệm.
                 </li>
                 <li>
-                  Gửi lại bộ kit đã sử dụng (gồm mẫu và đơn) về trung tâm theo hướng dẫn kèm trong kit.
+                  Gửi lại bộ kit đã sử dụng (gồm mẫu và đơn) về trung tâm theo
+                  hướng dẫn kèm trong kit.
                 </li>
               </ul>
               <div style={{ marginBottom: 6 }}>
@@ -473,9 +614,7 @@ const ServiceRegisterForm = () => {
                     onChange={(e) => setReadGuide(e.target.checked)}
                     required
                   />
-                  <span>
-                    Tôi đã đọc và hiểu quy trình tự thu mẫu tại nhà.
-                  </span>
+                  <span>Tôi đã đọc và hiểu quy trình tự thu mẫu tại nhà.</span>
                 </label>
               </div>
             </div>

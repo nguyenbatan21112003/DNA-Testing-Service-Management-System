@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react";
 import {
   Card,
   Table,
@@ -19,7 +19,7 @@ import {
   Row,
   Col,
   Statistic,
-} from "antd"
+} from "antd";
 import {
   BankOutlined,
   CalendarOutlined,
@@ -29,165 +29,188 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
-} from "@ant-design/icons"
-import dayjs from "dayjs"
-import { useOrderContext } from "../../context/OrderContext"
+  EyeOutlined,
+  ExperimentOutlined,
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import { useOrderContext } from "../../context/OrderContext";
+import { StaffDashboardContext } from "./StaffDashboard";
+import { AuthContext } from "../../context/AuthContext";
 
-const { Option } = Select
-const { TextArea } = Input
-const { TabPane } = Tabs
+const { Option } = Select;
+const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 const CenterSampling = () => {
-  const { getAllOrders, updateOrder } = useOrderContext()
-  const [appointments, setAppointments] = useState([])
-  const [selectedAppointment, setSelectedAppointment] = useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [updateModalVisible, setUpdateModalVisible] = useState(false)
-  const [calendarModalVisible, setCalendarModalVisible] = useState(false)
-  const [form] = Form.useForm()
+  const { getAllOrders, updateOrder } = useOrderContext();
+  const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [calendarModalVisible, setCalendarModalVisible] = useState(false);
+  // const [form] = Form.useForm();
   const [stats, setStats] = useState({
     total: 0,
     scheduled: 0,
     arrived: 0,
     missed: 0,
     canceled: 0,
-  })
+  });
+  const dashboardCtx = useContext(StaffDashboardContext);
+  const { user } = useContext(AuthContext);
 
   // Lấy dữ liệu đơn hàng từ context
   const loadAppointments = () => {
-    // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại trung tâm
-    const allOrders = getAllOrders()
+    const allOrders = getAllOrders();
     const centerSamplingOrders = allOrders
-      .filter((order) => order.sampleMethod === "center")
-      .map((order) => ({
-        ...order,
-        appointmentStatus: order.appointmentStatus || "da_hen",
-        appointmentDate: order.appointmentDate || null,
-        staffAssigned: order.staffAssigned || null,
-        notes: order.notes || "",
-        timeSlot: order.timeSlot || "09:00-10:00",
-      }))
+      .filter((order) => order.sampleMethod === "center" && !order.isHidden)
+      .map((order) => {
+        // Map status cũ sang chuẩn
+        let status = order.status || order.appointmentStatus;
+        switch (status) {
+          case "da_hen":
+            status = "WAITING_FOR_APPOINTMENT";
+            break;
+          case "da_den":
+            status = "SAMPLE_COLLECTING";
+            break;
+          case "vang_mat":
+            status = "CANCELLED";
+            break;
+          case "huy":
+            status = "CANCELLED";
+            break;
+          default:
+            break;
+        }
+        return {
+          ...order,
+          status: status || "PENDING_CONFIRM",
+          appointmentDate: order.appointmentDate || null,
+          staffAssigned: order.staffAssigned || null,
+          notes: order.notes || "",
+          timeSlot: order.timeSlot || "09:00-10:00",
+        };
+      });
 
-    setAppointments(centerSamplingOrders)
+    setAppointments(centerSamplingOrders);
 
     // Tính toán thống kê
     const newStats = {
       total: centerSamplingOrders.length,
-      scheduled: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "da_hen").length,
-      arrived: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "da_den").length,
-      missed: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "vang_mat").length,
-      canceled: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "huy").length,
-    }
-    setStats(newStats)
-  }
+      scheduled: centerSamplingOrders.filter(
+        (apt) => apt.status === "WAITING_FOR_APPOINTMENT"
+      ).length,
+      arrived: centerSamplingOrders.filter(
+        (apt) => apt.status === "SAMPLE_COLLECTING"
+      ).length,
+      missed: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED")
+        .length,
+      canceled: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED")
+        .length,
+    };
+    setStats(newStats);
+  };
 
   useEffect(() => {
     // Load orders khi component mount
-    loadAppointments()
-    
+    loadAppointments();
     // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'dna_orders') {
-        loadAppointments()
+    window.addEventListener("storage", (event) => {
+      if (event.key === "dna_orders") {
+        loadAppointments();
       }
-    })
+    });
 
     // Cleanup function
     return () => {
-      window.removeEventListener('storage', () => {})
-    }
-  }, [])
+      window.removeEventListener("storage", () => {});
+    };
+  }, []);
 
   const handleViewAppointment = (appointment) => {
-    setSelectedAppointment(appointment)
-    setModalVisible(true)
-  }
+    setSelectedAppointment(appointment);
+    setModalVisible(true);
+  };
 
-  const handleUpdateAppointment = (appointment) => {
-    setSelectedAppointment(appointment)
-    form.setFieldsValue({
-      appointmentStatus: appointment.appointmentStatus,
-      appointmentDate: appointment.appointmentDate ? dayjs(appointment.appointmentDate, "DD/MM/YYYY") : null,
-      timeSlot: appointment.timeSlot,
-      staffAssigned: appointment.staffAssigned || "",
-      notes: appointment.notes || "",
-    })
-    setUpdateModalVisible(true)
-  }
-
-  const handleSaveUpdate = async (values) => {
-    try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedAppointment.id, {
-        appointmentStatus: values.appointmentStatus,
-        appointmentDate: values.appointmentDate ? values.appointmentDate.format("DD/MM/YYYY") : null,
-        timeSlot: values.timeSlot,
-        staffAssigned: values.staffAssigned,
-        notes: values.notes,
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      })
-      
-      // Cập nhật lại danh sách đơn hàng
-      loadAppointments()
-      
-      setUpdateModalVisible(false)
-      message.success("Cập nhật lịch hẹn thành công!")
-    } catch {
-      message.error("Có lỗi xảy ra khi cập nhật!")
-    }
-  }
-
+  // Hàm lấy màu sắc trạng thái
+  // Dùng chung cho cả lịch hẹn và thống kê
   const getStatusColor = (status) => {
     switch (status) {
-      case "da_hen":
-        return "blue"
-      case "da_den":
-        return "green"
-      case "vang_mat":
-        return "orange"
-      case "huy":
-        return "red"
+      case "PENDING_CONFIRM":
+      case "WAITING_FOR_APPOINTMENT":
+      case "Chờ xác nhận":
+      case "Chờ đến ngày hẹn":
+        return "#fa8c16"; // Cam
+      case "CONFIRMED":
+      case "Xác nhận":
+      case "Đã xác nhận":
+        return "#1890ff"; // Xanh dương
+      case "SAMPLE_COLLECTING":
+      case "SAMPLE_COLLECTING_WITH_DOC":
+      case "Đang lấy mẫu":
+      case "Đang lấy mẫu và lập biên bản":
+        return "#722ed1"; // Tím
+      case "SAMPLE_RECEIVED":
+      case "COMPLETED":
+      case "Đã nhận mẫu":
+      case "Đã trả kết quả":
+        return "#52c41a"; // Xanh lá
+      case "CANCELLED":
+      case "Đã hủy":
+      case "Vắng mặt":
+        return "#ff4d4f"; // Đỏ
+      case "TESTING":
+      case "Đang xét nghiệm":
+        return "#1890ff"; // Xanh dương nhạt
       default:
-        return "default"
+        return "#d9d9d9";
     }
-  }
+  };
 
   const getStatusText = (status) => {
     switch (status) {
-      case "da_hen":
-        return "Đã hẹn"
-      case "da_den":
-        return "Đã đến"
-      case "vang_mat":
-        return "Vắng mặt"
-      case "huy":
-        return "Đã hủy"
+      case "PENDING_CONFIRM":
+        return "Đang chờ xác nhận";
+      case "CONFIRMED":
+        return "Đã xác nhận";
+      case "WAITING_FOR_APPOINTMENT":
+        return "Chờ đến ngày hẹn";
+      case "SAMPLE_COLLECTING":
+        return "Đang lấy mẫu";
+      case "SAMPLE_COLLECTING_WITH_DOC":
+        return "Đang lấy mẫu và lập biên bản";
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu";
+      case "TESTING":
+        return "Đang xét nghiệm";
+      case "COMPLETED":
+        return "Đã trả kết quả";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   const getListData = (value) => {
-    const dateStr = value.format("DD/MM/YYYY")
-    return appointments.filter((apt) => apt.appointmentDate === dateStr)
-  }
+    const dateStr = value.format("DD/MM/YYYY");
+    return appointments.filter((apt) => apt.appointmentDate === dateStr);
+  };
 
   const dateCellRender = (value) => {
-    const listData = getListData(value)
+    const listData = getListData(value);
     return (
       <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
         {listData.map((item) => (
           <li key={item.id}>
             <Badge
-              status={getStatusColor(item.appointmentStatus)}
+              status={getStatusColor(item.status)}
               text={`${item.timeSlot} - ${item.name}`}
               style={{ fontSize: 12 }}
             />
           </li>
         ))}
       </ul>
-    )
-  }
+    );
+  };
 
   const columns = [
     {
@@ -237,38 +260,13 @@ const CenterSampling = () => {
         ),
     },
     {
-      title: "Giờ hẹn",
-      dataIndex: "timeSlot",
-      key: "timeSlot",
-      width: 120,
-      render: (timeSlot) => (
-        <span>
-          <ClockCircleOutlined style={{ marginRight: 4 }} />
-          {timeSlot}
-        </span>
-      ),
-    },
-    {
       title: "Trạng thái",
-      dataIndex: "appointmentStatus",
-      key: "appointmentStatus",
+      dataIndex: "status",
+      key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
-    },
-    {
-      title: "Nhân viên",
-      dataIndex: "staffAssigned",
-      key: "staffAssigned",
-      width: 120,
-      render: (staff) =>
-        staff ? (
-          <span>
-            <UserOutlined style={{ marginRight: 4 }} />
-            {staff}
-          </span>
-        ) : (
-          <span style={{ color: "#999" }}>Chưa phân công</span>
-        ),
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
     },
     {
       title: "Thao tác",
@@ -276,29 +274,123 @@ const CenterSampling = () => {
       width: 200,
       render: (_, record) => (
         <Space size="small">
-          <Button type="primary" size="small" icon={<BankOutlined />} onClick={() => handleViewAppointment(record)}>
+          <Button
+            type="primary"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewAppointment(record)}
+            style={{
+              background: "#1890ff",
+              color: "#fff",
+              fontWeight: 700,
+              borderRadius: 6,
+              border: "none",
+              boxShadow: "0 2px 8px #1890ff22",
+              transition: "background 0.2s",
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
+          >
             Xem
           </Button>
-          <Button
-            type="default"
-            size="small"
-            icon={<CalendarOutlined />}
-            onClick={() => handleUpdateAppointment(record)}
-          >
-            Cập nhật
-          </Button>
+          {!record.confirmed && (
+            <Button
+              size="small"
+              icon={<CheckCircleOutlined />}
+              style={{
+                background: "#52c41a",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #52c41a22",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#389e0d")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
+              onClick={() => handleConfirmAppointment(record)}
+            >
+              Xác nhận
+            </Button>
+          )}
+          {record.confirmed && (
+            <Button
+              size="small"
+              icon={<ExperimentOutlined />}
+              style={{
+                background: "#fa8c16",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #fa8c1622",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#d46b08")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+              onClick={() => handleGoToSampleCollection(record)}
+            >
+              Lấy mẫu
+            </Button>
+          )}
         </Space>
       ),
     },
-  ]
+  ];
 
-  const todayAppointments = appointments.filter((apt) => apt.appointmentDate === dayjs().format("DD/MM/YYYY"))
+  const today = dayjs().format("DD/MM/YYYY");
+  const todayAppointments = appointments.filter(
+    (apt) =>
+      dayjs(apt.appointmentDate, ["D/M/YYYY", "DD/MM/YYYY"]).format(
+        "DD/MM/YYYY"
+      ) === today
+  );
+
+  const handleConfirmAppointment = (record) => {
+    // Cập nhật trạng thái xác nhận, giữ nguyên ngày hẹn cũ, gán người phân công là staff hiện tại
+    updateOrder(record.id, {
+      confirmed: true,
+      status: "Xác nhận",
+      appointmentStatus: "Xác nhận",
+      appointmentDate: record.appointmentDate, // giữ nguyên ngày hẹn
+      staffAssigned: user?.name || "",
+      updatedAt: new Date().toLocaleString("vi-VN"),
+    });
+    loadAppointments();
+    message.success("Đã xác nhận lịch hẹn!");
+  };
+
+  const handleGoToSampleCollection = (record) => {
+    // Lưu thông tin đơn hàng vào localStorage để SampleCollection lấy ra điền tự động
+    localStorage.setItem(
+      "dna_sample_collection_prefill",
+      JSON.stringify({
+        orderId: record.id,
+        collectionDate: record.appointmentDate || "",
+        requesterName: record.name || "",
+      })
+    );
+    // Chuyển tab sang Lấy mẫu xét nghiệm
+    if (dashboardCtx?.setActiveTab) {
+      dashboardCtx.setActiveTab("sample-collection");
+    }
+  };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Thu mẫu tại cơ sở</h1>
-        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>Quản lý lịch hẹn lấy mẫu tại trung tâm</p>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Thu mẫu tại cơ sở
+        </h1>
+        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
+          Quản lý lịch hẹn lấy mẫu tại trung tâm
+        </p>
       </div>
 
       {/* Thống kê */}
@@ -359,7 +451,11 @@ const CenterSampling = () => {
               title="Tỷ lệ đến"
               value={
                 stats.scheduled > 0
-                  ? Math.round((stats.arrived / (stats.scheduled + stats.arrived + stats.missed)) * 100)
+                  ? Math.round(
+                      (stats.arrived /
+                        (stats.scheduled + stats.arrived + stats.missed)) *
+                        100
+                    )
                   : 0
               }
               suffix="%"
@@ -372,19 +468,39 @@ const CenterSampling = () => {
 
       {/* Thống kê hôm nay */}
       <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <div>
-            <h3 style={{ margin: 0, color: "#00a67e" }}>Lịch hẹn hôm nay ({dayjs().format("DD/MM/YYYY")})</h3>
-            <p style={{ margin: "8px 0 0 0", color: "#666" }}>Tổng cộng: {todayAppointments.length} lịch hẹn</p>
+            <h3 style={{ margin: 0, color: "#00a67e" }}>
+              Lịch hẹn hôm nay ({dayjs().format("DD/MM/YYYY")})
+            </h3>
+            <p style={{ margin: "8px 0 0 0", color: "#666" }}>
+              Tổng cộng: {todayAppointments.length} lịch hẹn
+            </p>
           </div>
-          <Button type="primary" icon={<CalendarOutlined />} onClick={() => setCalendarModalVisible(true)}>
+          <Button
+            type="primary"
+            icon={<CalendarOutlined />}
+            onClick={() => setCalendarModalVisible(true)}
+          >
             Xem lịch tháng
           </Button>
         </div>
 
         {todayAppointments.length > 0 ? (
           <div style={{ marginTop: 16 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                gap: 12,
+              }}
+            >
               {todayAppointments.map((apt) => (
                 <div
                   key={apt.id}
@@ -396,31 +512,48 @@ const CenterSampling = () => {
                   }}
                 >
                   <div
-                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 8,
+                    }}
                   >
                     <strong>
                       #{apt.id} - {apt.name}
                     </strong>
-                    <Tag color={getStatusColor(apt.appointmentStatus)}>{getStatusText(apt.appointmentStatus)}</Tag>
+                    <Tag color={getStatusColor(apt.status)}>
+                      {getStatusText(apt.status)}
+                    </Tag>
                   </div>
-                  <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
-                    <ClockCircleOutlined style={{ marginRight: 4 }} />
-                    {apt.timeSlot} | {apt.type}
-                  </p>
-                  <p style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}>
+                  {apt.type && (
+                    <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
+                      {apt.type}
+                    </p>
+                  )}
+                  <p
+                    style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}
+                  >
                     <PhoneOutlined style={{ marginRight: 4 }} />
                     {apt.phone}
                   </p>
-                  <p style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}>
+                  <p
+                    style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}
+                  >
                     <UserOutlined style={{ marginRight: 4 }} />
-                    {apt.staffAssigned || "Chưa phân công"}
+                    {apt.staffAssigned ||
+                    (apt.status === "Xác nhận" && user?.name)
+                      ? `Nhân viên: ${apt.staffAssigned || user?.name}`
+                      : "Chưa phân công"}
                   </p>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "20px 0", color: "#999" }}>
+          <div
+            style={{ textAlign: "center", padding: "20px 0", color: "#999" }}
+          >
             <CalendarOutlined style={{ fontSize: 24, color: "#d9d9d9" }} />
             <p style={{ marginTop: 8 }}>Không có lịch hẹn nào hôm nay</p>
           </div>
@@ -438,7 +571,8 @@ const CenterSampling = () => {
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} lịch hẹn`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} lịch hẹn`,
               }}
               scroll={{ x: 1000 }}
             />
@@ -446,13 +580,16 @@ const CenterSampling = () => {
           <TabPane tab="Đã hẹn" key="scheduled">
             <Table
               columns={columns}
-              dataSource={appointments.filter((apt) => apt.appointmentStatus === "da_hen")}
+              dataSource={appointments.filter(
+                (apt) => apt.status === "WAITING_FOR_APPOINTMENT"
+              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} lịch hẹn`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} lịch hẹn`,
               }}
               scroll={{ x: 1000 }}
             />
@@ -460,13 +597,16 @@ const CenterSampling = () => {
           <TabPane tab="Đã đến" key="arrived">
             <Table
               columns={columns}
-              dataSource={appointments.filter((apt) => apt.appointmentStatus === "da_den")}
+              dataSource={appointments.filter(
+                (apt) => apt.status === "SAMPLE_COLLECTING"
+              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} lịch hẹn`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} lịch hẹn`,
               }}
               scroll={{ x: 1000 }}
             />
@@ -475,14 +615,15 @@ const CenterSampling = () => {
             <Table
               columns={columns}
               dataSource={appointments.filter(
-                (apt) => apt.appointmentStatus === "vang_mat" || apt.appointmentStatus === "huy",
+                (apt) => apt.status === "CANCELLED"
               )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} lịch hẹn`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} lịch hẹn`,
               }}
               scroll={{ x: 1000 }}
             />
@@ -499,19 +640,8 @@ const CenterSampling = () => {
           <Button key="close" onClick={() => setModalVisible(false)}>
             Đóng
           </Button>,
-          <Button
-            key="update"
-            type="primary"
-            icon={<CalendarOutlined />}
-            onClick={() => {
-              setModalVisible(false)
-              handleUpdateAppointment(selectedAppointment)
-            }}
-          >
-            Cập nhật lịch hẹn
-          </Button>,
         ]}
-        width={600}
+        width={800}
       >
         {selectedAppointment && (
           <div>
@@ -534,87 +664,33 @@ const CenterSampling = () => {
             <div style={{ marginBottom: 16 }}>
               <h3>Thông tin lịch hẹn:</h3>
               <p>
-                <strong>Ngày hẹn:</strong> {selectedAppointment.appointmentDate || "Chưa hẹn"}
-              </p>
-              <p>
-                <strong>Giờ hẹn:</strong> {selectedAppointment.timeSlot}
+                <strong>Ngày hẹn:</strong>{" "}
+                {selectedAppointment.appointmentDate || "Chưa hẹn"}
               </p>
               <p>
                 <strong>Trạng thái:</strong>{" "}
-                <Tag color={getStatusColor(selectedAppointment.appointmentStatus)}>
-                  {getStatusText(selectedAppointment.appointmentStatus)}
+                <Tag color={getStatusColor(selectedAppointment.status)}>
+                  {getStatusText(selectedAppointment.status)}
                 </Tag>
-              </p>
-              <p>
-                <strong>Nhân viên phụ trách:</strong> {selectedAppointment.staffAssigned || "Chưa phân công"}
               </p>
             </div>
 
             {selectedAppointment.notes && (
               <div>
                 <h3>Ghi chú:</h3>
-                <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4 }}>{selectedAppointment.notes}</div>
+                <div
+                  style={{
+                    background: "#f6f6f6",
+                    padding: 12,
+                    borderRadius: 4,
+                  }}
+                >
+                  {selectedAppointment.notes}
+                </div>
               </div>
             )}
           </div>
         )}
-      </Modal>
-
-      {/* Modal cập nhật lịch hẹn */}
-      <Modal
-        title={`Cập nhật lịch hẹn #${selectedAppointment?.id}`}
-        open={updateModalVisible}
-        onCancel={() => setUpdateModalVisible(false)}
-        onOk={() => form.submit()}
-        okText="Cập nhật"
-        cancelText="Hủy"
-        width={600}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
-          <Form.Item
-            name="appointmentStatus"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="da_hen">Đã hẹn</Option>
-              <Option value="da_den">Đã đến</Option>
-              <Option value="vang_mat">Vắng mặt</Option>
-              <Option value="huy">Đã hủy</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="appointmentDate" label="Ngày hẹn">
-            <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày hẹn" style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item name="timeSlot" label="Giờ hẹn">
-            <Select placeholder="Chọn khung giờ">
-              <Option value="08:00-09:00">08:00 - 09:00</Option>
-              <Option value="09:00-10:00">09:00 - 10:00</Option>
-              <Option value="10:00-11:00">10:00 - 11:00</Option>
-              <Option value="11:00-12:00">11:00 - 12:00</Option>
-              <Option value="13:00-14:00">13:00 - 14:00</Option>
-              <Option value="14:00-15:00">14:00 - 15:00</Option>
-              <Option value="15:00-16:00">15:00 - 16:00</Option>
-              <Option value="16:00-17:00">16:00 - 17:00</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="staffAssigned" label="Nhân viên phụ trách">
-            <Select placeholder="Chọn nhân viên">
-              <Option value="Trần Trung Tâm">Trần Trung Tâm</Option>
-              <Option value="Nguyễn Thị Lan">Nguyễn Thị Lan</Option>
-              <Option value="Trần Văn Minh">Trần Văn Minh</Option>
-              <Option value="Lê Thị Hoa">Lê Thị Hoa</Option>
-              <Option value="Phạm Văn Đức">Phạm Văn Đức</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="notes" label="Ghi chú">
-            <TextArea rows={3} placeholder="Nhập ghi chú về lịch hẹn..." />
-          </Form.Item>
-        </Form>
       </Modal>
 
       {/* Modal lịch tháng */}
@@ -628,7 +704,7 @@ const CenterSampling = () => {
         <Calendar dateCellRender={dateCellRender} />
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default CenterSampling
+export default CenterSampling;
