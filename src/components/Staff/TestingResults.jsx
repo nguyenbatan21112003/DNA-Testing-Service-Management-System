@@ -17,6 +17,7 @@ import {
   Statistic,
   Divider,
   Typography,
+  Tooltip,
 } from "antd"
 import {
   EyeOutlined,
@@ -51,6 +52,7 @@ const TestingResults = () => {
   const [tempFormData, setTempFormData] = useState({})
   const [currentEditOrderId, setCurrentEditOrderId] = useState(null)
   const [showCustomConclusion, setShowCustomConclusion] = useState(false)
+  const [confirmHideOrder, setConfirmHideOrder] = useState(null)
 
   useEffect(() => {
     setFilteredOrders(orders.filter(order => !order.isHidden))
@@ -58,9 +60,9 @@ const TestingResults = () => {
 
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders)
+      setFilteredOrders(orders.filter(order => !order.isHidden))
     } else {
-      setFilteredOrders(orders.filter((order) => order.status === filterStatus))
+      setFilteredOrders(orders.filter((order) => !order.isHidden && order.status === filterStatus))
     }
   }, [filterStatus, orders])
 
@@ -195,18 +197,24 @@ const TestingResults = () => {
   }
 
   const handleDeleteOrder = (order) => {
-    console.log("Ẩn đơn:", order)
-    Modal.confirm({
-      title: `Xác nhận ẩn đơn hàng #${order.id}`,
-      content: 'Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? Đơn hàng vẫn sẽ được lưu trên hệ thống và khách hàng vẫn xem được.',
-      okText: 'Ẩn',
-      okType: 'default',
-      cancelText: 'Huỷ',
-      onOk: () => {
-        updateOrder(order.id, { isHidden: true })
-        message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
-      }
-    })
+    setConfirmHideOrder(order)
+  }
+
+  const handleConfirmHide = () => {
+    if (confirmHideOrder) {
+      updateOrder(confirmHideOrder.id, { isHidden: true })
+      message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
+      setConfirmHideOrder(null)
+    }
+  }
+
+  const handleCancelHide = () => {
+    setConfirmHideOrder(null)
+  }
+
+  const handleUnhideOrder = (order) => {
+    updateOrder(order.id, { isHidden: false })
+    message.success('Đơn hàng đã được hiện lại cho nhân viên!')
   }
 
   const getStatusText = (status) => {
@@ -331,15 +339,16 @@ const TestingResults = () => {
               Báo cáo
             </Button>
           )}
-          <Button
-            size="small"
-            icon={<EyeInvisibleOutlined />}
-            onClick={() => handleDeleteOrder(record)}
-            style={{ color: "#888", borderColor: "#d9d9d9", background: "#f5f5f5" }}
-            title="Ẩn đơn này khỏi giao diện nhân viên (không xoá dữ liệu)"
-          >
-            Ẩn
-          </Button>
+          <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+            <Button
+              icon={<EyeInvisibleOutlined style={{ color: '#595959' }} />}
+              onClick={() => handleDeleteOrder(record)}
+              size="small"
+              style={{ marginLeft: 8, borderColor: '#bfbfbf', color: '#595959', background: '#f5f5f5', fontWeight: 600 }}
+            >
+              Ẩn
+            </Button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -459,7 +468,7 @@ const TestingResults = () => {
               children: (
                 <Table
                   columns={columns}
-                  dataSource={Array.isArray(filteredOrders) ? filteredOrders : []}
+                  dataSource={filteredOrders}
                   rowKey={record => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
@@ -495,13 +504,48 @@ const TestingResults = () => {
               children: (
                 <Table
                   columns={columns}
-                  dataSource={filteredOrders.filter(order => order.status === "Chờ xác thực")}
+                  dataSource={filteredOrders.filter(order => !order.isHidden && order.status === "Chờ xác thực")}
                   rowKey={record => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "hidden",
+              label: "Đơn đã ẩn",
+              children: (
+                <Table
+                  columns={[
+                    ...columns,
+                    {
+                      title: "Thao tác",
+                      key: "action-unhide",
+                      width: 120,
+                      render: (_, record) => (
+                        <Button
+                          size="small"
+                          type="primary"
+                          onClick={() => handleUnhideOrder(record)}
+                          style={{ background: "#52c41a", color: "#fff" }}
+                        >
+                          Hiện lại
+                        </Button>
+                      ),
+                    },
+                  ]}
+                  dataSource={orders.filter(order => order.isHidden)}
+                  rowKey={record => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn đã ẩn`,
                   }}
                   scroll={{ x: 1000 }}
                 />
@@ -712,6 +756,19 @@ const TestingResults = () => {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Modal xác nhận ẩn đơn hàng */}
+      <Modal
+        open={!!confirmHideOrder}
+        onCancel={handleCancelHide}
+        onOk={handleConfirmHide}
+        okText="Ẩn"
+        cancelText="Huỷ"
+        title={`Xác nhận ẩn đơn hàng #${confirmHideOrder?.id}`}
+        okButtonProps={{ danger: true, type: 'primary' }}
+      >
+        <p>Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? </p>
       </Modal>
     </div>
   )
