@@ -136,14 +136,20 @@ const HomeSampling = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "chua_gui":
-        return "orange"
-      case "da_gui":
-        return "blue"
-      case "da_nhan":
-        return "green"
-      case "huy":
-        return "red"
+      case "PENDING_CONFIRM":
+        return "#FDE68A" // vàng nhạt
+      case "CONFIRMED":
+        return "#A7F3D0" // xanh mint
+      case "KIT_SENT":
+        return "#DBEAFE" // xanh dương nhạt
+      case "KIT_DELIVERED":
+        return "#E0E7FF" // tím nhạt
+      case "SAMPLE_RECEIVED":
+        return "#86EFAC" // xanh lá nhạt
+      case "TESTING":
+        return "#FBCFE8" // hồng pastel
+      case "COMPLETED":
+        return "#FCD34D" // vàng đậm
       default:
         return "default"
     }
@@ -151,14 +157,20 @@ const HomeSampling = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "chua_gui":
-        return "Chưa gửi kit"
-      case "da_gui":
+      case "PENDING_CONFIRM":
+        return "Đang chờ xác nhận"
+      case "CONFIRMED":
+        return "Đã xác nhận"
+      case "KIT_SENT":
         return "Đã gửi kit"
-      case "da_nhan":
+      case "KIT_DELIVERED":
+        return "Đang thu mẫu tại nhà"
+      case "SAMPLE_RECEIVED":
         return "Đã nhận mẫu"
-      case "huy":
-        return "Đã hủy"
+      case "TESTING":
+        return "Đang xét nghiệm"
+      case "COMPLETED":
+        return "Đã trả kết quả"
       default:
         return status
     }

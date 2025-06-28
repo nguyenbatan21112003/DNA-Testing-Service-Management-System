@@ -7,7 +7,6 @@ import {
   Tag,
   Button,
   Modal,
-  Form,
   Input,
   Select,
   DatePicker,
@@ -47,7 +46,6 @@ const CenterSampling = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [calendarModalVisible, setCalendarModalVisible] = useState(false)
-  const [form] = Form.useForm()
   const [stats, setStats] = useState({
     total: 0,
     scheduled: 0,
@@ -108,32 +106,24 @@ const CenterSampling = () => {
     setModalVisible(true)
   }
 
-  const handleUpdateAppointment = (appointment) => {
-    setSelectedAppointment(appointment)
-    let dateValue = null
-    if (appointment.appointmentDate) {
-      // Tách lấy ngày nếu có cả giờ, và kiểm tra định dạng
-      const dateStr = appointment.appointmentDate.split(" ")[0]
-      const d = dayjs(dateStr, "DD/MM/YYYY", true)
-      dateValue = d.isValid() ? d : null
-    }
-    form.setFieldsValue({
-      appointmentStatus: appointment.appointmentStatus,
-      appointmentDate: dateValue,
-      notes: appointment.notes || "",
-    })
-  }
-
   const getStatusColor = (status) => {
     switch (status) {
-      case "da_hen":
-        return "blue"
-      case "da_den":
-        return "green"
-      case "vang_mat":
-        return "orange"
-      case "huy":
-        return "red"
+      case "PENDING_CONFIRM":
+        return "#FDE68A" // vàng nhạt
+      case "CONFIRMED":
+        return "#A7F3D0" // xanh mint
+      case "WAITING_FOR_APPOINTMENT":
+        return "#BFDBFE" // xanh dương nhạt
+      case "SAMPLE_COLLECTING":
+        return "#E0E7FF" // tím nhạt
+      case "SAMPLE_COLLECTING_WITH_DOC":
+        return "#E0E7FF" // tím nhạt (pháp lý)
+      case "SAMPLE_RECEIVED":
+        return "#86EFAC" // xanh lá nhạt
+      case "TESTING":
+        return "#FBCFE8" // hồng pastel
+      case "COMPLETED":
+        return "#FCD34D" // vàng đậm
       default:
         return "default"
     }
@@ -141,14 +131,22 @@ const CenterSampling = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "da_hen":
-        return "Đã hẹn"
-      case "da_den":
-        return "Đã đến"
-      case "vang_mat":
-        return "Vắng mặt"
-      case "huy":
-        return "Đã hủy"
+      case "PENDING_CONFIRM":
+        return "Đang chờ xác nhận"
+      case "CONFIRMED":
+        return "Đã xác nhận"
+      case "WAITING_FOR_APPOINTMENT":
+        return "Chờ đến ngày hẹn"
+      case "SAMPLE_COLLECTING":
+        return "Đang lấy mẫu"
+      case "SAMPLE_COLLECTING_WITH_DOC":
+        return "Đang lấy mẫu và lập biên bản"
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu"
+      case "TESTING":
+        return "Đang xét nghiệm"
+      case "COMPLETED":
+        return "Đã trả kết quả"
       default:
         return status
     }
@@ -539,28 +537,6 @@ const CenterSampling = () => {
         footer={[
           <Button key="close" onClick={() => setModalVisible(false)}>
             Đóng
-          </Button>,
-          <Button
-            key="update"
-            type="primary"
-            icon={<CalendarOutlined />}
-            onClick={() => {
-              setModalVisible(false)
-              handleUpdateAppointment(selectedAppointment)
-            }}
-            style={{
-              background: "#1890ff",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #1890ff22",
-              transition: "background 0.2s"
-            }}
-            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
-          >
-            Cập nhật lịch hẹn
           </Button>,
         ]}
         width={800}
