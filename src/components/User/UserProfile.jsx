@@ -505,7 +505,11 @@ const UserProfile = () => {
               {success && <span className="form-success">{success}</span>}
             </form>
           )}
-          {tab === "orders" && (
+          {tab === "orders" && userOrders.length === 0 ? (
+            <div style={{ width: "100%", padding: 64, textAlign: "center", color: "#888", fontSize: 22 }}>
+              Chưa có thông tin đơn.
+            </div>
+          ) : tab === "orders" && (
             <div
               style={{
                 width: "100%",
@@ -574,6 +578,22 @@ const UserProfile = () => {
                     Chờ xử lý
                   </span>
                   <span
+                    className={filterStatus === "Đã xác nhận" ? "active" : ""}
+                    style={{
+                      color: filterStatus === "Đã xác nhận" ? "#009e74" : "#888",
+                      fontWeight: filterStatus === "Đã xác nhận" ? 600 : 500,
+                      borderBottom:
+                        filterStatus === "Đã xác nhận"
+                          ? "2px solid #009e74"
+                          : "none",
+                      paddingBottom: 4,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setFilterStatus("Đã xác nhận")}
+                  >
+                    Đã xác nhận
+                  </span>
+                  <span
                     className={filterStatus === "Đang xử lý" ? "active" : ""}
                     style={{
                       color: filterStatus === "Đang xử lý" ? "#009e74" : "#888",
@@ -590,25 +610,34 @@ const UserProfile = () => {
                     Đang xử lý
                   </span>
                   <span
-                    className={filterStatus === "Hoàn thành" ? "active" : ""}
+                    className={filterStatus === "Có kết quả" ? "active" : ""}
                     style={{
-                      color: filterStatus === "Hoàn thành" ? "#009e74" : "#888",
-                      fontWeight: filterStatus === "Hoàn thành" ? 600 : 500,
+                      color: filterStatus === "Có kết quả" ? "#009e74" : "#888",
+                      fontWeight: filterStatus === "Có kết quả" ? 600 : 500,
                       borderBottom:
-                        filterStatus === "Hoàn thành"
+                        filterStatus === "Có kết quả"
                           ? "2px solid #009e74"
                           : "none",
                       paddingBottom: 4,
                       cursor: "pointer",
                     }}
-                    onClick={() => setFilterStatus("Hoàn thành")}
+                    onClick={() => setFilterStatus("Có kết quả")}
                   >
-                    Hoàn thành
+                    Có kết quả
                   </span>
                 </div>
                 {userOrders.filter(
                   (order) =>
-                    filterStatus === "Tất cả" || order.status === filterStatus
+                    filterStatus === "Tất cả" ||
+                    (filterStatus === "Đã xác nhận" && (
+                      order.status === "Xác nhận" ||
+                      order.appointmentStatus === "Xác nhận" ||
+                      ((order.status === "CONFIRMED" || order.appointmentStatus === "CONFIRMED") && order.appointmentDate) ||
+                      (order.sampleMethod === "home" && order.kitStatus === "da_nhan") ||
+                      (order.sampleMethod === "center" && order.status === "SAMPLE_RECEIVED")
+                    )) ||
+                    (filterStatus === "Có kết quả" && (order.result || order.status === "COMPLETED")) ||
+                    order.status === filterStatus
                 ).length === 0 && (
                     <div
                       style={{
@@ -618,13 +647,22 @@ const UserProfile = () => {
                         margin: "32px 0",
                       }}
                     >
-                      Chưa có đơn đăng ký nào.
+                      Chưa có thông tin đơn.
                     </div>
                   )}
                 {userOrders
                   .filter(
                     (order) =>
-                      (filterStatus === "Tất cả" || order.status === filterStatus) &&
+                      (filterStatus === "Tất cả" ||
+                        (filterStatus === "Đã xác nhận" && (
+                          order.status === "Xác nhận" ||
+                          order.appointmentStatus === "Xác nhận" ||
+                          ((order.status === "CONFIRMED" || order.appointmentStatus === "CONFIRMED") && order.appointmentDate) ||
+                          (order.sampleMethod === "home" && order.kitStatus === "da_nhan") ||
+                          (order.sampleMethod === "center" && order.status === "SAMPLE_RECEIVED")
+                        )) ||
+                        (filterStatus === "Có kết quả" && (order.result || order.status === "COMPLETED")) ||
+                        order.status === filterStatus) &&
                       (searchOrder.trim() === "" ||
                         order.id.toLowerCase().includes(searchOrder.trim().toLowerCase()) ||
                         (order.type && order.type.toLowerCase().includes(searchOrder.trim().toLowerCase()))
