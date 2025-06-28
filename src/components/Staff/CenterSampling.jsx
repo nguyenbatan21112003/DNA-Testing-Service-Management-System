@@ -60,7 +60,7 @@ const CenterSampling = () => {
   const loadAppointments = () => {
     const allOrders = getAllOrders()
     const centerSamplingOrders = allOrders
-      .filter((order) => order.sampleMethod === "center")
+      .filter((order) => order.sampleMethod === "center" && !order.isHidden)
       .map((order) => {
         // Map status cũ sang chuẩn
         let status = order.status || order.appointmentStatus

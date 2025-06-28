@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, Table, Tag, Button, Modal, Form, Input, Select, message, Space, Tabs, Statistic, Row, Col } from "antd"
-import { FileTextOutlined, EyeOutlined, EditOutlined, ExportOutlined, PlusOutlined, DeleteOutlined, UndoOutlined } from "@ant-design/icons"
+import { FileTextOutlined, EyeOutlined, EditOutlined, ExportOutlined, PlusOutlined, DeleteOutlined, UndoOutlined, EyeInvisibleOutlined } from "@ant-design/icons"
 import { useOrderContext } from "../../context/OrderContext"
 
 const { Option } = Select
@@ -11,24 +11,20 @@ const { TextArea } = Input
 const { TabPane } = Tabs
 
 const OrderManagement = () => {
-  const { getAllOrders, updateOrder, deleteOrder, addOrder } = useOrderContext()
+  const { getAllOrders, updateOrder } = useOrderContext()
   const [orders, setOrders] = useState([])
   const [filteredOrders, setFilteredOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
-  const [editModalVisible, setEditModalVisible] = useState(false)
   const [form] = Form.useForm()
   const [activeTab, setActiveTab] = useState("all")
   const [searchText, setSearchText] = useState("")
-  const [undoOrder, setUndoOrder] = useState(null)
-  const [undoTimer, setUndoTimer] = useState(null)
-  const [deleteModal, setDeleteModal] = useState({ visible: false, order: null })
 
   // Lấy dữ liệu đơn hàng từ context
   const loadOrders = () => {
     const allOrders = getAllOrders()
-    setOrders(allOrders)
-    setFilteredOrders(allOrders)
+    setOrders(allOrders.filter(order => !order.isHidden))
+    setFilteredOrders(allOrders.filter(order => !order.isHidden))
   }
 
   useEffect(() => {
@@ -80,51 +76,21 @@ const OrderManagement = () => {
       priority: order.priority,
       notes: order.notes || "",
     })
-    setEditModalVisible(true)
-  }
-
-  const handleSaveOrder = async (values) => {
-    try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedOrder.id, {
-        status: values.status,
-        priority: values.priority,
-        notes: values.notes,
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      })
-
-      // Cập nhật lại danh sách đơn hàng
-      loadOrders()
-
-      setEditModalVisible(false)
-      message.success("Cập nhật đơn hàng thành công!")
-    } catch {
-      message.error("Có lỗi xảy ra khi cập nhật đơn hàng!")
-    }
   }
 
   const handleDeleteOrder = (order) => {
-    setDeleteModal({ visible: true, order })
-  }
-
-  const confirmDeleteOrder = () => {
-    if (deleteModal.order) {
-      const deleted = deleteOrder(deleteModal.order.id)
-      setUndoOrder(deleted)
-      setDeleteModal({ visible: false, order: null })
-      // Hiện nút hoàn tác trong 8 giây
-      if (undoTimer) clearTimeout(undoTimer)
-      const timer = setTimeout(() => setUndoOrder(null), 8000)
-      setUndoTimer(timer)
-    }
-  }
-
-  const handleUndoDelete = () => {
-    if (undoOrder) {
-      addOrder(undoOrder)
-      setUndoOrder(null)
-      if (undoTimer) clearTimeout(undoTimer)
-    }
+    Modal.confirm({
+      title: `Xác nhận ẩn đơn hàng #${order.id}`,
+      content: 'Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? Đơn hàng vẫn sẽ được lưu trên hệ thống và khách hàng vẫn xem được.',
+      okText: 'Ẩn',
+      okType: 'default',
+      cancelText: 'Huỷ',
+      onOk: () => {
+        updateOrder(order.id, { isHidden: true })
+        message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
+        loadOrders()
+      }
+    })
   }
 
   const getStatusText = (status) => {
@@ -183,19 +149,6 @@ const OrderManagement = () => {
         return "#22C55E"
       case "CANCELLED":
         return "#EF4444"
-      default:
-        return "default"
-    }
-  }
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "Cao":
-        return "red"
-      case "Trung bình":
-        return "orange"
-      case "Thấp":
-        return "green"
       default:
         return "default"
     }
@@ -277,8 +230,14 @@ const OrderManagement = () => {
           <Button type="default" size="small" icon={<EditOutlined />} onClick={() => handleEditOrder(record)}>
             Sửa
           </Button>
-          <Button danger size="small" icon={<DeleteOutlined />} onClick={() => handleDeleteOrder(record)}>
-            Xoá
+          <Button
+            size="small"
+            icon={<EyeInvisibleOutlined />}
+            onClick={() => handleDeleteOrder(record)}
+            style={{ color: "#888", borderColor: "#d9d9d9", background: "#f5f5f5" }}
+            title="Ẩn đơn này khỏi giao diện nhân viên (không xoá dữ liệu)"
+          >
+            Ẩn
           </Button>
         </Space>
       ),
@@ -389,200 +348,11 @@ const OrderManagement = () => {
       {/* Modal xem chi tiết đơn hàng */}
       <Modal
         title={`Chi tiết đơn hàng #${selectedOrder?.id}`}
-        open={modalVisible}
+        visible={modalVisible}
         onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setModalVisible(false)}>
-            Đóng
-          </Button>,
-          <Button
-            key="edit"
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setModalVisible(false)
-              handleEditOrder(selectedOrder)
-            }}
-            style={{
-              background: "#1890ff",
-              color: "#fff",
-              borderRadius: 6,
-              border: "none",
-              fontWeight: 600,
-              boxShadow: "0 2px 8px rgba(24,144,255,0.08)",
-              transition: "background 0.2s"
-            }}
-            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
-          >
-            Chỉnh sửa
-          </Button>,
-        ]}
-        width={800}
+        footer={null}
       >
-        {selectedOrder && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin khách hàng:</h3>
-              <p>
-                <strong>Họ tên:</strong> {selectedOrder.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedOrder.email}
-              </p>
-              <p>
-                <strong>Số điện thoại:</strong> {selectedOrder.phone}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin đơn hàng:</h3>
-              <p>
-                <strong>Loại xét nghiệm:</strong> {selectedOrder.type}
-              </p>
-              <p>
-                <strong>Phương thức lấy mẫu:</strong>
-                <Tag color={selectedOrder.sampleMethod === "home" ? "blue" : "green"} style={{ marginLeft: 8 }}>
-                  {selectedOrder.sampleMethod === "home" ? "Tại nhà" : "Tại trung tâm"}
-                </Tag>
-              </p>
-              <p>
-                <strong>Trạng thái:</strong>
-                <Tag color={getStatusColor(selectedOrder.status)} style={{ marginLeft: 8 }}>
-                  {getStatusText(selectedOrder.status)}
-                </Tag>
-              </p>
-              <p>
-                <strong>Độ ưu tiên:</strong>
-                <Tag color={getPriorityColor(selectedOrder.priority)} style={{ marginLeft: 8 }}>
-                  {selectedOrder.priority}
-                </Tag>
-              </p>
-              <p>
-                <strong>Ngày tạo:</strong> {selectedOrder.date}
-              </p>
-            </div>
-
-            {selectedOrder.sampleMethod === "home" && selectedOrder.address && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Địa chỉ lấy mẫu:</h3>
-                <p>{selectedOrder.address}</p>
-                {selectedOrder.kitId && (
-                  <p>
-                    <strong>Mã kit:</strong> {selectedOrder.kitId}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {selectedOrder.sampleMethod === "center" && selectedOrder.appointmentDate && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Thông tin lịch hẹn:</h3>
-                <p>
-                  <strong>Ngày hẹn:</strong> {selectedOrder.appointmentDate}
-                </p>
-                {selectedOrder.timeSlot && (
-                  <p>
-                    <strong>Giờ hẹn:</strong> {selectedOrder.timeSlot}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {selectedOrder.result && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Kết quả xét nghiệm:</h3>
-                <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
-                  {selectedOrder.result}
-                </div>
-              </div>
-            )}
-
-            {selectedOrder.notes && (
-              <div>
-                <h3>Ghi chú:</h3>
-                <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4 }}>{selectedOrder.notes}</div>
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
-
-      {/* Modal chỉnh sửa đơn hàng */}
-      <Modal
-        title={`Chỉnh sửa đơn hàng #${selectedOrder?.id}`}
-        open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
-        onOk={() => form.submit()}
-        okText="Lưu"
-        cancelText="Hủy"
-        width={600}
-        okButtonProps={{
-          style: {
-            background: "#1890ff",
-            color: "#fff",
-            borderRadius: 6,
-            border: "none",
-            fontWeight: 600,
-            boxShadow: "0 2px 8px rgba(24,144,255,0.08)",
-            transition: "background 0.2s"
-          },
-          onMouseOver: e => (e.target.style.background = '#1765ad'),
-          onMouseOut: e => (e.target.style.background = '#1890ff')
-        }}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSaveOrder}>
-          <Form.Item
-            name="status"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="Chờ xử lý">Chờ xử lý</Option>
-              <Option value="Đang xử lý">Đang xử lý</Option>
-              <Option value="Hoàn thành">Hoàn thành</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="priority"
-            label="Độ ưu tiên"
-            rules={[{ required: true, message: "Vui lòng chọn độ ưu tiên!" }]}
-          >
-            <Select placeholder="Chọn độ ưu tiên">
-              <Option value="Cao">Cao</Option>
-              <Option value="Trung bình">Trung bình</Option>
-              <Option value="Thấp">Thấp</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="notes" label="Ghi chú">
-            <TextArea rows={4} placeholder="Nhập ghi chú về đơn hàng..." />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Undo notification */}
-      {undoOrder && (
-        <div style={{
-          position: "fixed", bottom: 32, right: 32, zIndex: 9999, background: "#fff", border: "1px solid #ccc", borderRadius: 8, boxShadow: "0 2px 8px #0002", padding: 20, display: "flex", alignItems: "center", gap: 16
-        }}>
-          <span>Đã xoá đơn <b>#{undoOrder.id}</b>. </span>
-          <Button icon={<UndoOutlined />} onClick={handleUndoDelete} type="primary">Hoàn tác</Button>
-        </div>
-      )}
-
-      {/* Modal xác nhận xoá */}
-      <Modal
-        title={`Xác nhận xoá đơn hàng #${deleteModal.order?.id}`}
-        open={deleteModal.visible}
-        onOk={confirmDeleteOrder}
-        onCancel={() => setDeleteModal({ visible: false, order: null })}
-        okText="Xoá"
-        okButtonProps={{ danger: true }}
-        cancelText="Huỷ"
-      >
-        <p>Bạn có chắc chắn muốn xoá đơn hàng này không? Hành động này có thể hoàn tác trong vài giây.</p>
+        {/* Modal content */}
       </Modal>
     </div>
   )

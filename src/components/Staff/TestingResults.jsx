@@ -30,6 +30,7 @@ import {
   ExperimentOutlined,
   DeleteOutlined,
   UndoOutlined,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons"
 import { useOrderContext } from "../../context/OrderContext"
 
@@ -39,7 +40,7 @@ const { TabPane } = Tabs
 const { Title, Text, Paragraph } = Typography
 
 const TestingResults = () => {
-  const { orders, updateOrder, getAllOrders, deleteOrder, addOrder } = useOrderContext()
+  const { orders, updateOrder, getAllOrders } = useOrderContext()
   const [filteredOrders, setFilteredOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -50,12 +51,9 @@ const TestingResults = () => {
   const [tempFormData, setTempFormData] = useState({})
   const [currentEditOrderId, setCurrentEditOrderId] = useState(null)
   const [showCustomConclusion, setShowCustomConclusion] = useState(false)
-  const [undoOrder, setUndoOrder] = useState(null)
-  const [undoTimer, setUndoTimer] = useState(null)
-  const [deleteModal, setDeleteModal] = useState({ visible: false, order: null })
 
   useEffect(() => {
-    setFilteredOrders(orders)
+    setFilteredOrders(orders.filter(order => !order.isHidden))
   }, [orders])
 
   useEffect(() => {
@@ -197,42 +195,51 @@ const TestingResults = () => {
   }
 
   const handleDeleteOrder = (order) => {
-    setDeleteModal({ visible: true, order })
-  }
-
-  const confirmDeleteOrder = () => {
-    if (deleteModal.order) {
-      const deleted = deleteOrder(deleteModal.order.id)
-      setUndoOrder(deleted)
-      setDeleteModal({ visible: false, order: null })
-      // Hiện nút hoàn tác trong 8 giây
-      if (undoTimer) clearTimeout(undoTimer)
-      const timer = setTimeout(() => setUndoOrder(null), 8000)
-      setUndoTimer(timer)
-    }
-  }
-
-  const handleUndoDelete = () => {
-    if (undoOrder) {
-      addOrder(undoOrder)
-      setUndoOrder(null)
-      if (undoTimer) clearTimeout(undoTimer)
-    }
+    console.log("Ẩn đơn:", order)
+    Modal.confirm({
+      title: `Xác nhận ẩn đơn hàng #${order.id}`,
+      content: 'Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? Đơn hàng vẫn sẽ được lưu trên hệ thống và khách hàng vẫn xem được.',
+      okText: 'Ẩn',
+      okType: 'default',
+      cancelText: 'Huỷ',
+      onOk: () => {
+        updateOrder(order.id, { isHidden: true })
+        message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
+      }
+    })
   }
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING": return "Chờ xử lý"
-      case "PROCESSING": return "Đang xử lý"
-      case "WAITING_APPROVAL": return "Chờ xác thực"
-      case "COMPLETED": return "Hoàn thành"
-      case "REJECTED": return "Từ chối"
+      case "PENDING":
+      case "PENDING_CONFIRM":
+        return "Chờ xử lý"
+      case "PROCESSING":
+        return "Đang xử lý"
+      case "WAITING_APPROVAL":
+        return "Chờ xác thực"
+      case "COMPLETED":
+        return "Hoàn thành"
+      case "REJECTED":
+        return "Từ chối"
+      case "KIT_SENT":
+        return "Đã gửi kit"
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu"
+      case "CONFIRMED":
+        return "Xác nhận"
+      case "CANCELLED":
+        return "Đã hủy"
       default:
         if (status === "Chờ xử lý") return "Chờ xử lý"
         if (status === "Đang xử lý") return "Đang xử lý"
-        if (status === "Chờ xác thực") return "Chờ xác thực"
         if (status === "Hoàn thành") return "Hoàn thành"
+        if (status === "Chờ xác thực") return "Chờ xác thực"
         if (status === "Từ chối") return "Từ chối"
+        if (status === "Đã gửi kit") return "Đã gửi kit"
+        if (status === "Đã nhận mẫu") return "Đã nhận mẫu"
+        if (status === "Xác nhận") return "Xác nhận"
+        if (status === "Đã hủy") return "Đã hủy"
         return status
     }
   }
@@ -240,6 +247,7 @@ const TestingResults = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING":
+      case "PENDING_CONFIRM":
       case "Chờ xử lý":
         return "orange"
       case "PROCESSING":
@@ -254,6 +262,14 @@ const TestingResults = () => {
       case "REJECTED":
       case "Từ chối":
         return "red"
+      case "KIT_SENT":
+        return "#2563EB"
+      case "SAMPLE_RECEIVED":
+        return "#22C55E"
+      case "CONFIRMED":
+        return "#10B981"
+      case "CANCELLED":
+        return "#EF4444"
       default:
         return "default"
     }
@@ -315,8 +331,14 @@ const TestingResults = () => {
               Báo cáo
             </Button>
           )}
-          <Button danger size="small" icon={<DeleteOutlined />} onClick={() => handleDeleteOrder(record)}>
-            Xoá
+          <Button
+            size="small"
+            icon={<EyeInvisibleOutlined />}
+            onClick={() => handleDeleteOrder(record)}
+            style={{ color: "#888", borderColor: "#d9d9d9", background: "#f5f5f5" }}
+            title="Ẩn đơn này khỏi giao diện nhân viên (không xoá dữ liệu)"
+          >
+            Ẩn
           </Button>
         </Space>
       ),
@@ -690,50 +712,6 @@ const TestingResults = () => {
             </div>
           </div>
         )}
-      </Modal>
-
-      {/* Undo notification */}
-      {undoOrder && (
-        <div style={{
-          position: "fixed", bottom: 32, right: 32, zIndex: 9999, background: "#fff", border: "2px solid #52c41a", borderRadius: 12, boxShadow: "0 4px 24px #52c41a33", padding: 28, display: "flex", alignItems: "center", gap: 20
-        }}>
-          <span style={{ fontSize: 18, fontWeight: 600, color: '#222' }}>Đã xoá đơn <b style={{ color: '#fa541c' }}>#{undoOrder.id}</b>.</span>
-          <Button
-            icon={<UndoOutlined style={{ fontSize: 22, marginRight: 6 }} />}
-            onClick={handleUndoDelete}
-            type="primary"
-            style={{
-              background: "#52c41a",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 18,
-              border: "none",
-              borderRadius: 8,
-              boxShadow: "0 2px 8px #52c41a44",
-              padding: "8px 28px",
-              display: "flex",
-              alignItems: "center",
-              transition: "background 0.2s"
-            }}
-            onMouseOver={e => (e.currentTarget.style.background = '#389e0d')}
-            onMouseOut={e => (e.currentTarget.style.background = '#52c41a')}
-          >
-            Hoàn tác
-          </Button>
-        </div>
-      )}
-
-      {/* Modal xác nhận xoá */}
-      <Modal
-        title={`Xác nhận xoá đơn hàng #${deleteModal.order?.id}`}
-        open={deleteModal.visible}
-        onOk={confirmDeleteOrder}
-        onCancel={() => setDeleteModal({ visible: false, order: null })}
-        okText="Xoá"
-        okButtonProps={{ danger: true }}
-        cancelText="Huỷ"
-      >
-        <p>Bạn có chắc chắn muốn xoá đơn hàng này không? Hành động này có thể hoàn tác trong vài giây.</p>
       </Modal>
     </div>
   )

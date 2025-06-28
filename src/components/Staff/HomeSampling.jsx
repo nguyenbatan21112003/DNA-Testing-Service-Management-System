@@ -51,7 +51,7 @@ const HomeSampling = () => {
   const loadSamplingRequests = () => {
     const allOrders = getAllOrders()
     const homeSamplingOrders = allOrders
-      .filter((order) => order.sampleMethod === "home")
+      .filter((order) => order.sampleMethod === "home" && !order.isHidden)
       .map((order) => {
         // Map status cũ sang chuẩn
         let status = order.status || order.kitStatus
