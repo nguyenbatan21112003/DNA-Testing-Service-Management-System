@@ -11,7 +11,7 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { Modal, message } from "antd";
+import { Modal, message, Tag } from "antd";
 import React from "react";
 import TimelineProgress from "./TimelineProgress";
 import NewOrderButton from "./NewOrderButton";
@@ -729,70 +729,48 @@ const UserProfile = () => {
                             >
                               #{order.id}
                             </span>
-                            <span
-                              style={{
-                                marginLeft: 16,
-                                padding: "2px 12px",
-                                borderRadius: 8,
-                                background:
-                                  (order.status === "Hoàn thành" || order.appointmentStatus === "Xác nhận" || order.status === "Xác nhận")
-                                    ? "#c6f6d5"
-                                    : order.status === "Chờ xử lý"
-                                      ? "#ffe6b0"
-                                      : "#e6f7f1",
-                                color:
-                                  (order.status === "Hoàn thành" || order.appointmentStatus === "Xác nhận" || order.status === "Xác nhận")
-                                    ? "#009e74"
-                                    : order.status === "Chờ xử lý"
-                                      ? "#b88900"
-                                      : "#009e74",
-                                fontWeight: 600,
-                                fontSize: 14,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                whiteSpace: "nowrap",
-                                minWidth: 80,
-                                maxWidth: 120,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis"
-                              }}
-                            >
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                            <span style={{ fontWeight: 600, color: '#888', marginRight: 2 }}>Trạng thái:</span>
+                            <Tag color={(() => {
+                              switch (getStatusText(order.status, order.sampleMethod, order.kitStatus, order.appointmentStatus)) {
+                                case "Xác nhận": return "#1890ff";
+                                case "Hoàn thành": return "#52c41a";
+                                case "Chờ xử lý": return "#fa8c16";
+                                case "Từ chối": return "#ff4d4f";
+                                case "Đã nhận mẫu": return "#52c41a";
+                                default: return "#bfbfbf";
+                              }
+                            })()} style={{ fontWeight: 600, fontSize: 15 }}>
                               {getStatusText(order.status, order.sampleMethod, order.kitStatus, order.appointmentStatus)}
-                            </span>
+                            </Tag>
+                            <span style={{ fontWeight: 600, color: '#888', marginLeft: 8 }}>Thể loại:</span>
+                            <Tag color={order.category === 'civil' ? '#722ed1' : '#36cfc9'} style={{ fontWeight: 600, fontSize: 15 }}>
+                              {order.category === 'civil' ? 'Dân sự' : order.category === 'admin' ? 'Hành chính' : order.category}
+                            </Tag>
                           </div>
                           <div className="order-type" style={{ marginBottom: 8 }}>
                             {order.type}
                           </div>
                           <div style={{ color: '#888', fontSize: 15, marginBottom: 2 }}>
-                            <b>Thể loại:</b> {order.category === 'civil' ? 'Dân sự' : order.category === 'admin' ? 'Hành chính' : order.category}
-                          </div>
-                          <div style={{ color: '#888', fontSize: 15, marginBottom: 8 }}>
                             <b>Hình thức thu mẫu:</b> {getSampleMethodLabel(order.sampleMethod)}
                           </div>
-                          <div
-                            className="order-date"
-                            style={{ color: "#888", fontSize: 15 }}
-                          >
-                            Ngày đăng ký: {order.date}
-                          </div>
-                          {order.appointmentDate && order.sampleMethod === 'center' && (
+                          {order.sampleMethod === 'center' && order.appointmentDate && (
                             <div style={{
                               background: '#e0edff',
-                              color: '#2563eb',
+                              color: '#1765ad',
                               fontWeight: 700,
-                              border: '1.5px solid #1d4ed8',
-                              borderRadius: 8,
-                              padding: '8px 18px',
+                              fontSize: 16,
                               margin: '10px 0 0 0',
                               display: 'inline-flex',
                               alignItems: 'center',
-                              fontSize: 17,
                               gap: 8,
-                              boxShadow: '0 2px 8px #2563eb22',
+                              border: '1.5px solid #1765ad',
+                              borderRadius: 8,
+                              padding: '8px 18px',
+                              boxShadow: '0 2px 8px #1765ad22',
                             }}>
-                              <span style={{ fontSize: 20, marginRight: 6 }}>
-                                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              </span>
+                              <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1765ad" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                               Ngày lấy mẫu: {order.appointmentDate}
                             </div>
                           )}
@@ -1496,47 +1474,25 @@ const UserProfile = () => {
                   #{selectedOrder.id}
                 </span>
               </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
-                <span>{getStatusText(selectedOrder.status, selectedOrder.sampleMethod, selectedOrder.kitStatus, selectedOrder.appointmentStatus)}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <span style={{ fontWeight: 600, color: '#888', marginRight: 2 }}>Trạng thái:</span>
+                <Tag color={(() => {
+                  switch (getStatusText(selectedOrder.status, selectedOrder.sampleMethod, selectedOrder.kitStatus, selectedOrder.appointmentStatus)) {
+                    case "Xác nhận": return "#1890ff";
+                    case "Hoàn thành": return "#52c41a";
+                    case "Chờ xử lý": return "#fa8c16";
+                    case "Từ chối": return "#ff4d4f";
+                    case "Đã nhận mẫu": return "#52c41a";
+                    default: return "#bfbfbf";
+                  }
+                })()} style={{ fontWeight: 600, fontSize: 15 }}>
+                  {getStatusText(selectedOrder.status, selectedOrder.sampleMethod, selectedOrder.kitStatus, selectedOrder.appointmentStatus)}
+                </Tag>
+                <span style={{ fontWeight: 600, color: '#888', marginLeft: 8 }}>Thể loại:</span>
+                <Tag color={selectedOrder.category === 'civil' ? '#722ed1' : '#36cfc9'} style={{ fontWeight: 600, fontSize: 15 }}>
+                  {selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}
+                </Tag>
               </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
-                <span>{selectedOrder.type}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Thể loại:</span>{" "}
-                <span>{selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
-                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
-                <span>{selectedOrder.date}</span>
-              </div>
-              {selectedOrder.appointmentDate && selectedOrder.sampleMethod === 'center' && (
-                <div style={{
-                  background: '#e0edff',
-                  color: '#2563eb',
-                  fontWeight: 700,
-                  border: '1.5px solid #1d4ed8',
-                  borderRadius: 8,
-                  padding: '8px 18px',
-                  margin: '10px 0 0 0',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  fontSize: 17,
-                  gap: 8,
-                  boxShadow: '0 2px 8px #2563eb22',
-                }}>
-                  <span style={{ fontSize: 20, marginRight: 6 }}>
-                    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </span>
-                  Ngày lấy mẫu: {selectedOrder.appointmentDate}
-                </div>
-              )}
               <div>
                 <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
                 <span>{selectedOrder.name}</span>
@@ -1553,10 +1509,38 @@ const UserProfile = () => {
                 <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
                 <span>{selectedOrder.address}</span>
               </div>
+              <div style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }} />
               <div>
-                <span style={{ fontWeight: 600 }}>Ngày xét nghiệm:</span>{" "}
-                <span>{selectedOrder.appointmentDate}</span>
+                <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
+                <span>{selectedOrder.type}</span>
               </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
+                <span>{selectedOrder.date}</span>
+              </div>
+              {selectedOrder.sampleMethod === 'center' && selectedOrder.appointmentDate && (
+                <div style={{
+                  background: '#e0edff',
+                  color: '#1765ad',
+                  fontWeight: 700,
+                  fontSize: 16,
+                  margin: '10px 0 0 0',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  border: '1.5px solid #1765ad',
+                  borderRadius: 8,
+                  padding: '8px 18px',
+                  boxShadow: '0 2px 8px #1765ad22',
+                }}>
+                  <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" style={{ marginRight: 4 }}><path d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="#1765ad" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  Ngày lấy mẫu: {selectedOrder.appointmentDate}
+                </div>
+              )}
               <div>
                 <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
                 <span>{selectedOrder.note}</span>
