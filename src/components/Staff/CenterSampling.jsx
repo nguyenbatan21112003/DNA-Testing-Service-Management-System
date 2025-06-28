@@ -58,28 +58,38 @@ const CenterSampling = () => {
 
   // Lấy dữ liệu đơn hàng từ context
   const loadAppointments = () => {
-    // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại trung tâm
     const allOrders = getAllOrders()
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center")
-      .map((order) => ({
-        ...order,
-        appointmentStatus: order.appointmentStatus || "da_hen",
-        appointmentDate: order.appointmentDate || null,
-        staffAssigned: order.staffAssigned || null,
-        notes: order.notes || "",
-        timeSlot: order.timeSlot || "09:00-10:00",
-      }))
+      .map((order) => {
+        // Map status cũ sang chuẩn
+        let status = order.status || order.appointmentStatus
+        switch (status) {
+          case "da_hen": status = "WAITING_FOR_APPOINTMENT"; break
+          case "da_den": status = "SAMPLE_COLLECTING"; break
+          case "vang_mat": status = "CANCELLED"; break
+          case "huy": status = "CANCELLED"; break
+          default: break
+        }
+        return {
+          ...order,
+          status: status || "PENDING_CONFIRM",
+          appointmentDate: order.appointmentDate || null,
+          staffAssigned: order.staffAssigned || null,
+          notes: order.notes || "",
+          timeSlot: order.timeSlot || "09:00-10:00",
+        }
+      })
 
     setAppointments(centerSamplingOrders)
 
     // Tính toán thống kê
     const newStats = {
       total: centerSamplingOrders.length,
-      scheduled: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "da_hen").length,
-      arrived: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "da_den").length,
-      missed: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "vang_mat").length,
-      canceled: centerSamplingOrders.filter((apt) => apt.appointmentStatus === "huy").length,
+      scheduled: centerSamplingOrders.filter((apt) => apt.status === "WAITING_FOR_APPOINTMENT").length,
+      arrived: centerSamplingOrders.filter((apt) => apt.status === "SAMPLE_COLLECTING").length,
+      missed: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED").length,
+      canceled: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED").length,
     }
     setStats(newStats)
   }
@@ -108,47 +118,29 @@ const CenterSampling = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "#FDE68A" // vàng nhạt
-      case "CONFIRMED":
-        return "#A7F3D0" // xanh mint
-      case "WAITING_FOR_APPOINTMENT":
-        return "#BFDBFE" // xanh dương nhạt
-      case "SAMPLE_COLLECTING":
-        return "#E0E7FF" // tím nhạt
-      case "SAMPLE_COLLECTING_WITH_DOC":
-        return "#E0E7FF" // tím nhạt (pháp lý)
-      case "SAMPLE_RECEIVED":
-        return "#86EFAC" // xanh lá nhạt
-      case "TESTING":
-        return "#FBCFE8" // hồng pastel
-      case "COMPLETED":
-        return "#FCD34D" // vàng đậm
-      default:
-        return "default"
+      case "PENDING_CONFIRM": return "#FDE68A"
+      case "CONFIRMED": return "#A7F3D0"
+      case "WAITING_FOR_APPOINTMENT": return "#BFDBFE"
+      case "SAMPLE_COLLECTING": return "#E0E7FF"
+      case "SAMPLE_COLLECTING_WITH_DOC": return "#E0E7FF"
+      case "SAMPLE_RECEIVED": return "#86EFAC"
+      case "TESTING": return "#FBCFE8"
+      case "COMPLETED": return "#FCD34D"
+      default: return "#e5e7eb"
     }
   }
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "Đang chờ xác nhận"
-      case "CONFIRMED":
-        return "Đã xác nhận"
-      case "WAITING_FOR_APPOINTMENT":
-        return "Chờ đến ngày hẹn"
-      case "SAMPLE_COLLECTING":
-        return "Đang lấy mẫu"
-      case "SAMPLE_COLLECTING_WITH_DOC":
-        return "Đang lấy mẫu và lập biên bản"
-      case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu"
-      case "TESTING":
-        return "Đang xét nghiệm"
-      case "COMPLETED":
-        return "Đã trả kết quả"
-      default:
-        return status
+      case "PENDING_CONFIRM": return "Đang chờ xác nhận"
+      case "CONFIRMED": return "Đã xác nhận"
+      case "WAITING_FOR_APPOINTMENT": return "Chờ đến ngày hẹn"
+      case "SAMPLE_COLLECTING": return "Đang lấy mẫu"
+      case "SAMPLE_COLLECTING_WITH_DOC": return "Đang lấy mẫu và lập biên bản"
+      case "SAMPLE_RECEIVED": return "Đã nhận mẫu"
+      case "TESTING": return "Đang xét nghiệm"
+      case "COMPLETED": return "Đã trả kết quả"
+      default: return status
     }
   }
 
@@ -164,7 +156,7 @@ const CenterSampling = () => {
         {listData.map((item) => (
           <li key={item.id}>
             <Badge
-              status={getStatusColor(item.appointmentStatus)}
+              status={getStatusColor(item.status)}
               text={`${item.timeSlot} - ${item.name}`}
               style={{ fontSize: 12 }}
             />
@@ -223,8 +215,8 @@ const CenterSampling = () => {
     },
     {
       title: "Trạng thái",
-      dataIndex: "appointmentStatus",
-      key: "appointmentStatus",
+      dataIndex: "status",
+      key: "status",
       width: 120,
       render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
     },
@@ -437,7 +429,7 @@ const CenterSampling = () => {
                     <strong>
                       #{apt.id} - {apt.name}
                     </strong>
-                    <Tag color={getStatusColor(apt.appointmentStatus)}>{getStatusText(apt.appointmentStatus)}</Tag>
+                    <Tag color={getStatusColor(apt.status)}>{getStatusText(apt.status)}</Tag>
                   </div>
                   {apt.type && (
                     <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
@@ -450,7 +442,7 @@ const CenterSampling = () => {
                   </p>
                   <p style={{ margin: "4px 0 0 0", fontSize: 12, color: "#666" }}>
                     <UserOutlined style={{ marginRight: 4 }} />
-                    {(apt.staffAssigned || (apt.appointmentStatus === "Xác nhận" && user?.name))
+                    {(apt.staffAssigned || (apt.status === "Xác nhận" && user?.name))
                       ? `Nhân viên: ${apt.staffAssigned || user?.name}`
                       : "Chưa phân công"}
                   </p>
@@ -485,7 +477,7 @@ const CenterSampling = () => {
           <TabPane tab="Đã hẹn" key="scheduled">
             <Table
               columns={columns}
-              dataSource={appointments.filter((apt) => apt.appointmentStatus === "da_hen")}
+              dataSource={appointments.filter((apt) => apt.status === "WAITING_FOR_APPOINTMENT")}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -499,7 +491,7 @@ const CenterSampling = () => {
           <TabPane tab="Đã đến" key="arrived">
             <Table
               columns={columns}
-              dataSource={appointments.filter((apt) => apt.appointmentStatus === "da_den")}
+              dataSource={appointments.filter((apt) => apt.status === "SAMPLE_COLLECTING")}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -514,7 +506,7 @@ const CenterSampling = () => {
             <Table
               columns={columns}
               dataSource={appointments.filter(
-                (apt) => apt.appointmentStatus === "vang_mat" || apt.appointmentStatus === "huy",
+                (apt) => apt.status === "CANCELLED",
               )}
               rowKey="id"
               pagination={{
@@ -566,8 +558,8 @@ const CenterSampling = () => {
               </p>
               <p>
                 <strong>Trạng thái:</strong>{" "}
-                <Tag color={getStatusColor(selectedAppointment.appointmentStatus)}>
-                  {getStatusText(selectedAppointment.appointmentStatus)}
+                <Tag color={getStatusColor(selectedAppointment.status)}>
+                  {getStatusText(selectedAppointment.status)}
                 </Tag>
               </p>
             </div>

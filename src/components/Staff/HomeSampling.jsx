@@ -49,17 +49,27 @@ const HomeSampling = () => {
 
   // Lấy dữ liệu đơn hàng từ context
   const loadSamplingRequests = () => {
-    // Lấy dữ liệu từ localStorage và lọc các đơn hàng lấy mẫu tại nhà
     const allOrders = getAllOrders()
     const homeSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "home")
-      .map((order) => ({
-        ...order,
-        samplingStatus: order.kitStatus || "chua_gui",
-        scheduledDate: order.scheduledDate || null,
-        samplerName: order.samplerName || null,
-        notes: order.notes || "",
-      }))
+      .map((order) => {
+        // Map status cũ sang chuẩn
+        let status = order.status || order.kitStatus
+        switch (status) {
+          case "chua_gui": status = "PENDING_CONFIRM"; break
+          case "da_gui": status = "KIT_SENT"; break
+          case "da_nhan": status = "SAMPLE_RECEIVED"; break
+          case "huy": status = "CANCELLED"; break
+          default: break
+        }
+        return {
+          ...order,
+          status: status || "PENDING_CONFIRM",
+          scheduledDate: order.scheduledDate || null,
+          samplerName: order.samplerName || null,
+          notes: order.notes || "",
+        }
+      })
 
     setSamplingRequests(homeSamplingOrders)
   }
@@ -89,7 +99,7 @@ const HomeSampling = () => {
   const handleUpdateStatus = (request) => {
     setSelectedRequest(request)
     form.setFieldsValue({
-      samplingStatus: request.kitStatus || "chua_gui",
+      samplingStatus: request.status,
       scheduledDate: request.scheduledDate ? dayjs(request.scheduledDate.split(" ")[0], "DD/MM/YYYY") : null,
       scheduledTime: request.scheduledDate ? request.scheduledDate.split(" ")[1] : null,
       samplerName: request.samplerName || "",
@@ -114,6 +124,7 @@ const HomeSampling = () => {
       // Sử dụng updateOrder từ context để cập nhật đơn hàng
       updateOrder(selectedRequest.id, {
         kitStatus: values.samplingStatus,
+        status: values.samplingStatus,
         scheduledDate:
           values.scheduledDate && values.scheduledTime
             ? `${values.scheduledDate.format("DD/MM/YYYY")} ${values.scheduledTime}`
@@ -136,43 +147,29 @@ const HomeSampling = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "#FDE68A" // vàng nhạt
-      case "CONFIRMED":
-        return "#A7F3D0" // xanh mint
-      case "KIT_SENT":
-        return "#DBEAFE" // xanh dương nhạt
-      case "KIT_DELIVERED":
-        return "#E0E7FF" // tím nhạt
-      case "SAMPLE_RECEIVED":
-        return "#86EFAC" // xanh lá nhạt
-      case "TESTING":
-        return "#FBCFE8" // hồng pastel
-      case "COMPLETED":
-        return "#FCD34D" // vàng đậm
-      default:
-        return "default"
+      case "PENDING_CONFIRM": return "#EA580C";
+      case "CONFIRMED": return "#10B981";
+      case "KIT_SENT": return "#2563EB";
+      case "KIT_DELIVERED": return "#6366F1";
+      case "SAMPLE_RECEIVED": return "#22C55E";
+      case "TESTING": return "#EC4899";
+      case "COMPLETED": return "#F59E42";
+      case "CANCELLED": return "#EF4444";
+      default: return "#e5e7eb";
     }
   }
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "Đang chờ xác nhận"
-      case "CONFIRMED":
-        return "Đã xác nhận"
-      case "KIT_SENT":
-        return "Đã gửi kit"
-      case "KIT_DELIVERED":
-        return "Đang thu mẫu tại nhà"
-      case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu"
-      case "TESTING":
-        return "Đang xét nghiệm"
-      case "COMPLETED":
-        return "Đã trả kết quả"
-      default:
-        return status
+      case "PENDING_CONFIRM": return "Đang chờ xác nhận"
+      case "CONFIRMED": return "Đã xác nhận"
+      case "KIT_SENT": return "Đã gửi kit"
+      case "KIT_DELIVERED": return "Đang thu mẫu tại nhà"
+      case "SAMPLE_RECEIVED": return "Đã nhận mẫu"
+      case "TESTING": return "Đang xét nghiệm"
+      case "COMPLETED": return "Đã trả kết quả"
+      case "CANCELLED": return "Đã hủy"
+      default: return status
     }
   }
 
@@ -244,10 +241,10 @@ const HomeSampling = () => {
     },
     {
       title: "Trạng thái kit",
-      dataIndex: "kitStatus",
-      key: "kitStatus",
+      dataIndex: "status",
+      key: "status",
       width: 130,
-      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
+      render: (_, record) => <Tag color={getStatusColor(record.status)}>{getStatusText(record.status)}</Tag>,
     },
     {
       title: "Ngày hẹn",
@@ -345,7 +342,7 @@ const HomeSampling = () => {
           <TabPane tab="Chưa gửi kit" key="pending">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.kitStatus === "chua_gui")}
+              dataSource={samplingRequests.filter((req) => req.status === "PENDING_CONFIRM")}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -359,7 +356,7 @@ const HomeSampling = () => {
           <TabPane tab="Đã gửi kit" key="sent">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.kitStatus === "da_gui")}
+              dataSource={samplingRequests.filter((req) => req.status === "KIT_SENT")}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -373,7 +370,7 @@ const HomeSampling = () => {
           <TabPane tab="Đã nhận mẫu" key="received">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.kitStatus === "da_nhan")}
+              dataSource={samplingRequests.filter((req) => req.status === "SAMPLE_RECEIVED")}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -547,10 +544,10 @@ const HomeSampling = () => {
             rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
           >
             <Select placeholder="Chọn trạng thái">
-              <Option value="chua_gui">Chưa gửi kit</Option>
-              <Option value="da_gui">Đã gửi kit</Option>
-              <Option value="da_nhan">Đã nhận mẫu</Option>
-              <Option value="huy">Đã hủy</Option>
+              <Option value="PENDING_CONFIRM">Chưa gửi kit</Option>
+              <Option value="KIT_SENT">Đã gửi kit</Option>
+              <Option value="SAMPLE_RECEIVED">Đã nhận mẫu</Option>
+              <Option value="CANCELLED">Đã hủy</Option>
             </Select>
           </Form.Item>
 
