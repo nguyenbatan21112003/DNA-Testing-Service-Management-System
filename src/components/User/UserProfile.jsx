@@ -216,6 +216,35 @@ const UserProfile = () => {
     window.location.reload();
   };
 
+  // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
+  const getStatusText = (status, sampleMethod, kitStatus, appointmentStatus) => {
+    // Ưu tiên trạng thái xác nhận, kit, hoặc trạng thái chính
+    if (sampleMethod === 'home' && kitStatus) {
+      switch (kitStatus) {
+        case 'chua_gui': return 'Chưa gửi kit';
+        case 'da_gui': return 'Đã gửi kit';
+        case 'da_nhan': return 'Đã nhận mẫu';
+        default: break;
+      }
+    }
+    if (appointmentStatus) {
+      if (appointmentStatus === 'CONFIRMED' || appointmentStatus === 'Xác nhận') return 'Xác nhận';
+    }
+    switch (status) {
+      case 'PENDING':
+      case 'PENDING_CONFIRM': return 'Chờ xử lý';
+      case 'PROCESSING': return 'Đang xử lý';
+      case 'WAITING_APPROVAL': return 'Chờ xác thực';
+      case 'COMPLETED': return 'Hoàn thành';
+      case 'REJECTED': return 'Từ chối';
+      case 'KIT_SENT': return 'Đã gửi kit';
+      case 'SAMPLE_RECEIVED': return 'Đã nhận mẫu';
+      case 'CONFIRMED': return 'Xác nhận';
+      case 'CANCELLED': return 'Đã hủy';
+      default: return status;
+    }
+  }
+
   return (
     <div
       className="user-profile-page"
@@ -728,7 +757,7 @@ const UserProfile = () => {
                                 textOverflow: "ellipsis"
                               }}
                             >
-                              {(order.status === "Xác nhận" || order.appointmentStatus === "Xác nhận") ? "Xác nhận" : order.status}
+                              {getStatusText(order.status, order.sampleMethod, order.kitStatus, order.appointmentStatus)}
                             </span>
                           </div>
                           <div className="order-type" style={{ marginBottom: 8 }}>
@@ -1469,7 +1498,7 @@ const UserProfile = () => {
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
-                <span>{selectedOrder.status}</span>
+                <span>{getStatusText(selectedOrder.status, selectedOrder.sampleMethod, selectedOrder.kitStatus, selectedOrder.appointmentStatus)}</span>
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Loại dịch vụ:</span>{" "}
@@ -1495,7 +1524,7 @@ const UserProfile = () => {
                   border: '1.5px solid #1d4ed8',
                   borderRadius: 8,
                   padding: '8px 18px',
-                  margin: '10px 0 16px 0',
+                  margin: '10px 0 0 0',
                   display: 'inline-flex',
                   alignItems: 'center',
                   fontSize: 17,

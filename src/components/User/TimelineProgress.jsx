@@ -3,14 +3,24 @@ import React from "react";
 const TimelineProgress = ({ order }) => {
   if (!order) return null;
   // Tùy vào sampleMethod, quyết định có mốc 'Gửi kit' hay không
+  const getStepLabel = (key) => {
+    switch (key) {
+      case 'registered': return 'Đăng ký';
+      case 'kit_sent': return 'Gửi kit';
+      case 'sample_received': return 'Nhận mẫu';
+      case 'analyzing': return 'Phân tích';
+      case 'completed': return 'Hoàn thành';
+      default: return key;
+    }
+  }
   const steps = [
-    { key: "registered", label: "Đăng ký", date: order.date },
+    { key: "registered", label: getStepLabel("registered"), date: order.date },
     ...(order.sampleMethod === "home"
-      ? [{ key: "kit_sent", label: "Gửi kit", date: order.kitSentDate }]
+      ? [{ key: "kit_sent", label: getStepLabel("kit_sent"), date: order.kitSentDate }]
       : []),
-    { key: "sample_received", label: "Nhận mẫu", date: order.sampleReceivedDate },
-    { key: "analyzing", label: "Phân tích", date: order.analyzingDate },
-    { key: "completed", label: "Hoàn thành", date: order.completedDate || order.finishDate },
+    { key: "sample_received", label: getStepLabel("sample_received"), date: order.sampleReceivedDate },
+    { key: "analyzing", label: getStepLabel("analyzing"), date: order.analyzingDate },
+    { key: "completed", label: getStepLabel("completed"), date: order.completedDate || order.finishDate },
   ];
   // Đếm số mốc đã hoàn thành (có date)
   const completedSteps = steps.filter(step => !!step.date).length;
