@@ -127,14 +127,62 @@ const OrderManagement = () => {
     }
   }
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING":
+      case "PENDING_CONFIRM":
+        return "Chờ xử lý"
+      case "PROCESSING":
+        return "Đang xử lý"
+      case "WAITING_APPROVAL":
+        return "Chờ xác thực"
+      case "COMPLETED":
+        return "Hoàn thành"
+      case "REJECTED":
+        return "Từ chối"
+      case "KIT_SENT":
+        return "Đã gửi kit"
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu"
+      case "CANCELLED":
+        return "Đã hủy"
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý"
+        if (status === "Đang xử lý") return "Đang xử lý"
+        if (status === "Hoàn thành") return "Hoàn thành"
+        if (status === "Chờ xác thực") return "Chờ xác thực"
+        if (status === "Từ chối") return "Từ chối"
+        if (status === "Đã gửi kit") return "Đã gửi kit"
+        if (status === "Đã nhận mẫu") return "Đã nhận mẫu"
+        if (status === "Đã hủy") return "Đã hủy"
+        return status
+    }
+  }
+
   const getStatusColor = (status) => {
     switch (status) {
+      case "PENDING":
+      case "PENDING_CONFIRM":
       case "Chờ xử lý":
         return "orange"
+      case "PROCESSING":
       case "Đang xử lý":
         return "blue"
+      case "WAITING_APPROVAL":
+      case "Chờ xác thực":
+        return "purple"
+      case "COMPLETED":
       case "Hoàn thành":
         return "green"
+      case "REJECTED":
+      case "Từ chối":
+        return "red"
+      case "KIT_SENT":
+        return "#2563EB"
+      case "SAMPLE_RECEIVED":
+        return "#22C55E"
+      case "CANCELLED":
+        return "#EF4444"
       default:
         return "default"
     }
@@ -201,7 +249,7 @@ const OrderManagement = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{status}</Tag>,
+      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
     },
     {
       title: "Ngày tạo",
@@ -242,6 +290,8 @@ const OrderManagement = () => {
     pending: orders.filter((order) => order.status === "Chờ xử lý").length,
     processing: orders.filter((order) => order.status === "Đang xử lý").length,
     completed: orders.filter((order) => order.status === "Hoàn thành").length,
+    waitingApproval: orders.filter((order) => order.status === "Chờ xác thực").length,
+    rejected: orders.filter((order) => order.status === "Từ chối").length,
   }
 
   return (
@@ -315,9 +365,11 @@ const OrderManagement = () => {
 
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
           <TabPane tab={`Tất cả (${stats.total})`} key="all" />
-          <TabPane tab={`Chờ xử lý (${stats.pending})`} key="Chờ xử lý" />
-          <TabPane tab={`Đang xử lý (${stats.processing})`} key="Đang xử lý" />
-          <TabPane tab={`Hoàn thành (${stats.completed})`} key="Hoàn thành" />
+          <TabPane tab={`Chờ xử lý (${stats.pending})`} key="PENDING" />
+          <TabPane tab={`Đang xử lý (${stats.processing})`} key="PROCESSING" />
+          <TabPane tab={`Chờ xác thực (${stats.waitingApproval || 0})`} key="WAITING_APPROVAL" />
+          <TabPane tab={`Hoàn thành (${stats.completed})`} key="COMPLETED" />
+          <TabPane tab={`Từ chối (${stats.rejected || 0})`} key="REJECTED" />
         </Tabs>
 
         <Table
@@ -397,7 +449,7 @@ const OrderManagement = () => {
               <p>
                 <strong>Trạng thái:</strong>
                 <Tag color={getStatusColor(selectedOrder.status)} style={{ marginLeft: 8 }}>
-                  {selectedOrder.status}
+                  {getStatusText(selectedOrder.status)}
                 </Tag>
               </p>
               <p>

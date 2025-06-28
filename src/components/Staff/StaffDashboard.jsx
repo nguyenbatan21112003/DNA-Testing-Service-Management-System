@@ -320,7 +320,16 @@ const StaffDashboard = () => {
           trigger={null}
           collapsible
           collapsed={collapsed}
-          style={{ background: "#fff", boxShadow: "2px 0 8px #e6e6e6" }}
+          style={{
+            background: "#fff",
+            boxShadow: "2px 0 8px #e6e6e6",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            height: "100vh",
+            zIndex: 100,
+          }}
         >
           <div>
             <div
@@ -407,7 +416,7 @@ const StaffDashboard = () => {
             </Button>
           </div>
         </Sider>
-        <Layout>
+        <Layout style={{ marginLeft: collapsed ? 80 : 240 }}>
           <div
             style={{
               width: "100%",

@@ -220,6 +220,45 @@ const TestingResults = () => {
     }
   }
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING": return "Chờ xử lý"
+      case "PROCESSING": return "Đang xử lý"
+      case "WAITING_APPROVAL": return "Chờ xác thực"
+      case "COMPLETED": return "Hoàn thành"
+      case "REJECTED": return "Từ chối"
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý"
+        if (status === "Đang xử lý") return "Đang xử lý"
+        if (status === "Chờ xác thực") return "Chờ xác thực"
+        if (status === "Hoàn thành") return "Hoàn thành"
+        if (status === "Từ chối") return "Từ chối"
+        return status
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PENDING":
+      case "Chờ xử lý":
+        return "orange"
+      case "PROCESSING":
+      case "Đang xử lý":
+        return "blue"
+      case "WAITING_APPROVAL":
+      case "Chờ xác thực":
+        return "purple"
+      case "COMPLETED":
+      case "Hoàn thành":
+        return "green"
+      case "REJECTED":
+      case "Từ chối":
+        return "red"
+      default:
+        return "default"
+    }
+  }
+
   const columns = [
     {
       title: "Mã đơn",
@@ -245,14 +284,7 @@ const TestingResults = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => {
-        let color = "default"
-        if (status === "Chờ xử lý") color = "orange"
-        if (status === "Đang xử lý") color = "blue"
-        if (status === "Hoàn thành") color = "green"
-        if (status === "Chờ xác thực") color = "purple"
-        return <Tag color={color}>{status}</Tag>
-      },
+      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
     },
     {
       title: "Ngày tạo",
@@ -481,8 +513,8 @@ const TestingResults = () => {
             </div>
             <div style={{ marginBottom: 16 }}>
               <Text strong>Trạng thái: </Text>
-              <Tag color={selectedOrder.status === "Hoàn thành" ? "green" : "orange"}>
-                {selectedOrder.status}
+              <Tag color={getStatusColor(selectedOrder.status)}>
+                {getStatusText(selectedOrder.status)}
               </Tag>
             </div>
             {selectedOrder.result && (

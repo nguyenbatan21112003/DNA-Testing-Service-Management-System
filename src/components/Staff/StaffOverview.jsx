@@ -47,12 +47,28 @@ const StaffOverview = () => {
     setUrgentOrders(highPriorityOrders)
   }, [])
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING": return "Chờ xử lý"
+      case "PROCESSING": return "Đang xử lý"
+      case "COMPLETED": return "Hoàn thành"
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý"
+        if (status === "Đang xử lý") return "Đang xử lý"
+        if (status === "Hoàn thành") return "Hoàn thành"
+        return status
+    }
+  }
+
   const getStatusColor = (status) => {
     switch (status) {
+      case "PENDING":
       case "Chờ xử lý":
         return "orange"
+      case "PROCESSING":
       case "Đang xử lý":
         return "blue"
+      case "COMPLETED":
       case "Hoàn thành":
         return "green"
       default:
@@ -98,7 +114,7 @@ const StaffOverview = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{status}</Tag>,
+      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
     },
     {
       title: "Độ ưu tiên",
