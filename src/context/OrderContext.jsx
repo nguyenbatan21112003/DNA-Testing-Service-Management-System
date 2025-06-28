@@ -153,7 +153,7 @@ export function OrderProvider({ children }) {
   };
 
   // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác thực)
-  const updateOrder = (orderId, updates) => {
+  const updateOrder = async (orderId, updates) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
 
@@ -197,6 +197,7 @@ export function OrderProvider({ children }) {
         }
       }
     }
+    return Promise.resolve();
   };
 
   // Thêm/Chỉnh sửa feedback và rating

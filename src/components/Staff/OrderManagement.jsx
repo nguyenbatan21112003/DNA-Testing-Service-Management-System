@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, Table, Tag, Button, Modal, Form, Input, Select, message, Space, Tabs, Statistic, Row, Col } from "antd"
+import { Card, Table, Tag, Button, Modal, Form, Input, Select, message, Space, Tabs, Statistic, Row, Col, Tooltip } from "antd"
 import { FileTextOutlined, EyeOutlined, EditOutlined, ExportOutlined, PlusOutlined, DeleteOutlined, UndoOutlined, EyeInvisibleOutlined } from "@ant-design/icons"
 import { useOrderContext } from "../../context/OrderContext"
 
@@ -19,11 +19,12 @@ const OrderManagement = () => {
   const [form] = Form.useForm()
   const [activeTab, setActiveTab] = useState("all")
   const [searchText, setSearchText] = useState("")
+  const [confirmHideOrder, setConfirmHideOrder] = useState(null)
 
   // Lấy dữ liệu đơn hàng từ context
   const loadOrders = () => {
     const allOrders = getAllOrders()
-    setOrders(allOrders.filter(order => !order.isHidden))
+    setOrders(allOrders)
     setFilteredOrders(allOrders.filter(order => !order.isHidden))
   }
 
@@ -47,8 +48,12 @@ const OrderManagement = () => {
     let filtered = orders
 
     // Lọc theo tab
-    if (activeTab !== "all") {
-      filtered = filtered.filter((order) => order.status === activeTab)
+    if (activeTab !== "all" && activeTab !== "hidden") {
+      filtered = filtered.filter((order) => order.status === activeTab && !order.isHidden)
+    } else if (activeTab === "hidden") {
+      filtered = filtered.filter((order) => order.isHidden)
+    } else {
+      filtered = filtered.filter((order) => !order.isHidden)
     }
 
     // Tìm kiếm
@@ -79,18 +84,27 @@ const OrderManagement = () => {
   }
 
   const handleDeleteOrder = (order) => {
-    Modal.confirm({
-      title: `Xác nhận ẩn đơn hàng #${order.id}`,
-      content: 'Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? Đơn hàng vẫn sẽ được lưu trên hệ thống và khách hàng vẫn xem được.',
-      okText: 'Ẩn',
-      okType: 'default',
-      cancelText: 'Huỷ',
-      onOk: () => {
-        updateOrder(order.id, { isHidden: true })
-        message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
-        loadOrders()
-      }
-    })
+    setConfirmHideOrder(order)
+  }
+
+  const handleConfirmHide = async () => {
+    if (confirmHideOrder) {
+      await updateOrder(confirmHideOrder.id, { isHidden: true })
+      message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
+      setConfirmHideOrder(null)
+      loadOrders()
+      setActiveTab("hidden")
+    }
+  }
+
+  const handleCancelHide = () => {
+    setConfirmHideOrder(null)
+  }
+
+  const handleUnhideOrder = (order) => {
+    updateOrder(order.id, { isHidden: false })
+    message.success('Đơn hàng đã được hiện lại cho nhân viên!')
+    loadOrders()
   }
 
   const getStatusText = (status) => {
@@ -230,27 +244,40 @@ const OrderManagement = () => {
           <Button type="default" size="small" icon={<EditOutlined />} onClick={() => handleEditOrder(record)}>
             Sửa
           </Button>
-          <Button
-            size="small"
-            icon={<EyeInvisibleOutlined />}
-            onClick={() => handleDeleteOrder(record)}
-            style={{ color: "#888", borderColor: "#d9d9d9", background: "#f5f5f5" }}
-            title="Ẩn đơn này khỏi giao diện nhân viên (không xoá dữ liệu)"
-          >
-            Ẩn
-          </Button>
+          {record.isHidden ? (
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => handleUnhideOrder(record)}
+              style={{ background: "#52c41a", color: "#fff" }}
+            >
+              Hiện lại
+            </Button>
+          ) : (
+            <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+              <Button
+                icon={<EyeInvisibleOutlined style={{ color: '#595959' }} />}
+                onClick={() => handleDeleteOrder(record)}
+                size="small"
+                style={{ marginLeft: 8, borderColor: '#bfbfbf', color: '#595959', background: '#f5f5f5', fontWeight: 600 }}
+              >
+                Ẩn
+              </Button>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
   ]
 
   const stats = {
-    total: orders.length,
-    pending: orders.filter((order) => order.status === "Chờ xử lý").length,
-    processing: orders.filter((order) => order.status === "Đang xử lý").length,
-    completed: orders.filter((order) => order.status === "Hoàn thành").length,
-    waitingApproval: orders.filter((order) => order.status === "Chờ xác thực").length,
-    rejected: orders.filter((order) => order.status === "Từ chối").length,
+    total: orders.filter(order => !order.isHidden).length,
+    pending: orders.filter((order) => order.status === "Chờ xử lý" && !order.isHidden).length,
+    processing: orders.filter((order) => order.status === "Đang xử lý" && !order.isHidden).length,
+    completed: orders.filter((order) => order.status === "Hoàn thành" && !order.isHidden).length,
+    waitingApproval: orders.filter((order) => order.status === "Chờ xác thực" && !order.isHidden).length,
+    rejected: orders.filter((order) => order.status === "Từ chối" && !order.isHidden).length,
+    hidden: orders.filter((order) => order.isHidden).length,
   }
 
   return (
@@ -329,6 +356,7 @@ const OrderManagement = () => {
           <TabPane tab={`Chờ xác thực (${stats.waitingApproval || 0})`} key="WAITING_APPROVAL" />
           <TabPane tab={`Hoàn thành (${stats.completed})`} key="COMPLETED" />
           <TabPane tab={`Từ chối (${stats.rejected || 0})`} key="REJECTED" />
+          <TabPane tab={`Đơn đã ẩn (${stats.hidden})`} key="hidden" />
         </Tabs>
 
         <Table
@@ -353,6 +381,18 @@ const OrderManagement = () => {
         footer={null}
       >
         {/* Modal content */}
+      </Modal>
+
+      <Modal
+        open={!!confirmHideOrder}
+        title={`Xác nhận ẩn đơn hàng #${confirmHideOrder?.id}`}
+        onOk={handleConfirmHide}
+        onCancel={handleCancelHide}
+        okText="Ẩn"
+        cancelText="Huỷ"
+        okButtonProps={{ danger: true }}
+      >
+        Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không?
       </Modal>
     </div>
   )
