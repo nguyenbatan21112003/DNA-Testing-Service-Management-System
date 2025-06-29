@@ -67,7 +67,6 @@ export function OrderProvider({ children }) {
     notifyFeedbackResponse,
     notifyPricingUpdate
   } = useNotification();
-
   // Khi load lần đầu hoặc user đổi, đọc orders từ localStorage và lọc theo user
   useEffect(() => {
     const loadOrders = () => {
@@ -95,22 +94,21 @@ export function OrderProvider({ children }) {
     // Load orders khi component mount và khi user thay đổi
     loadOrders();
 
-    //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
-    //   window.addEventListener('storage', (event) => {
-    //     if (event.key === 'dna_orders') {
-    //       loadOrders();
-    //     }
-    //   });
+  //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
+  //   window.addEventListener('storage', (event) => {
+  //     if (event.key === 'dna_orders') {
+  //       loadOrders();
+  //     }
+  //   });
 
-    //   // Cleanup function
-    //   return () => {
-    //     window.removeEventListener('storage', () => {});
-    //   };
-  }, [user]);
+  //   // Cleanup function
+  //   return () => {
+  //     window.removeEventListener('storage', () => {});
+  //   };
+   }, [user]);
 
   const addOrder = (order) => {
     if (!user || !user.email) return;
-
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
@@ -131,7 +129,7 @@ export function OrderProvider({ children }) {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const newOrders = [orderWithEmail, ...allOrders];
     localStorage.setItem("dna_orders", JSON.stringify(newOrders));
-
+    
     // Sau khi thêm, lọc lại toàn bộ đơn cho user hiện tại
     const filtered =
       user.role_id === 2
@@ -330,5 +328,4 @@ export function OrderProvider({ children }) {
     </OrderContext.Provider>
   );
 }
-
 export const useOrderContext = () => useContext(OrderContext);

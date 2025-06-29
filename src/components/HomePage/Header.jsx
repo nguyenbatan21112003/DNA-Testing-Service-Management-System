@@ -62,9 +62,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/"
-                className={`nav-link ${location.pathname === "/" ? "active" : ""
-                  }`}
-
+                className={`nav-link ${
+                  location.pathname === "/" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trang chủ
@@ -73,8 +73,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/dichvu"
-                className={`nav-link ${location.pathname === "/dichvu" ? "active" : ""
-                  }`}
+                className={`nav-link ${
+                  location.pathname === "/dichvu" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dịch vụ
@@ -83,8 +84,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/dangki"
-                className={`nav-link ${location.pathname === "/dangki" ? "active" : ""
-                  }`}
+                className={`nav-link ${
+                  location.pathname === "/dangki" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Đăng kí
@@ -93,8 +95,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/vechungtoi"
-                className={`nav-link ${location.pathname === "/vechungtoi" ? "active" : ""
-                  }`}
+                className={`nav-link ${
+                  location.pathname === "/vechungtoi" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Về chúng tôi
@@ -103,8 +106,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/tintuc"
-                className={`nav-link ${location.pathname === "/tintuc" ? "active" : ""
-                  }`}
+                className={`nav-link ${
+                  location.pathname === "/tintuc" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Tin tức
@@ -113,8 +117,9 @@ const Header = () => {
             <li className="nav-item">
               <Link
                 to="/lienhe"
-                className={`nav-link ${location.pathname === "/lienhe" ? "active" : ""
-                  }`}
+                className={`nav-link ${
+                  location.pathname === "/lienhe" ? "active" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Liên hệ
@@ -131,7 +136,11 @@ const Header = () => {
                 ref={dropdownRef}
               >
                 <span
-                  style={{ marginRight: 12, cursor: "pointer", fontWeight: 500 }}
+                  style={{
+                    marginRight: 12,
+                    cursor: "pointer",
+                    fontWeight: 500,
+                  }}
                   onClick={() => setShowDropdown((v) => !v)}
                 >
                   {user.name || user.fullName || user.email}{" "}
@@ -236,8 +245,12 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="login-button">Đăng nhập</Link>
-              <Link to="/register" className="register-button">Đăng ký</Link>
+              <Link to="/login" className="login-button">
+                Đăng nhập
+              </Link>
+              <Link to="/register" className="register-button">
+                Đăng ký
+              </Link>
             </>
           )}
         </div>

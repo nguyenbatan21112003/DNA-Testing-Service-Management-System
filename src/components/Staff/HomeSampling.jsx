@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Card,
   Table,
@@ -19,7 +19,7 @@ import {
   Col,
   Typography,
   Divider,
-} from "antd"
+} from "antd";
 import {
   HomeOutlined,
   CarOutlined,
@@ -28,39 +28,48 @@ import {
   ClockCircleOutlined,
   FileTextOutlined,
   PrinterOutlined,
-} from "@ant-design/icons"
-import dayjs from "dayjs"
-import { useOrderContext } from "../../context/OrderContext"
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import { useOrderContext } from "../../context/OrderContext";
 
-const { Option } = Select
-const { TextArea } = Input
-const { Step } = Steps
-const { Title, Text, Paragraph } = Typography
-const { TabPane } = Tabs
+const { Option } = Select;
+const { TextArea } = Input;
+const { Step } = Steps;
+const { Title, Text, Paragraph } = Typography;
+const { TabPane } = Tabs;
 
 const HomeSampling = () => {
-  const { getAllOrders, updateOrder } = useOrderContext()
-  const [samplingRequests, setSamplingRequests] = useState([])
-  const [selectedRequest, setSelectedRequest] = useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [updateModalVisible, setUpdateModalVisible] = useState(false)
-  const [reportModalVisible, setReportModalVisible] = useState(false)
-  const [form] = Form.useForm()
+  const { getAllOrders, updateOrder } = useOrderContext();
+  const [samplingRequests, setSamplingRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
   // Lấy dữ liệu đơn hàng từ context
   const loadSamplingRequests = () => {
-    const allOrders = getAllOrders()
+    const allOrders = getAllOrders();
     const homeSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "home" && !order.isHidden)
       .map((order) => {
         // Map status cũ sang chuẩn
-        let status = order.status || order.kitStatus
+        let status = order.status || order.kitStatus;
         switch (status) {
-          case "chua_gui": status = "PENDING_CONFIRM"; break
-          case "da_gui": status = "KIT_SENT"; break
-          case "da_nhan": status = "SAMPLE_RECEIVED"; break
-          case "huy": status = "CANCELLED"; break
-          default: break
+          case "chua_gui":
+            status = "PENDING_CONFIRM";
+            break;
+          case "da_gui":
+            status = "KIT_SENT";
+            break;
+          case "da_nhan":
+            status = "SAMPLE_RECEIVED";
+            break;
+          case "huy":
+            status = "CANCELLED";
+            break;
+          default:
+            break;
         }
         return {
           ...order,
@@ -68,56 +77,59 @@ const HomeSampling = () => {
           scheduledDate: order.scheduledDate || null,
           samplerName: order.samplerName || null,
           notes: order.notes || "",
-        }
-      })
+        };
+      });
 
-    setSamplingRequests(homeSamplingOrders)
-  }
+    setSamplingRequests(homeSamplingOrders);
+  };
 
   useEffect(() => {
     // Load orders khi component mount
-    loadSamplingRequests()
-
+    loadSamplingRequests();
     // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'dna_orders') {
-        loadSamplingRequests()
+    window.addEventListener("storage", (event) => {
+      if (event.key === "dna_orders") {
+        loadSamplingRequests();
       }
-    })
+    });
 
     // Cleanup function
     return () => {
-      window.removeEventListener('storage', () => { })
-    }
-  }, [])
+      window.removeEventListener("storage", () => {});
+    };
+  }, []);
 
   const handleViewRequest = (request) => {
-    setSelectedRequest(request)
-    setModalVisible(true)
-  }
+    setSelectedRequest(request);
+    setModalVisible(true);
+  };
 
   const handleUpdateStatus = (request) => {
-    setSelectedRequest(request)
+    setSelectedRequest(request);
     form.setFieldsValue({
       samplingStatus: request.status,
-      scheduledDate: request.scheduledDate ? dayjs(request.scheduledDate.split(" ")[0], "DD/MM/YYYY") : null,
-      scheduledTime: request.scheduledDate ? request.scheduledDate.split(" ")[1] : null,
+      scheduledDate: request.scheduledDate
+        ? dayjs(request.scheduledDate.split(" ")[0], "DD/MM/YYYY")
+        : null,
+      scheduledTime: request.scheduledDate
+        ? request.scheduledDate.split(" ")[1]
+        : null,
       samplerName: request.samplerName || "",
       kitId: request.kitId || generateKitId(request),
       notes: request.notes || "",
-    })
-    setUpdateModalVisible(true)
-  }
+    });
+    setUpdateModalVisible(true);
+  };
 
   const handleViewReport = (request) => {
-    setSelectedRequest(request)
-    setReportModalVisible(true)
-  }
+    setSelectedRequest(request);
+    setReportModalVisible(true);
+  };
 
   const generateKitId = (request) => {
-    const prefix = request.type.includes("huyết thống") ? "KIT-PC-" : "KIT-DT-"
-    return `${prefix}${request.id}`
-  }
+    const prefix = request.type.includes("huyết thống") ? "KIT-PC-" : "KIT-DT-";
+    return `${prefix}${request.id}`;
+  };
 
   const handleSaveUpdate = async (values) => {
     try {
@@ -127,67 +139,87 @@ const HomeSampling = () => {
         status: values.samplingStatus,
         scheduledDate:
           values.scheduledDate && values.scheduledTime
-            ? `${values.scheduledDate.format("DD/MM/YYYY")} ${values.scheduledTime}`
+            ? `${values.scheduledDate.format("DD/MM/YYYY")} ${
+                values.scheduledTime
+              }`
             : null,
         samplerName: values.samplerName,
         kitId: values.kitId,
         notes: values.notes,
         updatedAt: new Date().toLocaleString("vi-VN"),
-      })
+      });
 
       // Cập nhật lại danh sách đơn hàng
-      loadSamplingRequests()
+      loadSamplingRequests();
 
-      setUpdateModalVisible(false)
-      message.success("Cập nhật trạng thái thành công!")
+      setUpdateModalVisible(false);
+      message.success("Cập nhật trạng thái thành công!");
     } catch {
-      message.error("Có lỗi xảy ra khi cập nhật!")
+      message.error("Có lỗi xảy ra khi cập nhật!");
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM": return "#EA580C";
-      case "CONFIRMED": return "#10B981";
-      case "KIT_SENT": return "#2563EB";
-      case "KIT_DELIVERED": return "#6366F1";
-      case "SAMPLE_RECEIVED": return "#22C55E";
-      case "TESTING": return "#EC4899";
-      case "COMPLETED": return "#F59E42";
-      case "CANCELLED": return "#EF4444";
-      default: return "#e5e7eb";
+      case "PENDING_CONFIRM":
+        return "#EA580C";
+      case "CONFIRMED":
+        return "#10B981";
+      case "KIT_SENT":
+        return "#2563EB";
+      case "KIT_DELIVERED":
+        return "#6366F1";
+      case "SAMPLE_RECEIVED":
+        return "#22C55E";
+      case "TESTING":
+        return "#EC4899";
+      case "COMPLETED":
+        return "#F59E42";
+      case "CANCELLED":
+        return "#EF4444";
+      default:
+        return "#e5e7eb";
     }
-  }
+  };
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM": return "Đang chờ xác nhận"
-      case "CONFIRMED": return "Đã xác nhận"
-      case "KIT_SENT": return "Đã gửi kit"
-      case "KIT_DELIVERED": return "Đang thu mẫu tại nhà"
-      case "SAMPLE_RECEIVED": return "Đã nhận mẫu"
-      case "TESTING": return "Đang xét nghiệm"
-      case "COMPLETED": return "Đã trả kết quả"
-      case "CANCELLED": return "Đã hủy"
-      default: return status
+      case "PENDING_CONFIRM":
+        return "Đang chờ xác nhận";
+      case "CONFIRMED":
+        return "Đã xác nhận";
+      case "KIT_SENT":
+        return "Đã gửi kit";
+      case "KIT_DELIVERED":
+        return "Đang thu mẫu tại nhà";
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu";
+      case "TESTING":
+        return "Đang xét nghiệm";
+      case "COMPLETED":
+        return "Đã trả kết quả";
+      case "CANCELLED":
+        return "Đã hủy";
+      default:
+        return status;
     }
-  }
+  };
 
   const getStepStatus = (currentStatus, stepStatus) => {
-    const statusOrder = ["chua_gui", "da_gui", "da_nhan"]
-    const currentIndex = statusOrder.indexOf(currentStatus)
-    const stepIndex = statusOrder.indexOf(stepStatus)
+    const statusOrder = ["chua_gui", "da_gui", "da_nhan"];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    const stepIndex = statusOrder.indexOf(stepStatus);
 
-    if (currentStatus === "huy") return "error"
-    if (stepIndex < currentIndex) return "finish"
-    if (stepIndex === currentIndex) return "process"
-    return "wait"
-  }
+    if (currentStatus === "huy") return "error";
+    if (stepIndex < currentIndex) return "finish";
+    if (stepIndex === currentIndex) return "process";
+    return "wait";
+  };
 
   // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
   const disabledDate = (current) => {
     // Không cho chọn ngày trước hôm nay
-    const today = dayjs().startOf('day');
+    const today = dayjs().startOf("day");
     if (!current) return false;
     // current.day() === 0 là Chủ nhật
     return current < today || current.day() === 0;
@@ -244,7 +276,11 @@ const HomeSampling = () => {
       dataIndex: "status",
       key: "status",
       width: 130,
-      render: (_, record) => <Tag color={getStatusColor(record.status)}>{getStatusText(record.status)}</Tag>,
+      render: (_, record) => (
+        <Tag color={getStatusColor(record.status)}>
+          {getStatusText(record.status)}
+        </Tag>
+      ),
     },
     {
       title: "Ngày hẹn",
@@ -279,10 +315,10 @@ const HomeSampling = () => {
               borderRadius: 6,
               border: "none",
               boxShadow: "0 2px 8px #1890ff22",
-              transition: "background 0.2s"
+              transition: "background 0.2s",
             }}
-            onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-            onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
           >
             Xem
           </Button>
@@ -297,27 +333,36 @@ const HomeSampling = () => {
               borderRadius: 6,
               border: "none",
               boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s"
+              transition: "background 0.2s",
             }}
-            onMouseOver={e => (e.currentTarget.style.background = '#d46b08')}
-            onMouseOut={e => (e.currentTarget.style.background = '#fa8c16')}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
           >
             Cập nhật
           </Button>
           {record.kitStatus === "da_nhan" && (
-            <Button type="default" size="small" icon={<FileTextOutlined />} onClick={() => handleViewReport(record)}>
+            <Button
+              type="default"
+              size="small"
+              icon={<FileTextOutlined />}
+              onClick={() => handleViewReport(record)}
+            >
               Biên bản
             </Button>
           )}
         </Space>
       ),
     },
-  ]
+  ];
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Thu mẫu tại nhà</h1>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Thu mẫu tại nhà
+        </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
           Quản lý các yêu cầu lấy mẫu tại nhà của khách hàng
         </p>
@@ -334,7 +379,8 @@ const HomeSampling = () => {
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
               }}
               scroll={{ x: 1200 }}
             />
@@ -342,13 +388,16 @@ const HomeSampling = () => {
           <TabPane tab="Chưa gửi kit" key="pending">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.status === "PENDING_CONFIRM")}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "PENDING_CONFIRM"
+              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
               }}
               scroll={{ x: 1200 }}
             />
@@ -356,13 +405,16 @@ const HomeSampling = () => {
           <TabPane tab="Đã gửi kit" key="sent">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.status === "KIT_SENT")}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "KIT_SENT"
+              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
               }}
               scroll={{ x: 1200 }}
             />
@@ -370,13 +422,16 @@ const HomeSampling = () => {
           <TabPane tab="Đã nhận mẫu" key="received">
             <Table
               columns={columns}
-              dataSource={samplingRequests.filter((req) => req.status === "SAMPLE_RECEIVED")}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "SAMPLE_RECEIVED"
+              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
                 showSizeChanger: true,
                 showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} yêu cầu`,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
               }}
               scroll={{ x: 1200 }}
             />
@@ -398,8 +453,8 @@ const HomeSampling = () => {
             type="primary"
             icon={<CarOutlined />}
             onClick={() => {
-              setModalVisible(false)
-              handleUpdateStatus(selectedRequest)
+              setModalVisible(false);
+              handleUpdateStatus(selectedRequest);
             }}
             style={{
               background: "#fa8c16",
@@ -408,10 +463,10 @@ const HomeSampling = () => {
               borderRadius: 6,
               border: "none",
               boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s"
+              transition: "background 0.2s",
             }}
-            onMouseOver={e => (e.currentTarget.style.background = '#d46b08')}
-            onMouseOut={e => (e.currentTarget.style.background = '#fa8c16')}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
           >
             Cập nhật trạng thái
           </Button>,
@@ -438,13 +493,18 @@ const HomeSampling = () => {
                 <strong>Loại xét nghiệm:</strong> {selectedRequest.type}
               </p>
               <p>
-                <strong>Mã kit:</strong> {selectedRequest.kitId || "Chưa cấp mã kit"}
+                <strong>Mã kit:</strong>{" "}
+                {selectedRequest.kitId || "Chưa cấp mã kit"}
               </p>
             </div>
 
             <div style={{ marginBottom: 24 }}>
               <h3>Tiến trình lấy mẫu:</h3>
-              <Steps current={["chua_gui", "da_gui", "da_nhan"].indexOf(selectedRequest.kitStatus)}>
+              <Steps
+                current={["chua_gui", "da_gui", "da_nhan"].indexOf(
+                  selectedRequest.kitStatus
+                )}
+              >
                 <Step
                   title="Chuẩn bị kit"
                   description="Chuẩn bị và gửi kit lấy mẫu"
@@ -467,7 +527,9 @@ const HomeSampling = () => {
               <h3>Thông tin bổ sung:</h3>
               <p>
                 <strong>Trạng thái hiện tại:</strong>{" "}
-                <Tag color={getStatusColor(selectedRequest.kitStatus)}>{getStatusText(selectedRequest.kitStatus)}</Tag>
+                <Tag color={getStatusColor(selectedRequest.kitStatus)}>
+                  {getStatusText(selectedRequest.kitStatus)}
+                </Tag>
               </p>
               {selectedRequest.scheduledDate && (
                 <p>
@@ -476,7 +538,8 @@ const HomeSampling = () => {
               )}
               {selectedRequest.samplerName && (
                 <p>
-                  <strong>Nhân viên phụ trách:</strong> {selectedRequest.samplerName}
+                  <strong>Nhân viên phụ trách:</strong>{" "}
+                  {selectedRequest.samplerName}
                 </p>
               )}
               {selectedRequest.kitId && (
@@ -487,7 +550,14 @@ const HomeSampling = () => {
               {selectedRequest.notes && (
                 <div>
                   <strong>Ghi chú:</strong>
-                  <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4, marginTop: 8 }}>
+                  <div
+                    style={{
+                      background: "#f6f6f6",
+                      padding: 12,
+                      borderRadius: 4,
+                      marginTop: 8,
+                    }}
+                  >
                     {selectedRequest.notes}
                   </div>
                 </div>
@@ -497,15 +567,25 @@ const HomeSampling = () => {
             {selectedRequest.sampleInfo && (
               <div>
                 <h3>Thông tin người lấy mẫu:</h3>
-                <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4, marginTop: 8 }}>
+                <div
+                  style={{
+                    background: "#f6f6f6",
+                    padding: 12,
+                    borderRadius: 4,
+                    marginTop: 8,
+                  }}
+                >
                   <p>
-                    <strong>Địa điểm lấy mẫu:</strong> {selectedRequest.sampleInfo.location}
+                    <strong>Địa điểm lấy mẫu:</strong>{" "}
+                    {selectedRequest.sampleInfo.location}
                   </p>
                   <p>
-                    <strong>Nhân viên thu mẫu:</strong> {selectedRequest.sampleInfo.collector}
+                    <strong>Nhân viên thu mẫu:</strong>{" "}
+                    {selectedRequest.sampleInfo.collector}
                   </p>
                   <p>
-                    <strong>Ngày lấy mẫu:</strong> {selectedRequest.sampleInfo.collectionDate}
+                    <strong>Ngày lấy mẫu:</strong>{" "}
+                    {selectedRequest.sampleInfo.collectionDate}
                   </p>
                 </div>
               </div>
@@ -531,10 +611,10 @@ const HomeSampling = () => {
             borderRadius: 6,
             border: "none",
             boxShadow: "0 2px 8px #fa8c1622",
-            transition: "background 0.2s"
+            transition: "background 0.2s",
           },
-          onMouseOver: e => (e.currentTarget.style.background = '#d46b08'),
-          onMouseOut: e => (e.currentTarget.style.background = '#fa8c16')
+          onMouseOver: (e) => (e.currentTarget.style.background = "#d46b08"),
+          onMouseOut: (e) => (e.currentTarget.style.background = "#fa8c16"),
         }}
       >
         <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
@@ -551,7 +631,11 @@ const HomeSampling = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item name="kitId" label="Mã kit" rules={[{ required: true, message: "Vui lòng nhập mã kit!" }]}>
+          <Form.Item
+            name="kitId"
+            label="Mã kit"
+            rules={[{ required: true, message: "Vui lòng nhập mã kit!" }]}
+          >
             <Input placeholder="Nhập mã kit" />
           </Form.Item>
 
@@ -565,7 +649,10 @@ const HomeSampling = () => {
           </Form.Item>
 
           <Form.Item name="notes" label="Ghi chú">
-            <TextArea rows={4} placeholder="Nhập ghi chú về quá trình lấy mẫu..." />
+            <TextArea
+              rows={4}
+              placeholder="Nhập ghi chú về quá trình lấy mẫu..."
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -586,7 +673,13 @@ const HomeSampling = () => {
         width={800}
       >
         {selectedRequest && selectedRequest.sampleInfo && (
-          <div style={{ background: "#fff", padding: 24, border: "1px solid #ddd" }}>
+          <div
+            style={{
+              background: "#fff",
+              padding: 24,
+              border: "1px solid #ddd",
+            }}
+          >
             <div style={{ textAlign: "center", marginBottom: 24 }}>
               <Title level={4}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Title>
               <Text>Độc lập - Tự do - Hạnh phúc</Text>
@@ -594,28 +687,86 @@ const HomeSampling = () => {
               <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
             </div>
 
+            {/* Thông tin user gửi từ form yêu cầu xét nghiệm
+            <div style={{ marginBottom: 24, background: "#f6f6f6", padding: 16, borderRadius: 6 }}>
+              <h3>Thông tin yêu cầu xét nghiệm từ khách hàng</h3>
+              <p><strong>Họ tên người yêu cầu:</strong> {selectedRequest.name}</p>
+              <p><strong>Số điện thoại:</strong> {selectedRequest.phone}</p>
+              <p><strong>Email:</strong> {selectedRequest.email}</p>
+              <p><strong>Địa chỉ:</strong> {selectedRequest.address}</p>
+              <p><strong>Loại xét nghiệm:</strong> {selectedRequest.type}</p>
+              {selectedRequest.date && (
+                <p><strong>Ngày đăng ký:</strong> {selectedRequest.date}</p>
+              )}
+              {selectedRequest.idNumber && (
+                <p><strong>Số CCCD:</strong> {selectedRequest.idNumber}</p>
+              )}
+               //Danh sách thành viên cung cấp mẫu 
+              {selectedRequest.members && Array.isArray(selectedRequest.members) && selectedRequest.members.length > 0 ? (
+                <div style={{ marginTop: 16 }}>
+                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
+                  <ul>
+                    {selectedRequest.members.map((mem, idx) => (
+                      <li key={idx}>
+                        {mem.name} {mem.birth ? `- Năm sinh: ${mem.birth}` : ""}
+                        {mem.relation ? `- Mối quan hệ: ${mem.relation}` : ""}
+                        {mem.sampleType ? `- Loại mẫu: ${mem.sampleType}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (selectedRequest.sampleInfo && selectedRequest.sampleInfo.donors && Array.isArray(selectedRequest.sampleInfo.donors) && selectedRequest.sampleInfo.donors.length > 0) ? (
+                <div style={{ marginTop: 16 }}>
+                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
+                  <ul>
+                    {selectedRequest.sampleInfo.donors.map((donor, idx) => (
+                      <li key={idx}>
+                        {donor.name} {donor.dob ? `- Năm sinh: ${donor.dob}` : ""}
+                        {donor.relationship ? `- Mối quan hệ: ${donor.relationship}` : ""}
+                        {donor.sampleType ? `- Loại mẫu: ${donor.sampleType}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+                </div> */}
+
             <Paragraph>
-              Hôm nay, ngày {selectedRequest.sampleInfo.collectionDate}, tại {selectedRequest.sampleInfo.location}
+              Hôm nay, ngày {selectedRequest.sampleInfo.collectionDate}, tại{" "}
+              {selectedRequest.sampleInfo.location}
             </Paragraph>
             <Paragraph>Chúng tôi gồm có:</Paragraph>
             <Paragraph>
-              1. Nhân viên thu mẫu: <strong>{selectedRequest.sampleInfo.collector}</strong>
+              1. Nhân viên thu mẫu:{" "}
+              <strong>{selectedRequest.sampleInfo.collector}</strong>
             </Paragraph>
             <Paragraph>
-              2. Người yêu cầu xét nghiệm: <strong>{selectedRequest.name}</strong>, Địa chỉ hiện tại:{" "}
+              2. Người yêu cầu xét nghiệm:{" "}
+              <strong>{selectedRequest.name}</strong>, Địa chỉ hiện tại:{" "}
               {selectedRequest.address}
             </Paragraph>
 
             <Paragraph>
-              Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm ADN. Các mẫu của từng người được lấy riêng
-              rẽ như sau:
+              Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm
+              ADN. Các mẫu của từng người được lấy riêng rẽ như sau:
             </Paragraph>
 
-            <div style={{ border: "1px solid #000", padding: 16, marginBottom: 16 }}>
+            <div
+              style={{
+                border: "1px solid #000",
+                padding: 16,
+                marginBottom: 16,
+              }}
+            >
               {selectedRequest.sampleInfo.donors.map((donor, index) => (
                 <div
                   key={index}
-                  style={{ marginBottom: index < selectedRequest.sampleInfo.donors.length - 1 ? 24 : 0 }}
+                  style={{
+                    marginBottom:
+                      index < selectedRequest.sampleInfo.donors.length - 1
+                        ? 24
+                        : 0,
+                  }}
                 >
                   <Row gutter={16}>
                     <Col span={18}>
@@ -664,7 +815,10 @@ const HomeSampling = () => {
                   </Row>
                   <Row style={{ marginTop: 8 }}>
                     <Col span={24}>
-                      <Text>Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng: {donor.healthIssues}</Text>
+                      <Text>
+                        Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6
+                        tháng: {donor.healthIssues}
+                      </Text>
                     </Col>
                   </Row>
                   <div style={{ textAlign: "right", marginTop: 16 }}>
@@ -685,11 +839,13 @@ const HomeSampling = () => {
             </div>
 
             <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể tách rời.
+              * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể
+              tách rời.
             </Paragraph>
             <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày trả kết quả. Sau thời gian đó người yêu
-              cầu xét nghiệm cung cấp và chịu trách nhiệm.
+              * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày
+              trả kết quả. Sau thời gian đó người yêu cầu xét nghiệm cung cấp và
+              chịu trách nhiệm.
             </Paragraph>
 
             <Row gutter={24} style={{ marginTop: 24, textAlign: "center" }}>
@@ -725,7 +881,7 @@ const HomeSampling = () => {
         )}
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default HomeSampling
+export default HomeSampling;

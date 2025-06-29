@@ -19,7 +19,6 @@ import StaffManagement from "./StaffManagement";
 import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
 import PricingManagement from "./PricingManagement";
 
-
 const { Sider, Content } = Layout;
 
 const menuItems = [

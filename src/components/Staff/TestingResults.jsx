@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Card,
   Table,
@@ -18,7 +18,7 @@ import {
   Divider,
   Typography,
   Tooltip,
-} from "antd"
+} from "antd";
 import {
   EyeOutlined,
   EditOutlined,
@@ -32,45 +32,50 @@ import {
   DeleteOutlined,
   UndoOutlined,
   EyeInvisibleOutlined,
-} from "@ant-design/icons"
-import { useOrderContext } from "../../context/OrderContext"
+} from "@ant-design/icons";
+import { useOrderContext } from "../../context/OrderContext";
 
-const { TextArea } = Input
-const { Option } = Select
-const { TabPane } = Tabs
-const { Title, Text, Paragraph } = Typography
+const { TextArea } = Input;
+const { Option } = Select;
+const { TabPane } = Tabs;
+const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
-  const { orders, updateOrder, getAllOrders } = useOrderContext()
-  const [filteredOrders, setFilteredOrders] = useState([])
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  const [reportModalVisible, setReportModalVisible] = useState(false)
-  const [form] = Form.useForm()
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [tempFormData, setTempFormData] = useState({})
-  const [currentEditOrderId, setCurrentEditOrderId] = useState(null)
-  const [showCustomConclusion, setShowCustomConclusion] = useState(false)
-  const [confirmHideOrder, setConfirmHideOrder] = useState(null)
+  const { orders, updateOrder, getAllOrders } = useOrderContext();
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [tempFormData, setTempFormData] = useState({});
+  const [currentEditOrderId, setCurrentEditOrderId] = useState(null);
+  // const [showCustomConclusion, setShowCustomConclusion] = useState(false)
+  const [confirmHideOrder, setConfirmHideOrder] = useState(null);
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    setFilteredOrders(orders.filter(order => !order.isHidden))
-  }, [orders])
+    setFilteredOrders(orders.filter((order) => !order.isHidden));
+  }, [orders]);
 
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders.filter(order => !order.isHidden))
+      setFilteredOrders(orders.filter((order) => !order.isHidden));
     } else {
-      setFilteredOrders(orders.filter((order) => !order.isHidden && order.status === filterStatus))
+      setFilteredOrders(
+        orders.filter(
+          (order) => !order.isHidden && order.status === filterStatus
+        )
+      );
     }
-  }, [filterStatus, orders])
+  }, [filterStatus, orders]);
 
   useEffect(() => {
     if (editModalVisible) {
-      const currentData = form.getFieldValue('resultTableData');
+      const currentData = form.getFieldValue("resultTableData");
       if (currentData) {
-        // Handle table data if needed
+        setTableData(currentData);
       }
     }
   }, [editModalVisible, form]);
@@ -78,27 +83,31 @@ const TestingResults = () => {
   useEffect(() => {
     // Lắng nghe sự thay đổi của localStorage để reload orders khi có cập nhật từ manager
     const handleStorageChange = (event) => {
-      if (event.key === 'dna_orders') {
+      if (event.key === "dna_orders") {
         getAllOrders();
       }
     };
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, [getAllOrders]);
 
   const handleViewResult = (order) => {
-    setSelectedOrder(order)
-    setModalVisible(true)
-  }
+    setSelectedOrder(order);
+    setModalVisible(true);
+  };
 
   const handleEditResult = (order) => {
-    setSelectedOrder(order)
+    setSelectedOrder(order);
 
     // If returning to the same order being edited, use the saved temp data
-    if (currentEditOrderId === order.id && tempFormData && Object.keys(tempFormData).length > 0) {
-      form.setFieldsValue(tempFormData)
+    if (
+      currentEditOrderId === order.id &&
+      tempFormData &&
+      Object.keys(tempFormData).length > 0
+    ) {
+      form.setFieldsValue(tempFormData);
     } else {
       // Initialize with default empty row if no data exists
       let initialTableData = [];
@@ -108,7 +117,11 @@ const TestingResults = () => {
         initialTableData = [...order.resultTableData];
       }
       // If no result table data but we have string result, try parsing it
-      else if (!order.resultTableData && order.result && typeof order.result === 'string') {
+      else if (
+        !order.resultTableData &&
+        order.result &&
+        typeof order.result === "string"
+      ) {
         try {
           const parsedData = JSON.parse(order.result);
           if (Array.isArray(parsedData)) {
@@ -131,157 +144,157 @@ const TestingResults = () => {
         testingMethod: order.testingMethod || "STR",
         testingNotes: order.testingNotes || "",
         resultTableData: initialTableData,
-        conclusion: order.conclusion || ""
+        conclusion: order.conclusion || "",
       };
 
-      form.setFieldsValue(formValues)
+      form.setFieldsValue(formValues);
 
       // Store the initial form state for this order
-      setTempFormData(formValues)
+      setTempFormData(formValues);
     }
 
-    setCurrentEditOrderId(order.id)
-    setEditModalVisible(true)
-  }
+    setCurrentEditOrderId(order.id);
+    setEditModalVisible(true);
+  };
 
   const handleViewReport = (order) => {
-    setSelectedOrder(order)
-    setReportModalVisible(true)
-  }
+    setSelectedOrder(order);
+    setReportModalVisible(true);
+  };
 
   const handleSaveResult = async (values) => {
     console.log("Giá trị lưu:", values.resultTableData);
     try {
-      // Make a deep copy of the resultTableData to ensure it's properly serialized
-      let resultTableDataCopy = null;
-      if (values.resultTableData && Array.isArray(values.resultTableData)) {
-        resultTableDataCopy = JSON.parse(JSON.stringify(values.resultTableData));
-      }
+      // Lấy dữ liệu bảng: ưu tiên từ form, nếu không có thì dùng state tableData
+      let dataToSave =
+        Array.isArray(values.resultTableData) &&
+        values.resultTableData.length > 0
+          ? values.resultTableData
+          : tableData;
 
-      // Xác định trạng thái mới dựa trên việc có kết quả hay không
-      let newStatus = values.status;
-      if (resultTableDataCopy && resultTableDataCopy.length > 0 && resultTableDataCopy[0].marker) {
-        // Nếu có kết quả chi tiết, chuyển sang "Chờ xác thực"
-        newStatus = "Chờ xác thực";
-      }
+      // Make a deep copy for lưu trữ an toàn
+      const resultTableDataCopy = Array.isArray(dataToSave)
+        ? JSON.parse(JSON.stringify(dataToSave))
+        : null;
 
-      const updates = {
-        status: newStatus,
-        // Store as string representation for backward compatibility
-        result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+      // cập nhật qua context
+      updateOrder(selectedOrder.id, {
+        status: values.status,
+        result: resultTableDataCopy
+          ? JSON.stringify(resultTableDataCopy)
+          : values.result,
         testingMethod: values.testingMethod,
         testingNotes: values.testingNotes,
         conclusion: values.conclusion,
-        // Store the actual array for direct use
         resultTableData: resultTableDataCopy,
-        completedDate: newStatus === "Hoàn thành" ? new Date().toLocaleDateString("vi-VN") : selectedOrder.completedDate,
+        completedDate:
+          values.status === "Hoàn thành"
+            ? new Date().toLocaleDateString("vi-VN")
+            : selectedOrder.completedDate,
         updatedAt: new Date().toLocaleString("vi-VN"),
-      };
-
-      updateOrder(selectedOrder.id, updates);
+      });
 
       // Clear the temp form data since we've saved
-      setTempFormData({})
-      setCurrentEditOrderId(null)
-
-      setEditModalVisible(false)
-      message.success("Cập nhật kết quả thành công!")
+      setTempFormData({});
+      setCurrentEditOrderId(null);
+      setEditModalVisible(false);
+      message.success("Cập nhật kết quả thành công!");
     } catch (error) {
-      console.error("Error updating result:", error)
-      message.error("Có lỗi xảy ra khi cập nhật kết quả!")
+      console.error("Error updating result:", error);
+      message.error("Có lỗi xảy ra khi cập nhật kết quả!");
     }
-  }
+  };
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    setTempFormData(allValues)
-  }
+    setTempFormData(allValues);
+  };
 
   const handleDeleteOrder = (order) => {
-    setConfirmHideOrder(order)
-  }
+    setConfirmHideOrder(order);
+  };
 
   const handleConfirmHide = () => {
     if (confirmHideOrder) {
-      updateOrder(confirmHideOrder.id, { isHidden: true })
-      message.success('Đơn hàng đã được ẩn khỏi giao diện nhân viên!')
-      setConfirmHideOrder(null)
+      updateOrder(confirmHideOrder.id, { isHidden: true });
+      message.success("Đơn hàng đã được ẩn khỏi giao diện nhân viên!");
+      setConfirmHideOrder(null);
     }
-  }
+  };
 
   const handleCancelHide = () => {
-    setConfirmHideOrder(null)
-  }
+    setConfirmHideOrder(null);
+  };
 
   const handleUnhideOrder = (order) => {
-    updateOrder(order.id, { isHidden: false })
-    message.success('Đơn hàng đã được hiện lại cho nhân viên!')
-  }
+    updateOrder(order.id, { isHidden: false });
+    message.success("Đơn hàng đã được hiện lại cho nhân viên!");
+  };
 
   const getStatusText = (status) => {
     switch (status) {
       case "PENDING":
       case "PENDING_CONFIRM":
-        return "Chờ xử lý"
+        return "Chờ xử lý";
       case "PROCESSING":
-        return "Đang xử lý"
+        return "Đang xử lý";
       case "WAITING_APPROVAL":
-        return "Chờ xác thực"
+        return "Chờ xác thực";
       case "COMPLETED":
-        return "Hoàn thành"
+        return "Hoàn thành";
       case "REJECTED":
-        return "Từ chối"
+        return "Từ chối";
       case "KIT_SENT":
-        return "Đã gửi kit"
+        return "Đã gửi kit";
       case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu"
+        return "Đã nhận mẫu";
       case "CONFIRMED":
-        return "Xác nhận"
+        return "Xác nhận";
       case "CANCELLED":
-        return "Đã hủy"
+        return "Đã hủy";
       default:
-        if (status === "Chờ xử lý") return "Chờ xử lý"
-        if (status === "Đang xử lý") return "Đang xử lý"
-        if (status === "Hoàn thành") return "Hoàn thành"
-        if (status === "Chờ xác thực") return "Chờ xác thực"
-        if (status === "Từ chối") return "Từ chối"
-        if (status === "Đã gửi kit") return "Đã gửi kit"
-        if (status === "Đã nhận mẫu") return "Đã nhận mẫu"
-        if (status === "Xác nhận") return "Xác nhận"
-        if (status === "Đã hủy") return "Đã hủy"
-        return status
+        if (status === "Chờ xử lý") return "Chờ xử lý";
+        if (status === "Đang xử lý") return "Đang xử lý";
+        if (status === "Hoàn thành") return "Hoàn thành";
+        if (status === "Chờ xác thực") return "Chờ xác thực";
+        if (status === "Từ chối") return "Từ chối";
+        if (status === "Đã gửi kit") return "Đã gửi kit";
+        if (status === "Đã nhận mẫu") return "Đã nhận mẫu";
+        if (status === "Xác nhận") return "Xác nhận";
+        if (status === "Đã hủy") return "Đã hủy";
+        return status;
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING":
       case "PENDING_CONFIRM":
       case "Chờ xử lý":
-        return "orange"
+        return "orange";
       case "PROCESSING":
       case "Đang xử lý":
-        return "blue"
+        return "blue";
       case "WAITING_APPROVAL":
       case "Chờ xác thực":
-        return "purple"
+        return "purple";
       case "COMPLETED":
       case "Hoàn thành":
-        return "green"
+        return "green";
       case "REJECTED":
       case "Từ chối":
-        return "red"
+        return "red";
       case "KIT_SENT":
-        return "#2563EB"
+        return "#2563EB";
       case "SAMPLE_RECEIVED":
-        return "#22C55E"
+        return "#22C55E";
       case "CONFIRMED":
-        return "#10B981"
+        return "#10B981";
       case "CANCELLED":
-        return "#EF4444"
+        return "#EF4444";
       default:
-        return "default"
+        return "default";
     }
-  }
+  };
 
   const columns = [
     {
@@ -308,7 +321,9 @@ const TestingResults = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
     },
     {
       title: "Ngày tạo",
@@ -331,20 +346,36 @@ const TestingResults = () => {
           >
             Xem
           </Button>
-          <Button type="default" size="small" icon={<EditOutlined />} onClick={() => handleEditResult(record)}>
+          <Button
+            type="default"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEditResult(record)}
+          >
             Cập nhật
           </Button>
           {record.result && (
-            <Button type="default" size="small" icon={<FileTextOutlined />} onClick={() => handleViewReport(record)}>
+            <Button
+              type="default"
+              size="small"
+              icon={<FileTextOutlined />}
+              onClick={() => handleViewReport(record)}
+            >
               Báo cáo
             </Button>
           )}
           <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
             <Button
-              icon={<EyeInvisibleOutlined style={{ color: '#595959' }} />}
+              icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
               onClick={() => handleDeleteOrder(record)}
               size="small"
-              style={{ marginLeft: 8, borderColor: '#bfbfbf', color: '#595959', background: '#f5f5f5', fontWeight: 600 }}
+              style={{
+                marginLeft: 8,
+                borderColor: "#bfbfbf",
+                color: "#595959",
+                background: "#f5f5f5",
+                fontWeight: 600,
+              }}
             >
               Ẩn
             </Button>
@@ -352,7 +383,7 @@ const TestingResults = () => {
         </Space>
       ),
     },
-  ]
+  ];
 
   // Thống kê
   const stats = {
@@ -363,12 +394,16 @@ const TestingResults = () => {
     completed: orders.filter((o) => o.status === "Hoàn thành").length,
     rejected: orders.filter((o) => o.status === "Từ chối").length,
     withResults: orders.filter((o) => o.result).length,
-  }
+  };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Xét nghiệm & Kết quả</h1>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Xét nghiệm & Kết quả
+        </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
           Quản lý kết quả xét nghiệm và cập nhật trạng thái
         </p>
@@ -439,7 +474,14 @@ const TestingResults = () => {
       </Row>
 
       <Card>
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Select
             value={filterStatus}
             onChange={setFilterStatus}
@@ -469,12 +511,13 @@ const TestingResults = () => {
                 <Table
                   columns={columns}
                   dataSource={filteredOrders}
-                  rowKey={record => record.id || String(Math.random())}
+                  rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
                   }}
                   scroll={{ x: 1000 }}
                 />
@@ -486,13 +529,17 @@ const TestingResults = () => {
               children: (
                 <Table
                   columns={columns}
-                  dataSource={filteredOrders.filter(order => order.priority === "Cao" && order.status !== "Hoàn thành")}
-                  rowKey={record => record.id || String(Math.random())}
+                  dataSource={filteredOrders.filter(
+                    (order) =>
+                      order.priority === "Cao" && order.status !== "Hoàn thành"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
                   }}
                   scroll={{ x: 1000 }}
                 />
@@ -504,13 +551,17 @@ const TestingResults = () => {
               children: (
                 <Table
                   columns={columns}
-                  dataSource={filteredOrders.filter(order => !order.isHidden && order.status === "Chờ xác thực")}
-                  rowKey={record => record.id || String(Math.random())}
+                  dataSource={filteredOrders.filter(
+                    (order) =>
+                      !order.isHidden && order.status === "Chờ xác thực"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
                   }}
                   scroll={{ x: 1000 }}
                 />
@@ -539,13 +590,14 @@ const TestingResults = () => {
                       ),
                     },
                   ]}
-                  dataSource={orders.filter(order => order.isHidden)}
-                  rowKey={record => record.id || String(Math.random())}
+                  dataSource={orders.filter((order) => order.isHidden)}
+                  rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn đã ẩn`,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn đã ẩn`,
                   }}
                   scroll={{ x: 1000 }}
                 />
@@ -566,45 +618,194 @@ const TestingResults = () => {
         {selectedOrder && (
           <div>
             <div style={{ marginBottom: 16 }}>
-              <Text strong>Mã đơn: </Text>
-              <Text>#{selectedOrder.id}</Text>
+              <h3>Thông tin khách hàng:</h3>
+              <p>
+                <strong>Họ tên:</strong> {selectedOrder.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedOrder.email}
+              </p>
+              <p>
+                <strong>Số điện thoại:</strong> {selectedOrder.phone}
+              </p>
+              <p>
+                <strong>Loại xét nghiệm:</strong> {selectedOrder.type}
+              </p>
             </div>
+
             <div style={{ marginBottom: 16 }}>
-              <Text strong>Khách hàng: </Text>
-              <Text>{selectedOrder.name}</Text>
+              <h3>Thông tin xét nghiệm:</h3>
+              <p>
+                <strong>Trạng thái:</strong>{" "}
+                <Tag
+                  color={
+                    selectedOrder.status === "Hoàn thành"
+                      ? "green"
+                      : selectedOrder.status === "Đang xử lý"
+                      ? "blue"
+                      : "orange"
+                  }
+                >
+                  {selectedOrder.status}
+                </Tag>
+              </p>
+              {selectedOrder.testingMethod && (
+                <p>
+                  <strong>Phương pháp xét nghiệm:</strong>{" "}
+                  {selectedOrder.testingMethod}
+                </p>
+              )}
+              {selectedOrder.completedDate && (
+                <p>
+                  <strong>Ngày hoàn thành:</strong>{" "}
+                  {selectedOrder.completedDate}
+                </p>
+              )}
             </div>
+
             <div style={{ marginBottom: 16 }}>
-              <Text strong>Loại xét nghiệm: </Text>
-              <Text>{selectedOrder.type}</Text>
+              <h3>Kết quả xét nghiệm:</h3>
+              {(() => {
+                // Check for valid table data
+                const hasTableData =
+                  selectedOrder.resultTableData &&
+                  Array.isArray(selectedOrder.resultTableData) &&
+                  selectedOrder.resultTableData.length > 0;
+
+                if (hasTableData) {
+                  return (
+                    <div
+                      style={{
+                        background: "#f6ffed",
+                        border: "1px solid #b7eb8f",
+                        padding: 16,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Table
+                        bordered
+                        dataSource={
+                          Array.isArray(selectedOrder.resultTableData)
+                            ? selectedOrder.resultTableData
+                            : []
+                        }
+                        pagination={false}
+                        rowKey={(record) => record.key || String(Math.random())}
+                        size="small"
+                      >
+                        <Table.Column
+                          title="STT"
+                          key="index"
+                          render={(text, record, index) => index + 1}
+                          width={60}
+                        />
+                        <Table.Column
+                          title="Họ và tên"
+                          dataIndex="name"
+                          key="name"
+                        />
+                        <Table.Column
+                          title="Năm sinh"
+                          dataIndex="birthYear"
+                          key="birthYear"
+                          width={120}
+                        />
+                        <Table.Column
+                          title="Giới tính"
+                          dataIndex="gender"
+                          key="gender"
+                          width={120}
+                        />
+                        <Table.Column
+                          title="Mối quan hệ"
+                          dataIndex="relationship"
+                          key="relationship"
+                        />
+                        <Table.Column
+                          title="Loại mẫu"
+                          dataIndex="sampleType"
+                          key="sampleType"
+                        />
+                      </Table>
+
+                      {selectedOrder.conclusion && (
+                        <div style={{ marginTop: 16 }}>
+                          <h4>Kết luận:</h4>
+                          <div>{selectedOrder.conclusion}</div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                if (selectedOrder.result) {
+                  return (
+                    <div
+                      style={{
+                        background: "#f6ffed",
+                        border: "1px solid #b7eb8f",
+                        padding: 16,
+                        borderRadius: 6,
+                      }}
+                    >
+                      {selectedOrder.result}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    style={{
+                      background: "#fff7e6",
+                      border: "1px solid #ffd591",
+                      padding: 16,
+                      borderRadius: 6,
+                    }}
+                  >
+                    Kết quả chưa có sẵn
+                  </div>
+                );
+              })()}
             </div>
-            <div style={{ marginBottom: 16 }}>
-              <Text strong>Trạng thái: </Text>
-              <Tag color={getStatusColor(selectedOrder.status)}>
-                {getStatusText(selectedOrder.status)}
-              </Tag>
-            </div>
-            {selectedOrder.result && (
-              <div style={{ marginBottom: 16 }}>
-                <Text strong>Kết quả: </Text>
-                <div style={{ marginTop: 8, padding: 12, background: "#f5f5f5", borderRadius: 4 }}>
-                  <Text>{selectedOrder.result}</Text>
+
+            {selectedOrder.testingNotes && (
+              <div>
+                <h3>Ghi chú kỹ thuật:</h3>
+                <div
+                  style={{
+                    background: "#f6f6f6",
+                    padding: 12,
+                    borderRadius: 4,
+                  }}
+                >
+                  {selectedOrder.testingNotes}
                 </div>
               </div>
             )}
-            {selectedOrder.resultTableData && Array.isArray(selectedOrder.resultTableData) && selectedOrder.resultTableData.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <Text strong>Dữ liệu chi tiết: </Text>
-                <div style={{ marginTop: 8 }}>
-                  <Table
-                    dataSource={selectedOrder.resultTableData}
-                    columns={[
-                      { title: "Marker", dataIndex: "marker", key: "marker" },
-                      { title: "Allele 1", dataIndex: "allele1", key: "allele1" },
-                      { title: "Allele 2", dataIndex: "allele2", key: "allele2" },
-                    ]}
-                    pagination={false}
-                    size="small"
-                  />
+
+            {selectedOrder.sampleInfo && (
+              <div style={{ marginTop: 16 }}>
+                <h3>Thông tin mẫu xét nghiệm:</h3>
+                <div
+                  style={{
+                    background: "#f0f5ff",
+                    border: "1px solid #d6e4ff",
+                    padding: 12,
+                    borderRadius: 4,
+                  }}
+                >
+                  <p>
+                    <strong>Ngày lấy mẫu:</strong>{" "}
+                    {selectedOrder.sampleInfo.collectionDate}
+                  </p>
+                  <p>
+                    <strong>Nhân viên thu mẫu:</strong>{" "}
+                    {selectedOrder.sampleInfo.collector}
+                  </p>
+                  <p>
+                    <strong>Số lượng người cho mẫu:</strong>{" "}
+                    {selectedOrder.sampleInfo.donors.length}
+                  </p>
                 </div>
               </div>
             )}
@@ -612,13 +813,21 @@ const TestingResults = () => {
         )}
       </Modal>
 
-      {/* Modal nhập kết quả */}
+      {/* Modal chỉnh sửa kết quả */}
       <Modal
-        title="Nhập kết quả xét nghiệm"
+        title={`Cập nhật kết quả - Đơn hàng #${selectedOrder?.id}`}
         open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
-        footer={null}
-        width={1000}
+        onCancel={() => {
+          // Store the current form values when modal is closed without saving
+          const currentValues = form.getFieldsValue();
+          setTempFormData(currentValues);
+          setEditModalVisible(false);
+        }}
+        onOk={() => form.submit()}
+        okText="Lưu"
+        cancelText="Hủy"
+        width={800}
+        destroyOnHidden={false}
       >
         <Form
           form={form}
@@ -626,73 +835,241 @@ const TestingResults = () => {
           onFinish={handleSaveResult}
           onValuesChange={handleFormValuesChange}
         >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Trạng thái" name="status">
-                <Select>
-                  <Option value="Chờ xử lý">Chờ xử lý</Option>
-                  <Option value="Đang xử lý">Đang xử lý</Option>
-                  <Option value="Chờ xác thực">Chờ xác thực</Option>
-                  <Option value="Hoàn thành">Hoàn thành</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Phương pháp xét nghiệm" name="testingMethod">
-                <Select>
-                  <Option value="STR">STR (Short Tandem Repeat)</Option>
-                  <Option value="SNP">SNP (Single Nucleotide Polymorphism)</Option>
-                  <Option value="Y-STR">Y-STR (Y-chromosome STR)</Option>
-                  <Option value="mtDNA">mtDNA (Mitochondrial DNA)</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item label="Kết quả tổng quan" name="result">
-            <TextArea rows={4} placeholder="Nhập kết quả xét nghiệm..." />
-          </Form.Item>
-
-          <Form.Item label="Ghi chú xét nghiệm" name="testingNotes">
-            <TextArea rows={3} placeholder="Ghi chú về quá trình xét nghiệm..." />
-          </Form.Item>
-
-          <Form.Item label="Kết luận" name="conclusion">
-            <Select
-              placeholder="Chọn kết luận"
-              onChange={value => setShowCustomConclusion(value === 'custom')}
-            >
-              <Option value="Xác nhận có huyết thống">Xác nhận có huyết thống</Option>
-              <Option value="Không có huyết thống">Không có huyết thống</Option>
-              <Option value="Không đủ mẫu để kết luận">Không đủ mẫu để kết luận</Option>
-              <Option value="Kết quả không xác định">Kết quả không xác định</Option>
-              <Option value="custom">Khác...</Option>
+          <Form.Item
+            name="status"
+            label="Trạng thái"
+            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+          >
+            <Select placeholder="Chọn trạng thái">
+              <Option value="Chờ xử lý">Chờ xử lý</Option>
+              <Option value="Đang xử lý">Đang xử lý</Option>
+              <Option value="Chờ xác thực">Chờ xác thực</Option>
+              <Option value="Hoàn thành">Hoàn thành</Option>
             </Select>
           </Form.Item>
-          {showCustomConclusion && (
-            <Form.Item name="customConclusion" label="Nhập kết luận khác">
-              <TextArea rows={3} placeholder="Nhập kết luận cuối cùng..." />
-            </Form.Item>
-          )}
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
+          <Form.Item
+            name="testingMethod"
+            label="Phương pháp xét nghiệm"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn phương pháp xét nghiệm!",
+              },
+            ]}
+          >
+            <Select placeholder="Chọn phương pháp">
+              <Option value="STR">STR (Short Tandem Repeat)</Option>
+              <Option value="SNP">SNP (Single Nucleotide Polymorphism)</Option>
+              <Option value="CODIS">CODIS (Combined DNA Index System)</Option>
+              <Option value="Y-STR">Y-STR (Y-chromosome STR)</Option>
+              <Option value="mtDNA">mtDNA (Mitochondrial DNA)</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="resultTableData" label="Kết quả xét nghiệm">
+            <div
               style={{
-                background: "#1890ff",
-                color: "#fff",
-                borderRadius: 6,
-                border: "none",
-                fontWeight: 600,
-                boxShadow: "0 2px 8px rgba(24,144,255,0.08)",
-                transition: "background 0.2s"
+                border: "1px solid #d9d9d9",
+                borderRadius: "2px",
+                padding: "16px",
+                marginBottom: "16px",
               }}
-              onMouseOver={e => (e.currentTarget.style.background = '#1765ad')}
-              onMouseOut={e => (e.currentTarget.style.background = '#1890ff')}
             >
-              Lưu kết quả
-            </Button>
+              <Table
+                bordered
+                dataSource={Array.isArray(tableData) ? tableData : []}
+                pagination={false}
+                rowKey={(record) =>
+                  record.key || record.id || String(Math.random())
+                }
+              >
+                <Table.Column
+                  title="STT"
+                  dataIndex="key"
+                  key="key"
+                  width={60}
+                  render={(text, record, index) => index + 1}
+                />
+                <Table.Column
+                  title="Họ và tên"
+                  dataIndex="name"
+                  key="name"
+                  render={(text, record, index) => (
+                    <Input
+                      placeholder="Nhập họ và tên"
+                      value={text}
+                      onChange={(e) => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].name = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Năm sinh"
+                  dataIndex="birthYear"
+                  key="birthYear"
+                  width={120}
+                  render={(text, record, index) => (
+                    <Input
+                      placeholder="Năm sinh"
+                      value={text}
+                      onChange={(e) => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].birthYear = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Giới tính"
+                  dataIndex="gender"
+                  key="gender"
+                  width={120}
+                  render={(text, record, index) => (
+                    <Select
+                      placeholder="Giới tính"
+                      value={text}
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].gender = value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                    >
+                      <Option value="Nam">Nam</Option>
+                      <Option value="Nữ">Nữ</Option>
+                    </Select>
+                  )}
+                />
+                <Table.Column
+                  title="Mối quan hệ"
+                  dataIndex="relationship"
+                  key="relationship"
+                  render={(text, record, index) => (
+                    <Input
+                      placeholder="Mối quan hệ"
+                      value={text}
+                      onChange={(e) => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].relationship = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Loại mẫu"
+                  dataIndex="sampleType"
+                  key="sampleType"
+                  render={(text, record, index) => (
+                    <Input
+                      placeholder="Loại mẫu"
+                      value={text}
+                      onChange={(e) => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData[index].sampleType = e.target.value;
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                    />
+                  )}
+                />
+                <Table.Column
+                  title="Thao tác"
+                  key="action"
+                  width={90}
+                  render={(_, record, index) => (
+                    <Button
+                      type="link"
+                      danger
+                      onClick={() => {
+                        const newData = [...tableData];
+                        if (!newData[index]) newData[index] = {};
+                        newData.splice(index, 1);
+                        form.setFieldsValue({ resultTableData: newData });
+                        setTableData(newData);
+                        setTempFormData((prev) => ({
+                          ...prev,
+                          resultTableData: newData,
+                        }));
+                      }}
+                      disabled={tableData.length <= 1}
+                    >
+                      Xóa
+                    </Button>
+                  )}
+                />
+              </Table>
+              <Button
+                type="dashed"
+                style={{ width: "100%", marginTop: "16px" }}
+                onClick={() => {
+                  const newData = [...tableData];
+                  newData.push({ key: Date.now().toString() });
+                  form.setFieldsValue({ resultTableData: newData });
+                  setTableData(newData);
+                  setTempFormData((prev) => ({
+                    ...prev,
+                    resultTableData: newData,
+                  }));
+                }}
+              >
+                + Thêm dòng
+              </Button>
+            </div>
+          </Form.Item>
+
+          <Form.Item name="conclusion" label="Kết luận">
+            <TextArea
+              rows={4}
+              placeholder="Nhập kết luận từ kết quả xét nghiệm..."
+            />
+          </Form.Item>
+
+          <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
+            <TextArea
+              rows={3}
+              placeholder="Nhập ghi chú về quá trình xét nghiệm, chất lượng mẫu..."
+            />
+          </Form.Item>
+
+          <Form.Item label="Tải lên file kết quả">
+            <Upload>
+              <Button icon={<UploadOutlined />}>Chọn file</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>
@@ -735,7 +1112,9 @@ const TestingResults = () => {
 
             <div style={{ marginBottom: 16 }}>
               <Title level={4}>Kết quả xét nghiệm</Title>
-              <div style={{ padding: 12, background: "#f5f5f5", borderRadius: 4 }}>
+              <div
+                style={{ padding: 12, background: "#f5f5f5", borderRadius: 4 }}
+              >
                 <Text>{selectedOrder.result}</Text>
               </div>
             </div>
@@ -743,7 +1122,13 @@ const TestingResults = () => {
             {selectedOrder.conclusion && (
               <div style={{ marginBottom: 16 }}>
                 <Title level={4}>Kết luận</Title>
-                <div style={{ padding: 12, background: "#f5f5f5", borderRadius: 4 }}>
+                <div
+                  style={{
+                    padding: 12,
+                    background: "#f5f5f5",
+                    borderRadius: 4,
+                  }}
+                >
                   <Text>{selectedOrder.conclusion}</Text>
                 </div>
               </div>
@@ -766,12 +1151,12 @@ const TestingResults = () => {
         okText="Ẩn"
         cancelText="Huỷ"
         title={`Xác nhận ẩn đơn hàng #${confirmHideOrder?.id}`}
-        okButtonProps={{ danger: true, type: 'primary' }}
+        okButtonProps={{ danger: true, type: "primary" }}
       >
         <p>Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? </p>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default TestingResults
+export default TestingResults;

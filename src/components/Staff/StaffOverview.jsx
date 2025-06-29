@@ -1,21 +1,32 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, Row, Col, Statistic, Table, Tag, Progress, List, Avatar, Badge } from "antd"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Table,
+  Tag,
+  Progress,
+} from "antd";
 import {
   FileTextOutlined,
   ClockCircleOutlined,
   LoadingOutlined,
   CheckCircleOutlined,
   TrophyOutlined,
+  CalendarOutlined,
   AlertOutlined,
   ExperimentOutlined,
   HomeOutlined,
   BankOutlined,
   PhoneOutlined,
-} from "@ant-design/icons"
+} from "@ant-design/icons";
+import dayjs from "dayjs";
 
 const StaffOverview = () => {
+  const [, setOrders] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -23,71 +34,169 @@ const StaffOverview = () => {
     completed: 0,
     homeSampling: 0,
     centerSampling: 0,
-  })
-  const [urgentOrders, setUrgentOrders] = useState([])
+  });
+  const [, setRecentActivities] = useState([]);
+  const [, setTodayAppointments] = useState([]);
+  const [urgentOrders, setUrgentOrders] = useState([]);
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
+    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    setOrders(savedOrders);
 
     // Tính toán thống kê
     const newStats = {
       total: savedOrders.length,
-      pending: savedOrders.filter((order) => order.status === "Chờ xử lý").length,
-      processing: savedOrders.filter((order) => order.status === "Đang xử lý").length,
-      completed: savedOrders.filter((order) => order.status === "Hoàn thành").length,
-      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home").length,
-      centerSampling: savedOrders.filter((order) => order.sampleMethod === "center").length,
-    }
-    setStats(newStats)
+      pending: savedOrders.filter((order) => order.status === "Chờ xử lý")
+        .length,
+      processing: savedOrders.filter((order) => order.status === "Đang xử lý")
+        .length,
+      completed: savedOrders.filter((order) => order.status === "Hoàn thành")
+        .length,
+      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home")
+        .length,
+      centerSampling: savedOrders.filter(
+        (order) => order.sampleMethod === "center"
+      ).length,
+    };
+    setStats(newStats);
 
     // Lọc các đơn hàng ưu tiên cao
     const highPriorityOrders = savedOrders
-      .filter((order) => order.priority === "Cao" && order.status !== "Hoàn thành")
-      .slice(0, 5)
-    setUrgentOrders(highPriorityOrders)
-  }, [])
+      .filter(
+        (order) => order.priority === "Cao" && order.status !== "Hoàn thành"
+      )
+      .slice(0, 5);
+    setUrgentOrders(highPriorityOrders);
+
+    // Lọc các cuộc hẹn hôm nay
+    const today = dayjs().format("DD/MM/YYYY");
+    const appointments = savedOrders
+      .filter(
+        (order) =>
+          (order.sampleMethod === "center" &&
+            order.appointmentDate === today) ||
+          (order.sampleMethod === "home" &&
+            order.scheduledDate &&
+            order.scheduledDate.includes(today))
+      )
+      .slice(0, 5);
+    setTodayAppointments(appointments);
+
+    // Tạo hoạt động gần đây
+    generateRecentActivities(savedOrders);
+  }, []);
+
+  const generateRecentActivities = (orders) => {
+    const activities = [];
+
+    // Thêm hoạt động từ đơn hàng đã hoàn thành
+    const completedOrders = orders
+      .filter((order) => order.status === "Hoàn thành")
+      .slice(0, 2);
+    completedOrders.forEach((order) => {
+      activities.push({
+        time: order.completedDate || "Gần đây",
+        content: `Hoàn thành xét nghiệm cho đơn hàng #${order.id} - ${order.name}`,
+        type: "success",
+        icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
+      });
+    });
+
+    // Thêm hoạt động từ đơn hàng đang xử lý
+    const processingOrders = orders
+      .filter((order) => order.status === "Đang xử lý")
+      .slice(0, 2);
+    processingOrders.forEach((order) => {
+      activities.push({
+        time: order.date,
+        content: `Bắt đầu xử lý đơn hàng #${order.id} - ${order.name}`,
+        type: "processing",
+        icon: <LoadingOutlined style={{ color: "#1890ff" }} />,
+      });
+    });
+
+    // Thêm hoạt động từ đơn hàng lấy mẫu tại nhà
+    const homeSamplingOrders = orders
+      .filter(
+        (order) =>
+          order.sampleMethod === "home" && order.kitStatus === "da_nhan"
+      )
+      .slice(0, 2);
+    homeSamplingOrders.forEach((order) => {
+      activities.push({
+        time: order.date,
+        content: `Đã nhận mẫu từ đơn hàng #${order.id} - ${order.name}`,
+        type: "info",
+        icon: <HomeOutlined style={{ color: "#13c2c2" }} />,
+      });
+    });
+
+    // Thêm hoạt động từ đơn hàng lấy mẫu tại trung tâm
+    const centerSamplingOrders = orders
+      .filter(
+        (order) =>
+          order.sampleMethod === "center" &&
+          order.appointmentStatus === "da_den"
+      )
+      .slice(0, 2);
+    centerSamplingOrders.forEach((order) => {
+      activities.push({
+        time: order.appointmentDate,
+        content: `Khách hàng ${order.name} đã đến lấy mẫu tại trung tâm`,
+        type: "info",
+        icon: <BankOutlined style={{ color: "#722ed1" }} />,
+      });
+    });
+
+    // Sắp xếp hoạt động theo thời gian
+    activities.sort(() => Math.random() - 0.5);
+    setRecentActivities(activities.slice(0, 6));
+  };
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING": return "Chờ xử lý"
-      case "PROCESSING": return "Đang xử lý"
-      case "COMPLETED": return "Hoàn thành"
+      case "PENDING":
+        return "Chờ xử lý";
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "COMPLETED":
+        return "Hoàn thành";
       default:
-        if (status === "Chờ xử lý") return "Chờ xử lý"
-        if (status === "Đang xử lý") return "Đang xử lý"
-        if (status === "Hoàn thành") return "Hoàn thành"
-        return status
+        if (status === "Chờ xử lý") return "Chờ xử lý";
+        if (status === "Đang xử lý") return "Đang xử lý";
+        if (status === "Hoàn thành") return "Hoàn thành";
+        return status;
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING":
       case "Chờ xử lý":
-        return "orange"
+        return "orange";
       case "PROCESSING":
       case "Đang xử lý":
-        return "blue"
+        return "blue";
       case "COMPLETED":
       case "Hoàn thành":
-        return "green"
+        return "green";
       default:
-        return "default"
+        return "default";
     }
-  }
+  };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "Cao":
-        return "red"
+        return "red";
       case "Trung bình":
-        return "orange"
+        return "orange";
       case "Thấp":
-        return "green"
+        return "green";
       default:
-        return "default"
+        return "default";
     }
-  }
+  };
 
   const urgentColumns = [
     {
@@ -114,14 +223,18 @@ const StaffOverview = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>,
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
     },
     {
       title: "Độ ưu tiên",
       dataIndex: "priority",
       key: "priority",
       width: 100,
-      render: (priority) => <Tag color={getPriorityColor(priority)}>{priority}</Tag>,
+      render: (priority) => (
+        <Tag color={getPriorityColor(priority)}>{priority}</Tag>
+      ),
     },
     {
       title: "Ngày tạo",
@@ -129,13 +242,19 @@ const StaffOverview = () => {
       key: "date",
       width: 120,
     },
-  ]
+  ];
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Dashboard Nhân viên</h1>
-        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>Tổng quan hoạt động và thống kê hôm nay</p>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Dashboard Nhân viên
+        </h1>
+        <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
+          Tổng quan hoạt động và thống kê hôm nay
+        </p>
       </div>
 
       {/* Thống kê tổng quan */}
@@ -182,9 +301,8 @@ const StaffOverview = () => {
         </Col>
       </Row>
 
-      {/* Thống kê phương thức lấy mẫu */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Thu mẫu tại nhà"
@@ -193,7 +311,11 @@ const StaffOverview = () => {
               valueStyle={{ color: "#13c2c2", fontWeight: 600 }}
             />
             <Progress
-              percent={stats.total > 0 ? Math.round((stats.homeSampling / stats.total) * 100) : 0}
+              percent={
+                stats.total > 0
+                  ? Math.round((stats.homeSampling / stats.total) * 100)
+                  : 0
+              }
               strokeColor="#13c2c2"
               showInfo={false}
               style={{ marginTop: 8 }}
@@ -209,7 +331,11 @@ const StaffOverview = () => {
               valueStyle={{ color: "#722ed1", fontWeight: 600 }}
             />
             <Progress
-              percent={stats.total > 0 ? Math.round((stats.centerSampling / stats.total) * 100) : 0}
+              percent={
+                stats.total > 0
+                  ? Math.round((stats.centerSampling / stats.total) * 100)
+                  : 0
+              }
               strokeColor="#722ed1"
               showInfo={false}
               style={{ marginTop: 8 }}
@@ -238,7 +364,7 @@ const StaffOverview = () => {
         />
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default StaffOverview
+export default StaffOverview;
