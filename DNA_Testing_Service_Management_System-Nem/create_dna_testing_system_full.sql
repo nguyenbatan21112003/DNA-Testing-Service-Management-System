@@ -31,6 +31,7 @@ CREATE TABLE Users (
 );
 GO
 
+
 CREATE TABLE UserProfiles (
   ProfileID INT PRIMARY KEY IDENTITY(1,1),
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
@@ -183,6 +184,11 @@ CREATE TABLE TestSamples (
 GO
 ALTER TABLE TestSamples ADD CollectedAt DATETIME;
 
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'TestRequests';
+DROP TABLE CollectType;
+DROP TABLE TestType;
 
 -- bỏ bảng ỏ bảng SampleCollectionRecords, SampleCollectionSamples
 --hợp thành bảng SampleCollectionForms

@@ -17,7 +17,6 @@ public partial class DNAContext : DbContext
 
     public virtual DbSet<BlogPost> BlogPosts { get; set; }
 
-    public virtual DbSet<CollectType> CollectTypes { get; set; }
 
     public virtual DbSet<ConsultRequest> ConsultRequests { get; set; }
 
@@ -87,15 +86,15 @@ public partial class DNAContext : DbContext
                 .HasConstraintName("FK__BlogPosts__Autho__52593CB8");
         });
 
-        modelBuilder.Entity<CollectType>(entity =>
-        {
-            entity.HasKey(e => e.CollectId).HasName("PK__CollectT__8AAA9E2A3E2467C5");
+        //modelBuilder.Entity<CollectType>(entity =>
+        //{
+        //    entity.HasKey(e => e.CollectId).HasName("PK__CollectT__8AAA9E2A3E2467C5");
 
-            entity.ToTable("CollectType");
+        //    entity.ToTable("CollectType");
 
-            entity.Property(e => e.CollectId).HasColumnName("CollectID");
-            entity.Property(e => e.CollectName).HasMaxLength(20);
-        });
+        //    entity.Property(e => e.CollectId).HasColumnName("CollectID");
+        //    entity.Property(e => e.CollectName).HasMaxLength(20);
+        //});
 
         modelBuilder.Entity<ConsultRequest>(entity =>
         {
@@ -339,9 +338,9 @@ public partial class DNAContext : DbContext
                 .HasForeignKey(d => d.ServiceId)
                 .HasConstraintName("FK__TestReque__Servi__6E01572D");
 
-            entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
-                .HasForeignKey(d => d.TypeId)
-                .HasConstraintName("FK__TestReque__TypeI__6EF57B66");
+            //entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
+            //    .HasForeignKey(d => d.TypeId)
+            //    .HasConstraintName("FK__TestReque__TypeI__6EF57B66");
 
             entity.HasOne(d => d.User).WithMany(p => p.TestRequests)
                 .HasForeignKey(d => d.UserId)

@@ -41,8 +41,6 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<TestSample> TestSamples { get; set; }
 
-        public virtual DbSet<TestType> TestTypes { get; set; }
-
         public virtual DbSet<User> Users { get; set; }
 
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
@@ -51,7 +49,8 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<Invoice> Invoices { get; set; }
 
-        public virtual DbSet<CollectType> CollectTypes { get; set; }
+        public virtual DbSet<RequestDeclarant> RequestDeclarants { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -79,9 +78,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.AuthorId)
                     .HasConstraintName("FK__BlogPosts__Autho__32E0915F");
             });
-
-         
-
             modelBuilder.Entity<ConsultRequest>(entity =>
             {
                 entity.HasKey(e => e.ConsultId).HasName("PK__ConsultR__28859B152268FA69");
@@ -127,15 +123,15 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK__ConsultRe__Servi__XXXXXXX"); // Đặt tên FK đúng với tên trong DB nếu cần
             });
-            modelBuilder.Entity<CollectType>(entity =>
-            {
-                entity.HasKey(e => e.CollectId).HasName("PK__CollectT__8AAA9E2ADEBCB2E1");
+            //modelBuilder.Entity<CollectType>(entity =>
+            //{
+            //    entity.HasKey(e => e.CollectId).HasName("PK__CollectT__8AAA9E2ADEBCB2E1");
 
-                entity.ToTable("CollectType");
+            //    entity.ToTable("CollectType");
 
-                entity.Property(e => e.CollectId).HasColumnName("CollectID");
-                entity.Property(e => e.CollectName).HasMaxLength(20);
-            });
+            //    entity.Property(e => e.CollectId).HasColumnName("CollectID");
+            //    entity.Property(e => e.CollectName).HasMaxLength(20);
+            //});
             modelBuilder.Entity<Feature>(entity =>
             {
                 entity.HasKey(e => e.FeatureId).HasName("PK__Features__82230A298C737335");
@@ -146,7 +142,6 @@ namespace DNATestSystem.Repositories
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });
-
             modelBuilder.Entity<Feedback>(entity =>
             {
                 entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF6DC5A65B1");
@@ -164,8 +159,7 @@ namespace DNATestSystem.Repositories
                 entity.HasOne(d => d.User).WithMany(p => p.Feedbacks)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__Feedbacks__UserI__6477ECF3");
-            });
-          
+            });        
             modelBuilder.Entity<RequestDeclarant>(entity =>
             {
                 entity.HasKey(e => e.DeclarantId).HasName("PK__RequestD__761301B7886F2E3A");
@@ -200,7 +194,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK__PriceDeta__Servi__3E52440B");
             });
-
             modelBuilder.Entity<RefreshToken>(entity =>
             {
                 entity.HasKey(e => e.TokenId).HasName("PK__RefreshT__658FEE8A6B49B744");
@@ -215,7 +208,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__RefreshTo__UserI__6B24EA82");
             });
-
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A99E52713");
@@ -224,9 +216,7 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.RoleName).HasMaxLength(50);
 
 
-            });
-
-           
+            });        
             modelBuilder.Entity<Invoice>(entity =>
             {
                 entity.ToTable("Invoice"); // <== Cái này bắt buộc, vì mặc định EF sẽ tìm "Invoices"
@@ -241,8 +231,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.RequestId)
                     .HasConstraintName("FK__Invoice__Request__04E4BC85");
             });
-
-
             modelBuilder.Entity<Service>(entity =>
             {
                 entity.HasKey(e => e.ServiceId).HasName("PK__Services__C51BB0EA5C24E25B");
@@ -257,7 +245,6 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.ServiceName).HasMaxLength(100);
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
-
             modelBuilder.Entity<SystemLog>(entity =>
             {
                 entity.HasKey(e => e.LogId).HasName("PK__SystemLo__5E5499A8FD203F98");
@@ -277,7 +264,6 @@ namespace DNATestSystem.Repositories
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__SystemLog__UserI__36B12243");
             });
-
             modelBuilder.Entity<TestProcess>(entity =>
             {
                 entity.HasKey(e => e.ProcessId).HasName("PK__TestProc__1B39A9765173F1DE");
@@ -302,7 +288,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.StaffId)
                     .HasConstraintName("FK__TestProce__Staff__4D94879B");
             });
-
             modelBuilder.Entity<TestRequest>(entity =>
             {
                 entity.HasKey(e => e.RequestId).HasName("PK__TestRequ__33A8519A9426A80B");
@@ -319,15 +304,14 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK__TestReque__Servi__48CFD27E");
 
-                entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
-                    .HasForeignKey(d => d.TypeId)
-                    .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
+                //entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
+                //    .HasForeignKey(d => d.TypeId)
+                //    .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
 
                 entity.HasOne(d => d.User).WithMany(p => p.TestRequests)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__TestReque__UserI__47DBAE45");
             });
-
             modelBuilder.Entity<TestResult>(entity =>
             {
                 entity.HasKey(e => e.ResultId).HasName("PK__TestResu__97690228838146B3");
@@ -351,7 +335,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.VerifiedBy)
                     .HasConstraintName("FK__TestResul__Verif__5DCAEF64");
             });
-
             modelBuilder.Entity<TestSample>(entity =>
             {
                 entity.HasKey(e => e.SampleId).HasName("PK__TestSamp__8B99EC0A3F1D96F0");
@@ -380,19 +363,17 @@ namespace DNATestSystem.Repositories
 
 
             });
+            //modelBuilder.Entity<TestType>(entity =>
+            //{
+            //    entity.HasKey(e => e.TypeId).HasName("PK__TestType__516F039541C8093B");
 
-            modelBuilder.Entity<TestType>(entity =>
-            {
-                entity.HasKey(e => e.TypeId).HasName("PK__TestType__516F039541C8093B");
+            //    entity.ToTable("TestType");
 
-                entity.ToTable("TestType");
-
-                entity.Property(e => e.TypeId).HasColumnName("TypeID");
-                entity.Property(e => e.TypeName)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-            });
-
+            //    entity.Property(e => e.TypeId).HasColumnName("TypeID");
+            //    entity.Property(e => e.TypeName)
+            //        .HasMaxLength(20)
+            //        .IsUnicode(false);
+            //});
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACB59AC285");
@@ -410,7 +391,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK__Users__RoleID__2C3393D0");
             });
-
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.ProfileId).HasName("PK__UserProf__290C888421913B3E");
@@ -432,7 +412,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__UserProfi__UserI__2F10007B");
             });
-
             modelBuilder.Entity<UserSelectedService>(entity =>
             {
                 entity.HasKey(e => e.Id).HasName("PK__UserSele__3214EC271BA82503");
@@ -452,7 +431,6 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__UserSelec__UserI__412EB0B6");
             });
-
             OnModelCreatingPartial(modelBuilder);
         }
         

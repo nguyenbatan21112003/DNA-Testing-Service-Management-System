@@ -263,6 +263,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "SubmitTestRequest",
+    "RelativePath": "Staff/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "getAllBlogPsot",
     "RelativePath": "user/blogPost",

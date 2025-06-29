@@ -32,8 +32,6 @@ namespace DNATestSystem.Repositories
 
         DbSet<TestSample> TestSamples { get; set; }
 
-         DbSet<TestType> TestTypes { get; set; }
-
          DbSet<User> Users { get; set; }
 
          DbSet<UserProfile> UserProfiles { get; set; }
@@ -42,7 +40,9 @@ namespace DNATestSystem.Repositories
 
          DbSet<Invoice> Invoices { get; set; }
 
-        DbSet<CollectType> CollectTypes { get; set; }
+        DbSet<RequestDeclarant> RequestDeclarants { get; set; } 
+
+
 
         // Save changes
         int SaveChanges();

@@ -15,7 +15,7 @@ public partial class TestRequest
 
     public string? Category { get; set; }
 
-    public DateOnly? ScheduleDate { get; set; }
+    public DateTime? ScheduleDate { get; set; }
 
     public string? Address { get; set; }
 
@@ -37,7 +37,7 @@ public partial class TestRequest
 
     public virtual ICollection<TestSample> TestSamples { get; set; } = new List<TestSample>();
 
-    public virtual CollectType? Type { get; set; }
+    //public virtual CollectType? Type { get; set; }
 
     public virtual User? User { get; set; }
 }

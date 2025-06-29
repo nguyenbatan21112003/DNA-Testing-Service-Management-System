@@ -1,4 +1,5 @@
 ﻿using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,28 @@ namespace DNATestSystem.APIService.Controllers
             if (!result) return NotFound("Không tìm thấy yêu cầu tư vấn.");
 
             return Ok("Cập nhật thành công.");
+        }
+
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitTestRequest([FromBody] TestRequestSubmissionDto dto)
+        {
+            var result = await _staffService.SubmitTestRequestAsync(dto);
+
+            if (!result.Success)
+            {   
+                return StatusCode(500, new
+                {
+                    success = false,
+                    error = result.Message
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                requestId = result.RequestId,
+                message = result.Message
+            });
         }
 
     }

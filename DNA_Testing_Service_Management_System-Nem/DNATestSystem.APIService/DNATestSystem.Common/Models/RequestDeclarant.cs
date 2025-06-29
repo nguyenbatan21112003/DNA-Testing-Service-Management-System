@@ -17,7 +17,7 @@ public partial class RequestDeclarant
 
     public string? IdentityNumber { get; set; }
 
-    public DateOnly? IdentityIssuedDate { get; set; }
+    public DateTime? IdentityIssuedDate { get; set; }
 
     public string? IdentityIssuedPlace { get; set; }
 

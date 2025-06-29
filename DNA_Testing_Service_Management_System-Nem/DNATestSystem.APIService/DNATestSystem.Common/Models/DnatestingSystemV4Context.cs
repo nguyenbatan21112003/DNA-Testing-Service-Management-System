@@ -41,7 +41,6 @@ public partial class DnatestingSystemV4Context : DbContext
 
     public virtual DbSet<TestSample> TestSamples { get; set; }
 
-    public virtual DbSet<TestType> TestTypes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -367,9 +366,9 @@ public partial class DnatestingSystemV4Context : DbContext
                 .HasForeignKey(d => d.ServiceId)
                 .HasConstraintName("FK__TestReque__Servi__48CFD27E");
 
-            entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
-                .HasForeignKey(d => d.TypeId)
-                .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
+            //entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
+            //    .HasForeignKey(d => d.TypeId)
+            //    .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
 
             entity.HasOne(d => d.User).WithMany(p => p.TestRequests)
                 .HasForeignKey(d => d.UserId)
@@ -429,17 +428,17 @@ public partial class DnatestingSystemV4Context : DbContext
 
         });
 
-        modelBuilder.Entity<TestType>(entity =>
-        {
-            entity.HasKey(e => e.TypeId).HasName("PK__TestType__516F039541C8093B");
+        //modelBuilder.Entity<TestType>(entity =>
+        //{
+        //    entity.HasKey(e => e.TypeId).HasName("PK__TestType__516F039541C8093B");
 
-            entity.ToTable("TestType");
+        //    entity.ToTable("TestType");
 
-            entity.Property(e => e.TypeId).HasColumnName("TypeID");
-            entity.Property(e => e.TypeName)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-        });
+        //    entity.Property(e => e.TypeId).HasColumnName("TypeID");
+        //    entity.Property(e => e.TypeName)
+        //        .HasMaxLength(20)
+        //        .IsUnicode(false);
+        //});
 
         modelBuilder.Entity<User>(entity =>
         {

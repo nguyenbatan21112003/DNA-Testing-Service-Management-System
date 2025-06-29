@@ -69,8 +69,8 @@ namespace DNATestSystem.Services.Service
                 Password = hashPassword,
                 Phone = user.PhoneNumber,
                 RoleId = (int)BusinessObjects.Entities.Enum.RoleNum.Customer, // Mặc định là User
-                Status = (int)BusinessObjects.Entities.Enum.StatusNum.Pending
-                //CreateAt = DateTime.Now
+                Status = (int)BusinessObjects.Entities.Enum.StatusNum.Pending,
+                CreatedAt = DateTime.Now
             };
 
             _context.Users.Add(data);
