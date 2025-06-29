@@ -1616,6 +1616,7 @@ const UserProfile = () => {
             </h3>
             <div style={{ borderTop: "1px solid #e6e6e6", marginBottom: 18 }} />
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Mã đơn, Trạng thái, Thể loại lên đầu */}
               <div>
                 <span style={{ fontWeight: 700, color: "#009e74" }}>
                   Mã đơn:
@@ -1643,18 +1644,26 @@ const UserProfile = () => {
                   {selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}
                 </Tag>
               </div>
+              {/* Thông tin người dùng */}
               <div>
-                <span style={{ fontWeight: 600 }}>Trạng thái:</span>{" "}
-                <span>{getStatusText(selectedOrder.status, selectedOrder.sampleMethod, selectedOrder.kitStatus, selectedOrder.appointmentStatus)}</span>
+                <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
+                <span>{selectedOrder.name}</span>
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
                 <span>{selectedOrder.phone}</span>
               </div>
               <div>
-                <span style={{ fontWeight: 600 }}>Thể loại:</span>{" "}
-                <span>{selectedOrder.category === 'civil' ? 'Dân sự' : selectedOrder.category === 'admin' ? 'Hành chính' : selectedOrder.category}</span>
+                <span style={{ fontWeight: 600 }}>Email:</span>{" "}
+                <span>{selectedOrder.email}</span>
               </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
+                <span>{selectedOrder.address}</span>
+              </div>
+              {/* Divider giữa thông tin người dùng và đơn hàng */}
+              <div style={{ borderTop: '1px solid #e6e6e6', margin: '12px 0' }} />
+              {/* Thông tin đơn hàng còn lại */}
               <div>
                 <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
                 <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
@@ -1684,26 +1693,6 @@ const UserProfile = () => {
                   Ngày lấy mẫu: {selectedOrder.appointmentDate}
                 </div>
               )}
-              <div>
-                <span style={{ fontWeight: 600 }}>Họ tên:</span>{" "}
-                <span>{selectedOrder.name}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Số điện thoại:</span>{" "}
-                <span>{selectedOrder.phone}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Email:</span>{" "}
-                <span>{selectedOrder.email}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
-                <span>{selectedOrder.address}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Ngày xét nghiệm:</span>{" "}
-                <span>{selectedOrder.appointmentDate}</span>
-              </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
                 <span>{selectedOrder.note}</span>
