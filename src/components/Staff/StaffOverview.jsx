@@ -9,9 +9,6 @@ import {
   Table,
   Tag,
   Progress,
-  List,
-  Avatar,
-  Badge,
 } from "antd";
 import {
   FileTextOutlined,
@@ -29,7 +26,7 @@ import {
 import dayjs from "dayjs";
 
 const StaffOverview = () => {
-  const [setOrders] = useState([]);
+  const [, setOrders] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -38,8 +35,8 @@ const StaffOverview = () => {
     homeSampling: 0,
     centerSampling: 0,
   });
-  const [setRecentActivities] = useState([]);
-  const [setTodayAppointments] = useState([]);
+  const [, setRecentActivities] = useState([]);
+  const [, setTodayAppointments] = useState([]);
   const [urgentOrders, setUrgentOrders] = useState([]);
 
   useEffect(() => {

@@ -59,8 +59,6 @@ function orderReducer(state, action) {
 export function OrderProvider({ children }) {
   const [state, dispatch] = useReducer(orderReducer, initialState);
   const { user } = useContext(AuthContext);
-<<<<<<< HEAD
-=======
   const {
     notifyNewOrder,
     notifyOrderStatusUpdate,
@@ -69,8 +67,6 @@ export function OrderProvider({ children }) {
     notifyFeedbackResponse,
     notifyPricingUpdate
   } = useNotification();
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
-
   // Khi load lần đầu hoặc user đổi, đọc orders từ localStorage và lọc theo user
   useEffect(() => {
     const loadOrders = () => {
@@ -98,7 +94,6 @@ export function OrderProvider({ children }) {
     // Load orders khi component mount và khi user thay đổi
     loadOrders();
 
-<<<<<<< HEAD
   //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
   //   window.addEventListener('storage', (event) => {
   //     if (event.key === 'dna_orders') {
@@ -114,24 +109,6 @@ export function OrderProvider({ children }) {
 
   const addOrder = (order) => {
     if (!user || !user.email) return;
-=======
-    //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
-    //   window.addEventListener('storage', (event) => {
-    //     if (event.key === 'dna_orders') {
-    //       loadOrders();
-    //     }
-    //   });
-
-    //   // Cleanup function
-    //   return () => {
-    //     window.removeEventListener('storage', () => {});
-    //   };
-  }, [user]);
-
-  const addOrder = (order) => {
-    if (!user || !user.email) return;
-
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
@@ -144,35 +121,24 @@ export function OrderProvider({ children }) {
       rating: 0,
       resultFile: "",
       kitStatus: order.sampleMethod === "home" ? "chua_gui" : undefined,
-<<<<<<< HEAD
-    };
-=======
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Lưu vào localStorage (toàn bộ đơn)
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const newOrders = [orderWithEmail, ...allOrders];
     localStorage.setItem("dna_orders", JSON.stringify(newOrders));
-<<<<<<< HEAD
     
-=======
-
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     // Sau khi thêm, lọc lại toàn bộ đơn cho user hiện tại
     const filtered =
       user.role_id === 2
         ? newOrders
         : newOrders.filter((o) => o.email === user.email);
     dispatch({ type: "SET_ORDERS", payload: filtered });
-<<<<<<< HEAD
-=======
 
     // Tạo thông báo cho Staff và Manager
     notifyNewOrder(orderWithEmail);
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Hàm cho staff lấy toàn bộ đơn
@@ -184,17 +150,6 @@ export function OrderProvider({ children }) {
     dispatch({ type: "SET_ORDERS", payload: orders });
   };
 
-<<<<<<< HEAD
-  // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác nhận)
-  const updateOrder = (orderId, updates) => {
-    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    const idx = allOrders.findIndex((o) => o.id === orderId);
-    if (idx !== -1) {
-      allOrders[idx] = { ...allOrders[idx], ...updates };
-      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
-      setOrders(allOrders);
-    }
-=======
   // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác thực)
   const updateOrder = async (orderId, updates) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
@@ -241,23 +196,12 @@ export function OrderProvider({ children }) {
       }
     }
     return Promise.resolve();
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Thêm/Chỉnh sửa feedback và rating
   const addFeedback = (orderId, feedback, rating, categoryRatings = {}) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
-<<<<<<< HEAD
-    if (idx !== -1) {
-      const order = allOrders[idx];
-      const now = new Date();
-      const date = `${now.getDate()}/${
-        now.getMonth() + 1
-      }/${now.getFullYear()}`;
-      if (!order.feedbacks) order.feedbacks = [];
-      order.feedbacks.push({
-=======
 
     if (idx !== -1) {
       const order = allOrders[idx];
@@ -268,18 +212,12 @@ export function OrderProvider({ children }) {
       if (!order.feedbacks) order.feedbacks = [];
 
       const newFeedback = {
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
         rating,
         feedback,
         date,
         categoryRatings,
         user: order.name || order.fullName || order.email || "Người dùng",
         email: order.email || "",
-<<<<<<< HEAD
-      });
-      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
-      setOrders(allOrders);
-=======
       };
 
       order.feedbacks.push(newFeedback);
@@ -316,18 +254,11 @@ export function OrderProvider({ children }) {
 
       // Tạo thông báo cho User
       notifyFeedbackResponse(feedbackResponse, order, respondedBy);
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
     }
   };
 
   // Cập nhật dữ liệu giá và thời gian
   const updatePricingData = (category, updatedServices) => {
-<<<<<<< HEAD
-    dispatch({ 
-      type: "UPDATE_PRICING_DATA", 
-      payload: { [category]: updatedServices } 
-    });
-=======
     dispatch({
       type: "UPDATE_PRICING_DATA",
       payload: { [category]: updatedServices }
@@ -336,7 +267,6 @@ export function OrderProvider({ children }) {
     // Tạo thông báo cho Staff và Manager
     const updatedBy = user?.name || user?.email || "Admin";
     notifyPricingUpdate({ [category]: updatedServices }, updatedBy);
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   };
 
   // Lấy dữ liệu giá và thời gian
@@ -344,8 +274,6 @@ export function OrderProvider({ children }) {
     return state.pricingData;
   };
 
-<<<<<<< HEAD
-=======
   // Lấy đơn hàng theo trạng thái
   const getOrdersByStatus = (status) => {
     return state.orders.filter(order => order.status === status);
@@ -377,7 +305,6 @@ export function OrderProvider({ children }) {
     return null;
   };
 
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
   return (
     <OrderContext.Provider
       value={{
@@ -388,10 +315,6 @@ export function OrderProvider({ children }) {
         getAllOrders,
         updateOrder,
         addFeedback,
-<<<<<<< HEAD
-        updatePricingData,
-        getPricingData,
-=======
         respondToFeedback,
         updatePricingData,
         getPricingData,
@@ -399,15 +322,10 @@ export function OrderProvider({ children }) {
         getOrdersNeedingApproval,
         getOrdersWithFeedback,
         deleteOrder,
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
       }}
     >
       {children}
     </OrderContext.Provider>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> d771c24746f19dacabc041b27a3bb77e367695e4
 export const useOrderContext = () => useContext(OrderContext);

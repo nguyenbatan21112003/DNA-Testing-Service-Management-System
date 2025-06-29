@@ -266,7 +266,10 @@ const SampleCollection = () => {
   const getAdministrativeOrders = () => {
     const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     return orders.filter(
-      (order) => order.type.includes("hành chính") && !order.sampleCollected
+      (order) => {
+        const typeStr = (order.type || "").toLowerCase();
+        return typeStr.includes("hành chính") && !order.sampleCollected;
+      }
     );
   };
 

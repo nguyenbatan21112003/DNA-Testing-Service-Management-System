@@ -41,7 +41,6 @@ const { TabPane } = Tabs;
 const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
-  const [setOrders] = useState([]);
   const { orders, updateOrder, getAllOrders } = useOrderContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -178,32 +177,7 @@ const TestingResults = () => {
         ? JSON.parse(JSON.stringify(dataToSave))
         : null;
 
-      const updatedOrders = orders.map((order) =>
-        order.id === selectedOrder.id
-          ? {
-              ...order,
-              status: values.status,
-              // Store as string representation for backward compatibility
-              result: resultTableDataCopy
-                ? JSON.stringify(resultTableDataCopy)
-                : values.result,
-              testingMethod: values.testingMethod,
-              testingNotes: values.testingNotes,
-              conclusion: values.conclusion,
-              // Store the actual array for direct use
-              resultTableData: resultTableDataCopy,
-              completedDate:
-                values.status === "Hoàn thành"
-                  ? new Date().toLocaleDateString("vi-VN")
-                  : order.completedDate,
-              updatedAt: new Date().toLocaleString("vi-VN"),
-            }
-          : order
-      );
-      setOrders(updatedOrders);
-      localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
-
-      // Gọi context để cập nhật đơn hàng cho toàn bộ ứng dụng (bao gồm giao diện User)
+      // cập nhật qua context
       updateOrder(selectedOrder.id, {
         status: values.status,
         result: resultTableDataCopy
