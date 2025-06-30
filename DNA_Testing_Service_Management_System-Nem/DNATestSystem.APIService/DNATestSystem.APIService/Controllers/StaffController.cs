@@ -87,5 +87,11 @@ namespace DNATestSystem.APIService.Controllers
 
             return StatusCode(500, new { success = false, error = result.Message });
         }
+        [HttpGet("at-center-administrative")]
+        public async Task<IActionResult> GetAtCenterAdministrativeRequests([FromQuery] int staffId)
+        {
+            var result = await _staffService.GetAtCenterAdministrativeRequestsAsync(staffId);
+            return Ok(result);
+        }
     }
 }

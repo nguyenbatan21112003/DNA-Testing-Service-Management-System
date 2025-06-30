@@ -304,5 +304,54 @@ namespace DNATestSystem.Services.Service
                 return (true, "Assigned test process successfully.");
             
         }
+
+        public async Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId)
+        {
+            var result = await _context.TestProcesses
+               .Include(p => p.Request)
+                   .ThenInclude(r => r.Service)
+               .Include(p => p.Request)
+                   .ThenInclude(r => r.CollectType) // Type là CollectType
+               .Include(p => p.Request)
+                   .ThenInclude(r => r.RequestDeclarants)
+               .Include(p => p.Request)
+                   .ThenInclude(r => r.TestSamples)
+               .Where(p => p.StaffId == staffId &&
+                           p.Request.CollectType.CollectName == "At Center" &&
+                           p.Request.Category == "Administrative")
+               .Select(p => new TestRequestViewDto
+               {
+                   RequestId = p.Request.RequestId,
+                   ServiceName = p.Request.Service.ServiceName,
+                   CollectionType = p.Request.CollectType.CollectName,
+                   Category = p.Request.Category,
+                   Status = p.Request.Status,
+                   ScheduleDate = p.Request.ScheduleDate,
+                   CreatedAt = p.Request.CreatedAt,
+                   Address = p.Request.Address,
+                   Declarant = p.Request.RequestDeclarants.Select(d => new DeclarantDto
+                   {
+                       FullName = d.FullName,
+                       Gender = d.Gender,
+                       IdentityNumber = d.IdentityNumber,
+                       IdentityIssuedDate = d.IdentityIssuedDate,
+                       IdentityIssuedPlace = d.IdentityIssuedPlace,
+                       Address = d.Address,
+                       Phone = d.Phone,
+                       Email = d.Email
+                   }).FirstOrDefault(),
+                   Sample = p.Request.TestSamples.Select(s => new TestSampleDto
+                   {
+                       OwnerName = s.OwnerName,
+                       Gender = s.Gender,
+                       Relationship = s.Relationship,
+                       Yob = s.Yob,
+                       SampleType = s.SampleType,
+                   }).ToList()
+               })
+               .ToListAsync();
+
+            return result;
+        }
     }
 }
