@@ -364,184 +364,188 @@ const ServiceRegisterForm = () => {
             </div>
           </div>
           {/* Bảng thông tin thành viên cung cấp mẫu */}
-          <div
-            style={{
-              margin: "18px 0 10px 0",
-              fontWeight: 600,
-              color: "#009e74",
-              textAlign: "left",
-            }}
-          >
-            Bảng thông tin thành viên cung cấp mẫu:
-          </div>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              marginBottom: 18,
-            }}
-          >
-            <thead>
-              <tr style={{ background: "#f6f8fa" }}>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>STT</th>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>
-                  Họ và tên
-                </th>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>
-                  Năm sinh
-                </th>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>
-                  Giới tính
-                </th>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>
-                  Mối quan hệ
-                </th>
-                <th style={{ border: "1px solid #ccc", padding: 6 }}>
-                  Loại mẫu
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {memberTable.map((row, i) => (
-                <tr key={i}>
-                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
-                    {i + 1}
-                  </td>
-                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
-                    <input
-                      style={{
-                        width: "100%",
-                        border: "1px solid #bbb",
-                        borderRadius: 6,
-                        padding: 8,
-                        fontSize: 16,
-                      }}
-                      value={row.name}
-                      onChange={(e) =>
-                        handleMemberChange(i, "name", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
-                    <input
-                      style={{
-                        width: "100%",
-                        border: "1px solid #bbb",
-                        borderRadius: 6,
-                        padding: 8,
-                        fontSize: 16,
-                      }}
-                      value={row.birth}
-                      onChange={(e) =>
-                        handleMemberChange(i, "birth", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
-                    <select
-                      style={{
-                        width: "100%",
-                        border: "1px solid #bbb",
-                        borderRadius: 6,
-                        padding: 8,
-                        fontSize: 16,
-                      }}
-                      value={row.gender}
-                      onChange={(e) =>
-                        handleMemberChange(i, "gender", e.target.value)
-                      }
-                    >
-                      <option>Nam</option>
-                      <option>Nữ</option>
-                    </select>
-                  </td>
-                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
-                    <input
-                      style={{
-                        width: "100%",
-                        border: "1px solid #bbb",
-                        borderRadius: 6,
-                        padding: 8,
-                        fontSize: 16,
-                      }}
-                      value={row.relation}
-                      onChange={(e) =>
-                        handleMemberChange(i, "relation", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td
-                    style={{
-                      border: "1px solid #ccc",
-                      padding: 6,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <select
-                      style={{
-                        width: "100%",
-                        border: "1px solid #bbb",
-                        borderRadius: 6,
-                        padding: 8,
-                        fontSize: 16,
-                      }}
-                      value={row.sampleType}
-                      onChange={(e) =>
-                        handleMemberChange(i, "sampleType", e.target.value)
-                      }
-                    >
-                      <option value="">Chọn loại mẫu</option>
-                      <option value="Nước bọt">Nước bọt</option>
-                      <option value="Máu">Máu</option>
-                      <option value="Tóc">Tóc</option>
-                      <option value="Móng">Móng</option>
-                      <option value="Niêm mạc">Niêm mạc</option>
-                    </select>
-                    {memberTable.length > 2 && i >= 2 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveMember(i)}
-                        style={{
-                          marginLeft: 4,
-                          background: "#e74c3c",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: 4,
-                          padding: "4px 10px",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          fontSize: 14,
-                        }}
-                      >
-                        Xóa
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {memberTable.length < 3 && (
-            <div style={{ textAlign: "right", marginBottom: 18 }}>
-              <button
-                type="button"
-                onClick={handleAddMember}
+          {category === "civil" && sampleMethod === "home" && (
+            <>
+              <div
                 style={{
-                  background: "#009e74",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "8px 18px",
+                  margin: "18px 0 10px 0",
                   fontWeight: 600,
-                  fontSize: 15,
-                  cursor: "pointer",
+                  color: "#009e74",
+                  textAlign: "left",
                 }}
               >
-                + Thêm thành viên
-              </button>
-            </div>
+                Bảng thông tin thành viên cung cấp mẫu:
+              </div>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  marginBottom: 18,
+                }}
+              >
+                <thead>
+                  <tr style={{ background: "#f6f8fa" }}>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>STT</th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      Họ và tên
+                    </th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      Năm sinh
+                    </th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      Giới tính
+                    </th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      Mối quan hệ
+                    </th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      Loại mẫu
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {memberTable.map((row, i) => (
+                    <tr key={i}>
+                      <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                        {i + 1}
+                      </td>
+                      <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                        <input
+                          style={{
+                            width: "100%",
+                            border: "1px solid #bbb",
+                            borderRadius: 6,
+                            padding: 8,
+                            fontSize: 16,
+                          }}
+                          value={row.name}
+                          onChange={(e) =>
+                            handleMemberChange(i, "name", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                        <input
+                          style={{
+                            width: "100%",
+                            border: "1px solid #bbb",
+                            borderRadius: 6,
+                            padding: 8,
+                            fontSize: 16,
+                          }}
+                          value={row.birth}
+                          onChange={(e) =>
+                            handleMemberChange(i, "birth", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                        <select
+                          style={{
+                            width: "100%",
+                            border: "1px solid #bbb",
+                            borderRadius: 6,
+                            padding: 8,
+                            fontSize: 16,
+                          }}
+                          value={row.gender}
+                          onChange={(e) =>
+                            handleMemberChange(i, "gender", e.target.value)
+                          }
+                        >
+                          <option>Nam</option>
+                          <option>Nữ</option>
+                        </select>
+                      </td>
+                      <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                        <input
+                          style={{
+                            width: "100%",
+                            border: "1px solid #bbb",
+                            borderRadius: 6,
+                            padding: 8,
+                            fontSize: 16,
+                          }}
+                          value={row.relation}
+                          onChange={(e) =>
+                            handleMemberChange(i, "relation", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td
+                        style={{
+                          border: "1px solid #ccc",
+                          padding: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <select
+                          style={{
+                            width: "100%",
+                            border: "1px solid #bbb",
+                            borderRadius: 6,
+                            padding: 8,
+                            fontSize: 16,
+                          }}
+                          value={row.sampleType}
+                          onChange={(e) =>
+                            handleMemberChange(i, "sampleType", e.target.value)
+                          }
+                        >
+                          <option value="">Chọn loại mẫu</option>
+                          <option value="Nước bọt">Nước bọt</option>
+                          <option value="Máu">Máu</option>
+                          <option value="Tóc">Tóc</option>
+                          <option value="Móng">Móng</option>
+                          <option value="Niêm mạc">Niêm mạc</option>
+                        </select>
+                        {memberTable.length > 2 && i >= 2 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMember(i)}
+                            style={{
+                              marginLeft: 4,
+                              background: "#e74c3c",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: 4,
+                              padding: "4px 10px",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              fontSize: 14,
+                            }}
+                          >
+                            Xóa
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {memberTable.length < 3 && (
+                <div style={{ textAlign: "right", marginBottom: 18 }}>
+                  <button
+                    type="button"
+                    onClick={handleAddMember}
+                    style={{
+                      background: "#009e74",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "8px 18px",
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Thêm thành viên
+                  </button>
+                </div>
+              )}
+            </>
           )}
           <div className="form-group">
             <label htmlFor="message">Ghi chú thêm</label>

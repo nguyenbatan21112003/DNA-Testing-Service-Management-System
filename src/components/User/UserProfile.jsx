@@ -705,7 +705,7 @@ const UserProfile = () => {
                       onClick={() => setFilterStatus("Đã xác nhận")}
                     >
                       Đã xác nhận
-                    </span>
+                  </span>
                   <span
                     className={filterStatus === "Đang xử lý" ? "active" : ""}
                     style={{
@@ -804,8 +804,8 @@ const UserProfile = () => {
                         display: "flex",
                         flexDirection: "column",
                           gap: 16,
-                        }}
-                      >
+                      }}
+                    >
                         <div
                           style={{
                             width: "100%",
@@ -861,8 +861,8 @@ const UserProfile = () => {
                                 maxWidth: 120,
                                 overflow: "hidden",
                                   textOverflow: "ellipsis",
-                                }}
-                              >
+                              }}
+                            >
                                 {getStatusText(
                                   order.status,
                                   order.sampleMethod,
@@ -1192,14 +1192,14 @@ const UserProfile = () => {
                           fontSize: 15,
                           alignSelf: "center",
                             width: "auto",
-                          }}
+                        }}
                           onClick={() =>
                             setShowTimeline((prev) => ({
                               ...prev,
                               [order.id]: !prev[order.id],
                             }))
                           }
-                        >
+                      >
                           {showTimeline[order.id]
                             ? "Ẩn timeline"
                             : "Xem tiến độ & timeline xử lý"}
