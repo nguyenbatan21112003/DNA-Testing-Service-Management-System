@@ -238,6 +238,26 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetAtCenterTestRequests",
+    "RelativePath": "Staff/at-center",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetAtHomeTestRequests",
+    "RelativePath": "Staff/at-home",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "CompleteConsult",
     "RelativePath": "Staff/consults/complete",
     "HttpMethod": "PUT",

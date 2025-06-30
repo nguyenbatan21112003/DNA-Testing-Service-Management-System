@@ -457,3 +457,38 @@ SELECT * FROM TestRequests
 WHERE UserId IS NULL OR ServiceId IS NULL
 
 SELECT * FROM TestResults WHERE RequestId IS NOT NULL AND RequestId NOT IN (SELECT RequestId FROM TestRequests);
+
+-- Insert TestRequest
+INSERT INTO TestRequests (UserID, ServiceID, TypeID, Category, ScheduleDate, Address, Status, CreatedAt)
+VALUES
+(3, 3, 2, N'Voluntary', '2025-06-28', N'123 Đường ABC, Hà Nội', N'Pending', '2025-06-24T17:00:00'),
+(3, 3, 2, N'Voluntary', '2025-06-28', N'123 Đường ABC, Hà Nội', N'Pending', '2025-06-24T17:00:00'),
+(3, 3, 2, N'Voluntary', '2025-06-28', N'123 Đường ABC, Hà Nội', N'Pending', '2025-06-24T17:00:00'),
+(3, 3, 2, N'Voluntary', '2025-06-28', N'123 Đường ABC, Hà Nội', N'Pending', '2025-06-24T17:00:00'),
+(3, 3, 2, N'Voluntary', '2025-06-28', N'123 Đường ABC, Hà Nội', N'Pending', '2025-06-24T17:00:00');
+
+-- Insert RequestDeclarant (example)
+INSERT INTO RequestDeclarants (
+  RequestID, FullName, Gender, Address, IdentityNumber, IdentityIssuedDate,
+  IdentityIssuedPlace, Phone, Email
+)
+VALUES
+(1, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC', '0123456789', '2020-01-01', N'Hà Nội', '0901234567', 'abc@example.com'),
+(2, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC', '0123456789', '2020-01-01', N'Hà Nội', '0901234567', 'abc@example.com'),
+(3, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC', '0123456789', '2020-01-01', N'Hà Nội', '0901234567', 'abc@example.com'),
+(4, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC', '0123456789', '2020-01-01', N'Hà Nội', '0901234567', 'abc@example.com'),
+(5, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC', '0123456789', '2020-01-01', N'Hà Nội', '0901234567', 'abc@example.com');
+
+-- Insert TestSamples
+INSERT INTO TestSamples (RequestID, ProcessID, OwnerName, Gender, Relationship, SampleType, YOB, CollectedAt)
+VALUES
+(1, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
+(1, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL),
+(2, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
+(2, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL),
+(3, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
+(3, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL),
+(4, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
+(4, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL),
+(5, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
+(5, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL);

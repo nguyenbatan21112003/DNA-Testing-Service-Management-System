@@ -64,5 +64,17 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.PendingTestRequestAsync();
             return Ok(result);
         }
+        [HttpGet("at-center")]
+        public async Task<IActionResult> GetAtCenterTestRequests()
+        {
+            var result = await _staffService.AtCenterTestRequestAsync();
+            return Ok(result);
+        }
+        [HttpGet("at-home")]
+         public async Task<IActionResult> GetAtHomeTestRequests()
+            {
+                var result = await _staffService.AtHomeTestRequestAsync();
+                return Ok(result);
+            }
     }
 }

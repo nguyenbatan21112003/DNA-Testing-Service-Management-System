@@ -19,7 +19,8 @@ namespace DNATestSystem.Services.Service
     {
         private readonly IApplicationDbContext _context;
         // Constructor injection for the database context
-        public StaffService(IApplicationDbContext context) {
+        public StaffService(IApplicationDbContext context)
+        {
 
             _context = context;
         }
@@ -180,5 +181,91 @@ namespace DNATestSystem.Services.Service
             return result;
         }
 
+        public async Task<List<TestRequestViewDto>> AtCenterTestRequestAsync()
+        {
+            
+            var result = await _context.TestRequests
+                .Include(x => x.Service)
+                .Include(x => x.RequestDeclarants)
+                .Include(x => x.TestSamples)
+                .Include(x => x.CollectType)
+                .Where( x => x.CollectType.CollectName == "At Center")
+                .Select(x => new TestRequestViewDto
+                {
+                    RequestId = x.RequestId,
+                    ServiceName = x.Service.ServiceName,
+                    CollectionType = x.CollectType.CollectName,
+                    Category = x.Category,
+                    Status = x.Status,
+                    ScheduleDate = x.ScheduleDate,
+                    CreatedAt = x.CreatedAt,
+                    Address = x.Address,
+                    Declarant = x.RequestDeclarants.Select(d => new DeclarantDto
+                    {
+                        FullName = d.FullName,
+                        Gender = d.Gender,
+                        IdentityNumber = d.IdentityNumber,
+                        IdentityIssuedDate = d.IdentityIssuedDate,
+                        IdentityIssuedPlace = d.IdentityIssuedPlace,
+                        Address = d.Address,
+                        Phone = d.Phone,
+                        Email = d.Email
+                    }).FirstOrDefault(),
+                    Sample = x.TestSamples.Select(s => new TestSampleDto
+                    {
+                        OwnerName = s.OwnerName,
+                        Gender = s.Gender,
+                        Relationship = s.Relationship,
+                        Yob = s.Yob,
+                        SampleType = s.SampleType,
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return result;
+        }
+        public async Task<List<TestRequestViewDto>> AtHomeTestRequestAsync()
+        {
+
+            var result = await _context.TestRequests
+                .Include(x => x.Service)
+                .Include(x => x.RequestDeclarants)
+                .Include(x => x.TestSamples)
+                .Include(x => x.CollectType)
+                .Where(x => x.CollectType.CollectName == "At Home")
+                .Select(x => new TestRequestViewDto
+                {
+                    RequestId = x.RequestId,
+                    ServiceName = x.Service.ServiceName,
+                    CollectionType = x.CollectType.CollectName,
+                    Category = x.Category,
+                    Status = x.Status,
+                    ScheduleDate = x.ScheduleDate,
+                    CreatedAt = x.CreatedAt,
+                    Address = x.Address,
+                    Declarant = x.RequestDeclarants.Select(d => new DeclarantDto
+                    {
+                        FullName = d.FullName,
+                        Gender = d.Gender,
+                        IdentityNumber = d.IdentityNumber,
+                        IdentityIssuedDate = d.IdentityIssuedDate,
+                        IdentityIssuedPlace = d.IdentityIssuedPlace,
+                        Address = d.Address,
+                        Phone = d.Phone,
+                        Email = d.Email
+                    }).FirstOrDefault(),
+                    Sample = x.TestSamples.Select(s => new TestSampleDto
+                    {
+                        OwnerName = s.OwnerName,
+                        Gender = s.Gender,
+                        Relationship = s.Relationship,
+                        Yob = s.Yob,
+                        SampleType = s.SampleType,
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return result;
+        }
     }
 }
