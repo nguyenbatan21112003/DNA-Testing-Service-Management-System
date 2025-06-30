@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using DNATestSystem.BusinessObjects.Application.Dtos;
 
 namespace DNATestSystem.BusinessObjects.Models;
 
@@ -25,9 +27,9 @@ public partial class TestRequest
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
-    public virtual ICollection<RequestDeclarant> RequestDeclarants { get; set; } = new List<RequestDeclarant>();
+    public virtual ICollection<RequestDeclarant> RequestDeclarants { get; set; } 
 
-    public virtual ICollection<SampleCollectionForm> SampleCollectionForms { get; set; } = new List<SampleCollectionForm>();
+    public virtual ICollection<SampleCollectionForm> SampleCollectionForms { get; set; }
 
     public virtual Service? Service { get; set; }
 
@@ -37,7 +39,9 @@ public partial class TestRequest
 
     public virtual ICollection<TestSample> TestSamples { get; set; } = new List<TestSample>();
 
-    //public virtual CollectType? Type { get; set; }
+    public int? CollectID { get; set; }
 
+    [ForeignKey("CollectID")]
+    public CollectType? CollectType { get; set; }
     public virtual User? User { get; set; }
 }

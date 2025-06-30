@@ -51,6 +51,8 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<RequestDeclarant> RequestDeclarants { get; set; }
 
+        public virtual DbSet<CollectType> CollectTypes { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -123,15 +125,13 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK__ConsultRe__Servi__XXXXXXX"); // Đặt tên FK đúng với tên trong DB nếu cần
             });
-            //modelBuilder.Entity<CollectType>(entity =>
-            //{
-            //    entity.HasKey(e => e.CollectId).HasName("PK__CollectT__8AAA9E2ADEBCB2E1");
+            modelBuilder.Entity<CollectType>(entity =>
+            {
+                entity.HasKey(e => e.CollectTypeId);
+                entity.Property(e => e.CollectTypeId).HasColumnName("CollectID");
+                entity.Property(e => e.CollectName).HasColumnName("CollectName");
+            });
 
-            //    entity.ToTable("CollectType");
-
-            //    entity.Property(e => e.CollectId).HasColumnName("CollectID");
-            //    entity.Property(e => e.CollectName).HasMaxLength(20);
-            //});
             modelBuilder.Entity<Feature>(entity =>
             {
                 entity.HasKey(e => e.FeatureId).HasName("PK__Features__82230A298C737335");
@@ -307,6 +307,10 @@ namespace DNATestSystem.Repositories
                 //entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
                 //    .HasForeignKey(d => d.TypeId)
                 //    .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
+                entity.HasOne(d => d.CollectType)
+                        .WithMany(p => p.TestRequests)
+                        .HasForeignKey(d => d.TypeId)
+                        .HasConstraintName("FK_TestRequest_CollectType");
 
                 entity.HasOne(d => d.User).WithMany(p => p.TestRequests)
                     .HasForeignKey(d => d.UserId)

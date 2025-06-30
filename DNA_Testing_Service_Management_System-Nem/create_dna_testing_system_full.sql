@@ -5,6 +5,16 @@ BEGIN
 END;
 GO
 DROP DATABASE DNATestingSystem_V4
+
+USE master;
+GO
+
+ALTER DATABASE DNATestingSystem_V4 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+GO
+
+DROP DATABASE DNATestingSystem_V4
+GO
+
 USE DNATestingSystem_V4;
 GO
 
@@ -123,17 +133,23 @@ GO
 
 -- ===================== TEST REQUESTS =====================
 CREATE TABLE CollectType (
-  CollectID INT PRIMARY KEY IDENTITY(1,1),
+  CollectTypeId INT PRIMARY KEY IDENTITY(1,1),
   CollectName NVARCHAR(20)
 );
 GO
 DROP TABLE CollectType
+-- Đổi tên cột CollectID thành CollectTypeId
+EXEC sp_rename 'CollectType.CollectID', 'CollectTypeId', 'COLUMN';
+
+INSERT INTO CollectType (CollectName) VALUES
+(N'At Center'),
+(N'At Home');
 
 CREATE TABLE TestRequests (
   RequestID INT PRIMARY KEY IDENTITY(1,1),
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
-  TypeID INT FOREIGN KEY REFERENCES CollectType(CollectID),
+  TypeID INT FOREIGN KEY REFERENCES CollectType(CollectTypeId),
   Category NVARCHAR(50),
   -- thêm bảng
   ScheduleDate DATE,
@@ -376,14 +392,16 @@ GO
 SELECT * FROM CollectType
 SET IDENTITY_INSERT CollectType ON;
 
-INSERT INTO CollectType  (CollectID , CollectName  ) VALUES
-(1, 'Cha - Con'),
-(2, 'Mẹ - Con'),
-(3, 'Anh - Em'),
-(4, 'Họ hàng'),
-(5, 'Khai sinh'),
-(6, 'Thẻ ADN cá nhân'),
-(7, 'Hành chính nhanh');
+INSERT INTO CollectType  (  CollectName  ) VALUES
+(N'At Center'),
+(N'At Home'),
+( 'Cha - Con'),
+('Mẹ - Con'),
+( 'Anh - Em'),
+( 'Họ hàng'),
+( 'Khai sinh'),
+( 'Thẻ ADN cá nhân'),
+( 'Hành chính nhanh');
 
 SET IDENTITY_INSERT CollectType OFF;
 
@@ -400,16 +418,35 @@ VALUES
 SELECT * FROM TestRequests
 --TestResult
 -- Thêm 2 request để khớp với TestResults
-INSERT INTO TestResults (RequestID, EnteredBy, VerifiedBy, ResultData, Status, EnteredAt, VerifiedAt)
-VALUES
--- Yêu cầu 1: Chưa xác nhận
-(3, 2, NULL, N'Kết quả xét nghiệm đang được xử lý...', N'Pending', GETDATE(), NULL),
+INSERT INTO TestRequests (UserID, ServiceID, TypeID, Category, ScheduleDate, Address, Status, CreatedAt)
+VALUES 
+(3, 1, 3, N'Dân sự', '2025-07-01', N'12 Trần Phú, Hà Nội', N'Pending', GETDATE()),
+(3, 2, 4, N'Dân sự', '2025-07-02', N'34 Hùng Vương, Huế', N'Pending', GETDATE());
+INSERT INTO TestProcesses (RequestID, StaffID, ClaimedAt, KitCode, CurrentStatus, ProcessState, Notes, UpdatedAt)
+VALUES 
+(6, 2, GETDATE(), 'KIT001', N'Chờ lấy mẫu', N'Mới', NULL, GETDATE()),
+(7, 2, GETDATE(), 'KIT002', N'Chờ lấy mẫu', N'Mới', NULL, GETDATE());
 
--- Yêu cầu 2: Đang phân tích
-(4, 2, NULL, N'Đang phân tích mẫu...', N'Pending', GETDATE(), NULL),
+INSERT INTO TestSamples (RequestID, ProcessID, OwnerName, Gender, Relationship, SampleType, YOB, CollectedAt)
+VALUES 
+-- Cha - Con
+(6, 1, N'Nguyễn Văn A', 'Nam', N'Cha', N'Nước bọt', 1980, GETDATE()),
+(6, 1, N'Nguyễn Văn B', 'Nam', N'Con', N'Nước bọt', 2012, GETDATE()),
 
--- Yêu cầu 3: Đã xác minh huyết thống
-(5, 2, 3, N'Quan hệ huyết thống: Cha - Con (99.99%)', N'Verified', DATEADD(DAY, -2, GETDATE()), GETDATE());
+-- Mẹ - Con
+(7, 2, N'Lê Thị C', 'Nữ', N'Mẹ', N'Tóc có chân tóc', 1985, GETDATE()),
+(7, 2, N'Lê Thị D', 'Nữ', N'Con', N'Máu', 2015, GETDATE());
+
+-- Giả sử bạn đã có các RequestID tồn tại trong bảng TestRequests
+
+INSERT INTO RequestDeclarants (
+  RequestID, FullName, Gender, Address, IdentityNumber, IdentityIssuedDate, 
+  IdentityIssuedPlace, Phone, Email
+) VALUES
+(1, N'Nguyễn Văn A', N'Nam', N'123 Đường ABC, Quận 1, TP.HCM', '123456789', '2015-06-15', N'CA TP.HCM', '0909123456', 'a.nguyen@example.com'),
+(2, N'Lê Thị B', N'Nữ', N'45 Đường XYZ, Quận 3, TP.HCM', '987654321', '2017-09-20', N'CA TP.HCM', '0912233445', 'b.le@example.com'),
+(3, N'Trần Văn C', N'Nam', N'789 Đường DEF, Quận 5, TP.HCM', '135792468', '2018-11-10', N'CA TP.HCM', '0987654321', 'c.tran@example.com');
+
 
 SELECT * FROM UserProfiles
 SELECT * FROM TestResults

@@ -1,8 +1,10 @@
 ﻿using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -12,9 +14,11 @@ namespace DNATestSystem.APIService.Controllers
     public class StaffController : Controller
     {
         private readonly IStaffService _staffService;
-        public StaffController(IStaffService staffService)
+        private readonly IApplicationDbContext _context;
+        public StaffController(IStaffService staffService, IApplicationDbContext context)
         {
             _staffService = staffService;
+            _context = context;
         }
         [HttpGet("pending-consults")]
         public async Task<IActionResult> GetPendingConsults()
@@ -54,5 +58,11 @@ namespace DNATestSystem.APIService.Controllers
             });
         }
 
+        [HttpGet("pending")]
+        public async Task<IActionResult> GetPendingTestRequests()
+        {
+            var result = await _staffService.PendingTestRequestAsync();
+            return Ok(result);
+        }
     }
 }

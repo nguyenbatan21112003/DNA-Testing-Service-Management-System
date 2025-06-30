@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
@@ -59,8 +61,15 @@ namespace DNATestSystem.Services.Service
         {
             using var transaction = await (_context as DbContext)!.Database.BeginTransactionAsync();
 
+
             try
             {
+                int collectTypeId = dto.TestRequest.TypeId switch
+                {
+                    1 => 1, // At Center
+                    2 => 2, // At Home
+                    _ => throw new ArgumentException("Invalid TypeId")
+                };
                 var testRequest = new TestRequest
                 {
                     UserId = dto.TestRequest.UserId,
@@ -126,5 +135,50 @@ namespace DNATestSystem.Services.Service
                 return (false, ex.InnerException?.Message ?? ex.Message, null);
             }
         }
+
+        public async Task<List<TestRequestViewDto>> PendingTestRequestAsync()
+        {
+
+            var result = await _context.TestRequests
+                .Where(x => x.Status == "Pending")
+                .Include(x => x.Service)
+                .Include(x => x.RequestDeclarants)
+                .Include(x => x.TestSamples)
+                .Include(x => x.CollectType)
+                .Select(x => new TestRequestViewDto
+                {
+                    RequestId = x.RequestId,
+                    ServiceName = x.Service.ServiceName,
+                    CollectionType = x.CollectType.CollectName,
+                    Category = x.Category,
+                    Status = x.Status,
+                    ScheduleDate = x.ScheduleDate,
+                    CreatedAt = x.CreatedAt,
+                    Address = x.Address,
+                    Declarant = x.RequestDeclarants.Select(d => new DeclarantDto
+                    {
+                        FullName = d.FullName,
+                        Gender = d.Gender,
+                        IdentityNumber = d.IdentityNumber,
+                        IdentityIssuedDate = d.IdentityIssuedDate,
+                        IdentityIssuedPlace = d.IdentityIssuedPlace,
+                        Address = d.Address,
+                        Phone = d.Phone,
+                        Email = d.Email
+                    }).FirstOrDefault(),
+                    Sample = x.TestSamples.Select(s => new TestSampleDto
+                    {
+                        OwnerName = s.OwnerName,
+                        Gender = s.Gender,
+                        Relationship = s.Relationship,
+                        Yob = s.Yob,
+                        SampleType = s.SampleType,
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
     }
 }

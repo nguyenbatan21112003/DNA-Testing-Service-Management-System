@@ -40,8 +40,9 @@ namespace DNATestSystem.Repositories
 
          DbSet<Invoice> Invoices { get; set; }
 
-        DbSet<RequestDeclarant> RequestDeclarants { get; set; } 
+        DbSet<RequestDeclarant> RequestDeclarants { get; set; }
 
+        DbSet<CollectType> CollectTypes { get; set; }
 
 
         // Save changes

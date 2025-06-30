@@ -254,6 +254,16 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetPendingTestRequests",
+    "RelativePath": "Staff/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetPendingConsults",
     "RelativePath": "Staff/pending-consults",
     "HttpMethod": "GET",
