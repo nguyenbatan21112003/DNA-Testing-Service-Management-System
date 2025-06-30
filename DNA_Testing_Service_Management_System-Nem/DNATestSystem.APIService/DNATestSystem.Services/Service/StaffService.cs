@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using DNATestSystem.BusinessObjects.Models;
@@ -266,6 +267,42 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
 
             return result;
+        }
+
+        public async Task<(bool Success, string Message)> AssignTestProcessAsync(AssignTestProcessDto dto)
+        {
+            
+                var process = new TestProcess
+                {
+                    RequestId = dto.RequestId,
+                    StaffId = dto.StaffId,
+                    ClaimedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Notes = dto.Notes,
+                    ProcessState = "Processing"
+                };
+
+                if (dto.CollectionType == "At Home")
+                {
+                    process.KitCode = dto.KitCode;
+                    process.CurrentStatus = "KIT SENT";
+                }
+                else if (dto.CollectionType == "At Center")
+                {
+                    process.KitCode = "";
+                    process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+                }
+                else
+                {
+                    return (false, "Invalid CollectType.");
+                }
+                // là như thế này , nếu mà staff để là At home thì lưu kit
+                // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+                _context.TestProcesses.Add(process);
+                await _context.SaveChangesAsync();
+
+                return (true, "Assigned test process successfully.");
+            
         }
     }
 }

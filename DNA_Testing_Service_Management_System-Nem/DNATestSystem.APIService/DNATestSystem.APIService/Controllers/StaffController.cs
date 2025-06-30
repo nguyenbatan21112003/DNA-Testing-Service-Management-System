@@ -1,4 +1,5 @@
 ﻿using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
@@ -72,9 +73,19 @@ namespace DNATestSystem.APIService.Controllers
         }
         [HttpGet("at-home")]
          public async Task<IActionResult> GetAtHomeTestRequests()
-            {
+         {
                 var result = await _staffService.AtHomeTestRequestAsync();
                 return Ok(result);
-            }
+         }
+        [HttpPost("assign-test-process")]
+        public async Task<IActionResult> AssignTestProcess([FromBody] AssignTestProcessDto dto)
+        {
+            var result = await _staffService.AssignTestProcessAsync(dto);
+
+            if (result.Success)
+                return Ok(new { success = true, message = result.Message });
+
+            return StatusCode(500, new { success = false, error = result.Message });
+        }
     }
 }

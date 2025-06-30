@@ -238,6 +238,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "AssignTestProcess",
+    "RelativePath": "Staff/assign-test-process",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.AssignTestProcessDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetAtCenterTestRequests",
     "RelativePath": "Staff/at-center",
     "HttpMethod": "GET",
