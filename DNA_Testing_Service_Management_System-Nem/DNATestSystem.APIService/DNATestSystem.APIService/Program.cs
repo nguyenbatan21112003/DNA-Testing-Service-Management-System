@@ -12,6 +12,7 @@ using DNATestSystem.Repositories;
 using DNATestSystem.Services.Service;
 using DNATestSystem.BusinessObjects.Entities;
 using DNATestSystem.Services.Interface;
+using DNATestSystem.BusinessObjects.Application.Dtos.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,10 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssemblyContaining<UserValidateModel>(); // hoặc bất kỳ validator nào bạn viết
     });
 
+builder.Services.Configure<MailSettings>(
+    builder.Configuration.GetSection("MailSettings"));
+
+// Đăng ký service gửi mail (nếu có)
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
 builder.Services.AddScoped<IAdminService, AdminService>();
@@ -69,6 +74,7 @@ builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IMailService, MailService>();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -139,6 +145,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // tự động add vào request xong r save vào browser
 });
 builder.Services.AddHttpContextAccessor();
+
 // Sau khi cấu hình xong, gọi builder.Build() một lần duy nhất
 var app = builder.Build();
 
