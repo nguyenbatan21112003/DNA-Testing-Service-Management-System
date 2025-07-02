@@ -40,6 +40,43 @@ const CustomerFeedback = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Luôn ghi đè dữ liệu mẫu vào localStorage để kiểm tra đồng bộ
+    const sampleOrders = [
+      {
+        id: "DNA001",
+        phone: "0123456789",
+        type: "Xét nghiệm ADN cha con",
+        feedbacks: [
+          {
+            user: "Nguyễn Văn Minh",
+            email: "nguyenvanminh@gmail.com",
+            rating: 5,
+            feedback: "Dịch vụ rất tốt, kết quả chính xác và nhanh chóng. Nhân viên tư vấn nhiệt tình.",
+            date: "20/06/2024",
+            category: "Khen ngợi"
+          }
+        ]
+      },
+      {
+        id: "DNA002",
+        phone: "0987654321",
+        type: "Xét nghiệm huyết thống",
+        feedbacks: [
+          {
+            user: "Trần Thị Hương",
+            email: "tranthihuong@gmail.com",
+            rating: 2,
+            feedback: "Thời gian chờ kết quả quá lâu, không đúng như cam kết ban đầu. Cần cải thiện.",
+            date: "19/06/2024",
+            category: "Khiếu nại"
+          }
+        ]
+      }
+    ];
+    localStorage.setItem('dna_orders', JSON.stringify(sampleOrders));
+  }, []);
+
   // Hàm xử lý khi localStorage thay đổi
   const handleStorageChange = (event) => {
     if (event.key === "dna_orders") {
@@ -218,11 +255,33 @@ const CustomerFeedback = () => {
       render: (_, record) => (
         <Button
           type="primary"
-          size="small"
-          icon={<EyeOutlined />}
+          icon={<EyeOutlined style={{ fontSize: 14 }} />}
+          style={{
+            background: '#1890ff',
+            borderColor: '#1890ff',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: 14,
+            height: 28,
+            padding: '0 10px',
+            transition: 'background 0.2s, color 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#1765ad';
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#1765ad';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = '#1890ff';
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#1890ff';
+          }}
           onClick={() => handleViewFeedback(record)}
         >
-          Xem
+          <span style={{ marginLeft: 4 }}>Xem</span>
         </Button>
       ),
     },
@@ -244,10 +303,10 @@ const CustomerFeedback = () => {
     percentage:
       feedbacks.length > 0
         ? (
-            (feedbacks.filter((f) => f.rating === rating).length /
-              feedbacks.length) *
-            100
-          ).toFixed(1)
+          (feedbacks.filter((f) => f.rating === rating).length /
+            feedbacks.length) *
+          100
+        ).toFixed(1)
         : 0,
   }));
 
@@ -348,10 +407,10 @@ const CustomerFeedback = () => {
                         item.rating >= 4
                           ? "#52c41a"
                           : item.rating === 3
-                          ? "#faad14"
-                          : item.rating <= 2
-                          ? "#ff4d4f"
-                          : "#00a67e",
+                            ? "#faad14"
+                            : item.rating <= 2
+                              ? "#ff4d4f"
+                              : "#00a67e",
                       borderRadius: 4,
                     }}
                   />
@@ -496,13 +555,12 @@ const CustomerFeedback = () => {
                   background: "#f6f6f6",
                   padding: 16,
                   borderRadius: 6,
-                  borderLeft: `4px solid ${
-                    selectedFeedback.rating >= 4
-                      ? "#52c41a"
-                      : selectedFeedback.rating >= 3
+                  borderLeft: `4px solid ${selectedFeedback.rating >= 4
+                    ? "#52c41a"
+                    : selectedFeedback.rating >= 3
                       ? "#faad14"
                       : "#ff4d4f"
-                  }`,
+                    }`,
                 }}
               >
                 {selectedFeedback.comment}

@@ -168,7 +168,7 @@ const TestingResults = () => {
       // Lấy dữ liệu bảng: ưu tiên từ form, nếu không có thì dùng state tableData
       let dataToSave =
         Array.isArray(values.resultTableData) &&
-        values.resultTableData.length > 0
+          values.resultTableData.length > 0
           ? values.resultTableData
           : tableData;
 
@@ -642,8 +642,8 @@ const TestingResults = () => {
                     selectedOrder.status === "Hoàn thành"
                       ? "green"
                       : selectedOrder.status === "Đang xử lý"
-                      ? "blue"
-                      : "orange"
+                        ? "blue"
+                        : "orange"
                   }
                 >
                   {selectedOrder.status}
@@ -828,6 +828,28 @@ const TestingResults = () => {
         cancelText="Hủy"
         width={800}
         destroyOnHidden={false}
+        okButtonProps={{
+          style: {
+            background: '#1890ff',
+            borderColor: '#1890ff',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 16,
+            padding: '7px 32px',
+            borderRadius: 6,
+            transition: 'background 0.2s, color 0.2s',
+          },
+          onMouseOver: e => {
+            e.target.style.background = '#1765ad';
+            e.target.style.color = '#fff';
+            e.target.style.borderColor = '#1765ad';
+          },
+          onMouseOut: e => {
+            e.target.style.background = '#1890ff';
+            e.target.style.color = '#fff';
+            e.target.style.borderColor = '#1890ff';
+          }
+        }}
       >
         <Form
           form={form}

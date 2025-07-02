@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useOrderContext } from "../../context/OrderContext"
 
 const CustomerFeedbackManager = () => {
+    const { getAllOrders, updateOrder } = useOrderContext()
     const [activeTab, setActiveTab] = useState("all")
     const [feedbacks, setFeedbacks] = useState([])
     const [selectedFeedback, setSelectedFeedback] = useState(null)
@@ -14,103 +16,87 @@ const CustomerFeedbackManager = () => {
         complaints: 0,
     })
 
-    useEffect(() => {
-        // Tạo dữ liệu phản hồi mẫu
-        const sampleFeedbacks = [
-            {
-                id: 1,
-                customerName: "Nguyễn Văn Minh",
-                email: "nguyenvanminh@gmail.com",
-                phone: "0123456789",
-                orderType: "Xét nghiệm ADN cha con",
-                rating: 5,
-                comment: "Dịch vụ rất tốt, kết quả chính xác và nhanh chóng. Nhân viên tư vấn nhiệt tình.",
-                status: "Mới",
-                priority: "Thấp",
-                date: "20/06/2024",
-                category: "Khen ngợi",
-                responseStatus: "Chưa phản hồi",
-            },
-            {
-                id: 2,
-                customerName: "Trần Thị Hương",
-                email: "tranthihuong@gmail.com",
-                phone: "0987654321",
-                orderType: "Xét nghiệm huyết thống",
-                rating: 2,
-                comment: "Thời gian chờ kết quả quá lâu, không đúng như cam kết ban đầu. Cần cải thiện.",
-                status: "Khiếu nại",
-                priority: "Cao",
-                date: "19/06/2024",
-                category: "Khiếu nại",
-                responseStatus: "Chưa phản hồi",
-            },
-            {
-                id: 3,
-                customerName: "Lê Văn Đức",
-                email: "levanduc@gmail.com",
-                phone: "0123987456",
-                orderType: "Xét nghiệm ADN cha con",
-                rating: 4,
-                comment: "Kết quả chính xác, nhân viên chuyên nghiệp. Tuy nhiên giá cả hơi cao.",
-                status: "Đã giải quyết",
-                priority: "Trung bình",
-                date: "18/06/2024",
-                category: "Góp ý",
-                responseStatus: "Đã phản hồi",
-                response: "Cảm ơn anh đã góp ý. Chúng tôi sẽ xem xét điều chỉnh giá cả phù hợp hơn.",
-                responseDate: "19/06/2024",
-                responseBy: "Trần Văn Quản",
-            },
-            {
-                id: 4,
-                customerName: "Phạm Thị Mai",
-                email: "phamthimai@gmail.com",
-                phone: "0369852147",
-                orderType: "Xét nghiệm ADN anh em",
-                rating: 1,
-                comment: "Rất không hài lòng! Nhân viên lấy mẫu không chuyên nghiệp, thái độ không tốt.",
-                status: "Khiếu nại",
-                priority: "Cao",
-                date: "17/06/2024",
-                category: "Khiếu nại",
-                responseStatus: "Đang xử lý",
-                actionPlan: "Đã liên hệ khách hàng để xin lỗi và sắp xếp lấy mẫu lại miễn phí",
-            },
-            {
-                id: 5,
-                customerName: "Hoàng Văn Nam",
-                email: "hoangvannam@gmail.com",
-                phone: "0741852963",
-                orderType: "Xét nghiệm huyết thống",
-                rating: 5,
-                comment: "Excellent service! Very professional staff and accurate results.",
-                status: "Đã giải quyết",
-                priority: "Thấp",
-                date: "16/06/2024",
-                category: "Khen ngợi",
-                responseStatus: "Đã phản hồi",
-                response: "Thank you for your positive feedback! We appreciate your trust in our services.",
-                responseDate: "17/06/2024",
-                responseBy: "Trần Văn Quản",
-            },
-        ]
-
-        setFeedbacks(sampleFeedbacks)
-
+    // Hàm load feedbacks từ các đơn hàng (giống Staff)
+    const loadFeedbacks = () => {
+        const allOrders = getAllOrders()
+        const allFeedbacks = []
+        allOrders.forEach((order) => {
+            if (order.feedbacks && order.feedbacks.length > 0) {
+                order.feedbacks.forEach((feedback, index) => {
+                    allFeedbacks.push({
+                        id: `${order.id}-${index}`,
+                        orderId: order.id,
+                        customerName: feedback.user,
+                        email: feedback.email,
+                        phone: order.phone,
+                        orderType: order.type,
+                        rating: feedback.rating,
+                        comment: feedback.feedback,
+                        date: feedback.date,
+                        status: feedback.status || "Chưa phản hồi",
+                        category: feedback.category || "Tổng thể",
+                        response: feedback.response || "",
+                        responseDate: feedback.responseDate || "",
+                        responseBy: feedback.responseBy || "",
+                        actionPlan: feedback.actionPlan || "",
+                        responseStatus: feedback.response ? "Đã phản hồi" : "Chưa phản hồi",
+                    })
+                })
+            }
+        })
+        // Sắp xếp mới nhất lên đầu
+        allFeedbacks.sort((a, b) => {
+            const dateA = new Date(a.date.split("/").reverse().join("-"))
+            const dateB = new Date(b.date.split("/").reverse().join("-"))
+            return dateB - dateA
+        })
+        setFeedbacks(allFeedbacks)
         // Tính toán thống kê
-        const totalFeedbacks = sampleFeedbacks.length
-        const avgRating = sampleFeedbacks.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
-        const pending = sampleFeedbacks.filter((f) => f.responseStatus === "Chưa phản hồi").length
-        const complaints = sampleFeedbacks.filter((f) => f.category === "Khiếu nại").length
-
+        const totalFeedbacks = allFeedbacks.length
+        const avgRating = totalFeedbacks > 0 ? (allFeedbacks.reduce((sum, f) => sum + (f.rating || 0), 0) / totalFeedbacks).toFixed(1) : 0
+        const pending = allFeedbacks.filter((f) => f.responseStatus === "Chưa phản hồi").length
+        const complaints = allFeedbacks.filter((f) => f.category === "Khiếu nại").length
         setStats({
-            avgRating: avgRating.toFixed(1),
+            avgRating,
             totalFeedbacks,
             pending,
             complaints,
         })
+    }
+
+    useEffect(() => {
+        loadFeedbacks()
+        window.addEventListener("storage", loadFeedbacks)
+        return () => window.removeEventListener("storage", loadFeedbacks)
     }, [])
+
+    // Khi Manager phản hồi, cập nhật lại feedback trong đơn hàng (localStorage)
+    const handleSubmitResponse = (responseData) => {
+        if (!selectedFeedback) return
+        // Lấy tất cả đơn hàng
+        const allOrders = getAllOrders()
+        // Tìm đơn hàng chứa feedback này
+        const orderIdx = allOrders.findIndex(o => o.id === selectedFeedback.orderId)
+        if (orderIdx === -1) return
+        const order = allOrders[orderIdx]
+        // Tìm feedback trong đơn hàng
+        const fbIdx = order.feedbacks.findIndex((fb, idx) => `${order.id}-${idx}` === selectedFeedback.id)
+        if (fbIdx === -1) return
+        // Cập nhật nội dung phản hồi
+        order.feedbacks[fbIdx] = {
+            ...order.feedbacks[fbIdx],
+            response: responseData.response,
+            responseDate: new Date().toLocaleDateString("vi-VN"),
+            responseBy: "Manager",
+            actionPlan: responseData.actionPlan,
+            status: responseData.status,
+        }
+        // Lưu lại đơn hàng
+        updateOrder(order.id, order)
+        setShowModal(false)
+        setSelectedFeedback(null)
+        setTimeout(loadFeedbacks, 300) // reload lại feedbacks
+    }
 
     const tabs = [
         { key: "all", label: "Tất cả", count: feedbacks.length },
@@ -141,28 +127,6 @@ const CustomerFeedbackManager = () => {
     const handleResponseFeedback = (feedback) => {
         setSelectedFeedback(feedback)
         setShowModal(true)
-    }
-
-    const handleSubmitResponse = (responseData) => {
-        const updatedFeedbacks = feedbacks.map((feedback) => {
-            if (feedback.id === selectedFeedback.id) {
-                return {
-                    ...feedback,
-                    status: responseData.status,
-                    responseStatus: "Đã phản hồi",
-                    response: responseData.response,
-                    responseDate: new Date().toLocaleDateString("vi-VN"),
-                    responseBy: "Trần Văn Quản",
-                    actionPlan: responseData.actionPlan,
-                    contactMethod: responseData.contactMethod,
-                }
-            }
-            return feedback
-        })
-
-        setFeedbacks(updatedFeedbacks)
-        setShowModal(false)
-        setSelectedFeedback(null)
     }
 
     const getRatingColor = (rating) => {
