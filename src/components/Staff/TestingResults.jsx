@@ -137,11 +137,11 @@ const TestingResults = () => {
       ) {
         initialTableData = order.members.map((mem, idx) => ({
           key: `${Date.now()}-${idx}`,
-          name: mem.name || "",
-          birthYear: mem.birthYear || mem.namSinh || "",
-          gender: mem.gender || "",
-          relationship: mem.relationship || mem.moiQuanHe || "",
-          sampleType: mem.sampleType || mem.loaiMau || ""
+          name: mem.name || mem.hoTen || mem.hovaten || "",
+          birthYear: mem.birthYear || mem.namSinh || mem.namsinh || mem.birth || "",
+          gender: mem.gender || mem.gioiTinh || mem.gioitinh || "",
+          relationship: mem.relationship || mem.moiQuanHe || mem.moiquanhe || mem.relation || "",
+          sampleType: mem.sampleType || mem.loaiMau || mem.loaimau || ""
         }));
       }
 
