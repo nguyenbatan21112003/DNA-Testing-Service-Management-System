@@ -254,6 +254,10 @@
             "Google.Apis.Auth": {
               "target": "Package",
               "version": "[1.69.0, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.13.0, )"
             }
           },
           "imports": [

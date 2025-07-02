@@ -9,6 +9,6 @@ namespace DNATestSystem.Services.Interface
 {
     public interface IMailService
     {
-        Task SendMailAsync(SendMailDto dto);
+        Task<bool> SendMailAsync(SendMailDto dto);
     }
 }

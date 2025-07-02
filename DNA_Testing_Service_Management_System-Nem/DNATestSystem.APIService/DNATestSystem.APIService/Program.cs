@@ -65,6 +65,10 @@ builder.Services.AddControllers()
 
 builder.Services.Configure<MailSettings>(
     builder.Configuration.GetSection("MailSettings"));
+// ✅ Đăng ký cấu hình Mailgun từ appsettings
+builder.Services.Configure<MailGunSetting>(
+    builder.Configuration.GetSection("MailgunSettings"));
+
 
 // Đăng ký service gửi mail (nếu có)
 // Service + Session + Cache
@@ -75,7 +79,8 @@ builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IMailService, MailService>();
-
+// ✅ Đăng ký HttpClient và MailgunService
+builder.Services.AddHttpClient<MailgunService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(

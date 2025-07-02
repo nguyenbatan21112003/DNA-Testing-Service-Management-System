@@ -10,6 +10,8 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Mail
     {
         public string FromAddress { get; set; }
         public string AppPassword { get; set; }
+        public int Port { get; set; }
+        public string SmtpServer { get; set; }
     }
 
 }
