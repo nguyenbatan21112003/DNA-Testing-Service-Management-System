@@ -8,7 +8,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Mail
 {
     public class SendMailDto
     {
-        public string FromAddress { get; set; } =
+        public string FromAddress { get; set; }
         public string AppPassword { get; set; }
         public string ToAddress { get; set; }
         public string Subject { get; set; }

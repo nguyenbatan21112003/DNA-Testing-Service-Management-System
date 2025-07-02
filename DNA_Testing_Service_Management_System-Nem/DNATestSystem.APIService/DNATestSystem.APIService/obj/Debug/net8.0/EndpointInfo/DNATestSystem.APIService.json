@@ -146,6 +146,37 @@
         }
       }
     },
+    "/Mail/send": {
+      "post": {
+        "tags": [
+          "Mail"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Manager/test-results/pending": {
       "get": {
         "tags": [
@@ -1002,6 +1033,10 @@
       "PaymentInformationModel": {
         "type": "object",
         "properties": {
+          "requestId": {
+            "type": "string",
+            "nullable": true
+          },
           "orderType": {
             "type": "string",
             "nullable": true
@@ -1081,6 +1116,32 @@
             "nullable": true
           },
           "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendMailDto": {
+        "type": "object",
+        "properties": {
+          "fromAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "appPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "toAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
             "type": "string",
             "nullable": true
           }
