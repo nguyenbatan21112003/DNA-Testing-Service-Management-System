@@ -1085,10 +1085,11 @@ const TestingResults = () => {
           </Form.Item>
 
           <Form.Item name="conclusion" label="Kết luận">
-            <TextArea
-              rows={4}
-              placeholder="Nhập kết luận từ kết quả xét nghiệm..."
-            />
+            <Select placeholder="Chọn kết luận">
+              <Option value="Có huyết thống">Có huyết thống</Option>
+              <Option value="Không có huyết thống">Không có huyết thống</Option>
+              <Option value="Lỗi mẫu">Lỗi mẫu</Option>
+            </Select>
           </Form.Item>
 
           <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
