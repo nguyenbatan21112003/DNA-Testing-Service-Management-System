@@ -400,31 +400,6 @@ const CustomerFeedbackManager = () => {
                                         <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Ngày phản hồi</div>
                                         <div style={{ fontWeight: "600" }}>{feedback.date}</div>
                                     </div>
-                                    <div>
-                                        <div style={{ fontSize: "14px", color: "#666", marginBottom: "4px" }}>Trạng thái</div>
-                                        <span
-                                            style={{
-                                                padding: "4px 8px",
-                                                borderRadius: "12px",
-                                                fontSize: "12px",
-                                                fontWeight: "600",
-                                                background:
-                                                    feedback.status === "Đã giải quyết"
-                                                        ? "#f6ffed"
-                                                        : feedback.status === "Đang xử lý"
-                                                            ? "#fff7e6"
-                                                            : "#f0f5ff",
-                                                color:
-                                                    feedback.status === "Đã giải quyết"
-                                                        ? "#52c41a"
-                                                        : feedback.status === "Đang xử lý"
-                                                            ? "#faad14"
-                                                            : "#1890ff",
-                                            }}
-                                        >
-                                            {feedback.status}
-                                        </span>
-                                    </div>
                                 </div>
 
                                 <div style={{ marginBottom: "16px" }}>
@@ -501,22 +476,6 @@ const CustomerFeedbackManager = () => {
                                         💬 Phản hồi
                                     </button>
                                 )}
-
-                                <button
-                                    onClick={() => window.open(`tel:${feedback.phone}`)}
-                                    style={{
-                                        padding: "8px 16px",
-                                        background: "#52c41a",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        fontWeight: "600",
-                                        fontSize: "14px",
-                                    }}
-                                >
-                                    📞 Gọi
-                                </button>
 
                                 <button
                                     onClick={() => window.open(`mailto:${feedback.email}`)}
@@ -683,7 +642,6 @@ const ResponseModal = ({ feedback, onSubmit, onClose }) => {
                                 }}
                             >
                                 <option value="email">📧 Email</option>
-                                <option value="phone">📞 Điện thoại</option>
                                 <option value="meeting">🤝 Gặp trực tiếp</option>
                             </select>
                         </div>
