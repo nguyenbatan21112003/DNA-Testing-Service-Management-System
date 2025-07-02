@@ -326,6 +326,34 @@ const HomeSampling = () => {
           >
             Cập nhật
           </Button>
+          {record.status === "Chờ xác nhận" && (
+            <Button
+              size="small"
+              style={{
+                background: "#10B981",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #10B98122",
+                transition: "background 0.2s",
+              }}
+              onClick={async () => {
+                await updateOrder(record.id, {
+                  ...record,
+                  status: "Đã xác nhận",
+                  kitStatus: "Đã xác nhận",
+                  updatedAt: new Date().toLocaleString("vi-VN"),
+                });
+                loadSamplingRequests();
+                message.success("Đã xác nhận yêu cầu!");
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#059669")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#10B981")}
+            >
+              Xác nhận
+            </Button>
+          )}
           {record.kitStatus === "da_nhan" && (
             <Button
               type="default"
