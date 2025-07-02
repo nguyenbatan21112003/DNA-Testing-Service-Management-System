@@ -40,43 +40,6 @@ const CustomerFeedback = () => {
     };
   }, []);
 
-  useEffect(() => {
-    // Luôn ghi đè dữ liệu mẫu vào localStorage để kiểm tra đồng bộ
-    const sampleOrders = [
-      {
-        id: "DNA001",
-        phone: "0123456789",
-        type: "Xét nghiệm ADN cha con",
-        feedbacks: [
-          {
-            user: "Nguyễn Văn Minh",
-            email: "nguyenvanminh@gmail.com",
-            rating: 5,
-            feedback: "Dịch vụ rất tốt, kết quả chính xác và nhanh chóng. Nhân viên tư vấn nhiệt tình.",
-            date: "20/06/2024",
-            category: "Khen ngợi"
-          }
-        ]
-      },
-      {
-        id: "DNA002",
-        phone: "0987654321",
-        type: "Xét nghiệm huyết thống",
-        feedbacks: [
-          {
-            user: "Trần Thị Hương",
-            email: "tranthihuong@gmail.com",
-            rating: 2,
-            feedback: "Thời gian chờ kết quả quá lâu, không đúng như cam kết ban đầu. Cần cải thiện.",
-            date: "19/06/2024",
-            category: "Khiếu nại"
-          }
-        ]
-      }
-    ];
-    localStorage.setItem('dna_orders', JSON.stringify(sampleOrders));
-  }, []);
-
   // Hàm xử lý khi localStorage thay đổi
   const handleStorageChange = (event) => {
     if (event.key === "dna_orders") {

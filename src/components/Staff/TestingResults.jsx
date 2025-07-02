@@ -109,15 +109,11 @@ const TestingResults = () => {
     ) {
       form.setFieldsValue(tempFormData);
     } else {
-      // Initialize with default empty row if no data exists
       let initialTableData = [];
 
-      // Try to use existing result data in proper array format
       if (order.resultTableData && Array.isArray(order.resultTableData)) {
         initialTableData = [...order.resultTableData];
-      }
-      // If no result table data but we have string result, try parsing it
-      else if (
+      } else if (
         !order.resultTableData &&
         order.result &&
         typeof order.result === "string"
@@ -131,6 +127,22 @@ const TestingResults = () => {
           // Failed to parse, use empty array with one row
           console.error("Failed to parse result data:", err);
         }
+      }
+
+      // Nếu là lấy mẫu tại nhà và có danh sách thành viên cung cấp mẫu (order.members), tự động điền toàn bộ danh sách này vào bảng kết quả
+      if (
+        initialTableData.length === 0 &&
+        order.sampleMethod === "home" &&
+        Array.isArray(order.members) && order.members.length > 0
+      ) {
+        initialTableData = order.members.map((mem, idx) => ({
+          key: `${Date.now()}-${idx}`,
+          name: mem.name || "",
+          birthYear: mem.birthYear || mem.namSinh || "",
+          gender: mem.gender || "",
+          relationship: mem.relationship || mem.moiQuanHe || "",
+          sampleType: mem.sampleType || mem.loaiMau || ""
+        }));
       }
 
       // Ensure we have at least one row
@@ -148,8 +160,6 @@ const TestingResults = () => {
       };
 
       form.setFieldsValue(formValues);
-
-      // Store the initial form state for this order
       setTempFormData(formValues);
     }
 
