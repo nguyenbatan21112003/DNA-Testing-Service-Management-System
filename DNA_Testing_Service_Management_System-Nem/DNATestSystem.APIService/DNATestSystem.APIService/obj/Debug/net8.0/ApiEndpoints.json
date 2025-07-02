@@ -264,6 +264,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetAtCenterAdministrativeRequests",
+    "RelativePath": "Staff/at-center-administrative",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "staffId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetAtHomeTestRequests",
     "RelativePath": "Staff/at-home",
     "HttpMethod": "GET",

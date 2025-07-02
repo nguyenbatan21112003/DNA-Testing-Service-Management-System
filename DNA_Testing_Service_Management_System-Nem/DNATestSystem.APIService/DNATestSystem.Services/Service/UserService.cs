@@ -116,26 +116,26 @@ namespace DNATestSystem.Services.Service
             return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public async Task<string> GenerateRefreshTokenAsync(int userId)
-        {
-            string refreshToken = HashHelper.GenerateRandomString(64);
-            //refresh Token nên hash lại
-            string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
-
-            var data = new BusinessObjects.Models.RefreshToken
+            public async Task<string> GenerateRefreshTokenAsync(int userId)
             {
-                UserId = userId,
-                Token = hashRefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
-                Revoked = false
-            };
+                string refreshToken = HashHelper.GenerateRandomString(64);
+                //refresh Token nên hash lại
+                string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
 
-            _context.RefreshTokens.Add(data);
+                var data = new BusinessObjects.Models.RefreshToken
+                {
+                    UserId = userId,
+                    Token = hashRefreshToken,
+                    ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
+                    Revoked = false
+                };
 
-            await _context.SaveChangesAsync();
+                _context.RefreshTokens.Add(data);
 
-            return hashRefreshToken;
-        }
+                await _context.SaveChangesAsync();
+
+                return hashRefreshToken;
+            }
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
