@@ -656,7 +656,7 @@ const TestingResults = () => {
                         : "orange"
                   }
                 >
-                  {selectedOrder.status}
+                  {getStatusText(selectedOrder.status)}
                 </Tag>
               </p>
               {selectedOrder.testingMethod && (
