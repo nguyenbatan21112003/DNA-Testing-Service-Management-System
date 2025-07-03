@@ -14,7 +14,6 @@ import {
   Descriptions,
   Divider,
   Input,
-  Tabs,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -38,7 +37,6 @@ const TestResultVerification = () => {
   const [rejectNote, setRejectNote] = useState("");
   const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     loadOrdersNeedingApproval();
@@ -201,11 +199,7 @@ const TestResultVerification = () => {
   };
 
   const allOrders = getAllOrders();
-  let filteredOrders = allOrders;
-  if (activeTab === "waiting") filteredOrders = allOrders.filter(o => o.status === "Chờ xác thực");
-  else if (activeTab === "approved") filteredOrders = allOrders.filter(o => o.status === "Hoàn thành");
-  else if (activeTab === "rejected") filteredOrders = allOrders.filter(o => o.status === "Từ chối");
-  filteredOrders = filteredOrders.filter(order => {
+  let filteredOrders = allOrders.filter(order => {
     const text = searchText.toLowerCase();
     return (
       order.name?.toLowerCase().includes(text) ||
@@ -279,19 +273,6 @@ const TestResultVerification = () => {
         </Row>
       </div>
 
-      {/* Tabs */}
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        style={{ marginBottom: 16 }}
-        items={[
-          { key: "all", label: "Tất cả các đơn" },
-          { key: "waiting", label: "Đơn chờ xác thực" },
-          { key: "approved", label: "Đơn đã phê duyệt" },
-          { key: "rejected", label: "Đơn đã từ chối" },
-        ]}
-      />
-
       {/* Bảng đơn hàng */}
       <div
         style={{
@@ -302,7 +283,7 @@ const TestResultVerification = () => {
           border: "1px solid #f0f0f0",
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
           <Input.Search
             placeholder="Tìm kiếm theo tên khách hàng, mã đơn, loại xét nghiệm..."
             value={searchText}
