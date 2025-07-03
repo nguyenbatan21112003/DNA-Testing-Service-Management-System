@@ -68,17 +68,17 @@ const TestResultVerification = () => {
       };
 
       updateOrder(selectedOrder.id, updates);
-      
+
       setApprovalModalVisible(false);
       setApprovalNote("");
       setSelectedOrder(null);
-      
+
       message.success(
-        approved 
-          ? "Đã phê duyệt kết quả xét nghiệm thành công!" 
+        approved
+          ? "Đã phê duyệt kết quả xét nghiệm thành công!"
           : "Đã từ chối kết quả xét nghiệm!"
       );
-      
+
       // Reload the list
       loadOrdersNeedingApproval();
     } catch (error) {
@@ -134,7 +134,7 @@ const TestResultVerification = () => {
         const createdDate = new Date(record.createdAt || record.date);
         const now = new Date();
         const diffInHours = Math.floor((now - createdDate) / (1000 * 60 * 60));
-        
+
         if (diffInHours < 24) {
           return <Tag color="green">{diffInHours} giờ</Tag>;
         } else {
@@ -149,27 +149,45 @@ const TestResultVerification = () => {
       width: 200,
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            type="primary" 
-            size="small" 
-            icon={<EyeOutlined />} 
+          <Button
+            type="primary"
+            size="small"
+            icon={<EyeOutlined />}
             onClick={() => handleViewResult(record)}
+            style={{
+              background: '#1677ff',
+              borderColor: '#1677ff',
+              fontWeight: 600,
+              borderRadius: 20,
+              boxShadow: '0 2px 8px rgba(22,119,255,0.12)',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.background = '#0958d9';
+              e.currentTarget.style.borderColor = '#0958d9';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(9,88,217,0.18)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = '#1677ff';
+              e.currentTarget.style.borderColor = '#1677ff';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(22,119,255,0.12)';
+            }}
           >
             Xem
           </Button>
-          <Button 
-            type="default" 
-            size="small" 
-            icon={<CheckCircleOutlined />} 
+          <Button
+            type="default"
+            size="small"
+            icon={<CheckCircleOutlined />}
             onClick={() => handleApprove(record)}
             style={{ color: "#52c41a", borderColor: "#52c41a" }}
           >
             Phê duyệt
           </Button>
-          <Button 
-            type="default" 
-            size="small" 
-            icon={<CloseCircleOutlined />} 
+          <Button
+            type="default"
+            size="small"
+            icon={<CloseCircleOutlined />}
             onClick={() => handleReject(record)}
             danger
           >
@@ -347,9 +365,37 @@ const TestResultVerification = () => {
             <div style={{ marginBottom: 16 }}>
               <Title level={4}>Kết quả xét nghiệm</Title>
               {selectedOrder.result ? (
-                <div style={{ padding: 12, background: "#f6ffed", border: "1px solid #b7eb8f", borderRadius: 4 }}>
-                  <Text>{selectedOrder.result}</Text>
-                </div>
+                (() => {
+                  let parsed = null;
+                  try {
+                    parsed = JSON.parse(selectedOrder.result);
+                  } catch {
+                    // Không parse được, giữ nguyên parsed = null
+                  }
+                  if (Array.isArray(parsed) && parsed.length > 0) {
+                    return (
+                      <Table
+                        dataSource={parsed}
+                        columns={[
+                          { title: "Họ và tên", dataIndex: "name", key: "name" },
+                          { title: "Năm sinh", dataIndex: "birthYear", key: "birthYear" },
+                          { title: "Giới tính", dataIndex: "gender", key: "gender" },
+                          { title: "Mối quan hệ", dataIndex: "relationship", key: "relationship" },
+                          { title: "Loại mẫu", dataIndex: "sampleType", key: "sampleType" },
+                        ]}
+                        pagination={false}
+                        size="small"
+                        rowKey={(row, idx) => row.key || idx}
+                        style={{ background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 4 }}
+                      />
+                    );
+                  }
+                  return (
+                    <div style={{ padding: 12, background: "#f6ffed", border: "1px solid #b7eb8f", borderRadius: 4 }}>
+                      <Text>{selectedOrder.result}</Text>
+                    </div>
+                  );
+                })()
               ) : (
                 <div style={{ padding: 12, background: "#fff7e6", border: "1px solid #ffd591", borderRadius: 4 }}>
                   <Text>Chưa có kết quả chi tiết</Text>
