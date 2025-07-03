@@ -59,7 +59,7 @@ namespace DNATestSystem.Services.Service
             return true;
         }
 
-        
+
 
         public async Task<List<TestRequestViewDto>> PendingTestRequestAsync()
         {
@@ -107,13 +107,13 @@ namespace DNATestSystem.Services.Service
 
         public async Task<List<TestRequestViewDto>> AtCenterTestRequestAsync()
         {
-            
+
             var result = await _context.TestRequests
                 .Include(x => x.Service)
                 .Include(x => x.RequestDeclarants)
                 .Include(x => x.TestSamples)
                 .Include(x => x.CollectType)
-                .Where( x => x.CollectType.CollectName == "At Center")
+                .Where(x => x.CollectType.CollectName == "At Center")
                 .Select(x => new TestRequestViewDto
                 {
                     RequestId = x.RequestId,
@@ -148,6 +148,7 @@ namespace DNATestSystem.Services.Service
 
             return result;
         }
+
         public async Task<List<TestRequestViewDto>> AtHomeTestRequestAsync()
         {
 
@@ -194,38 +195,38 @@ namespace DNATestSystem.Services.Service
 
         public async Task<(bool Success, string Message)> AssignTestProcessAsync(AssignTestProcessDto dto)
         {
-            
-                var process = new TestProcess
-                {
-                    RequestId = dto.RequestId,
-                    StaffId = dto.StaffId,
-                    ClaimedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    Notes = dto.Notes,
-                    ProcessState = "Processing"
-                };
 
-                if (dto.CollectionType == "At Home")
-                {
-                    process.KitCode = dto.KitCode;
-                    process.CurrentStatus = "KIT SENT";
-                }
-                else if (dto.CollectionType == "At Center")
-                {
-                    process.KitCode = "";
-                    process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
-                }
-                else
-                {
-                    return (false, "Invalid CollectType.");
-                }
-                // là như thế này , nếu mà staff để là At home thì lưu kit
-                // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
-                _context.TestProcesses.Add(process);
-                await _context.SaveChangesAsync();
+            var process = new TestProcess
+            {
+                RequestId = dto.RequestId,
+                StaffId = dto.StaffId,
+                ClaimedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Notes = dto.Notes,
+                ProcessState = "Processing"
+            };
 
-                return (true, "Assigned test process successfully.");
-            
+            if (dto.CollectionType == "At Home")
+            {
+                process.KitCode = dto.KitCode;
+                process.CurrentStatus = "KIT SENT";
+            }
+            else if (dto.CollectionType == "At Center")
+            {
+                process.KitCode = "";
+                process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+            }
+            else
+            {
+                return (false, "Invalid CollectType.");
+            }
+            // là như thế này , nếu mà staff để là At home thì lưu kit
+            // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+            _context.TestProcesses.Add(process);
+            await _context.SaveChangesAsync();
+
+            return (true, "Assigned test process successfully.");
+
         }
 
         public async Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId)
@@ -276,5 +277,75 @@ namespace DNATestSystem.Services.Service
 
             return result;
         }
+
+        public async Task<List<TestProcessDto>> GetTestProcessesForStaffAsync(int staffId)
+        {
+            var testProcesses = await _context.TestProcesses
+                                    .Include(tp => tp.Request)
+                                        .ThenInclude(r => r.Service)
+                                    .Include(tp => tp.Request)
+                                        .ThenInclude(r => r.CollectType)
+                                    .Include(tp => tp.Request)
+                                        .ThenInclude(r => r.RequestDeclarants)
+                                    .Include(tp => tp.Request)
+                                        .ThenInclude(r => r.TestSamples)
+                                    .Where(tp => tp.StaffId == staffId && tp.Request != null && tp.Request.Status != "COMPLETED")
+                                    .ToListAsync();
+
+
+
+            var result = testProcesses.Select(tp => new TestProcessDto
+            {
+                Request = new RequestDto
+                {
+                    RequestId = tp.Request.RequestId,
+                    ServiceId = tp.Request.ServiceId,
+                    ServiceName = tp.Request.Service?.ServiceName,
+                    TypeId = tp.Request.TypeId,
+                    CollectType = tp.Request.CollectType?.CollectName,
+                    Category = tp.Request.Category,
+                    ScheduleDate = tp.Request.ScheduleDate,
+                    Address = tp.Request.Address,
+                    Status = tp.Request.Status,
+                    CreatedAt = tp.Request.CreatedAt
+                },
+
+                TestProcess = new TestProcessInfoDto
+                {
+                    ProcessId = tp.ProcessId,
+                    RequestId = tp.RequestId,
+                    StaffId = tp.StaffId,
+                    KitCode = tp.KitCode ?? "",
+                    CurrentStatus = tp.CurrentStatus,
+                    ProcessState = tp.ProcessState,
+                    Notes = tp.Notes
+                },
+
+                Declarant = tp.Request.RequestDeclarants.FirstOrDefault() == null ? null : new DeclarantDto
+                {
+                    FullName = tp.Request.RequestDeclarants.First().FullName,
+                    Gender = tp.Request.RequestDeclarants.First().Gender,
+                    IdentityNumber = tp.Request.RequestDeclarants.First().IdentityNumber,
+                    IdentityIssuedDate = tp.Request.RequestDeclarants.First().IdentityIssuedDate,
+                    IdentityIssuedPlace = tp.Request.RequestDeclarants.First().IdentityIssuedPlace,
+                    Address = tp.Request.RequestDeclarants.First().Address,
+                    Phone = tp.Request.RequestDeclarants.First().Phone,
+                    Email = tp.Request.RequestDeclarants.First().Email
+                },
+
+                Samples = tp.Request.TestSamples.Select(tr => new TestRequestSampleDto
+                {
+                    OwnerName = tr.OwnerName,
+                    Gender = tr.Gender,
+                    Relationship = tr.Relationship,
+                    Yob = tr.Yob,
+                    SampleType = tr.SampleType,
+                    CollectedAt = tr.CollectedAt
+                }).ToList()
+            }).ToList();
+
+            return result;
+        }           
+   
     }
 }

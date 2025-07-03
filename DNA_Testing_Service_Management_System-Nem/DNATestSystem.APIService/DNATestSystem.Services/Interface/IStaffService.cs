@@ -8,6 +8,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.BusinessObjects.Models;
 
 namespace DNATestSystem.Services.Interface
 {
@@ -22,7 +23,8 @@ namespace DNATestSystem.Services.Interface
         //
         Task<(bool Success, string Message)> AssignTestProcessAsync(AssignTestProcessDto dto);
         Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId);
-
+        //
+        Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId);
 
     }
 }

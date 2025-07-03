@@ -71,5 +71,16 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.GetAtCenterAdministrativeRequestsAsync(staffId);
             return Ok(result);
         }
+        [HttpGet("staff/{staffId}")]
+        public async Task<IActionResult> GetByStaffId(int staffId)
+        {
+            var result = await _staffService.GetTestProcessesByStaffIdAsync(staffId);
+            if (result == null || !result.Any())
+            {
+                return NotFound("No test processes found.");
+            }
+
+            return Ok(result);
+        }
     }
 }
