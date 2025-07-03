@@ -15,7 +15,7 @@ namespace DNATestSystem.Services.Interface
     {
         Task<List<PendingConsultDto>> PendingConsultResultsAsync();
         Task<bool> UpdateConsultResultAsync(UpdateConsultRequestDto updateConsultRequestDto);
-        Task<(bool Success, string Message, int? RequestId)> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
+        //Task<(bool Success, string Message, int? RequestId)> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
         Task<List<TestRequestViewDto>> PendingTestRequestAsync();
         Task<List<TestRequestViewDto>> AtCenterTestRequestAsync();
         Task<List<TestRequestViewDto>> AtHomeTestRequestAsync();

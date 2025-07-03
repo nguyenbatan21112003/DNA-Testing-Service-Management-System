@@ -36,29 +36,7 @@ namespace DNATestSystem.APIService.Controllers
 
             return Ok("Cập nhật thành công.");
         }
-
-        [HttpPost("submit")]
-        public async Task<IActionResult> SubmitTestRequest([FromBody] TestRequestSubmissionDto dto)
-        {
-            var result = await _staffService.SubmitTestRequestAsync(dto);
-
-            if (!result.Success)
-            {   
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = result.Message
-                });
-            }
-
-            return Ok(new
-            {
-                success = true,
-                requestId = result.RequestId,
-                message = result.Message
-            });
-        }
-
+      
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingTestRequests()
         {

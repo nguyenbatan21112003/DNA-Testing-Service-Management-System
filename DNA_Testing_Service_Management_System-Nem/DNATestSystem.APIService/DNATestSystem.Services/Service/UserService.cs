@@ -13,6 +13,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 
 namespace DNATestSystem.Services.Service
 {
@@ -118,7 +119,7 @@ namespace DNATestSystem.Services.Service
             return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-            public async Task<string> GenerateRefreshTokenAsync(int userId)
+        public async Task<string> GenerateRefreshTokenAsync(int userId)
             {
                 string refreshToken = HashHelper.GenerateRandomString(64);
                 //refresh Token nên hash lại
@@ -374,6 +375,84 @@ namespace DNATestSystem.Services.Service
             _context.SaveChangesAsync();
             return Task.FromResult(consultRequest);
         }
+
+        public async Task<(bool Success, string Message, int? RequestId)> SubmitTestRequestAsync(TestRequestSubmissionDto dto)
+        {
+            using var transaction = await (_context as DbContext)!.Database.BeginTransactionAsync();
+            try
+            {
+                int collectTypeId = dto.TestRequest.TypeId switch
+                {
+                    1 => 1, // At Center
+                    2 => 2, // At Home
+                    _ => throw new ArgumentException("Invalid TypeId")
+                };
+                var testRequest = new TestRequest
+                {
+                    UserId = dto.TestRequest.UserId,
+                    ServiceId = dto.TestRequest.ServiceId,
+                    TypeId = dto.TestRequest.TypeId,
+                    Category = dto.TestRequest.Category,
+                    ScheduleDate = dto.TestRequest.ScheduleDate,
+                    Address = dto.TestRequest.Address,
+                    Status = dto.TestRequest.Status,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.TestRequests.Add(testRequest);
+                await _context.SaveChangesAsync();
+
+                var declarant = new RequestDeclarant
+                {
+                    RequestId = testRequest.RequestId,
+                    FullName = dto.Declarant.FullName,
+                    Gender = dto.Declarant.Gender,
+                    Address = dto.Declarant.Address,
+                    IdentityNumber = dto.Declarant.IdentityNumber,
+                    IdentityIssuedDate = dto.Declarant.IdentityIssuedDate,
+                    IdentityIssuedPlace = dto.Declarant.IdentityIssuedPlace,
+                    Phone = dto.Declarant.Phone,
+                    Email = dto.Declarant.Email
+                };
+
+                _context.RequestDeclarants.Add(declarant);
+
+                foreach (var s in dto.Samples)
+                {
+                    var sample = new TestSample
+                    {
+                        RequestId = testRequest.RequestId,
+                        OwnerName = s.OwnerName,
+                        Gender = s.Gender,
+                        Relationship = s.Relationship,
+                        SampleType = s.SampleType,
+                        Yob = s.Yob,
+                        CollectedAt = DateTime.Now
+                    };
+
+                    _context.TestSamples.Add(sample);
+                }
+
+                var invoice = new Invoice
+                {
+                    RequestId = testRequest.RequestId,
+                    PaidAt = dto.Invoice.PaidAt
+                };
+
+                _context.Invoices.Add(invoice);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return (true, "Đăng ký xét nghiệm thành công", testRequest.RequestId);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return (false, ex.InnerException?.Message ?? ex.Message, null);
+            }
+        }
+    
     }
 }
 
