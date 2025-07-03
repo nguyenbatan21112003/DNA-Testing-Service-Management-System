@@ -13,6 +13,8 @@ import {
   Statistic,
   Descriptions,
   Divider,
+  Input,
+  Tabs,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -26,7 +28,7 @@ import { useOrderContext } from "../../context/OrderContext";
 const { Title, Text } = Typography;
 
 const TestResultVerification = () => {
-  const { getOrdersNeedingApproval, updateOrder } = useOrderContext();
+  const { getOrdersNeedingApproval, updateOrder, getAllOrders } = useOrderContext();
   const [ordersNeedingApproval, setOrdersNeedingApproval] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -35,6 +37,8 @@ const TestResultVerification = () => {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [rejectNote, setRejectNote] = useState("");
   const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     loadOrdersNeedingApproval();
@@ -118,19 +122,6 @@ const TestResultVerification = () => {
       width: 120,
     },
     {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 120,
-      render: (priority) => {
-        let color = "default";
-        if (priority === "Cao") color = "red";
-        if (priority === "Trung bình") color = "orange";
-        if (priority === "Thấp") color = "green";
-        return <Tag color={color}>{priority}</Tag>;
-      },
-    },
-    {
       title: "Thời gian chờ",
       key: "waitingTime",
       width: 150,
@@ -204,14 +195,24 @@ const TestResultVerification = () => {
 
   const stats = {
     total: ordersNeedingApproval.length,
-    highPriority: ordersNeedingApproval.filter((o) => o.priority === "Cao").length,
-    waitingOver24h: ordersNeedingApproval.filter((o) => {
-      const createdDate = new Date(o.createdAt || o.date);
-      const now = new Date();
-      const diffInHours = Math.floor((now - createdDate) / (1000 * 60 * 60));
-      return diffInHours > 24;
-    }).length,
+    approved: getAllOrders().filter(o => o.status === "Hoàn thành").length,
+    rejected: getAllOrders().filter(o => o.status === "Từ chối").length,
+    waiting: getAllOrders().filter(o => o.status === "Chờ xác thực").length,
   };
+
+  const allOrders = getAllOrders();
+  let filteredOrders = allOrders;
+  if (activeTab === "waiting") filteredOrders = allOrders.filter(o => o.status === "Chờ xác thực");
+  else if (activeTab === "approved") filteredOrders = allOrders.filter(o => o.status === "Hoàn thành");
+  else if (activeTab === "rejected") filteredOrders = allOrders.filter(o => o.status === "Từ chối");
+  filteredOrders = filteredOrders.filter(order => {
+    const text = searchText.toLowerCase();
+    return (
+      order.name?.toLowerCase().includes(text) ||
+      order.id?.toString().toLowerCase().includes(text) ||
+      order.type?.toLowerCase().includes(text)
+    );
+  });
 
   return (
     <div style={{ padding: "0" }}>
@@ -226,18 +227,16 @@ const TestResultVerification = () => {
       </div>
 
       {/* Thống kê */}
-      <div
-        style={{
-          background: "#fff",
-          padding: "24px",
-          borderRadius: "12px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          border: "1px solid #f0f0f0",
-          marginBottom: "24px",
-        }}
-      >
+      <div style={{
+        background: "#fff",
+        padding: "24px",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        border: "1px solid #f0f0f0",
+        marginBottom: "24px",
+      }}>
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Card>
               <Statistic
                 title="Tổng đơn chờ xác thực"
@@ -247,21 +246,31 @@ const TestResultVerification = () => {
               />
             </Card>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Card>
               <Statistic
-                title="Ưu tiên cao"
-                value={stats.highPriority}
-                prefix={<ClockCircleOutlined style={{ color: "#ff4d4f" }} />}
+                title="Đã phê duyệt"
+                value={stats.approved}
+                prefix={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+                valueStyle={{ color: "#52c41a", fontWeight: 600 }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={6}>
+            <Card>
+              <Statistic
+                title="Đã từ chối"
+                value={stats.rejected}
+                prefix={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
                 valueStyle={{ color: "#ff4d4f", fontWeight: 600 }}
               />
             </Card>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Card>
               <Statistic
-                title="Chờ > 24h"
-                value={stats.waitingOver24h}
+                title="Đang chờ xử lý"
+                value={stats.waiting}
                 prefix={<ClockCircleOutlined style={{ color: "#fa8c16" }} />}
                 valueStyle={{ color: "#fa8c16", fontWeight: 600 }}
               />
@@ -269,6 +278,19 @@ const TestResultVerification = () => {
           </Col>
         </Row>
       </div>
+
+      {/* Tabs */}
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        style={{ marginBottom: 16 }}
+        items={[
+          { key: "all", label: "Tất cả các đơn" },
+          { key: "waiting", label: "Đơn chờ xác thực" },
+          { key: "approved", label: "Đơn đã phê duyệt" },
+          { key: "rejected", label: "Đơn đã từ chối" },
+        ]}
+      />
 
       {/* Bảng đơn hàng */}
       <div
@@ -280,7 +302,17 @@ const TestResultVerification = () => {
           border: "1px solid #f0f0f0",
         }}
       >
-        {ordersNeedingApproval.length === 0 ? (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên khách hàng, mã đơn, loại xét nghiệm..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            onSearch={v => setSearchText(v)}
+            allowClear
+            style={{ width: 320 }}
+          />
+        </div>
+        {filteredOrders.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
             <SafetyCertificateOutlined style={{ fontSize: 48, marginBottom: 16 }} />
             <Title level={4} style={{ color: "#999" }}>
@@ -291,7 +323,7 @@ const TestResultVerification = () => {
         ) : (
           <Table
             columns={columns}
-            dataSource={ordersNeedingApproval}
+            dataSource={filteredOrders}
             rowKey={(record) => record.id}
             pagination={{
               pageSize: 10,
