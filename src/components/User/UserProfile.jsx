@@ -221,51 +221,44 @@ const UserProfile = () => {
     appointmentStatus
   ) => {
     // Ưu tiên trạng thái xác nhận, kit, hoặc trạng thái chính
-    if (sampleMethod === "home") {
-      if (status === "Chờ xác nhận" || status === "PENDING" || status === "PENDING_CONFIRM") return "Chờ xác nhận";
-      if (status === "Đã xác nhận" || status === "CONFIRMED") return "Đã xác nhận";
-      if (status === "Chưa gửi kit" || kitStatus === "chua_gui") return "Chưa gửi kit";
-      if (status === "Đã gửi kit" || kitStatus === "da_gui" || status === "KIT_SENT") return "Đã gửi kit";
-      if (status === "Đã nhận mẫu" || kitStatus === "da_nhan" || status === "SAMPLE_RECEIVED") return "Đã nhận mẫu";
-      if (status === "Đang xét nghiệm" || status === "PROCESSING") return "Đang xét nghiệm";
-      if (status === "Đã trả kết quả" || status === "Hoàn thành" || status === "COMPLETED") return "Hoàn thành";
-      if (status === "Đã hủy" || status === "CANCELLED") return "Đã hủy";
+    if (sampleMethod === "home" && kitStatus) {
+      switch (kitStatus) {
+        case "chua_gui":
+          return "Chưa gửi kit";
+        case "da_gui":
+          return "Đã gửi kit";
+        case "da_nhan":
+          return "Đã nhận mẫu";
+        default:
+          break;
+      }
     }
     if (appointmentStatus) {
       if (appointmentStatus === "CONFIRMED" || appointmentStatus === "Xác nhận")
         return "Xác nhận";
     }
     switch (status) {
-      case "Chờ xác nhận":
       case "PENDING":
       case "PENDING_CONFIRM":
-        return "Chờ xác nhận";
-      case "Đã xác nhận":
-      case "CONFIRMED":
-        return "Đã xác nhận";
-      case "Chưa gửi kit":
-      case "chua_gui":
-        return "Chưa gửi kit";
-      case "Đã gửi kit":
-      case "KIT_SENT":
-      case "da_gui":
-        return "Đã gửi kit";
-      case "Đã nhận mẫu":
-      case "SAMPLE_RECEIVED":
-      case "da_nhan":
-        return "Đã nhận mẫu";
-      case "Đang xét nghiệm":
+        return "Chờ xử lý";
       case "PROCESSING":
-        return "Đang xét nghiệm";
-      case "Đã trả kết quả":
-      case "Hoàn thành":
+        return "Đang xử lý";
+      case "WAITING_APPROVAL":
+        return "Chờ xác thực";
       case "COMPLETED":
         return "Hoàn thành";
-      case "Đã hủy":
+      case "REJECTED":
+        return "Từ chối";
+      case "KIT_SENT":
+        return "Đã gửi kit";
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu";
+      case "CONFIRMED":
+        return "Xác nhận";
       case "CANCELLED":
         return "Đã hủy";
       default:
-        return '';
+        return status;
     }
   };
 
