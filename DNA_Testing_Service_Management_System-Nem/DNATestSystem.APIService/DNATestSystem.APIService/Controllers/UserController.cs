@@ -51,6 +51,9 @@ namespace DNATestSystem.Controllers
             if (user == null)
             {
                 return BadRequest("Username or password is wrong");
+            }else if(user.Status == -1)
+            {
+                return BadRequest("This account have been banned pls contact to admin !");
             }
 
             var newOptions = new CookieOptions

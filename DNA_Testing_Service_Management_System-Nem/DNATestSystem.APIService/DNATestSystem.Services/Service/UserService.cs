@@ -51,6 +51,8 @@ namespace DNATestSystem.Services.Service
 
             if (user == null) return null;
 
+            if(user.Status == -1) return null;
+
             var password = loginModel.Password;
 
             return HashHelper.BCriptVerify(password, user.Password) ? user : null;

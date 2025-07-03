@@ -1125,14 +1125,6 @@
       "SendMailDto": {
         "type": "object",
         "properties": {
-          "fromAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "appPassword": {
-            "type": "string",
-            "nullable": true
-          },
           "toAddress": {
             "type": "string",
             "nullable": true
