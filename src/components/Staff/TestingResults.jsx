@@ -55,6 +55,12 @@ const TestingResults = () => {
   const [confirmHideOrder, setConfirmHideOrder] = useState(null);
   const [tableData, setTableData] = useState([]);
 
+  // Chỉ còn 4 trạng thái duy nhất
+  const STATUS_PROCESSING = "Đang xử lý";
+  const STATUS_WAITING_APPROVAL = "Chờ xác thực";
+  const STATUS_REJECTED = "Từ chối";
+  const STATUS_COMPLETED = "Hoàn thành";
+
   useEffect(() => {
     setFilteredOrders(orders.filter((order) => !order.isHidden));
   }, [orders]);
@@ -173,23 +179,17 @@ const TestingResults = () => {
   };
 
   const handleSaveResult = async (values) => {
-    console.log("Giá trị lưu:", values.resultTableData);
     try {
-      // Lấy dữ liệu bảng: ưu tiên từ form, nếu không có thì dùng state tableData
       let dataToSave =
         Array.isArray(values.resultTableData) &&
           values.resultTableData.length > 0
           ? values.resultTableData
           : tableData;
-
-      // Make a deep copy for lưu trữ an toàn
       const resultTableDataCopy = Array.isArray(dataToSave)
         ? JSON.parse(JSON.stringify(dataToSave))
         : null;
-
-      // cập nhật qua context
       updateOrder(selectedOrder.id, {
-        status: values.status,
+        status: STATUS_WAITING_APPROVAL,
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
@@ -197,18 +197,12 @@ const TestingResults = () => {
         testingNotes: values.testingNotes,
         conclusion: values.conclusion,
         resultTableData: resultTableDataCopy,
-        completedDate:
-          values.status === "Hoàn thành"
-            ? new Date().toLocaleDateString("vi-VN")
-            : selectedOrder.completedDate,
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
-
-      // Clear the temp form data since we've saved
       setTempFormData({});
       setCurrentEditOrderId(null);
       setEditModalVisible(false);
-      message.success("Cập nhật kết quả thành công!");
+      message.success("Đã gửi yêu cầu xác thực cho quản lý!");
     } catch (error) {
       console.error("Error updating result:", error);
       message.error("Có lỗi xảy ra khi cập nhật kết quả!");
@@ -242,65 +236,33 @@ const TestingResults = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING":
-      case "PENDING_CONFIRM":
-        return "Chờ xử lý";
       case "PROCESSING":
-        return "Đang xử lý";
+      case STATUS_PROCESSING:
+        return STATUS_PROCESSING;
       case "WAITING_APPROVAL":
-        return "Chờ xác thực";
-      case "COMPLETED":
-        return "Hoàn thành";
+      case STATUS_WAITING_APPROVAL:
+        return STATUS_WAITING_APPROVAL;
       case "REJECTED":
-        return "Từ chối";
-      case "KIT_SENT":
-        return "Đã gửi kit";
-      case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu";
-      case "CONFIRMED":
-        return "Xác nhận";
-      case "CANCELLED":
-        return "Đã hủy";
+      case STATUS_REJECTED:
+        return STATUS_REJECTED;
+      case "COMPLETED":
+      case STATUS_COMPLETED:
+        return STATUS_COMPLETED;
       default:
-        if (status === "Chờ xử lý") return "Chờ xử lý";
-        if (status === "Đang xử lý") return "Đang xử lý";
-        if (status === "Hoàn thành") return "Hoàn thành";
-        if (status === "Chờ xác thực") return "Chờ xác thực";
-        if (status === "Từ chối") return "Từ chối";
-        if (status === "Đã gửi kit") return "Đã gửi kit";
-        if (status === "Đã nhận mẫu") return "Đã nhận mẫu";
-        if (status === "Xác nhận") return "Xác nhận";
-        if (status === "Đã hủy") return "Đã hủy";
         return status;
     }
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "PENDING":
-      case "PENDING_CONFIRM":
-      case "Chờ xử lý":
-        return "orange";
-      case "PROCESSING":
-      case "Đang xử lý":
-        return "blue";
-      case "WAITING_APPROVAL":
-      case "Chờ xác thực":
-        return "purple";
-      case "COMPLETED":
-      case "Hoàn thành":
-        return "green";
-      case "REJECTED":
-      case "Từ chối":
-        return "red";
-      case "KIT_SENT":
-        return "#2563EB";
-      case "SAMPLE_RECEIVED":
-        return "#22C55E";
-      case "CONFIRMED":
-        return "#10B981";
-      case "CANCELLED":
-        return "#EF4444";
+    switch (getStatusText(status)) {
+      case STATUS_PROCESSING:
+        return "#1890ff";
+      case STATUS_WAITING_APPROVAL:
+        return "#722ed1";
+      case STATUS_COMPLETED:
+        return "#52c41a";
+      case STATUS_REJECTED:
+        return "#ff4d4f";
       default:
         return "default";
     }
@@ -398,11 +360,10 @@ const TestingResults = () => {
   // Thống kê
   const stats = {
     total: orders.length,
-    pending: orders.filter((o) => o.status === "Chờ xử lý").length,
-    processing: orders.filter((o) => o.status === "Đang xử lý").length,
-    waitingApproval: orders.filter((o) => o.status === "Chờ xác thực").length,
-    completed: orders.filter((o) => o.status === "Hoàn thành").length,
-    rejected: orders.filter((o) => o.status === "Từ chối").length,
+    processing: orders.filter((o) => getStatusText(o.status) === STATUS_PROCESSING).length,
+    waitingApproval: orders.filter((o) => getStatusText(o.status) === STATUS_WAITING_APPROVAL).length,
+    completed: orders.filter((o) => getStatusText(o.status) === STATUS_COMPLETED).length,
+    rejected: orders.filter((o) => getStatusText(o.status) === STATUS_REJECTED).length,
     withResults: orders.filter((o) => o.result).length,
   };
 
@@ -428,16 +389,6 @@ const TestingResults = () => {
               value={stats.total}
               valueStyle={{ color: "#00a67e" }}
               prefix={<FileTextOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Chờ xử lý"
-              value={stats.pending}
-              valueStyle={{ color: "#fa8c16" }}
-              prefix={<ClockCircleOutlined />}
             />
           </Card>
         </Col>
@@ -499,11 +450,10 @@ const TestingResults = () => {
             placeholder="Lọc theo trạng thái"
           >
             <Option value="all">Tất cả trạng thái</Option>
-            <Option value="Chờ xử lý">Chờ xử lý</Option>
-            <Option value="Đang xử lý">Đang xử lý</Option>
-            <Option value="Chờ xác thực">Chờ xác thực</Option>
-            <Option value="Hoàn thành">Hoàn thành</Option>
-            <Option value="Từ chối">Từ chối</Option>
+            <Option value={STATUS_PROCESSING}>{STATUS_PROCESSING}</Option>
+            <Option value={STATUS_WAITING_APPROVAL}>{STATUS_WAITING_APPROVAL}</Option>
+            <Option value={STATUS_COMPLETED}>{STATUS_COMPLETED}</Option>
+            <Option value={STATUS_REJECTED}>{STATUS_REJECTED}</Option>
           </Select>
           <Space>
             <Button icon={<DownloadOutlined />}>Xuất Excel</Button>
@@ -541,7 +491,7 @@ const TestingResults = () => {
                   columns={columns}
                   dataSource={filteredOrders.filter(
                     (order) =>
-                      order.priority === "Cao" && order.status !== "Hoàn thành"
+                      order.priority === "Cao" && order.status !== STATUS_COMPLETED
                   )}
                   rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
@@ -563,7 +513,7 @@ const TestingResults = () => {
                   columns={columns}
                   dataSource={filteredOrders.filter(
                     (order) =>
-                      !order.isHidden && order.status === "Chờ xác thực"
+                      !order.isHidden && order.status === STATUS_WAITING_APPROVAL
                   )}
                   rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
@@ -649,9 +599,9 @@ const TestingResults = () => {
                 <strong>Trạng thái:</strong>{" "}
                 <Tag
                   color={
-                    selectedOrder.status === "Hoàn thành"
+                    selectedOrder.status === STATUS_COMPLETED
                       ? "green"
-                      : selectedOrder.status === "Đang xử lý"
+                      : selectedOrder.status === STATUS_PROCESSING
                         ? "blue"
                         : "orange"
                   }
@@ -713,28 +663,111 @@ const TestingResults = () => {
                           title="Họ và tên"
                           dataIndex="name"
                           key="name"
+                          width={220}
+                          render={(text) => (
+                            <Input
+                              value={text}
+                              disabled
+                              style={{
+                                background: '#fff',
+                                color: '#222',
+                                fontSize: 16,
+                                fontWeight: 600,
+                                border: '1.5px solid #bfbfbf',
+                                borderRadius: 6,
+                                textAlign: 'center',
+                                letterSpacing: 0.2
+                              }}
+                            />
+                          )}
                         />
                         <Table.Column
                           title="Năm sinh"
                           dataIndex="birthYear"
                           key="birthYear"
-                          width={120}
+                          width={80}
+                          render={(text) => (
+                            <Input
+                              value={text}
+                              disabled
+                              style={{
+                                background: '#fff',
+                                color: '#222',
+                                fontSize: 16,
+                                fontWeight: 600,
+                                border: '1.5px solid #bfbfbf',
+                                borderRadius: 6,
+                                textAlign: 'center',
+                                letterSpacing: 0.2
+                              }}
+                            />
+                          )}
                         />
                         <Table.Column
                           title="Giới tính"
                           dataIndex="gender"
                           key="gender"
-                          width={120}
+                          width={80}
+                          render={(text) => (
+                            <Input
+                              value={text}
+                              disabled
+                              style={{
+                                background: '#fff',
+                                color: '#222',
+                                fontSize: 16,
+                                fontWeight: 600,
+                                border: '1.5px solid #bfbfbf',
+                                borderRadius: 6,
+                                textAlign: 'center',
+                                letterSpacing: 0.2
+                              }}
+                            />
+                          )}
                         />
                         <Table.Column
                           title="Mối quan hệ"
                           dataIndex="relationship"
                           key="relationship"
+                          width={90}
+                          render={(text) => (
+                            <Input
+                              value={text}
+                              disabled
+                              style={{
+                                background: '#fff',
+                                color: '#222',
+                                fontSize: 16,
+                                fontWeight: 600,
+                                border: '1.5px solid #bfbfbf',
+                                borderRadius: 6,
+                                textAlign: 'center',
+                                letterSpacing: 0.2
+                              }}
+                            />
+                          )}
                         />
                         <Table.Column
                           title="Loại mẫu"
                           dataIndex="sampleType"
                           key="sampleType"
+                          width={90}
+                          render={(text) => (
+                            <Input
+                              value={text}
+                              disabled
+                              style={{
+                                background: '#fff',
+                                color: '#222',
+                                fontSize: 16,
+                                fontWeight: 600,
+                                border: '1.5px solid #bfbfbf',
+                                borderRadius: 6,
+                                textAlign: 'center',
+                                letterSpacing: 0.2
+                              }}
+                            />
+                          )}
                         />
                       </Table>
 
@@ -867,17 +900,11 @@ const TestingResults = () => {
           onFinish={handleSaveResult}
           onValuesChange={handleFormValuesChange}
         >
-          <Form.Item
-            name="status"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="Chờ xử lý">Chờ xử lý</Option>
-              <Option value="Đang xử lý">Đang xử lý</Option>
-              <Option value="Chờ xác thực">Chờ xác thực</Option>
-              <Option value="Hoàn thành">Hoàn thành</Option>
-            </Select>
+          {/* Trạng thái chỉ hiển thị, không cho chọn */}
+          <Form.Item label="Trạng thái">
+            <Tag color={getStatusColor(selectedOrder?.status)} style={{ fontSize: 16, fontWeight: 600, padding: '4px 18px' }}>
+              {getStatusText(selectedOrder?.status)}
+            </Tag>
           </Form.Item>
 
           <Form.Item
@@ -927,20 +954,20 @@ const TestingResults = () => {
                   title="Họ và tên"
                   dataIndex="name"
                   key="name"
-                  render={(text, record, index) => (
+                  width={220}
+                  render={(text) => (
                     <Input
-                      placeholder="Nhập họ và tên"
                       value={text}
-                      onChange={(e) => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData[index].name = e.target.value;
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
+                      disabled
+                      style={{
+                        background: '#fff',
+                        color: '#222',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        border: '1.5px solid #bfbfbf',
+                        borderRadius: 6,
+                        textAlign: 'center',
+                        letterSpacing: 0.2
                       }}
                     />
                   )}
@@ -949,21 +976,20 @@ const TestingResults = () => {
                   title="Năm sinh"
                   dataIndex="birthYear"
                   key="birthYear"
-                  width={120}
-                  render={(text, record, index) => (
+                  width={80}
+                  render={(text) => (
                     <Input
-                      placeholder="Năm sinh"
                       value={text}
-                      onChange={(e) => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData[index].birthYear = e.target.value;
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
+                      disabled
+                      style={{
+                        background: '#fff',
+                        color: '#222',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        border: '1.5px solid #bfbfbf',
+                        borderRadius: 6,
+                        textAlign: 'center',
+                        letterSpacing: 0.2
                       }}
                     />
                   )}
@@ -972,47 +998,42 @@ const TestingResults = () => {
                   title="Giới tính"
                   dataIndex="gender"
                   key="gender"
-                  width={120}
-                  render={(text, record, index) => (
-                    <Select
-                      placeholder="Giới tính"
+                  width={80}
+                  render={(text) => (
+                    <Input
                       value={text}
-                      style={{ width: "100%" }}
-                      onChange={(value) => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData[index].gender = value;
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
+                      disabled
+                      style={{
+                        background: '#fff',
+                        color: '#222',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        border: '1.5px solid #bfbfbf',
+                        borderRadius: 6,
+                        textAlign: 'center',
+                        letterSpacing: 0.2
                       }}
-                    >
-                      <Option value="Nam">Nam</Option>
-                      <Option value="Nữ">Nữ</Option>
-                    </Select>
+                    />
                   )}
                 />
                 <Table.Column
                   title="Mối quan hệ"
                   dataIndex="relationship"
                   key="relationship"
-                  render={(text, record, index) => (
+                  width={90}
+                  render={(text) => (
                     <Input
-                      placeholder="Mối quan hệ"
                       value={text}
-                      onChange={(e) => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData[index].relationship = e.target.value;
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
+                      disabled
+                      style={{
+                        background: '#fff',
+                        color: '#222',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        border: '1.5px solid #bfbfbf',
+                        borderRadius: 6,
+                        textAlign: 'center',
+                        letterSpacing: 0.2
                       }}
                     />
                   )}
@@ -1021,66 +1042,25 @@ const TestingResults = () => {
                   title="Loại mẫu"
                   dataIndex="sampleType"
                   key="sampleType"
-                  render={(text, record, index) => (
+                  width={90}
+                  render={(text) => (
                     <Input
-                      placeholder="Loại mẫu"
                       value={text}
-                      onChange={(e) => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData[index].sampleType = e.target.value;
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
+                      disabled
+                      style={{
+                        background: '#fff',
+                        color: '#222',
+                        fontSize: 16,
+                        fontWeight: 600,
+                        border: '1.5px solid #bfbfbf',
+                        borderRadius: 6,
+                        textAlign: 'center',
+                        letterSpacing: 0.2
                       }}
                     />
                   )}
                 />
-                <Table.Column
-                  title="Thao tác"
-                  key="action"
-                  width={90}
-                  render={(_, record, index) => (
-                    <Button
-                      type="link"
-                      danger
-                      onClick={() => {
-                        const newData = [...tableData];
-                        if (!newData[index]) newData[index] = {};
-                        newData.splice(index, 1);
-                        form.setFieldsValue({ resultTableData: newData });
-                        setTableData(newData);
-                        setTempFormData((prev) => ({
-                          ...prev,
-                          resultTableData: newData,
-                        }));
-                      }}
-                      disabled={tableData.length <= 1}
-                    >
-                      Xóa
-                    </Button>
-                  )}
-                />
               </Table>
-              <Button
-                type="dashed"
-                style={{ width: "100%", marginTop: "16px" }}
-                onClick={() => {
-                  const newData = [...tableData];
-                  newData.push({ key: Date.now().toString() });
-                  form.setFieldsValue({ resultTableData: newData });
-                  setTableData(newData);
-                  setTempFormData((prev) => ({
-                    ...prev,
-                    resultTableData: newData,
-                  }));
-                }}
-              >
-                + Thêm dòng
-              </Button>
             </div>
           </Form.Item>
 
