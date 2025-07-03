@@ -49,19 +49,21 @@ const NotificationBell = () => {
       <div style={{ textAlign: "center", padding: "20px", color: "#999" }}>
         <BellOutlined style={{ fontSize: 24, marginBottom: 8 }} />
         <br />
-        Không có thông báo mới cho role: {roleId}
+        Không có thông báo
       </div>
     );
   } else {
     notificationContent = (
-      <div style={{ width: 420, maxHeight: 500, overflow: "auto" }}>
+      <div style={{ width: 440, maxHeight: 500, overflow: "auto", background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.12)', padding: 12 }}>
         <div style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "8px 0",
+          padding: "8px 0 12px 0",
           borderBottom: "1px solid #f0f0f0",
-          marginBottom: 8
+          marginBottom: 8,
+          background: '#fff',
+          borderRadius: 0
         }}>
           <Text strong>Thông báo ({userNotifications.length})</Text>
           <Space>
@@ -91,10 +93,17 @@ const NotificationBell = () => {
           renderItem={(notification) => (
             <List.Item
               style={{
-                padding: "12px 0",
-                borderBottom: "1px solid #f0f0f0",
+                marginBottom: 14,
+                padding: "16px 16px 12px 16px",
+                borderRadius: 12,
+                boxShadow: notification.read ? 'none' : '0 2px 8px rgba(82,196,26,0.08)',
+                background: notification.read ? '#fff' : '#f6ffed',
+                border: notification.read ? '1px solid #f0f0f0' : '1.5px solid #b7eb8f',
                 cursor: "pointer",
-                backgroundColor: notification.read ? "transparent" : "#f6ffed",
+                transition: 'box-shadow 0.2s',
+                minHeight: 70,
+                display: 'flex',
+                alignItems: 'center',
               }}
               onClick={() => {
                 markAsRead(notification.id);
@@ -105,7 +114,7 @@ const NotificationBell = () => {
             >
               <List.Item.Meta
                 avatar={
-                  <span style={{ fontSize: 20 }}>
+                  <span style={{ fontSize: 22, marginRight: 8 }}>
                     {getNotificationIcon(notification.type)}
                   </span>
                 }
@@ -122,14 +131,6 @@ const NotificationBell = () => {
                 description={
                   <div style={{ fontSize: 14, color: "#444", padding: '4px 0', wordBreak: 'break-word', whiteSpace: 'pre-line', lineHeight: 1.6 }}>
                     {notification.message}
-                    <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
-                      targetRoles: {JSON.stringify(notification.targetRoles)}
-                    </div>
-                    {!notification.read && (
-                      <div style={{ marginTop: 4 }}>
-                        <Tag color="blue" size="small">Mới</Tag>
-                      </div>
-                    )}
                   </div>
                 }
               />
