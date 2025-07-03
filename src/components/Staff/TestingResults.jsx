@@ -242,31 +242,67 @@ const TestingResults = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "Chờ xử lý": return "Chờ xử lý";
-      case "Đang xử lý": return "Đang xử lý";
-      case "Chờ xác thực": return "Chờ xác thực";
-      case "Đã nhận mẫu": return "Đã nhận mẫu";
-      case "Hoàn thành": return "Hoàn thành";
-      case "Từ chối": return "Từ chối";
-      case "Đã gửi kit": return "Đã gửi kit";
-      case "Xác nhận": return "Xác nhận";
-      case "Đã hủy": return "Đã hủy";
-      default: return "";
+      case "PENDING":
+      case "PENDING_CONFIRM":
+        return "Chờ xử lý";
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "WAITING_APPROVAL":
+        return "Chờ xác thực";
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "REJECTED":
+        return "Từ chối";
+      case "KIT_SENT":
+        return "Đã gửi kit";
+      case "SAMPLE_RECEIVED":
+        return "Đã nhận mẫu";
+      case "CONFIRMED":
+        return "Xác nhận";
+      case "CANCELLED":
+        return "Đã hủy";
+      default:
+        if (status === "Chờ xử lý") return "Chờ xử lý";
+        if (status === "Đang xử lý") return "Đang xử lý";
+        if (status === "Hoàn thành") return "Hoàn thành";
+        if (status === "Chờ xác thực") return "Chờ xác thực";
+        if (status === "Từ chối") return "Từ chối";
+        if (status === "Đã gửi kit") return "Đã gửi kit";
+        if (status === "Đã nhận mẫu") return "Đã nhận mẫu";
+        if (status === "Xác nhận") return "Xác nhận";
+        if (status === "Đã hủy") return "Đã hủy";
+        return status;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Chờ xử lý": return "orange";
-      case "Đang xử lý": return "blue";
-      case "Chờ xác thực": return "purple";
-      case "Đã nhận mẫu": return "#22C55E";
-      case "Hoàn thành": return "green";
-      case "Từ chối": return "red";
-      case "Đã gửi kit": return "#2563EB";
-      case "Xác nhận": return "#10B981";
-      case "Đã hủy": return "#EF4444";
-      default: return undefined;
+      case "PENDING":
+      case "PENDING_CONFIRM":
+      case "Chờ xử lý":
+        return "orange";
+      case "PROCESSING":
+      case "Đang xử lý":
+        return "blue";
+      case "WAITING_APPROVAL":
+      case "Chờ xác thực":
+        return "purple";
+      case "COMPLETED":
+      case "Hoàn thành":
+        return "green";
+      case "REJECTED":
+      case "Từ chối":
+        return "red";
+      case "KIT_SENT":
+        return "#2563EB";
+      case "SAMPLE_RECEIVED":
+        return "#22C55E";
+      case "CONFIRMED":
+        return "#10B981";
+      case "CANCELLED":
+        return "#EF4444";
+      default:
+        return "default";
     }
   };
 
@@ -620,7 +656,7 @@ const TestingResults = () => {
                         : "orange"
                   }
                 >
-                  {getStatusText(selectedOrder.status)}
+                  {selectedOrder.status}
                 </Tag>
               </p>
               {selectedOrder.testingMethod && (
@@ -840,12 +876,7 @@ const TestingResults = () => {
               <Option value="Chờ xử lý">Chờ xử lý</Option>
               <Option value="Đang xử lý">Đang xử lý</Option>
               <Option value="Chờ xác thực">Chờ xác thực</Option>
-              <Option value="Đã nhận mẫu">Đã nhận mẫu</Option>
               <Option value="Hoàn thành">Hoàn thành</Option>
-              <Option value="Từ chối">Từ chối</Option>
-              <Option value="Đã gửi kit">Đã gửi kit</Option>
-              <Option value="Xác nhận">Xác nhận</Option>
-              <Option value="Đã hủy">Đã hủy</Option>
             </Select>
           </Form.Item>
 
