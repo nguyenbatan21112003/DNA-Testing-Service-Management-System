@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useOrderContext } from "../../context/OrderContext";
 
@@ -13,14 +13,9 @@ const RegistrationForm = () => {
     message: "",
   });
   const { user } = useContext(AuthContext);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [errors, setErrors] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
   const { addOrder } = useOrderContext();
-
-  useEffect(() => {
-    setIsLoggedIn(!!user);
-  }, [user]);
 
   const validate = () => {
     const newErrors = {};
@@ -44,10 +39,6 @@ const RegistrationForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      alert("Bạn cần đăng nhập để đăng ký nhận tư vấn.");
-      return;
-    }
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -62,8 +53,40 @@ const RegistrationForm = () => {
       sampleMethod: "",
       priority: "Trung bình"
     });
+    // Lưu yêu cầu tư vấn vào localStorage để Staff có thể xem
+    try {
+      const consultationsKey = "dna_consultations";
+      const allConsultations = JSON.parse(localStorage.getItem(consultationsKey) || "[]");
+
+      const serviceLabel =
+        serviceOptions[formData.category].find((opt) => opt.value === formData.serviceType)?.label || "Dịch vụ ADN";
+
+      const newConsultation = {
+        id: Date.now(),
+        customerName: formData.fullName,
+        email: user?.email || "",
+        phone: formData.phone,
+        subject: serviceLabel,
+        message: formData.message || "",
+        status: "Chờ phản hồi",
+        priority: "Trung bình",
+        createdAt: new Date().toLocaleString("vi-VN"),
+        category: formData.category === "civil" ? "Xét nghiệm ADN dân sự" : "Xét nghiệm ADN hành chính",
+      };
+
+      const updatedConsultations = [newConsultation, ...allConsultations];
+      localStorage.setItem(consultationsKey, JSON.stringify(updatedConsultations));
+    } catch (err) {
+      console.error("Không thể lưu yêu cầu tư vấn:", err);
+    }
     setShowSuccess(true);
-    setFormData({ fullName: "", phone: "", serviceType: "", message: "" });
+    setFormData({
+      fullName: "",
+      phone: "",
+      category: "civil",
+      serviceType: "",
+      message: "",
+    });
     setTimeout(() => setShowSuccess(false), 2500);
   };
 
@@ -119,7 +142,7 @@ const RegistrationForm = () => {
             flex: "0 0 40%",
             maxWidth: "40%",
             minWidth: 420,
-            minHeight: 700,
+            minHeight: 970,
             display: "flex",
             alignItems: "stretch",
             justifyContent: "center",
@@ -167,7 +190,7 @@ const RegistrationForm = () => {
               `}
             </style>
             <img
-              src="/tuvan.png"
+              src="/new-tu-van.png"
               alt="Xét nghiệm ADN"
               style={{
                 width: "100%",
@@ -265,7 +288,7 @@ const RegistrationForm = () => {
                     required
                   >
                     <option value="">Chọn loại dịch vụ</option>
-                    {serviceOptions[formData.category].map((opt) => (
+                    {(serviceOptions[formData.category] || []).map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>

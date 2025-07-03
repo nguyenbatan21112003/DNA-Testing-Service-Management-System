@@ -330,12 +330,12 @@ const StaffOverview = () => {
               prefix={<BankOutlined style={{ color: "#722ed1" }} />}
               valueStyle={{ color: "#722ed1", fontWeight: 600 }}
             />
-            <Progress
-              percent={
-                stats.total > 0
+              <Progress
+                percent={
+                  stats.total > 0
                   ? Math.round((stats.centerSampling / stats.total) * 100)
-                  : 0
-              }
+                    : 0
+                }
               strokeColor="#722ed1"
               showInfo={false}
               style={{ marginTop: 8 }}
@@ -354,11 +354,11 @@ const StaffOverview = () => {
         }
         style={{ marginBottom: 24 }}
       >
-        <Table
-          dataSource={urgentOrders}
+            <Table
+              dataSource={urgentOrders}
           columns={urgentColumns}
-          pagination={false}
-          size="small"
+              pagination={false}
+              size="small"
           rowKey="id"
           scroll={{ x: 800 }}
         />

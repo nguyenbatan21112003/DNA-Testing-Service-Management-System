@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   Table,
@@ -32,84 +32,32 @@ const ConsultationRequests = () => {
   const [replyModalVisible, setReplyModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    // Tạo dữ liệu mẫu cho yêu cầu tư vấn
-    const sampleConsultations = [
-      {
-        id: 1,
-        customerName: "Nguyễn Văn An",
-        email: "nguyenvanan@gmail.com",
-        phone: "0123456789",
-        subject: "Tư vấn về xét nghiệm ADN cha con",
-        message:
-          "Tôi muốn biết quy trình xét nghiệm ADN cha con và thời gian có kết quả. Chi phí như thế nào?",
-        status: "Chờ phản hồi",
-        priority: "Cao",
-        createdAt: "16/06/2024 09:30",
-        category: "Xét nghiệm ADN",
-      },
-      {
-        id: 2,
-        customerName: "Trần Thị Bình",
-        email: "tranthibinh@gmail.com",
-        phone: "0987654321",
-        subject: "Hỏi về độ chính xác kết quả",
-        message:
-          "Xin chào, tôi muốn hỏi về độ chính xác của xét nghiệm ADN huyết thống. Có thể tin tưởng được không?",
-        status: "Đã phản hồi",
-        priority: "Trung bình",
-        createdAt: "15/06/2024 14:20",
-        category: "Độ chính xác",
-        reply:
-          "Xin chào anh/chị, xét nghiệm ADN huyết thống của chúng tôi có độ chính xác lên đến 99.99%. Chúng tôi sử dụng công nghệ hiện đại và được kiểm định bởi các tổ chức uy tín.",
-        repliedAt: "15/06/2024 16:45",
-      },
-      {
-        id: 3,
-        customerName: "Lê Văn Cường",
-        email: "levancuong@gmail.com",
-        phone: "0369258147",
-        subject: "Thủ tục lấy mẫu tại nhà",
-        message:
-          "Tôi ở xa trung tâm, có thể lấy mẫu tại nhà không? Thủ tục như thế nào?",
-        status: "Đang xử lý",
-        priority: "Trung bình",
-        createdAt: "16/06/2024 11:15",
-        category: "Lấy mẫu",
-      },
-      {
-        id: 4,
-        customerName: "Phạm Thị Dung",
-        email: "phamthidung@gmail.com",
-        phone: "0741963852",
-        subject: "Giá cả dịch vụ",
-        message:
-          "Cho tôi hỏi bảng giá các loại xét nghiệm ADN. Có chương trình khuyến mãi nào không?",
-        status: "Chờ phản hồi",
-        priority: "Thấp",
-        createdAt: "16/06/2024 08:45",
-        category: "Giá cả",
-      },
-      {
-        id: 5,
-        customerName: "Hoàng Văn Em",
-        email: "hoangvanem@gmail.com",
-        phone: "0852741963",
-        subject: "Thời gian có kết quả",
-        message:
-          "Xét nghiệm ADN anh em mất bao lâu để có kết quả? Có thể rút ngắn thời gian không?",
-        status: "Đã phản hồi",
-        priority: "Cao",
-        createdAt: "14/06/2024 16:30",
-        category: "Thời gian",
-        reply:
-          "Thời gian xét nghiệm ADN anh em thường là 5-7 ngày làm việc. Chúng tôi có dịch vụ xét nghiệm nhanh trong 3 ngày với phụ phí.",
-        repliedAt: "15/06/2024 09:20",
-      },
-    ];
-
-    setConsultations(sampleConsultations);
+  // Hàm tải yêu cầu tư vấn từ localStorage (nếu không có thì để trống)
+  const loadConsultations = useCallback(() => {
+    const consultationsKey = "dna_consultations";
+    const saved = JSON.parse(localStorage.getItem(consultationsKey) || "[]");
+    let list = Array.isArray(saved) ? saved : [];
+    // Lọc bỏ các bản ghi mẫu cũ (id nhỏ hơn 1e12 hoặc có email "@gmail.com" như dữ liệu demo)
+    const cleaned = list.filter((c) => Number(c.id) > 1e12);
+    if (cleaned.length !== list.length) {
+      // Cập nhật localStorage nếu có thay đổi
+      localStorage.setItem(consultationsKey, JSON.stringify(cleaned));
+    }
+    setConsultations(cleaned);
   }, []);
+
+  // Tải dữ liệu khi component mount và khi localStorage thay đổi (từ tab khác)
+  useEffect(() => {
+    loadConsultations();
+
+    const handleStorage = (e) => {
+      if (e.key === "dna_consultations") {
+        loadConsultations();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [loadConsultations]);
 
   const handleViewConsultation = (consultation) => {
     setSelectedConsultation(consultation);
@@ -134,7 +82,9 @@ const ConsultationRequests = () => {
             }
           : consultation
       );
+      // Cập nhật state và localStorage
       setConsultations(updatedConsultations);
+      localStorage.setItem("dna_consultations", JSON.stringify(updatedConsultations));
       setReplyModalVisible(false);
       message.success("Gửi phản hồi thành công!");
     } catch {
