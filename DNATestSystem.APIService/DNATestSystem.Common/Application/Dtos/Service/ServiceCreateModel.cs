@@ -15,5 +15,9 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Service
         public byte? NumberSample { get; set; }
         public bool IsUrgent { get; set; }
         public bool IsPublished { get; set; }
+
+        public decimal Price2Samples { get; set; }
+        public decimal Price3Samples { get; set; }
+        public bool IncludeVAT { get; set; }
     }
 }

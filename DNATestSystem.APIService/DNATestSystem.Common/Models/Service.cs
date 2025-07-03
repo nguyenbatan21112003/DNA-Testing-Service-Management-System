@@ -9,21 +9,23 @@ public partial class Service
 
     public string? ServiceName { get; set; }
 
-    public string? Slug { get; set; }    
-
     public string? Description { get; set; }
+
+    public string? Slug { get; set; }
 
     public string? Category { get; set; }
 
     public byte? NumberSample { get; set; }
 
-    public bool IsUrgent { get; set; }
-
-    public bool IsPublished {  get; set; }
+    public bool? IsUrgent { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public bool? IsPublished { get; set; }
+
+    public virtual ICollection<ConsultRequest> ConsultRequests { get; set; } = new List<ConsultRequest>();
 
     public virtual ICollection<PriceDetail> PriceDetails { get; set; } = new List<PriceDetail>();
 

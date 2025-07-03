@@ -54,8 +54,7 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("ThumbnailURL")
-                        .IsRequired()
+                    b.Property<string>("ThumbnailUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -77,6 +76,25 @@ namespace DNATestSystem.Repositories.Migrations
                     b.ToTable("BlogPosts");
                 });
 
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.CollectType", b =>
+                {
+                    b.Property<int>("CollectTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CollectID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CollectTypeId"));
+
+                    b.Property<string>("CollectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CollectName");
+
+                    b.HasKey("CollectTypeId");
+
+                    b.ToTable("CollectType");
+                });
+
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.ConsultRequest", b =>
                 {
                     b.Property<int>("ConsultId")
@@ -86,21 +104,30 @@ namespace DNATestSystem.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConsultId"));
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int")
-                        .HasColumnName("CustomerID");
+                    b.Property<string>("FullName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<DateTime?>("RepliedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("ReplyMessage")
-                        .HasColumnType("text");
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int")
+                        .HasColumnName("ServiceID");
 
                     b.Property<int?>("StaffId")
                         .HasColumnType("int")
@@ -110,14 +137,10 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Subject")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.HasKey("ConsultId")
                         .HasName("PK__ConsultR__28859B152268FA69");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("StaffId");
 
@@ -184,35 +207,30 @@ namespace DNATestSystem.Repositories.Migrations
                     b.ToTable("Feedbacks");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Payment", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Invoice", b =>
                 {
-                    b.Property<int>("PaymentId")
+                    b.Property<int>("InvoiceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("PaymentID");
+                        .HasColumnName("InvoiceID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
-
-                    b.Property<decimal?>("Amount")
-                        .HasColumnType("decimal(18, 2)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
 
                     b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("PaymentMethod")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(getdate())");
 
                     b.Property<int?>("RequestId")
                         .HasColumnType("int")
                         .HasColumnName("RequestID");
 
-                    b.HasKey("PaymentId")
-                        .HasName("PK__Payments__9B556A58C62259D1");
+                    b.HasKey("InvoiceId")
+                        .HasName("PK__Invoice__D796AAD5A8ABCEEA");
 
                     b.HasIndex("RequestId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Invoice", (string)null);
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.PriceDetail", b =>
@@ -227,7 +245,7 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<bool?>("IncludeVAT")
+                    b.Property<bool?>("IncludeVat")
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("Price2Samples")
@@ -289,85 +307,20 @@ namespace DNATestSystem.Repositories.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Role", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.RequestDeclarant", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("DeclarantId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("RoleID");
+                        .HasColumnName("DeclarantID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
-
-                    b.Property<string>("RoleName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("RoleId")
-                        .HasName("PK__Roles__8AFACE3A99E52713");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionRecord", b =>
-                {
-                    b.Property<int>("RecordId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("RecordID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecordId"));
-
-                    b.Property<DateTime?>("CollectedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("CollectedBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConfirmedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int")
-                        .HasColumnName("ProcessID");
-
-                    b.Property<int?>("RequestId")
-                        .HasColumnType("int")
-                        .HasColumnName("RequestID");
-
-                    b.HasKey("RecordId")
-                        .HasName("PK__SampleCo__FBDF78C9BC15D8F2");
-
-                    b.HasIndex("CollectedBy");
-
-                    b.HasIndex("ProcessId");
-
-                    b.HasIndex("RequestId");
-
-                    b.ToTable("SampleCollectionRecords");
-                });
-
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionSample", b =>
-                {
-                    b.Property<int>("CollectedSampleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CollectedSampleID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CollectedSampleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeclarantId"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("CollectedBy")
+                    b.Property<string>("Email")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -379,55 +332,126 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
+                    b.Property<DateTime?>("IdentityIssuedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IdentityIssuedPlace")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IdentityNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int")
+                        .HasColumnName("RequestID");
+
+                    b.HasKey("DeclarantId")
+                        .HasName("PK__RequestD__761301B7886F2E3A");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("RequestDeclarants");
+                });
+
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("RoleID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+
+                    b.Property<int?>("FeatureId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("RoleId")
+                        .HasName("PK__Roles__8AFACE3A99E52713");
+
+                    b.HasIndex("FeatureId");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionForm", b =>
+                {
+                    b.Property<int>("CollectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CollectionId"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FingerprintImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("HasGeneticDiseaseHistory")
                         .HasColumnType("bit");
 
                     b.Property<DateOnly?>("IdissuedDate")
-                        .HasColumnType("date")
-                        .HasColumnName("IDIssuedDate");
+                        .HasColumnType("date");
 
                     b.Property<string>("IdissuedPlace")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("IDIssuedPlace");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Idnumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("IDNumber");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Idtype")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
-                        .HasColumnName("IDType");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProcessId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Quantity")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<int?>("RecordId")
-                        .HasColumnType("int")
-                        .HasColumnName("RecordID");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Relationship")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SampleType")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Yob")
-                        .HasColumnType("int")
-                        .HasColumnName("YOB");
+                        .HasColumnType("int");
 
-                    b.HasKey("CollectedSampleId")
-                        .HasName("PK__SampleCo__98BC8F30615E9963");
+                    b.HasKey("CollectionId");
 
-                    b.HasIndex("RecordId");
+                    b.HasIndex("ProcessId");
 
-                    b.ToTable("SampleCollectionSamples");
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("SampleCollectionForm");
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Service", b =>
@@ -452,7 +476,10 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsUrgent")
+                    b.Property<bool?>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsUrgent")
                         .HasColumnType("bit");
 
                     b.Property<byte?>("NumberSample")
@@ -572,11 +599,17 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CollectID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<DateOnly?>("ScheduleDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("ScheduleDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int")
@@ -614,6 +647,9 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasColumnName("ResultID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResultId"));
+
+                    b.Property<DateTime?>("CollectedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("EnteredAt")
                         .HasColumnType("datetime");
@@ -659,6 +695,10 @@ namespace DNATestSystem.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SampleId"));
 
+                    b.Property<DateTime?>("CollectedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CollectedAt");
+
                     b.Property<string>("Gender")
                         .HasMaxLength(10)
                         .IsUnicode(false)
@@ -696,26 +736,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.HasIndex("RequestId");
 
                     b.ToTable("TestSamples");
-                });
-
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestType", b =>
-                {
-                    b.Property<int>("TypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("TypeID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
-
-                    b.Property<string>("TypeName")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("TypeId")
-                        .HasName("PK__TestType__516F039541C8093B");
-
-                    b.ToTable("TestType", (string)null);
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.User", b =>
@@ -789,7 +809,7 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("IdentityFile")
+                    b.Property<string>("IdentityId")
                         .HasMaxLength(100)
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
@@ -823,6 +843,9 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool?>("IncludeVat")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
@@ -847,24 +870,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.ToTable("UserSelectedServices");
                 });
 
-            modelBuilder.Entity("RoleFeature", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int")
-                        .HasColumnName("RoleID");
-
-                    b.Property<int>("FeatureId")
-                        .HasColumnType("int")
-                        .HasColumnName("FeatureID");
-
-                    b.HasKey("RoleId", "FeatureId")
-                        .HasName("PK__RoleFeat__02D8FE984F43F664");
-
-                    b.HasIndex("FeatureId");
-
-                    b.ToTable("RoleFeatures", (string)null);
-                });
-
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.BlogPost", b =>
                 {
                     b.HasOne("DNATestSystem.BusinessObjects.Models.User", "Author")
@@ -877,17 +882,17 @@ namespace DNATestSystem.Repositories.Migrations
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.ConsultRequest", b =>
                 {
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.User", "Customer")
-                        .WithMany("ConsultRequestCustomers")
-                        .HasForeignKey("CustomerId")
-                        .HasConstraintName("FK__ConsultRe__Custo__6754599E");
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.Service", "Service")
+                        .WithMany("ConsultRequests")
+                        .HasForeignKey("ServiceId")
+                        .HasConstraintName("FK__ConsultRe__Servi__XXXXXXX");
 
                     b.HasOne("DNATestSystem.BusinessObjects.Models.User", "Staff")
-                        .WithMany("ConsultRequestStaffs")
+                        .WithMany("ConsultRequests")
                         .HasForeignKey("StaffId")
                         .HasConstraintName("FK__ConsultRe__Staff__68487DD7");
 
-                    b.Navigation("Customer");
+                    b.Navigation("Service");
 
                     b.Navigation("Staff");
                 });
@@ -909,12 +914,12 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Payment", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Invoice", b =>
                 {
                     b.HasOne("DNATestSystem.BusinessObjects.Models.TestRequest", "Request")
-                        .WithMany("Payments")
+                        .WithMany("Invoices")
                         .HasForeignKey("RequestId")
-                        .HasConstraintName("FK__Payments__Reques__60A75C0F");
+                        .HasConstraintName("FK__Invoice__Request__04E4BC85");
 
                     b.Navigation("Request");
                 });
@@ -939,38 +944,36 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionRecord", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.RequestDeclarant", b =>
                 {
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.User", "CollectedByNavigation")
-                        .WithMany("SampleCollectionRecords")
-                        .HasForeignKey("CollectedBy")
-                        .HasConstraintName("FK__SampleCol__Colle__5629CD9C");
-
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.TestProcess", "Process")
-                        .WithMany("SampleCollectionRecords")
-                        .HasForeignKey("ProcessId")
-                        .HasConstraintName("FK__SampleCol__Proce__5535A963");
-
                     b.HasOne("DNATestSystem.BusinessObjects.Models.TestRequest", "Request")
-                        .WithMany("SampleCollectionRecords")
+                        .WithMany("RequestDeclarants")
                         .HasForeignKey("RequestId")
-                        .HasConstraintName("FK__SampleCol__Reque__5441852A");
-
-                    b.Navigation("CollectedByNavigation");
-
-                    b.Navigation("Process");
+                        .HasConstraintName("FK__RequestDe__Reque__75A278F5");
 
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionSample", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Role", b =>
                 {
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.SampleCollectionRecord", "Record")
-                        .WithMany("SampleCollectionSamples")
-                        .HasForeignKey("RecordId")
-                        .HasConstraintName("FK__SampleCol__Recor__59063A47");
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.Feature", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("FeatureId");
+                });
 
-                    b.Navigation("Record");
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionForm", b =>
+                {
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.TestProcess", "Process")
+                        .WithMany("SampleCollectionForms")
+                        .HasForeignKey("ProcessId");
+
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.TestRequest", "Request")
+                        .WithMany("SampleCollectionForms")
+                        .HasForeignKey("RequestId");
+
+                    b.Navigation("Process");
+
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SystemLog", b =>
@@ -1008,19 +1011,19 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasForeignKey("ServiceId")
                         .HasConstraintName("FK__TestReque__Servi__48CFD27E");
 
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.TestType", "Type")
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.CollectType", "CollectType")
                         .WithMany("TestRequests")
                         .HasForeignKey("TypeId")
-                        .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
+                        .HasConstraintName("FK_TestRequest_CollectType");
 
                     b.HasOne("DNATestSystem.BusinessObjects.Models.User", "User")
                         .WithMany("TestRequests")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__TestReque__UserI__47DBAE45");
 
-                    b.Navigation("Service");
+                    b.Navigation("CollectType");
 
-                    b.Navigation("Type");
+                    b.Navigation("Service");
 
                     b.Navigation("User");
                 });
@@ -1103,19 +1106,14 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RoleFeature", b =>
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.CollectType", b =>
                 {
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.Feature", null)
-                        .WithMany()
-                        .HasForeignKey("FeatureId")
-                        .IsRequired()
-                        .HasConstraintName("FK__RoleFeatu__Featu__29572725");
+                    b.Navigation("TestRequests");
+                });
 
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .IsRequired()
-                        .HasConstraintName("FK__RoleFeatu__RoleI__286302EC");
+            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Feature", b =>
+                {
+                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Role", b =>
@@ -1123,13 +1121,10 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.SampleCollectionRecord", b =>
-                {
-                    b.Navigation("SampleCollectionSamples");
-                });
-
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.Service", b =>
                 {
+                    b.Navigation("ConsultRequests");
+
                     b.Navigation("PriceDetails");
 
                     b.Navigation("TestRequests");
@@ -1139,16 +1134,18 @@ namespace DNATestSystem.Repositories.Migrations
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestProcess", b =>
                 {
-                    b.Navigation("SampleCollectionRecords");
+                    b.Navigation("SampleCollectionForms");
 
                     b.Navigation("TestSamples");
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestRequest", b =>
                 {
-                    b.Navigation("Payments");
+                    b.Navigation("Invoices");
 
-                    b.Navigation("SampleCollectionRecords");
+                    b.Navigation("RequestDeclarants");
+
+                    b.Navigation("SampleCollectionForms");
 
                     b.Navigation("TestProcesses");
 
@@ -1162,24 +1159,15 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("Feedbacks");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestType", b =>
-                {
-                    b.Navigation("TestRequests");
-                });
-
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.User", b =>
                 {
                     b.Navigation("BlogPosts");
 
-                    b.Navigation("ConsultRequestCustomers");
-
-                    b.Navigation("ConsultRequestStaffs");
+                    b.Navigation("ConsultRequests");
 
                     b.Navigation("Feedbacks");
 
                     b.Navigation("RefreshTokens");
-
-                    b.Navigation("SampleCollectionRecords");
 
                     b.Navigation("SystemLogs");
 

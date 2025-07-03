@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj": {}
+    "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj": {}
   },
   "projects": {
-    "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj": {
+    "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+        "projectUniqueName": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
         "projectName": "DNATestSystem.APIService",
-        "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+        "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.APIService\\obj\\",
+        "outputPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -33,14 +33,14 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
               },
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj"
               },
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj"
               }
             }
           }
@@ -115,14 +115,14 @@
         }
       }
     },
-    "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
+    "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+        "projectUniqueName": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
         "projectName": "DNATestSystem.BusinessObjects",
-        "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+        "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\obj\\",
+        "outputPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -211,14 +211,14 @@
         }
       }
     },
-    "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
+    "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+        "projectUniqueName": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
         "projectName": "DNATestSystem.Repositories",
-        "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+        "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\obj\\",
+        "outputPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -240,8 +240,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
               }
             }
           }
@@ -303,14 +303,14 @@
         }
       }
     },
-    "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj": {
+    "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
+        "projectUniqueName": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
         "projectName": "DNATestSystem.Services",
-        "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
+        "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
         "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
-        "outputPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Services\\obj\\",
+        "outputPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -332,11 +332,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj"
               },
-              "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
-                "projectPath": "D:\\fileCode\\SWP391\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj"
+              "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj": {
+                "projectPath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj"
               }
             }
           }

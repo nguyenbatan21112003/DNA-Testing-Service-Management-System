@@ -17,6 +17,8 @@ public partial class UserSelectedService
 
     public bool? ConvertedToRequest { get; set; }
 
+    public bool? IncludeVat { get; set; }
+
     public virtual Service? Service { get; set; }
 
     public virtual User? User { get; set; }

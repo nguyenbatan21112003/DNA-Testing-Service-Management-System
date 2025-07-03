@@ -21,6 +21,8 @@ public partial class TestSample
 
     public int? Yob { get; set; }
 
+    public DateTime? CollectedAt { get; set; }
+
     public virtual TestProcess? Process { get; set; }
 
     public virtual TestRequest? Request { get; set; }

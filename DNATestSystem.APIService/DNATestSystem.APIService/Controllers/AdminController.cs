@@ -19,25 +19,25 @@ namespace DNATestSystem.APIService.Controllers
             _adminService = adminService;
         }
         [HttpPost("create-manager")]
-        public IActionResult CreateManager([FromBody] ManagerCreateModel model)
+        public async Task<IActionResult> CreateManager([FromBody] ManagerCreateModel model)
         {
-            var userId = _adminService.CreateManager(model);
+            var userId = await _adminService.CreateManagerAsync(model);
             return Ok(new { message = "Tạo tài khoản Manager thành công", userId });
         }
 
         [HttpPost("create-staff")]
-        public IActionResult CreateStaff([FromBody] StaffCreateModel model)
+        public async Task<IActionResult> CreateStaff([FromBody] StaffCreateModel model)
         {
-            var userId = _adminService.CreateStaff(model);
+            var userId = await _adminService.CreateStaffAsync(model);
             return Ok(new { message = "Tạo tài khoản Staff thành công", userId });
         }
 
         [HttpPut("update-role-status")]
-        public IActionResult UpdateUserRoleAndStatus([FromBody] UpdateStatusAndRoleModel model)
+        public async Task<IActionResult> UpdateUserRoleAndStatus([FromBody] UpdateStatusAndRoleModel model)
         {
             try
             {
-                _adminService.UpdateStatusAndRole(model);
+                await _adminService.UpdateStatusAndRoleAsync(model);
                 return Ok(new { message = "Cập nhật thành công" });
             }
             catch (Exception ex)
@@ -45,11 +45,27 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPost("create-service")]
-        public IActionResult CreateNewService([FromBody] ServiceCreateModel model)
+
+        [HttpPut("ban-user/{id}")]
+        public async Task<IActionResult> BanUser(int id)
         {
-            var serviceId = _adminService.CreateServiceMethod(model);
-            return Ok(new { message = "Tạo service thành công", serviceId } );
+            try
+            {
+                var userId = await _adminService.BanUserByIdAsync(id);
+                return Ok(new { message = "Đã khóa tài khoản thành công", userId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
+        [HttpGet("getAllUser")]
+        public async Task<IActionResult> GetAllUser()
+        {
+            var users = await _adminService.GetAllUserAsync();
+            return Ok(users);
+        }
+
     }
 }

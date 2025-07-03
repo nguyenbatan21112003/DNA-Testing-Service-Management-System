@@ -65,6 +65,11 @@ builder.Services.AddControllers()
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IManagerService, ManagerService>();
+builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -133,7 +138,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // khi các bạn luu cookie xuống browser, nó sẽ ko cho phép javastric đọc
     options.Cookie.IsEssential = true; // tự động add vào request xong r save vào browser
 });
-
+builder.Services.AddHttpContextAccessor();
 // Sau khi cấu hình xong, gọi builder.Build() một lần duy nhất
 var app = builder.Build();
 

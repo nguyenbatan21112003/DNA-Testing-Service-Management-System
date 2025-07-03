@@ -12,6 +12,7 @@ using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 
 namespace DNATestSystem.Services.Service
 {
@@ -20,32 +21,43 @@ namespace DNATestSystem.Services.Service
         private readonly IApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
 
-        public UserService(IApplicationDbContext context , IOptions<JwtSettings> jwtSettings)
+        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
         }
 
-        //Salting: đã mặn thêm muối
-        public User? Login(UserLoginModel loginModel)
+        //public User? Login(UserLoginModel loginModel)
+        //{
+        //    var user = _context.Users
+        //        .FirstOrDefault(x => x.Email == loginModel.Email);
+        //    if (user == null)
+        //    {
+        //        return null;
+        //    }
+        //    var password = loginModel.Password;
+
+        //    if (HashHelper.BCriptVerify(password, user.Password))
+        //    {
+        //        return user;
+        //    }
+        //    return null;
+        //}
+
+        public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
-            var user = _context.Users
-                .FirstOrDefault(x => x.Email == loginModel.Email);
-            if (user == null)
-            {
-                return null;
-            }
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email == loginModel.Email);
+
+            if (user == null) return null;
+
             var password = loginModel.Password;
 
-            if (HashHelper.BCriptVerify(password, user.Password))
-            {
-                return user;
-            }
-            return null;
+            return HashHelper.BCriptVerify(password, user.Password) ? user : null;
         }
 
-        public int Register(UserRegisterModel user)
-        {           
+        public async Task<int> RegisterAsync(UserRegisterModel user)
+        {
             var password = user.Password;
             var hashPassword = HashHelper.BCriptHash(password);
 
@@ -57,17 +69,30 @@ namespace DNATestSystem.Services.Service
                 Password = hashPassword,
                 Phone = user.PhoneNumber,
                 RoleId = (int)BusinessObjects.Entities.Enum.RoleNum.Customer, // Mặc định là User
-                Status = (int)BusinessObjects.Entities.Enum.StatusNum.Pending
-                //CreateAt = DateTime.Now
+                Status = (int)BusinessObjects.Entities.Enum.StatusNum.Pending,
+                CreatedAt = DateTime.Now
             };
 
             _context.Users.Add(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            // Tạo user profile mặc định sau khi tạo user
+            var profile = new UserProfile
+            {
+                UserId = data.UserId,
+                Gender = "",
+                Address = "",
+                DateOfBirth = null,
+                IdentityId = "",
+                Fingerfile = "",
+                UpdatedAt = DateTime.UtcNow
+            };
+            _context.UserProfiles.Add(profile);
+            await _context.SaveChangesAsync();
 
             return data.UserId;
         }
 
-        public string GenerateJwt(User user)
+        public Task<string> GenerateJwtAsync(User user)
         {
 
             var claims = new List<Claim>
@@ -83,15 +108,15 @@ namespace DNATestSystem.Services.Service
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
+                expires: DateTime.UtcNow.AddHours(_jwtSettings.ExpirationInHours),
                 signingCredentials: new SigningCredentials(
                         key,
                         SecurityAlgorithms.HmacSha256Signature
                         ));
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public string GenerateRefreshToken(int userId)
+        public async Task<string> GenerateRefreshTokenAsync(int userId)
         {
             string refreshToken = HashHelper.GenerateRandomString(64);
             //refresh Token nên hash lại
@@ -107,73 +132,185 @@ namespace DNATestSystem.Services.Service
 
             _context.RefreshTokens.Add(data);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return hashRefreshToken;
         }
 
-        public User GetUserByRefreshToken(string refreshToken)
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            var user = _context.RefreshTokens.
-            Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
-            .Select(x => x.User)
-            .FirstOrDefault();
+            var user = await _context.RefreshTokens.
+           Where(x => x.Token == refreshToken && (x.Revoked == false) && x.ExpiresAt > DateTime.Now)
+           .Select(x => x.User)
+           .FirstOrDefaultAsync();
             return user;
         }
 
-        public void DeleteOldRefreshToken(string refreshToken)
+        public async Task DeleteOldRefreshToken(string refreshToken)
         {
-            var entity = _context.RefreshTokens
-                        .FirstOrDefault(x => x.Token == refreshToken);
-
-
+            var entity = await _context.RefreshTokens
+                        .FirstOrDefaultAsync(x => x.Token == refreshToken);
             if (entity != null)
             {
                 return;
             }
             _context.RefreshTokens.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteOldRefreshToken(int userId)
+        public async Task DeleteOldRefreshTokenAsync(int userId)
         {
-            var entity = _context.RefreshTokens
-                        .Where(x => x.UserId== userId)
-                        .ToList();
+            var entity = await _context.RefreshTokens
+                        .Where(x => x.UserId == userId)
+                        .ToListAsync();
 
             if (entity != null)
             {
                 return;
             }
             _context.RefreshTokens.RemoveRange(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<ServiceSummaryDto> GetService()
+        public async Task<List<ServiceSummaryDto>> GetServiceForUserAsync()
         {
-            var services = _context.Services
-                            .Include(s => s.PriceDetails)
-                            .AsEnumerable() // để tránh lỗi ?. không hỗ trợ trong Expression Tree
-                            .Select(s => new ServiceSummaryDto
+            var priceDetails = await _context.Services
+                                    .Include(s => s.PriceDetails)
+                                    .Where(s => s.IsPublished == true)
+                                    .ToListAsync();
+            //tạo ra priceDetails khi đã join với Service
+            var service = priceDetails
+                            .Select(s =>
                             {
-                                Id = s.ServiceId,
-                                Slug = s.Slug,
-                                ServiceName = s.ServiceName,
-                                Category = s.Category,
-                                IsUrgent = false, // gán cứng nếu chưa có
-                                IncludeVAT = true,
-                                Price2Samples = s.PriceDetails.FirstOrDefault()?.Price2Samples,
-                                Price3Samples = s.PriceDetails.FirstOrDefault()?.Price3Samples,
-                                TimeToResult = s.PriceDetails.FirstOrDefault()?.TimeToResult
-                            }) .ToList();
-            return services;              
+                                var price = s.PriceDetails.FirstOrDefault();
+                                //lấy tk Price ra
+
+                                return new ServiceSummaryDto
+                                {
+                                    Id = s.ServiceId,
+                                    Slug = s.Slug,
+                                    ServiceName = s.ServiceName,
+                                    Description = s.Description,
+                                    Category = s.Category,
+                                    IsUrgent = (bool)s.IsUrgent,
+                                    IncludeVAT = true,
+                                    Price2Samples = price?.Price2Samples,
+                                    Price3Samples = price?.Price3Samples,
+                                    TimeToResult = price?.TimeToResult
+                                };
+                            }).ToList();
+            return service;
         }
 
-        public ServiceSummaryDetailsModel GetServiceById(int id)
+        public async Task<ProfileDetailModel?> GetProfileUserAsync(int profileId)
         {
-            var service = _context.Services
-                .FirstOrDefault(s => s.ServiceId == id);
+            var user = await _context.Users
+                .Include(x => x.UserProfiles)
+                .FirstOrDefaultAsync(s => s.UserId == profileId);
 
+            if (user == null) return null;
+
+            var profile = user.UserProfiles.FirstOrDefault();
+
+            return new ProfileDetailModel
+            {
+                UserID = user.UserId,
+                FullName = user.FullName,
+                PhoneNumber = user.Phone,
+                Email = user.Email,
+                RoleID = user.RoleId,
+                CreatedAt = user.CreatedAt,
+                ProfileDto = profile == null ? null : new ProfileDto
+                {
+                    Gender = profile.Gender,
+                    Address = profile.Address,
+                    DateOfBirth = profile.DateOfBirth,
+                    IdentityID = profile.IdentityId,
+                    Fingerfile = profile.Fingerfile,
+                    UpdatedAt = profile.UpdatedAt
+                }
+            };
+        }
+
+        public async Task<List<BlogPostModel>> GetAllBlogForUserAsync()
+        {
+            var blogPosts = await _context.BlogPosts
+                 .Include(p => p.Author)
+                 .Where(p => (bool)p.IsPublished == true)
+                 .Select(p => new BlogPostModel
+                 {
+                     PostId = p.PostId,
+                     Title = p.Title,
+                     Slug = p.Slug,
+                     Summary = p.Summary,
+                     ThumbnailURL = p.ThumbnailUrl,
+                     AuthorName = p.Author.FullName
+                 })
+                 .ToListAsync();
+            return blogPosts;
+        }
+
+        public async Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug)
+        {
+            var blog = await _context.BlogPosts
+                .Where(s => s.IsPublished == true)
+               .FirstOrDefaultAsync(s => s.Slug == slug);
+
+            if (blog == null) return null;
+
+
+            return new BlogPostDetailsModel
+            {
+                PostId = blog.PostId,
+                Title = blog.Title,
+                Slug = blog.Slug,
+                Summary = blog.Summary,
+                ThumbnailURL = blog.ThumbnailUrl,
+                Content = blog.Content,
+                CreatedAt = blog.CreatedAt,
+                UpdatedAt = blog.UpdatedAt,
+                IsPublished = blog.IsPublished,
+                AuthorId = blog.AuthorId,
+            };
+        }
+
+        public async Task<UpdateProfileModel?> UpdateProfileAsync(UpdateProfileModel updateProfileModel)
+        {
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.ProfileId == updateProfileModel.ProfileId);
+
+            if (userProfile == null)
+            {
+                return null;
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userProfile.UserId);
+            var data = new UpdateProfileModel
+            {
+                Fullname = user.FullName,
+                Phone = user.Phone,
+
+                Gender = userProfile.Gender,
+                Address = userProfile.Address,
+                DateOfBirth = userProfile.DateOfBirth,
+                IdentityID = userProfile.IdentityId,
+                Fingerfile = userProfile.Fingerfile,
+            };
+            user.UpdatedAt = DateTime.UtcNow;
+            return data;
+        }
+
+        public async Task DeleteOldRefreshTokenAsync(string refreshToken)
+        {
+            var entity = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
+            if (entity != null)
+            {
+                _context.RefreshTokens.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id)
+        {
+            var service = await _context.Services.Include(s => s.PriceDetails).FirstOrDefaultAsync(s => s.ServiceId == id);
             if (service == null) return null;
 
             var priceDetail = service.PriceDetails.FirstOrDefault();
@@ -185,7 +322,7 @@ namespace DNATestSystem.Services.Service
                 ServiceName = service.ServiceName,
                 Category = service.Category,
                 Description = service.Description,
-                IsUrgent = false, // hoặc true nếu bạn có trường này
+                IsUrgent = false,
                 IncludeVAT = true,
                 Price2Samples = priceDetail?.Price2Samples,
                 Price3Samples = priceDetail?.Price3Samples,
@@ -194,45 +331,46 @@ namespace DNATestSystem.Services.Service
             };
         }
 
-        public List<BlogPostModel> GetAllBlogPosts()
+        public async Task<bool> VerifyCurrentPasswordAsync(UserVerifyCurrentPassword model)
         {
-            var blogPosts = _context.BlogPosts
-                 .Include(p => p.Author)
-                 .Where(p => (bool)p.IsPublished)
-                 .Select(p => new BlogPostModel
-                 {
-                     PostId = p.PostId,
-                     Title = p.Title,
-                     Slug = p.Slug,
-                     Summary = p.Summary,
-                     ThumbnailURL = p.ThumbnailURL,
-                     AuthorName = p.Author.FullName
-                 })
-                 .ToList();
-            return blogPosts;
-            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null) return false;
 
-        public BlogPostDetailsModel GetBlogPostDetailsModel(string Slug)
+
+             return HashHelper.BCriptVerify(model.CurrentPassword, user.Password);
+        }
+
+        public async Task ChangePasswordAsync(UserChangePasswordModel model)
         {
-            var blog = _context.BlogPosts
-               .FirstOrDefault(s => s.Slug == Slug);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+                throw new Exception("User not found.");
 
-            if (blog == null) return null;
+            var isMatch = BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.Password);
+            if (!isMatch)
+                throw new Exception("Current password is incorrect.");
+            // Mã hóa mật khẩu mới
+            user.Password = HashHelper.BCriptHash(model.NewPassword);
+            user.UpdatedAt = DateTime.UtcNow;   
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
 
-
-            return new BlogPostDetailsModel
+        public Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model)
+        {
+            var consultRequest = new ConsultRequest
             {
-               PostId = blog.PostId,
-               Title = blog.Title,  
-               Slug = blog.Slug,    
-               Summary = blog.Summary,  
-               ThumbnailURL = blog.ThumbnailURL,    
-               Content = blog.Content,
-               CreatedAt = blog.CreatedAt,
-               UpdatedAt = blog.UpdatedAt,
-               IsPublished = blog.IsPublished,
-               AuthorId = blog.AuthorId,
+                FullName = model.FullName,
+                Phone = model.Phone,
+                Category = model.Category,
+                ServiceId = model.ServiceId,
+                Message = model.Message,
+                CreatedAt = DateTime.UtcNow,
+                Status = "Pending"
             };
+             _context.ConsultRequests.Add(consultRequest);
+            _context.SaveChangesAsync();
+            return Task.FromResult(consultRequest);
         }
     }
 }
