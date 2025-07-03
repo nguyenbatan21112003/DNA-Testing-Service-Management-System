@@ -122,6 +122,7 @@ export function NotificationProvider({ children }) {
 
   // Tạo thông báo mới
   const createNotification = (type, title, messageText, data = {}, targetRoles = []) => {
+    console.log('DEBUG: createNotification', { type, title, messageText, data, targetRoles });
     const notification = {
       type,
       title,
@@ -172,9 +173,11 @@ export function NotificationProvider({ children }) {
 
   // Lọc thông báo theo role
   const getNotificationsByRole = (roleId) => {
-    return state.notifications.filter((notif) =>
+    const filtered = state.notifications.filter((notif) =>
       notif.targetRoles.includes(roleId)
     );
+    console.log('DEBUG: getNotificationsByRole', { roleId, filtered });
+    return filtered;
   };
 
   // Lọc hoạt động theo role
@@ -340,6 +343,23 @@ export function NotificationProvider({ children }) {
       targetRoles
     );
   };
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'dna_notifications') {
+        const savedNotifications = JSON.parse(localStorage.getItem("dna_notifications") || "[]");
+        dispatch({
+          type: "LOAD_NOTIFICATIONS",
+          payload: {
+            notifications: savedNotifications,
+            activities: state.activities,
+          },
+        });
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [state.activities]);
 
   return (
     <NotificationContext.Provider

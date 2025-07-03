@@ -4,6 +4,7 @@ import { BellOutlined, CheckOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNotification } from "../../context/NotificationContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
@@ -17,6 +18,7 @@ const NotificationBell = () => {
     clearNotifications,
     getNotificationsByRole,
   } = useNotification();
+  const navigate = useNavigate();
 
   // Lọc thông báo theo role hiện tại và loại mong muốn
   let roleId = user?.role_id;
@@ -52,7 +54,7 @@ const NotificationBell = () => {
     );
   } else {
     notificationContent = (
-      <div style={{ width: 350, maxHeight: 400, overflow: "auto" }}>
+      <div style={{ width: 420, maxHeight: 500, overflow: "auto" }}>
         <div style={{
           display: "flex",
           justifyContent: "space-between",
@@ -89,12 +91,17 @@ const NotificationBell = () => {
           renderItem={(notification) => (
             <List.Item
               style={{
-                padding: "8px 0",
+                padding: "12px 0",
                 borderBottom: "1px solid #f0f0f0",
                 cursor: "pointer",
                 backgroundColor: notification.read ? "transparent" : "#f6ffed",
               }}
-              onClick={() => markAsRead(notification.id)}
+              onClick={() => {
+                markAsRead(notification.id);
+                if (notification.data && notification.data.link) {
+                  navigate(notification.data.link);
+                }
+              }}
             >
               <List.Item.Meta
                 avatar={
@@ -104,7 +111,7 @@ const NotificationBell = () => {
                 }
                 title={
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text strong style={{ fontSize: 14 }}>
+                    <Text strong style={{ fontSize: 15 }}>
                       {notification.title}
                     </Text>
                     <Tag color={getNotificationColor(notification.type)} size="small">
@@ -113,10 +120,8 @@ const NotificationBell = () => {
                   </div>
                 }
                 description={
-                  <div>
-                    <Text style={{ fontSize: 12, color: "#666" }}>
-                      {notification.message}
-                    </Text>
+                  <div style={{ fontSize: 14, color: "#444", padding: '4px 0', wordBreak: 'break-word', whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                    {notification.message}
                     <div style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
                       targetRoles: {JSON.stringify(notification.targetRoles)}
                     </div>

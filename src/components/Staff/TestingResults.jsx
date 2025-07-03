@@ -317,6 +317,7 @@ const TestingResults = () => {
             size="small"
             icon={<EditOutlined />}
             onClick={() => handleEditResult(record)}
+            disabled={getStatusText(record.status) === STATUS_COMPLETED}
           >
             Cập nhật
           </Button>
@@ -892,7 +893,8 @@ const TestingResults = () => {
             e.target.style.background = '#1890ff';
             e.target.style.color = '#fff';
             e.target.style.borderColor = '#1890ff';
-          }
+          },
+          disabled: getStatusText(selectedOrder?.status) === STATUS_COMPLETED
         }}
       >
         <Form
