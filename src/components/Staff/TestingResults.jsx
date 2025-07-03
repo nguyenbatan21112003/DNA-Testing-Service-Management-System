@@ -32,6 +32,7 @@ import {
   DeleteOutlined,
   UndoOutlined,
   EyeInvisibleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { useOrderContext } from "../../context/OrderContext";
 
@@ -41,7 +42,7 @@ const { TabPane } = Tabs;
 const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
-  const { orders, updateOrder, getAllOrders } = useOrderContext();
+  const { orders, updateOrder, getAllOrders, setOrders } = useOrderContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -51,11 +52,11 @@ const TestingResults = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [tempFormData, setTempFormData] = useState({});
   const [currentEditOrderId, setCurrentEditOrderId] = useState(null);
-  // const [showCustomConclusion, setShowCustomConclusion] = useState(false)
   const [confirmHideOrder, setConfirmHideOrder] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [reasonModalVisible, setReasonModalVisible] = useState(false);
+  const [reasonText, setReasonText] = useState("");
 
-  // Chỉ còn 4 trạng thái duy nhất
   const STATUS_PROCESSING = "Đang xử lý";
   const STATUS_WAITING_APPROVAL = "Chờ xác thực";
   const STATUS_REJECTED = "Từ chối";
@@ -87,17 +88,14 @@ const TestingResults = () => {
   }, [editModalVisible, form]);
 
   useEffect(() => {
-    // Lắng nghe sự thay đổi của localStorage để reload orders khi có cập nhật từ manager
     const handleStorageChange = (event) => {
-      if (event.key === "dna_orders") {
-        getAllOrders();
+      if (event.key === 'dna_orders') {
+        if (typeof getAllOrders === 'function') setOrders(getAllOrders());
       }
     };
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [getAllOrders]);
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleViewResult = (order) => {
     setSelectedOrder(order);
@@ -107,7 +105,6 @@ const TestingResults = () => {
   const handleEditResult = (order) => {
     setSelectedOrder(order);
 
-    // If returning to the same order being edited, use the saved temp data
     if (
       currentEditOrderId === order.id &&
       tempFormData &&
@@ -130,12 +127,10 @@ const TestingResults = () => {
             initialTableData = parsedData;
           }
         } catch (err) {
-          // Failed to parse, use empty array with one row
           console.error("Failed to parse result data:", err);
         }
       }
 
-      // Nếu là lấy mẫu tại nhà và có danh sách thành viên cung cấp mẫu (order.members), tự động điền toàn bộ danh sách này vào bảng kết quả
       if (
         initialTableData.length === 0 &&
         order.sampleMethod === "home" &&
@@ -151,7 +146,6 @@ const TestingResults = () => {
         }));
       }
 
-      // Ensure we have at least one row
       if (initialTableData.length === 0) {
         initialTableData = [{ key: Date.now().toString() }];
       }
@@ -306,7 +300,7 @@ const TestingResults = () => {
     {
       title: "Thao tác",
       key: "action",
-      width: 240,
+      width: 180,
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -352,12 +346,24 @@ const TestingResults = () => {
               Ẩn
             </Button>
           </Tooltip>
+          {record.status === STATUS_REJECTED && record.managerNote && (
+            <Button
+              size="small"
+              icon={<ExclamationCircleOutlined style={{ color: '#faad14' }} />}
+              onClick={() => {
+                setReasonText(record.managerNote);
+                setReasonModalVisible(true);
+              }}
+              style={{ background: '#fffbe6', borderColor: '#faad14', color: '#faad14', fontWeight: 600 }}
+            >
+              Lý Do
+            </Button>
+          )}
         </Space>
       ),
     },
   ];
 
-  // Thống kê
   const stats = {
     total: orders.length,
     processing: orders.filter((o) => getStatusText(o.status) === STATUS_PROCESSING).length,
@@ -380,7 +386,6 @@ const TestingResults = () => {
         </p>
       </div>
 
-      {/* Thống kê */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={6}>
           <Card>
@@ -567,7 +572,6 @@ const TestingResults = () => {
         />
       </Card>
 
-      {/* Modal xem kết quả */}
       <Modal
         title="Xem kết quả xét nghiệm"
         open={modalVisible}
@@ -626,7 +630,6 @@ const TestingResults = () => {
             <div style={{ marginBottom: 16 }}>
               <h3>Kết quả xét nghiệm:</h3>
               {(() => {
-                // Check for valid table data
                 const hasTableData =
                   selectedOrder.resultTableData &&
                   Array.isArray(selectedOrder.resultTableData) &&
@@ -856,12 +859,10 @@ const TestingResults = () => {
         )}
       </Modal>
 
-      {/* Modal chỉnh sửa kết quả */}
       <Modal
         title={`Cập nhật kết quả - Đơn hàng #${selectedOrder?.id}`}
         open={editModalVisible}
         onCancel={() => {
-          // Store the current form values when modal is closed without saving
           const currentValues = form.getFieldsValue();
           setTempFormData(currentValues);
           setEditModalVisible(false);
@@ -900,7 +901,6 @@ const TestingResults = () => {
           onFinish={handleSaveResult}
           onValuesChange={handleFormValuesChange}
         >
-          {/* Trạng thái chỉ hiển thị, không cho chọn */}
           <Form.Item label="Trạng thái">
             <Tag color={getStatusColor(selectedOrder?.status)} style={{ fontSize: 16, fontWeight: 600, padding: '4px 18px' }}>
               {getStatusText(selectedOrder?.status)}
@@ -1087,7 +1087,6 @@ const TestingResults = () => {
         </Form>
       </Modal>
 
-      {/* Modal xem báo cáo */}
       <Modal
         title="Báo cáo kết quả xét nghiệm"
         open={reportModalVisible}
@@ -1156,7 +1155,6 @@ const TestingResults = () => {
         )}
       </Modal>
 
-      {/* Modal xác nhận ẩn đơn hàng */}
       <Modal
         open={!!confirmHideOrder}
         onCancel={handleCancelHide}
@@ -1167,6 +1165,21 @@ const TestingResults = () => {
         okButtonProps={{ danger: true, type: "primary" }}
       >
         <p>Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? </p>
+      </Modal>
+
+      <Modal
+        title="Lý do từ chối của quản lý"
+        open={reasonModalVisible}
+        onCancel={() => setReasonModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setReasonModalVisible(false)}>
+            Đóng
+          </Button>,
+        ]}
+      >
+        <div style={{ whiteSpace: 'pre-line', color: '#fa541c', fontWeight: 500 }}>
+          {reasonText}
+        </div>
       </Modal>
     </div>
   );

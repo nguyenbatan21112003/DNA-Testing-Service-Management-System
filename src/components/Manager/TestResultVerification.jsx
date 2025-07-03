@@ -30,8 +30,11 @@ const TestResultVerification = () => {
   const [ordersNeedingApproval, setOrdersNeedingApproval] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [viewModalVisible, setViewModalVisible] = useState(false);
-  const [approvalModalVisible, setApprovalModalVisible] = useState(false);
-  const [approvalNote, setApprovalNote] = useState("");
+  const [approveConfirmVisible, setApproveConfirmVisible] = useState(false);
+  const [pendingApproveOrder, setPendingApproveOrder] = useState(null);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [rejectNote, setRejectNote] = useState("");
+  const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
 
   useEffect(() => {
     loadOrdersNeedingApproval();
@@ -48,43 +51,44 @@ const TestResultVerification = () => {
   };
 
   const handleApprove = (order) => {
-    setSelectedOrder(order);
-    setApprovalModalVisible(true);
+    setPendingApproveOrder(order);
+    setApproveConfirmVisible(true);
   };
 
   const handleReject = (order) => {
-    setSelectedOrder(order);
-    setApprovalModalVisible(true);
+    setPendingRejectOrder(order);
+    setRejectModalVisible(true);
   };
 
-  const confirmApproval = (approved) => {
-    if (!selectedOrder) return;
+  const confirmApprove = async () => {
+    if (!pendingApproveOrder) return;
+    await updateOrder(pendingApproveOrder.id, {
+      managerConfirm: true,
+      approvedAt: new Date().toISOString(),
+      managerNote: ""
+    });
+    setApproveConfirmVisible(false);
+    setPendingApproveOrder(null);
+    message.success("Đã phê duyệt kết quả xét nghiệm thành công!");
+    loadOrdersNeedingApproval();
+  };
 
-    try {
-      const updates = {
-        managerConfirm: approved,
-        managerNote: approvalNote,
-        approvedAt: new Date().toISOString(),
-      };
-
-      updateOrder(selectedOrder.id, updates);
-
-      setApprovalModalVisible(false);
-      setApprovalNote("");
-      setSelectedOrder(null);
-
-      message.success(
-        approved
-          ? "Đã phê duyệt kết quả xét nghiệm thành công!"
-          : "Đã từ chối kết quả xét nghiệm!"
-      );
-
-      // Reload the list
-      loadOrdersNeedingApproval();
-    } catch (error) {
-      console.error("Error updating approval:", error);
-      message.error("Có lỗi xảy ra khi cập nhật!");
-    }
+  const confirmReject = async () => {
+    console.log('DEBUG: pendingRejectOrder', pendingRejectOrder);
+    console.log('DEBUG: rejectNote', rejectNote);
+    if (!pendingRejectOrder) return;
+    await updateOrder(pendingRejectOrder.id, {
+      managerConfirm: false,
+      status: "Từ chối",
+      approvedAt: new Date().toISOString(),
+      managerNote: rejectNote
+    });
+    console.log('DEBUG: updateOrder called, should reload list');
+    setRejectModalVisible(false);
+    setRejectNote("");
+    setPendingRejectOrder(null);
+    message.success("Đã từ chối kết quả xét nghiệm!");
+    await loadOrdersNeedingApproval();
   };
 
   const columns = [
@@ -440,77 +444,60 @@ const TestResultVerification = () => {
         )}
       </Modal>
 
-      {/* Modal phê duyệt/từ chối */}
+      {/* Modal xác nhận phê duyệt */}
       <Modal
-        title={selectedOrder ? "Xác nhận phê duyệt/từ chối" : ""}
-        open={approvalModalVisible}
-        onCancel={() => {
-          setApprovalModalVisible(false);
-          setApprovalNote("");
-          setSelectedOrder(null);
-        }}
+        title="Xác nhận phê duyệt"
+        open={approveConfirmVisible}
+        onCancel={() => setApproveConfirmVisible(false)}
         footer={[
-          <Button
-            key="cancel"
-            onClick={() => {
-              setApprovalModalVisible(false);
-              setApprovalNote("");
-              setSelectedOrder(null);
-            }}
-          >
-            Hủy
-          </Button>,
-          <Button
-            key="reject"
-            danger
-            icon={<CloseCircleOutlined />}
-            onClick={() => confirmApproval(false)}
-          >
-            Từ chối
+          <Button key="cancel" onClick={() => setApproveConfirmVisible(false)}>
+            Huỷ
           </Button>,
           <Button
             key="approve"
             type="primary"
             icon={<CheckCircleOutlined />}
-            onClick={() => confirmApproval(true)}
+            onClick={confirmApprove}
             style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
           >
             Phê duyệt
           </Button>,
         ]}
-        width={600}
+        width={400}
       >
-        {selectedOrder && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <Text strong>Đơn hàng: </Text>
-              <Text>#{selectedOrder.id} - {selectedOrder.name}</Text>
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <Text strong>Loại xét nghiệm: </Text>
-              <Text>{selectedOrder.type}</Text>
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <Text>Bạn có chắc muốn phê duyệt/từ chối kết quả xét nghiệm này không?</Text>
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <Text strong>Ghi chú (tùy chọn):</Text>
-              <textarea
-                value={approvalNote}
-                onChange={(e) => setApprovalNote(e.target.value)}
-                placeholder="Nhập ghi chú về việc phê duyệt/từ chối..."
-                style={{
-                  width: "100%",
-                  minHeight: "80px",
-                  padding: "8px",
-                  border: "1px solid #d9d9d9",
-                  borderRadius: "4px",
-                  marginTop: "8px",
-                }}
-              />
-            </div>
-          </div>
-        )}
+        <Text>Bạn có chắc chắn thông tin xét nghiệm chính xác?</Text>
+      </Modal>
+
+      {/* Modal từ chối */}
+      <Modal
+        title="Từ chối kết quả xét nghiệm"
+        open={rejectModalVisible}
+        onCancel={() => setRejectModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setRejectModalVisible(false)}>
+            Huỷ
+          </Button>,
+          <Button
+            key="reject"
+            danger
+            icon={<CloseCircleOutlined />}
+            onClick={confirmReject}
+            disabled={!rejectNote.trim()}
+          >
+            Từ chối
+          </Button>,
+        ]}
+        width={500}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <Text strong>Lý do từ chối:</Text>
+          <textarea
+            value={rejectNote}
+            onChange={e => setRejectNote(e.target.value)}
+            placeholder="Nhập lý do từ chối..."
+            style={{ width: "100%", minHeight: 80, padding: 8, border: '1px solid #d9d9d9', borderRadius: 4, marginTop: 8 }}
+          />
+        </div>
       </Modal>
     </div>
   );
