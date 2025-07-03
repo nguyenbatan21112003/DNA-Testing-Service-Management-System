@@ -830,7 +830,7 @@ const TestingResults = () => {
         onOk={() => form.submit()}
         okText="Lưu"
         cancelText="Hủy"
-        width={800}
+        width={1000}
         destroyOnHidden={false}
       >
         <Form
@@ -971,6 +971,7 @@ const TestingResults = () => {
                   title="Mối quan hệ"
                   dataIndex="relationship"
                   key="relationship"
+                  width={120}
                   render={(text, record, index) => (
                     <Input
                       placeholder="Mối quan hệ"
@@ -993,14 +994,16 @@ const TestingResults = () => {
                   title="Loại mẫu"
                   dataIndex="sampleType"
                   key="sampleType"
+                  width={160}
                   render={(text, record, index) => (
-                    <Input
-                      placeholder="Loại mẫu"
+                    <Select
+                      placeholder="Chọn loại mẫu"
                       value={text}
-                      onChange={(e) => {
+                      style={{ width: "100%" }}
+                      onChange={(value) => {
                         const newData = [...tableData];
                         if (!newData[index]) newData[index] = {};
-                        newData[index].sampleType = e.target.value;
+                        newData[index].sampleType = value;
                         form.setFieldsValue({ resultTableData: newData });
                         setTableData(newData);
                         setTempFormData((prev) => ({
@@ -1008,7 +1011,13 @@ const TestingResults = () => {
                           resultTableData: newData,
                         }));
                       }}
-                    />
+                    >
+                      <Option value="Nước bọt">Nước bọt</Option>
+                      <Option value="Máu">Máu</Option>
+                      <Option value="Tóc">Tóc</Option>
+                      <Option value="Móng">Móng</Option>
+                      <Option value="Niêm mạc">Niêm mạc</Option>
+                    </Select>
                   )}
                 />
                 <Table.Column
