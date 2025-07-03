@@ -188,9 +188,9 @@ const ServicesPage = () => {
                         </ul>
                       </div>
                       <div className="service-cta">
-                        <a href="#registration" className="service-button">
+                        <Link to="/dangki" className="service-button">
                           Đăng ký xét nghiệm <ChevronRight size={16} />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -273,9 +273,9 @@ const ServicesPage = () => {
                         </ul>
                       </div>
                       <div className="service-cta">
-                        <a href="#registration" className="service-button">
+                        <Link to="/dangki" className="service-button">
                           Đăng ký xét nghiệm <ChevronRight size={16} />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

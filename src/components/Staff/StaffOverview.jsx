@@ -349,7 +349,7 @@ const StaffOverview = () => {
         title={
           <span>
             <AlertOutlined style={{ color: "#ff4d4f", marginRight: 8 }} />
-            Đơn hàng ưu tiên cao
+            Các đơn xét nghiệm đang xử lý
           </span>
         }
         style={{ marginBottom: 24 }}

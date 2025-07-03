@@ -220,7 +220,11 @@ const UserProfile = () => {
     kitStatus,
     appointmentStatus
   ) => {
-    // Ưu tiên trạng thái xác nhận, kit, hoặc trạng thái chính
+    // Luôn ưu tiên trạng thái Hoàn thành
+    if (status === "Hoàn thành" || status === "COMPLETED") {
+      return "Hoàn thành";
+    }
+
     if (sampleMethod === "home" && kitStatus) {
       switch (kitStatus) {
         case "chua_gui":
@@ -245,8 +249,6 @@ const UserProfile = () => {
         return "Đang xử lý";
       case "WAITING_APPROVAL":
         return "Chờ xác thực";
-      case "COMPLETED":
-        return "Hoàn thành";
       case "REJECTED":
         return "Từ chối";
       case "KIT_SENT":
@@ -1755,58 +1757,96 @@ const UserProfile = () => {
                 <span style={{ fontWeight: 600 }}>Địa chỉ:</span>{" "}
                 <span>{selectedOrder.address}</span>
               </div>
-              {/* Divider giữa thông tin người dùng và đơn hàng */}
-              <div
-                style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }}
-              />
-              {/* Thông tin đơn hàng còn lại */}
-              <div>
-                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
-                <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
-              </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
-                <span>{selectedOrder.date}</span>
-              </div>
-              {selectedOrder.appointmentDate &&
-                selectedOrder.sampleMethod === "center" && (
-                  <div
-                    style={{
-                      background: "#e0edff",
-                      color: "#2563eb",
-                      fontWeight: 700,
-                      border: "1.5px solid #1d4ed8",
-                      borderRadius: 8,
-                      padding: "8px 18px",
-                      margin: "10px 0 0 0",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      fontSize: 17,
-                      gap: 8,
-                      boxShadow: "0 2px 8px #2563eb22",
-                    }}
-                  >
-                    <span style={{ fontSize: 20, marginRight: 6 }}>
-                      <svg
-                        width="1em"
-                        height="1em"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"
-                          stroke="#1d4ed8"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+              {/* Bảng thông tin thành viên cung cấp mẫu */}
+              {(() => {
+                let memberData = [];
+                if (
+                  selectedOrder.members &&
+                  Array.isArray(selectedOrder.members) &&
+                  selectedOrder.members.length > 0
+                ) {
+                  memberData = selectedOrder.members;
+                } else if (
+                  selectedOrder.sampleInfo &&
+                  Array.isArray(selectedOrder.sampleInfo.donors) &&
+                  selectedOrder.sampleInfo.donors.length > 0
+                ) {
+                  memberData = selectedOrder.sampleInfo.donors;
+                }
+
+                if (memberData.length === 0) return null;
+
+                return (
+                  <div style={{ marginTop: 16 }}>
+                    <span style={{ fontWeight: 700, fontSize: 18 }}>
+                      Bảng thông tin thành viên cung cấp mẫu:
                     </span>
-                    Ngày lấy mẫu: {selectedOrder.appointmentDate}
+                    <div
+                      style={{
+                        border: "1px solid #e6e6e6",
+                        borderRadius: 8,
+                        marginTop: 8,
+                        overflowX: "auto",
+                      }}
+                    >
+                      <table
+                        style={{
+                          width: "100%",
+                          borderCollapse: "collapse",
+                          fontSize: 15,
+                        }}
+                      >
+                        <thead>
+                          <tr style={{ background: "#f0f0f0" }}>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              STT
+                            </th>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              Họ và tên
+                            </th>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              Năm sinh
+                            </th>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              Giới tính
+                            </th>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              Mối quan hệ
+                            </th>
+                            <th style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                              Loại mẫu
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {memberData.map((mem, idx) => (
+                            <tr key={idx}>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6", textAlign: "center" }}>
+                                {idx + 1}
+                              </td>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6" }}>{mem.name}</td>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6", textAlign: "center" }}>
+                                {mem.birth || mem.birthYear || ""}
+                              </td>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6", textAlign: "center" }}>
+                                {mem.gender || ""}
+                              </td>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                                {mem.relation || mem.relationship || ""}
+                              </td>
+                              <td style={{ padding: 8, border: "1px solid #e6e6e6" }}>
+                                {mem.sampleType || ""}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                )}
-              <div>
+                );
+              })()}
+
+              <div style={{ marginTop: 12 }}>
                 <span style={{ fontWeight: 600 }}>Ghi chú:</span>{" "}
                 <span>{selectedOrder.note}</span>
               </div>

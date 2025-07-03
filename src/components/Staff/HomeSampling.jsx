@@ -492,6 +492,16 @@ const HomeSampling = () => {
               <p>
                 <strong>Loại xét nghiệm:</strong> {selectedRequest.type}
               </p>
+              {selectedRequest.category && (
+                <p>
+                  <strong>Thể loại:</strong>{" "}
+                  {selectedRequest.category === "civil"
+                    ? "Dân sự"
+                    : selectedRequest.category === "admin"
+                    ? "Hành chính"
+                    : selectedRequest.category}
+                </p>
+              )}
               <p>
                 <strong>Mã kit:</strong>{" "}
                 {selectedRequest.kitId || "Chưa cấp mã kit"}

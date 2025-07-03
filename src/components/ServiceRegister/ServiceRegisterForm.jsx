@@ -348,7 +348,7 @@ const ServiceRegisterForm = () => {
               />
             </div>
             <div className="form-group" style={{ flex: 1 }}>
-              <label htmlFor="appointmentDate">Ngày xét nghiệm</label>
+              <label htmlFor="appointmentDate">Ngày cấp CCCD</label>
               <DatePicker
                 selected={appointmentDate}
                 onChange={(date) => setAppointmentDate(date)}
@@ -385,7 +385,9 @@ const ServiceRegisterForm = () => {
               >
                 <thead>
                   <tr style={{ background: "#f6f8fa" }}>
-                    <th style={{ border: "1px solid #ccc", padding: 6 }}>STT</th>
+                    <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                      STT
+                    </th>
                     <th style={{ border: "1px solid #ccc", padding: 6 }}>
                       Họ và tên
                     </th>
@@ -541,7 +543,7 @@ const ServiceRegisterForm = () => {
                       cursor: "pointer",
                     }}
                   >
-                    + Thêm thành viên
+                    + Thêm người
                   </button>
                 </div>
               )}

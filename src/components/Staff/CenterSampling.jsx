@@ -659,6 +659,16 @@ const CenterSampling = () => {
               <p>
                 <strong>Loại xét nghiệm:</strong> {selectedAppointment.type}
               </p>
+              {selectedAppointment.category && (
+                <p>
+                  <strong>Thể loại:</strong>{" "}
+                  {selectedAppointment.category === "civil"
+                    ? "Dân sự"
+                    : selectedAppointment.category === "admin"
+                    ? "Hành chính"
+                    : selectedAppointment.category}
+                </p>
+              )}
             </div>
 
             <div style={{ marginBottom: 16 }}>

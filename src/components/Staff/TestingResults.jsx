@@ -178,8 +178,12 @@ const TestingResults = () => {
         : null;
 
       // cập nhật qua context
+      let newStatus = values.status;
+      if (selectedOrder.sampleMethod === "center") {
+        newStatus = "Chờ xác thực";
+      }
       updateOrder(selectedOrder.id, {
-        status: values.status,
+        status: newStatus,
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
@@ -188,7 +192,7 @@ const TestingResults = () => {
         conclusion: values.conclusion,
         resultTableData: resultTableDataCopy,
         completedDate:
-          values.status === "Hoàn thành"
+          newStatus === "Hoàn thành"
             ? new Date().toLocaleDateString("vi-VN")
             : selectedOrder.completedDate,
         updatedAt: new Date().toLocaleString("vi-VN"),
@@ -1115,7 +1119,35 @@ const TestingResults = () => {
               <div
                 style={{ padding: 12, background: "#f5f5f5", borderRadius: 4 }}
               >
-                <Text>{selectedOrder.result}</Text>
+                {(() => {
+                  let tableData = [];
+                  try {
+                    const parsed = JSON.parse(selectedOrder.result);
+                    if (Array.isArray(parsed)) tableData = parsed;
+                  } catch {
+                    // Không phải JSON, hiển thị dạng text
+                  }
+                  if (tableData.length > 0) {
+                    return (
+                      <Table
+                        bordered
+                        dataSource={tableData}
+                        pagination={false}
+                        rowKey={(record) => record.key || String(Math.random())}
+                        size="small"
+                      >
+                        <Table.Column title="STT" key="index" render={(text, record, index) => index + 1} width={60} />
+                        <Table.Column title="Họ và tên" dataIndex="name" key="name" />
+                        <Table.Column title="Năm sinh" dataIndex="birthYear" key="birthYear" width={120} />
+                        <Table.Column title="Giới tính" dataIndex="gender" key="gender" width={120} />
+                        <Table.Column title="Mối quan hệ" dataIndex="relationship" key="relationship" />
+                        <Table.Column title="Loại mẫu" dataIndex="sampleType" key="sampleType" />
+                      </Table>
+                    );
+                  }
+                  // Nếu không phải JSON array, hiển thị text
+                  return <Text>{selectedOrder.result}</Text>;
+                })()}
               </div>
             </div>
 

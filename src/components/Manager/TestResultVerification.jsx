@@ -348,7 +348,41 @@ const TestResultVerification = () => {
               <Title level={4}>Kết quả xét nghiệm</Title>
               {selectedOrder.result ? (
                 <div style={{ padding: 12, background: "#f6ffed", border: "1px solid #b7eb8f", borderRadius: 4 }}>
-                  <Text>{selectedOrder.result}</Text>
+                  {(() => {
+                    let tableData = [];
+
+                    if (Array.isArray(selectedOrder.result)) {
+                      tableData = selectedOrder.result;
+                    } else if (typeof selectedOrder.result === "string") {
+                      try {
+                        const parsed = JSON.parse(selectedOrder.result);
+                        if (Array.isArray(parsed)) tableData = parsed;
+                      } catch {
+                        /* not JSON */
+                      }
+                    }
+
+                    if (tableData.length > 0) {
+                      return (
+                        <Table
+                          bordered
+                          dataSource={tableData}
+                          pagination={false}
+                          rowKey={(record) => record.key || String(Math.random())}
+                          size="small"
+                        >
+                          <Table.Column title="STT" key="index" render={(text, record, index) => index + 1} width={60} />
+                          <Table.Column title="Họ và tên" dataIndex="name" key="name" />
+                          <Table.Column title="Năm sinh" dataIndex="birthYear" key="birthYear" width={120} />
+                          <Table.Column title="Giới tính" dataIndex="gender" key="gender" width={120} />
+                          <Table.Column title="Mối quan hệ" dataIndex="relationship" key="relationship" />
+                          <Table.Column title="Loại mẫu" dataIndex="sampleType" key="sampleType" />
+                        </Table>
+                      );
+                    }
+
+                    return <Text>{String(selectedOrder.result)}</Text>;
+                  })()}
                 </div>
               ) : (
                 <div style={{ padding: 12, background: "#fff7e6", border: "1px solid #ffd591", borderRadius: 4 }}>
@@ -356,22 +390,6 @@ const TestResultVerification = () => {
                 </div>
               )}
             </div>
-
-            {selectedOrder.resultTableData && Array.isArray(selectedOrder.resultTableData) && selectedOrder.resultTableData.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Dữ liệu chi tiết</Title>
-                <Table
-                  dataSource={selectedOrder.resultTableData}
-                  columns={[
-                    { title: "Marker", dataIndex: "marker", key: "marker" },
-                    { title: "Allele 1", dataIndex: "allele1", key: "allele1" },
-                    { title: "Allele 2", dataIndex: "allele2", key: "allele2" },
-                  ]}
-                  pagination={false}
-                  size="small"
-                />
-              </div>
-            )}
 
             {selectedOrder.conclusion && (
               <div style={{ marginBottom: 16 }}>

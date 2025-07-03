@@ -19,7 +19,6 @@ import NotificationBell from "../HomePage/NotificationBell";
 // Import các component con
 import ManagerOverview from "./ManagerOverview";
 import ManagerReports from "./ManagerReports";
-import CustomerFeedbackManager from "./CustomerFeedbackManager";
 import TestResultVerification from "./TestResultVerification";
 
 const { Sider, Content } = Layout;
@@ -39,11 +38,6 @@ const menuItems = [
     key: "reports",
     icon: <BarChartOutlined />,
     label: "Báo cáo",
-  },
-  {
-    key: "feedback",
-    icon: <MessageOutlined />,
-    label: "Phản hồi khách hàng",
   },
 ];
 
@@ -121,8 +115,6 @@ const ManagerDashboard = () => {
         return <TestResultVerification />;
       case "reports":
         return <ManagerReports />;
-      case "feedback":
-        return <CustomerFeedbackManager />;
       default:
         return <ManagerOverview />;
     }

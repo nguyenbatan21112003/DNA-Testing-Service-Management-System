@@ -22,8 +22,6 @@ import {
   FileTextOutlined,
   EyeOutlined,
   EditOutlined,
-  ExportOutlined,
-  PlusOutlined,
   DeleteOutlined,
   UndoOutlined,
   EyeInvisibleOutlined,
@@ -402,28 +400,7 @@ const OrderManagement = () => {
               allowClear
             />
           </div>
-          <Space>
-            <Button icon={<ExportOutlined />}>Xuất Excel</Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{
-                background: "#1890ff",
-                color: "#fff",
-                borderRadius: 6,
-                border: "none",
-                fontWeight: 600,
-                boxShadow: "0 2px 8px rgba(24,144,255,0.08)",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#1765ad")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
-            >
-              Tạo đơn mới
-            </Button>
-          </Space>
+          {/* Đã loại bỏ nút Xuất Excel và Tạo đơn mới */}
         </div>
 
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
