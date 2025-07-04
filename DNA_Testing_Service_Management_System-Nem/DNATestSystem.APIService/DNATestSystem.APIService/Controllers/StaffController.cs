@@ -83,7 +83,7 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.GetSamplesByStaffAndRequestAsync(staffId, requestId);
             return Ok(result);
         }
-        [HttpPost]
+        [HttpPost("post-SampleCollection")]
         public async Task<IActionResult> Post([FromBody] SampleCollectionFormsSummaryDto request)
         {
             var success = await _staffService.CreateSampleCollectionsAsync(request);
