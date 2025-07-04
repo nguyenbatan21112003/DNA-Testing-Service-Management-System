@@ -22,13 +22,14 @@ import {
 } from "antd";
 import {
   HomeOutlined,
-  CarOutlined,
+  GiftOutlined,
   PhoneOutlined,
   EnvironmentOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
   PrinterOutlined,
-  CheckCircleOutlined,
+  CheckOutlined,
+  ExperimentOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
@@ -166,13 +167,13 @@ const HomeSampling = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING_CONFIRM":
-        return "#fdcb6e"; // vàng cam
+        return "#00b894"; // xanh ngọc bích
       case "KIT_NOT_SENT":
-        return "#00b894"; // xanh ngọc
+        return "#7c3aed"; // tím
       case "KIT_SENT":
         return "#0984e3"; // xanh dương
       case "SAMPLE_RECEIVED":
-        return "#16a34a"; // xanh lá đậm
+        return "#16a34a"; // xanh lá
       case "CANCELLED":
         return "#d63031"; // đỏ tươi
       default:
@@ -335,7 +336,7 @@ const HomeSampling = () => {
           {record.status === "PENDING_CONFIRM" && (
             <Button
               size="small"
-              icon={<CheckCircleOutlined />}
+              icon={<CheckOutlined />}
               onClick={async () => {
                 await updateOrder(String(record.id), {
                   status: "KIT_NOT_SENT",
@@ -345,71 +346,85 @@ const HomeSampling = () => {
                 message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
               }}
               style={{
-                background: "#16a34a",
+                background: "#00b894",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #16a34a22",
+                boxShadow: "0 2px 8px #00b89455",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#009e74")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#00b894")}
             >
               Xác nhận
             </Button>
           )}
-          {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' */}
+          {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' và không render thêm nút nào khác cho trạng thái này */}
           {record.status === "KIT_NOT_SENT" && (
             <Button
               size="small"
-              icon={<CarOutlined />}
+              icon={<GiftOutlined />}
               onClick={() => handleUpdateStatus(record)}
               style={{
-                background: "#2563EB",
+                background: "#7c3aed",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #2563EB22",
+                boxShadow: "0 2px 8px #7c3aed55",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#1D4ED8")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#2563EB")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#5b21b6")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
             >
               Gửi Kit
             </Button>
           )}
-          {/* Ẩn nút Cập nhật khi đã gửi kit hoặc đã nhận mẫu */}
-          {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && (
+          {/* Ẩn nút Cập nhật cho trạng thái KIT_NOT_SENT */}
+          {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && (
             <Button
               size="small"
-              icon={<CarOutlined />}
+              icon={<GiftOutlined />}
               onClick={() => handleUpdateStatus(record)}
               style={{
-                background: record.status === "KIT_NOT_SENT" ? "#2563EB" : "#fa8c16",
+                background: "#fa8c16",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: record.status === "KIT_NOT_SENT" ? "0 2px 8px #2563EB22" : "0 2px 8px #fa8c1622",
+                boxShadow: "0 2px 8px #fa8c1622",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = record.status === "KIT_NOT_SENT" ? "#1D4ED8" : "#d46b08")}
-              onMouseOut={(e) => (e.currentTarget.style.background = record.status === "KIT_NOT_SENT" ? "#2563EB" : "#fa8c16")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
             >
-              {record.status === "KIT_NOT_SENT" ? "Gửi Kit" : "Cập nhật"}
+              Cập nhật
             </Button>
           )}
           {record.status === "SAMPLE_RECEIVED" && (
-            <Button
-              type="default"
-              size="small"
-              icon={<FileTextOutlined />}
-              onClick={() => handleViewReport(record)}
-            >
-              Biên bản
-            </Button>
+            <>
+              <Button
+                type="primary"
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#16a34a",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #16a34a55",
+                  transition: "background 0.2s",
+                  marginLeft: 8,
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
+                onClick={() => {/* TODO: Xử lý logic xét nghiệm */ }}
+              >
+                Xét Nghiệm
+              </Button>
+            </>
           )}
         </Space>
       ),

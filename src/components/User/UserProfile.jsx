@@ -205,8 +205,8 @@ const UserProfile = () => {
     if (!kitInfo) return;
     // Cập nhật kitStatus và trạng thái đơn
     updateOrder(kitInfo.id, {
-      kitStatus: "da_nhan",
-      status: "Đã nhận mẫu",
+      kitStatus: "SAMPLE_RECEIVED",
+      status: "SAMPLE_RECEIVED",
     });
 
     setShowConfirmKitModal(false);
