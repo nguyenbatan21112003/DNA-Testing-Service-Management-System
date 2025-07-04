@@ -53,6 +53,7 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<CollectType> CollectTypes { get; set; }
 
+        public virtual DbSet<SampleCollectionForm> SampleCollectionForms { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -131,7 +132,46 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.CollectTypeId).HasColumnName("CollectID");
                 entity.Property(e => e.CollectName).HasColumnName("CollectName");
             });
+            modelBuilder.Entity<SampleCollectionForm>(entity =>
+            {
+                entity.ToTable("SampleCollectionForm");
+                entity.HasKey(e => e.CollectionId).HasName("PK__SampleCo__7DE6BC24DD0B0FC3");
 
+                entity.Property(e => e.CollectionId).HasColumnName("CollectionID");
+                entity.Property(e => e.Address).HasMaxLength(255);
+                entity.Property(e => e.ConfirmedBy).HasMaxLength(100);
+                entity.Property(e => e.FingerprintImage).HasMaxLength(255);
+                entity.Property(e => e.FullName).HasMaxLength(100);
+                entity.Property(e => e.Gender).HasMaxLength(10);
+                entity.Property(e => e.IdissuedDate).HasColumnName("IDIssuedDate");
+                entity.Property(e => e.IdissuedPlace)
+                    .HasMaxLength(100)
+                    .HasColumnName("IDIssuedPlace");
+                entity.Property(e => e.Idnumber)
+                    .HasMaxLength(50)
+                    .HasColumnName("IDNumber");
+                entity.Property(e => e.Idtype)
+                    .HasMaxLength(30)
+                    .HasColumnName("IDType");
+                entity.Property(e => e.Location).HasMaxLength(255);
+                entity.Property(e => e.Note).HasMaxLength(1000);
+                entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
+                entity.Property(e => e.Quantity)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+                entity.Property(e => e.Relationship).HasMaxLength(30);
+                entity.Property(e => e.RequestId).HasColumnName("RequestID");
+                entity.Property(e => e.SampleType).HasMaxLength(50);
+                entity.Property(e => e.Yob).HasColumnName("YOB");
+
+                entity.HasOne(d => d.Process).WithMany(p => p.SampleCollectionForms)
+                    .HasForeignKey(d => d.ProcessId)
+                    .HasConstraintName("FK__SampleCol__Proce__7D439ABD");
+
+                entity.HasOne(d => d.Request).WithMany(p => p.SampleCollectionForms)
+                    .HasForeignKey(d => d.RequestId)
+                    .HasConstraintName("FK__SampleCol__Reque__7C4F7684");
+            });
             modelBuilder.Entity<Feature>(entity =>
             {
                 entity.HasKey(e => e.FeatureId).HasName("PK__Features__82230A298C737335");
@@ -432,6 +472,7 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__UserSelec__UserI__412EB0B6");
             });
+            
             OnModelCreatingPartial(modelBuilder);
         }
         

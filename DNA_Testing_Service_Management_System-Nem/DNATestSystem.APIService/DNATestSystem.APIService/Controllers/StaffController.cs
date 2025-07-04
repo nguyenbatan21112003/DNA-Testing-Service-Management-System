@@ -1,4 +1,6 @@
-﻿using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+﻿using System.Security.Claims;
+using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.Repositories;
@@ -68,6 +70,31 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.GetTestProcessesByStaffIdAsync(staffId);
             return Ok(result);
         }
+        [HttpGet("samples")]
+        public async Task<IActionResult> GetSamplesByRequest([FromQuery] int requestId)
+        {
+            var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (!int.TryParse(staffIdClaim, out var staffId))
+            {
+                return Unauthorized("Invalid staff identity");
+            }
+
+            var result = await _staffService.GetSamplesByStaffAndRequestAsync(staffId, requestId);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] SampleCollectionFormsSummaryDto request)
+        {
+            var success = await _staffService.CreateSampleCollectionsAsync(request);
+            if (!success)
+                return NotFound("TestProcess not found or invalid");
+
+            return Ok(new
+            {
+                success = true,
+                message = "Sample collection saved successfully"
+            });
+        }
     }
 }

@@ -545,7 +545,7 @@
         }
       }
     },
-    "/Staff/staff/{staffId}": {
+    "/Staff/test-processes/{staffId}": {
       "get": {
         "tags": [
           "Staff"
@@ -561,6 +561,59 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/samples": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff": {
+      "post": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1117,6 +1170,95 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "SampleCollectionFormsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleProviders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SampleProviders"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SampleProviders": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "yob": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "idtype": {
+            "type": "string",
+            "nullable": true
+          },
+          "idnumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "idissuedDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "idissuedPlace": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasGeneticDiseaseHistory": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "fingerprintImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "SendConsultRequestModel": {
         "type": "object",

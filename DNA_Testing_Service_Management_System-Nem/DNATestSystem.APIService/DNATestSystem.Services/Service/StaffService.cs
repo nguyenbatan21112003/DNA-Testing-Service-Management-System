@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
+using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
@@ -311,7 +312,63 @@ namespace DNATestSystem.Services.Service
             }).ToList();
 
             return result;
-        }           
-   
+        }
+
+        public async Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int staffId, int requestId)
+        {
+            var samples = await _context.TestSamples
+                .Where(s => s.RequestId == requestId &&
+                            s.Request.TestProcesses.Any(p => p.StaffId == staffId)) // đảm bảo staff phụ trách đơn này
+                .Select(s => new TestSampleDto
+                {
+                    OwnerName = s.OwnerName,
+                    Gender = s.Gender,
+                    Relationship = s.Relationship,
+                    SampleType = s.SampleType,
+                    Yob = s.Yob
+                })
+                .ToListAsync();
+
+            return samples;
+        }
+
+        public async Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request)
+        {
+            var process = await _context.TestProcesses
+                .Include(p => p.Request)
+                .FirstOrDefaultAsync(p => p.ProcessId == request.ProcessId);
+
+            if (process == null)
+                return false;
+
+            var forms = request.sampleProviders.Select(p => new SampleCollectionForm
+            {
+                ProcessId = request.ProcessId,
+                RequestId = process.RequestId,
+                Location = request.location,
+                FullName = p.FullName,
+                Yob = p.Yob,
+                Gender = p.Gender,
+                Idtype = p.Idtype,
+                Idnumber = p.Idnumber,
+                IdissuedDate = p.IdissuedDate,
+                IdissuedPlace = p.IdissuedPlace,
+                Address = p.Address,
+                SampleType = p.SampleType,
+                Quantity = p.Quantity,
+                Relationship = p.Relationship,
+                HasGeneticDiseaseHistory = p.HasGeneticDiseaseHistory,
+                FingerprintImage = p.FingerprintImage,
+                ConfirmedBy = p.ConfirmedBy,
+                Note = p.Note
+            }).ToList();
+
+            _context.SampleCollectionForms.AddRange(forms);
+
+            process.CurrentStatus = "SAMPLE_RECEIVED";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
