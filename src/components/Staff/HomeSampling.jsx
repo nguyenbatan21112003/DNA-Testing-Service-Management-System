@@ -184,17 +184,17 @@ const HomeSampling = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING_CONFIRM":
-        return "#EA580C"; // Cam đậm - Chờ xác nhận
+        return "#fdcb6e"; // vàng cam
       case "KIT_NOT_SENT":
-        return "#10B981"; // Xanh lá - Chưa gửi kit
+        return "#00b894"; // xanh ngọc
       case "KIT_SENT":
-        return "#2563EB"; // Xanh dương - Đã gửi kit
+        return "#0984e3"; // xanh dương tươi
       case "SAMPLE_RECEIVED":
-        return "#22C55E"; // Xanh lá đậm - Đã nhận mẫu
+        return "#b2bec3"; // xám nhạt
       case "CANCELLED":
-        return "#EF4444"; // Đỏ - Đã hủy
+        return "#d63031"; // đỏ tươi
       default:
-        return "#e5e7eb";
+        return "#b2bec3"; // xám nhạt
     }
   };
 

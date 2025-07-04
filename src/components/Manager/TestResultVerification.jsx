@@ -66,6 +66,7 @@ const TestResultVerification = () => {
     if (!pendingApproveOrder) return;
     await updateOrder(pendingApproveOrder.id, {
       managerConfirm: true,
+      status: "Hoàn thành",
       approvedAt: new Date().toISOString(),
       managerNote: ""
     });

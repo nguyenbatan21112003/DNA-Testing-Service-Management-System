@@ -182,6 +182,28 @@ const TestingResults = () => {
       const resultTableDataCopy = Array.isArray(dataToSave)
         ? JSON.parse(JSON.stringify(dataToSave))
         : null;
+      // Kiểm tra nếu là lỗi mẫu
+      const isErrorSample = (values.conclusion || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').trim() === 'loi mau';
+      if (isErrorSample) {
+        updateOrder(selectedOrder.id, {
+          // Không đổi trạng thái, chỉ update kết quả và các trường khác
+          result: resultTableDataCopy
+            ? JSON.stringify(resultTableDataCopy)
+            : values.result,
+          testingMethod: values.testingMethod,
+          testingNotes: values.testingNotes,
+          conclusion: values.conclusion,
+          resultTableData: resultTableDataCopy,
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        });
+        setTempFormData({});
+        setCurrentEditOrderId(null);
+        setEditModalVisible(false);
+        message.warning("Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!");
+        // TODO: Gửi thông báo cho khách hàng ở đây nếu có tích hợp notification
+        return;
+      }
+      // Trường hợp bình thường
       updateOrder(selectedOrder.id, {
         status: STATUS_WAITING_APPROVAL,
         result: resultTableDataCopy
@@ -228,40 +250,38 @@ const TestingResults = () => {
     message.success("Đơn hàng đã được hiện lại cho nhân viên!");
   };
 
-  const getStatusText = (status, order) => {
-    if (order && order.sampleMethod === "home") {
-      return STATUS_PROCESSING;
-    }
-    switch (status) {
-      case "PROCESSING":
-      case STATUS_PROCESSING:
-        return STATUS_PROCESSING;
-      case "WAITING_APPROVAL":
-      case STATUS_WAITING_APPROVAL:
-        return STATUS_WAITING_APPROVAL;
-      case "REJECTED":
-      case STATUS_REJECTED:
-        return STATUS_REJECTED;
-      case "COMPLETED":
-      case STATUS_COMPLETED:
-        return STATUS_COMPLETED;
-      default:
-        return status;
-    }
+  // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa
+  function normalizeStatus(str) {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .replace(/\s+/g, '')
+      .trim();
+  }
+
+  const getStatusText = (status) => {
+    const s = normalizeStatus(status);
+    if (['dangxuly', 'processing'].includes(s)) return 'Đang xử lý';
+    if (['choxacthuc', 'waitingapproval'].includes(s)) return 'Chờ xác thực';
+    if (['hoanthanh', 'completed'].includes(s)) return 'Hoàn thành';
+    if (['tuchoi', 'rejected'].includes(s)) return 'Từ chối';
+    return 'Đang xử lý';
   };
 
   const getStatusColor = (status) => {
     switch (getStatusText(status)) {
-      case STATUS_PROCESSING:
-        return "#1890ff";
-      case STATUS_WAITING_APPROVAL:
+      case "Đang xử lý":
+        return "#00b894";
+      case "Chờ xác thực":
         return "#722ed1";
-      case STATUS_COMPLETED:
+      case "Hoàn thành":
         return "#52c41a";
-      case STATUS_REJECTED:
-        return "#ff4d4f";
+      case "Từ chối":
+        return "#d63031";
       default:
-        return "#e0e0e0";
+        return "#00b894";
     }
   };
 
@@ -290,8 +310,8 @@ const TestingResults = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status, record) => (
-        <Tag style={{background: getStatusColor(status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>{getStatusText(status, record)}</Tag>
+      render: (status) => (
+        <Tag style={{background: getStatusColor(status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>{getStatusText(status)}</Tag>
       ),
     },
     {
@@ -315,15 +335,16 @@ const TestingResults = () => {
           >
             Xem
           </Button>
-          <Button
-            type="default"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleEditResult(record)}
-            disabled={getStatusText(record.status, record) === STATUS_COMPLETED}
-          >
-            Cập nhật
-          </Button>
+          {getStatusText(record.status) !== "Hoàn thành" && (
+            <Button
+              type="default"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleEditResult(record)}
+            >
+              Cập nhật
+            </Button>
+          )}
           {record.result && (
             <Button
               type="default"
@@ -897,7 +918,7 @@ const TestingResults = () => {
             e.target.style.color = '#fff';
             e.target.style.borderColor = '#1890ff';
           },
-          disabled: getStatusText(selectedOrder?.status, selectedOrder) === STATUS_COMPLETED
+          disabled: getStatusText(selectedOrder?.status) === STATUS_COMPLETED
         }}
       >
         <Form
@@ -908,7 +929,7 @@ const TestingResults = () => {
         >
           <Form.Item label="Trạng thái">
             <Tag style={{background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>
-              {getStatusText(selectedOrder?.status, selectedOrder)}
+              {getStatusText(selectedOrder?.status)}
             </Tag>
           </Form.Item>
 
