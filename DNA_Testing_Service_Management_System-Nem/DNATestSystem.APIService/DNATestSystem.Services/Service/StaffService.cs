@@ -203,7 +203,6 @@ namespace DNATestSystem.Services.Service
                 ClaimedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 Notes = dto.Notes,
-                ProcessState = "Processing"
             };
 
             if (dto.CollectionType == "At Home")
@@ -278,7 +277,7 @@ namespace DNATestSystem.Services.Service
             return result;
         }
 
-        public async Task<List<TestProcessDto>> GetTestProcessesForStaffAsync(int staffId)
+        public async Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId)
         {
             var testProcesses = await _context.TestProcesses
                                     .Include(tp => tp.Request)
@@ -317,7 +316,6 @@ namespace DNATestSystem.Services.Service
                     StaffId = tp.StaffId,
                     KitCode = tp.KitCode ?? "",
                     CurrentStatus = tp.CurrentStatus,
-                    ProcessState = tp.ProcessState,
                     Notes = tp.Notes
                 },
 

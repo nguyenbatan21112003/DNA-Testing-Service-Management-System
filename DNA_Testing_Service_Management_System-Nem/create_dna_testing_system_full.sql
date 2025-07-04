@@ -155,7 +155,7 @@ CREATE TABLE TestRequests (
   ScheduleDate DATE,
   Address NVARCHAR(255),
   Status NVARCHAR(50),
-  CreatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE() 
 );
 GO
 
@@ -166,7 +166,8 @@ CREATE TABLE TestProcesses (
   ClaimedAt DATETIME,
   KitCode VARCHAR(50),
   CurrentStatus NVARCHAR(50),
-  ProcessState NVARCHAR(50),
+--  ProcessState NVARCHAR(50),
+-- bỏ
   Notes TEXT,
   UpdatedAt DATETIME
 );
@@ -188,7 +189,8 @@ IdentityIssuedDate DATE,
 CREATE TABLE TestSamples (
   SampleID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
-  ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
+ -- ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
+ --bỏ
   OwnerName NVARCHAR(100),
   Gender VARCHAR(10),
   Relationship NVARCHAR(30),
@@ -250,7 +252,7 @@ CREATE TABLE TestResults (
   Status NVARCHAR(50),
   EnteredAt DATETIME,
   VerifiedAt DATETIME,
-  CollectedAt DATETIME,
+ -- CollectedAt DATETIME, bỏ
 );
 GO
 ALTER TABLE TestResults ADD CollectedAt DATETIME;

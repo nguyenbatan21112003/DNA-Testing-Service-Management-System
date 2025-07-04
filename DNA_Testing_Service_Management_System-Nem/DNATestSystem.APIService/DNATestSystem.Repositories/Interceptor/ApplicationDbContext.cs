@@ -275,7 +275,6 @@ namespace DNATestSystem.Repositories
                     .HasMaxLength(20)
                     .IsUnicode(false);
                 entity.Property(e => e.Notes).HasColumnType("text");
-                entity.Property(e => e.ProcessState).HasMaxLength(50);
                 entity.Property(e => e.RequestId).HasColumnName("RequestID");
                 entity.Property(e => e.StaffId).HasColumnName("StaffID");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -348,7 +347,6 @@ namespace DNATestSystem.Repositories
                     .HasMaxLength(10)
                     .IsUnicode(false);
                 entity.Property(e => e.OwnerName).HasMaxLength(100);
-                entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
                 entity.Property(e => e.Relationship).HasMaxLength(30);
                 entity.Property(e => e.RequestId).HasColumnName("RequestID");
                 entity.Property(e => e.SampleType).HasMaxLength(50);
@@ -358,7 +356,6 @@ namespace DNATestSystem.Repositories
                 .HasColumnName("CollectedAt");
 
                 entity.HasOne(d => d.Process).WithMany(p => p.TestSamples)
-                    .HasForeignKey(d => d.ProcessId)
                     .HasConstraintName("FK__TestSampl__Proce__5165187F");
 
                 entity.HasOne(d => d.Request).WithMany(p => p.TestSamples)
