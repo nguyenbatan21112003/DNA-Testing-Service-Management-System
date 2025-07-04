@@ -228,7 +228,10 @@ const TestingResults = () => {
     message.success("Đơn hàng đã được hiện lại cho nhân viên!");
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status, order) => {
+    if (order && order.sampleMethod === "home") {
+      return STATUS_PROCESSING;
+    }
     switch (status) {
       case "PROCESSING":
       case STATUS_PROCESSING:
@@ -258,7 +261,7 @@ const TestingResults = () => {
       case STATUS_REJECTED:
         return "#ff4d4f";
       default:
-        return "default";
+        return "#e0e0e0";
     }
   };
 
@@ -287,8 +290,8 @@ const TestingResults = () => {
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      render: (status, record) => (
+        <Tag style={{background: getStatusColor(status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>{getStatusText(status, record)}</Tag>
       ),
     },
     {
@@ -317,7 +320,7 @@ const TestingResults = () => {
             size="small"
             icon={<EditOutlined />}
             onClick={() => handleEditResult(record)}
-            disabled={getStatusText(record.status) === STATUS_COMPLETED}
+            disabled={getStatusText(record.status, record) === STATUS_COMPLETED}
           >
             Cập nhật
           </Button>
@@ -894,7 +897,7 @@ const TestingResults = () => {
             e.target.style.color = '#fff';
             e.target.style.borderColor = '#1890ff';
           },
-          disabled: getStatusText(selectedOrder?.status) === STATUS_COMPLETED
+          disabled: getStatusText(selectedOrder?.status, selectedOrder) === STATUS_COMPLETED
         }}
       >
         <Form
@@ -904,8 +907,8 @@ const TestingResults = () => {
           onValuesChange={handleFormValuesChange}
         >
           <Form.Item label="Trạng thái">
-            <Tag color={getStatusColor(selectedOrder?.status)} style={{ fontSize: 16, fontWeight: 600, padding: '4px 18px' }}>
-              {getStatusText(selectedOrder?.status)}
+            <Tag style={{background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>
+              {getStatusText(selectedOrder?.status, selectedOrder)}
             </Tag>
           </Form.Item>
 

@@ -149,28 +149,19 @@ const HomeSampling = () => {
 
   const handleSaveUpdate = async (values) => {
     try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedRequest.id, {
-        kitStatus: values.samplingStatus,
-        status: values.samplingStatus,
-        scheduledDate:
-          values.scheduledDate && values.scheduledTime
-            ? `${values.scheduledDate.format("DD/MM/YYYY")} ${values.scheduledTime
-            }`
-            : null,
-        samplerName: values.samplerName,
+      // Khi gửi kit, luôn chuyển trạng thái sang KIT_SENT
+      await updateOrder(String(selectedRequest.id), {
+        kitStatus: "KIT_SENT",
+        status: "KIT_SENT",
         kitId: values.kitId,
         notes: values.notes,
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
-
-      // Cập nhật lại danh sách đơn hàng
       loadSamplingRequests();
-
       setUpdateModalVisible(false);
-      message.success("Cập nhật trạng thái thành công!");
+      message.success("Đã gửi kit thành công!");
     } catch {
-      message.error("Có lỗi xảy ra khi cập nhật!");
+      message.error("Có lỗi xảy ra khi gửi kit!");
     }
   };
 
@@ -233,6 +224,21 @@ const HomeSampling = () => {
     if (stepIndex < currentIndex) return "finish";
     if (stepIndex === currentIndex) return "process";
     return "wait";
+  };
+
+  // Hàm ánh xạ status sang step tiến trình
+  const mapStatusToStep = (status) => {
+    switch (status) {
+      case "PENDING_CONFIRM":
+      case "KIT_NOT_SENT":
+        return "chua_gui";
+      case "KIT_SENT":
+        return "da_gui";
+      case "SAMPLE_RECEIVED":
+        return "da_nhan";
+      default:
+        return "chua_gui";
+    }
   };
 
   const columns = [
@@ -374,8 +380,8 @@ const HomeSampling = () => {
               Gửi Kit
             </Button>
           )}
-          {/* Nút Cập nhật - chỉ hiện khi KHÔNG phải 2 trạng thái trên */}
-          {record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && (
+          {/* Nút Cập nhật - chỉ hiện khi KHÔNG phải 2 trạng thái trên và KHÔNG phải 'KIT_SENT' */}
+          {record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && record.status !== "KIT_SENT" && (
             <Button
               size="small"
               icon={<CarOutlined />}
@@ -520,28 +526,6 @@ const HomeSampling = () => {
           <Button key="close" onClick={() => setModalVisible(false)}>
             Đóng
           </Button>,
-          <Button
-            key="update"
-            type="primary"
-            icon={<CarOutlined />}
-            onClick={() => {
-              setModalVisible(false);
-              handleUpdateStatus(selectedRequest);
-            }}
-            style={{
-              background: "#fa8c16",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-          >
-            Cập nhật trạng thái
-          </Button>,
         ]}
         width={800}
       >
@@ -573,24 +557,22 @@ const HomeSampling = () => {
             <div style={{ marginBottom: 24 }}>
               <h3>Tiến trình lấy mẫu:</h3>
               <Steps
-                current={["chua_gui", "da_gui", "da_nhan"].indexOf(
-                  selectedRequest.kitStatus
-                )}
+                current={["chua_gui", "da_gui", "da_nhan"].indexOf(mapStatusToStep(selectedRequest.status))}
               >
                 <Step
                   title="Chuẩn bị kit"
                   description="Chuẩn bị và gửi kit lấy mẫu"
-                  status={getStepStatus(selectedRequest.kitStatus, "chua_gui")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "chua_gui")}
                 />
                 <Step
                   title="Đã gửi kit"
                   description="Kit đã được gửi đến khách hàng"
-                  status={getStepStatus(selectedRequest.kitStatus, "da_gui")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_gui")}
                 />
                 <Step
                   title="Nhận mẫu"
                   description="Đã nhận được mẫu từ khách hàng"
-                  status={getStepStatus(selectedRequest.kitStatus, "da_nhan")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_nhan")}
                 />
               </Steps>
             </div>
@@ -599,8 +581,8 @@ const HomeSampling = () => {
               <h3>Thông tin bổ sung:</h3>
               <p>
                 <strong>Trạng thái hiện tại:</strong>{" "}
-                <Tag color={getStatusColor(selectedRequest.kitStatus)}>
-                  {getStatusText(selectedRequest.kitStatus)}
+                <Tag color={getStatusColor(selectedRequest.status)}>
+                  {getStatusText(selectedRequest.status)}
                 </Tag>
               </p>
               {selectedRequest.scheduledDate && (
