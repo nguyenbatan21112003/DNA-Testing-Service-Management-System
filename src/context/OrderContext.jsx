@@ -112,7 +112,7 @@ export function OrderProvider({ children }) {
     const orderWithEmail = {
       ...order,
       email: user.email,
-      status: "Chờ xử lý",
+      status: order.sampleMethod === "home" ? "PENDING_CONFIRM" : "Chờ xử lý",
       result: "",
       staffName: "",
       managerConfirm: false,

@@ -276,20 +276,24 @@ const HomeSampling = () => {
       key: "status",
       width: 130,
       render: (_, record) => (
-        <Tag
-          style={{
-            background: getStatusColor(record.status),
-            color: '#fff',
-            fontWeight: 600,
-            borderRadius: 8,
-            padding: '4px 16px',
-            fontSize: 14,
-            border: 'none',
-            letterSpacing: 0.5,
-          }}
-        >
-          {getStatusText(record.status)}
-        </Tag>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Tag
+            style={{
+              background: getStatusColor(record.status),
+              color: '#fff',
+              fontWeight: 600,
+              borderRadius: 8,
+              padding: '4px 16px',
+              fontSize: 14,
+              border: 'none',
+              letterSpacing: 0.5,
+              textAlign: 'center',
+              minWidth: 110,
+            }}
+          >
+            {getStatusText(record.status)}
+          </Tag>
+        </div>
       ),
     },
     {
@@ -346,16 +350,16 @@ const HomeSampling = () => {
                 message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
               }}
               style={{
-                background: "#00b894",
+                background: "#16a34a",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #00b89455",
+                boxShadow: "0 2px 8px #16a34a55",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#009e74")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#00b894")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
             >
               Xác nhận
             </Button>
@@ -367,16 +371,16 @@ const HomeSampling = () => {
               icon={<GiftOutlined />}
               onClick={() => handleUpdateStatus(record)}
               style={{
-                background: "#7c3aed",
+                background: "#fa8c16",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #7c3aed55",
+                boxShadow: "0 2px 8px #fa8c1655",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#5b21b6")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
             >
               Gửi Kit
             </Button>
@@ -409,17 +413,17 @@ const HomeSampling = () => {
                 size="small"
                 icon={<ExperimentOutlined />}
                 style={{
-                  background: "#16a34a",
+                  background: "#7c3aed",
                   color: "#fff",
                   fontWeight: 700,
                   borderRadius: 6,
                   border: "none",
-                  boxShadow: "0 2px 8px #16a34a55",
+                  boxShadow: "0 2px 8px #7c3aed55",
                   transition: "background 0.2s",
                   marginLeft: 8,
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
-                onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#5b21b6")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
                 onClick={() => {/* TODO: Xử lý logic xét nghiệm */ }}
               >
                 Xét Nghiệm

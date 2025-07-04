@@ -933,7 +933,7 @@ const TestingResults = () => {
           onValuesChange={handleFormValuesChange}
         >
           <Form.Item label="Trạng thái">
-            <Tag style={{background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 0', boxShadow: '0 2px 8px #0001'}}>
+            <Tag style={{ background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 0', boxShadow: '0 2px 8px #0001' }}>
               {getStatusText(selectedOrder?.status)}
             </Tag>
           </Form.Item>
