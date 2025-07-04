@@ -21,7 +21,6 @@ namespace DNATestSystem.Services.Interface
         Task<List<TestRequestViewDto>> AtCenterTestRequestAsync();
         Task<List<TestRequestViewDto>> AtHomeTestRequestAsync();
         //
-        Task<(bool Success, string Message)> AssignTestProcessAsync(AssignTestProcessDto dto);
         Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId);
         //
         Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId);

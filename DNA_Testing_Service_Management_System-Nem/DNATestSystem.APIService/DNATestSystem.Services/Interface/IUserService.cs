@@ -6,6 +6,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 
 
 namespace DNATestSystem.Services.Interface
@@ -43,7 +45,8 @@ namespace DNATestSystem.Services.Interface
 
         //đăng ký tư vấn
         Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model);
-        Task<(bool Success, string Message, int? RequestId)> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
+        Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
+        Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto);
 
     }
 }

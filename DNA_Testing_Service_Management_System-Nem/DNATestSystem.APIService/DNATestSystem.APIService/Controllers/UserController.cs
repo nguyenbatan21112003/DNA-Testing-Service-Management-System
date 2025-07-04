@@ -13,6 +13,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.Services.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 
 namespace DNATestSystem.Controllers
 {
@@ -193,23 +194,16 @@ namespace DNATestSystem.Controllers
         public async Task<IActionResult> SubmitTestRequest([FromBody] TestRequestSubmissionDto dto)
         {
             var result = await _userService.SubmitTestRequestAsync(dto);
-
-            if (!result.Success)
-            {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = result.Message
-                });
-            }
-
-            return Ok(new
-            {
-                success = true,
-                requestId = result.RequestId,
-                message = result.Message
-            });
+            return result.Success ? Ok(result) : StatusCode(500, result);
         }
+
+        [HttpPost("assign-test-process")]
+        public async Task<IActionResult> AssignTestProcess([FromBody] AssignTestProcessDto dto)
+        {
+            var result = await _userService.AssignTestProcessAsync(dto);
+            return result.Success ? Ok(result) : StatusCode(500, result);
+        }
+
 
     }
 }

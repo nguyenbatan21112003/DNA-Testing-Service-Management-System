@@ -14,6 +14,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 
 namespace DNATestSystem.Services.Service
 {
@@ -376,7 +378,7 @@ namespace DNATestSystem.Services.Service
             return Task.FromResult(consultRequest);
         }
 
-        public async Task<(bool Success, string Message, int? RequestId)> SubmitTestRequestAsync(TestRequestSubmissionDto dto)
+        public async Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto)
         {
             using var transaction = await (_context as DbContext)!.Database.BeginTransactionAsync();
             try
@@ -444,15 +446,69 @@ namespace DNATestSystem.Services.Service
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return (true, "Đăng ký xét nghiệm thành công", testRequest.RequestId);
+                return new ApiResponseDtoWithReqId
+                {
+                    Success = true,
+                    Message = "Đăng ký xét nghiệm thành công",
+                    RequestId = testRequest.RequestId
+                };
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return (false, ex.InnerException?.Message ?? ex.Message, null);
+                return new ApiResponseDtoWithReqId
+                {
+                    Success = false,
+                    Message = ex.InnerException?.Message ?? ex.Message,
+                    RequestId = null
+                };
+
             }
         }
-    
+
+        public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
+        {
+
+            var process = new TestProcess
+            {
+                RequestId = dto.RequestId,
+                StaffId = dto.StaffId,
+                ClaimedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Notes = dto.Notes,
+            };
+
+            if (dto.CollectionType == "At Home")
+            {
+                process.KitCode = dto.KitCode;
+                process.CurrentStatus = "KIT SENT";
+            }
+            else if (dto.CollectionType == "At Center")
+            {
+                process.KitCode = "";
+                process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+            }
+            else
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Invalid CollectType."
+                };
+
+            }
+            // là như thế này , nếu mà staff để là At home thì lưu kit
+            // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+            _context.TestProcesses.Add(process);
+            await _context.SaveChangesAsync();
+
+            return new ApiResponseDto
+            {
+                Success = true,
+                Message = "Assigned test process successfully."
+            };
+
+        }
     }
 }
 
