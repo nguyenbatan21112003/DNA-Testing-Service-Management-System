@@ -28,6 +28,7 @@ import {
   ClockCircleOutlined,
   FileTextOutlined,
   PrinterOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
@@ -53,43 +54,41 @@ const HomeSampling = () => {
     const homeSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "home" && !order.isHidden)
       .map((order) => {
-        // Map status cũ sang chuẩn mới, đồng bộ status và kitStatus
-        let status = order.status || order.kitStatus;
-        let kitStatus = order.kitStatus || order.status;
-        switch (status) {
+        let mappedStatus = order.status || order.kitStatus;
+        let mappedKitStatus = order.kitStatus || order.status;
+        switch (mappedStatus) {
           case "chua_gui":
-          case "PENDING_CONFIRM":
-            status = "PENDING_CONFIRM";
-            kitStatus = "PENDING_CONFIRM";
-            break;
-          case "KIT_NOT_SENT":
-            status = "KIT_NOT_SENT";
-            kitStatus = "KIT_NOT_SENT";
+            mappedStatus = "PENDING_CONFIRM";
+            mappedKitStatus = "PENDING_CONFIRM";
             break;
           case "da_gui":
-          case "KIT_SENT":
-            status = "KIT_SENT";
-            kitStatus = "KIT_SENT";
+            mappedStatus = "KIT_SENT";
+            mappedKitStatus = "KIT_SENT";
             break;
           case "da_nhan":
-          case "SAMPLE_RECEIVED":
-            status = "SAMPLE_RECEIVED";
-            kitStatus = "SAMPLE_RECEIVED";
+            mappedStatus = "SAMPLE_RECEIVED";
+            mappedKitStatus = "SAMPLE_RECEIVED";
             break;
           case "huy":
-          case "CANCELLED":
-            status = "CANCELLED";
-            kitStatus = "CANCELLED";
+            mappedStatus = "CANCELLED";
+            mappedKitStatus = "CANCELLED";
             break;
+          // Nếu là các status hợp lệ thì giữ nguyên
+          case "PENDING_CONFIRM":
+          case "KIT_NOT_SENT":
+          case "KIT_SENT":
+          case "SAMPLE_RECEIVED":
+            break;
+          // Nếu là các status khác thì map về PENDING_CONFIRM
           default:
-            status = "PENDING_CONFIRM";
-            kitStatus = "PENDING_CONFIRM";
+            mappedStatus = "PENDING_CONFIRM";
+            mappedKitStatus = "PENDING_CONFIRM";
             break;
         }
         return {
           ...order,
-          status: status,
-          kitStatus: kitStatus,
+          status: mappedStatus,
+          kitStatus: mappedKitStatus,
           scheduledDate: order.scheduledDate || null,
           samplerName: order.samplerName || null,
           notes: order.notes || "",
@@ -149,35 +148,18 @@ const HomeSampling = () => {
 
   const handleSaveUpdate = async (values) => {
     try {
-      // Khi gửi kit, luôn chuyển trạng thái sang KIT_SENT
       await updateOrder(String(selectedRequest.id), {
-        kitStatus: "KIT_SENT",
         status: "KIT_SENT",
+        kitStatus: "KIT_SENT",
         kitId: values.kitId,
         notes: values.notes,
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
       loadSamplingRequests();
       setUpdateModalVisible(false);
-      message.success("Đã gửi kit thành công!");
+      message.success("Đã gửi kit thành công! Trạng thái chuyển sang 'Đã gửi kit'.");
     } catch {
       message.error("Có lỗi xảy ra khi gửi kit!");
-    }
-  };
-
-  const handleConfirmRequest = async (request) => {
-    try {
-      console.log('Xác nhận đơn:', request.id, typeof request.id);
-      await updateOrder(String(request.id), {
-        kitStatus: "KIT_NOT_SENT",
-        status: "KIT_NOT_SENT",
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      });
-      loadSamplingRequests();
-      message.success("Đã xác nhận yêu cầu lấy mẫu!");
-    } catch (err) {
-      console.error('Lỗi xác nhận:', err);
-      message.error("Có lỗi xảy ra khi xác nhận!");
     }
   };
 
@@ -188,9 +170,9 @@ const HomeSampling = () => {
       case "KIT_NOT_SENT":
         return "#00b894"; // xanh ngọc
       case "KIT_SENT":
-        return "#0984e3"; // xanh dương tươi
+        return "#0984e3"; // xanh dương
       case "SAMPLE_RECEIVED":
-        return "#b2bec3"; // xám nhạt
+        return "#16a34a"; // xanh lá đậm
       case "CANCELLED":
         return "#d63031"; // đỏ tươi
       default:
@@ -293,7 +275,18 @@ const HomeSampling = () => {
       key: "status",
       width: 130,
       render: (_, record) => (
-        <Tag color={getStatusColor(record.status)}>
+        <Tag
+          style={{
+            background: getStatusColor(record.status),
+            color: '#fff',
+            fontWeight: 600,
+            borderRadius: 8,
+            padding: '4px 16px',
+            fontSize: 14,
+            border: 'none',
+            letterSpacing: 0.5,
+          }}
+        >
           {getStatusText(record.status)}
         </Tag>
       ),
@@ -338,28 +331,35 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          {/* Nút Xác nhận - chỉ hiện khi trạng thái là "Chờ xác nhận" */}
+          {/* Nếu là Chờ xác nhận thì hiện nút Xác nhận màu xanh lá */}
           {record.status === "PENDING_CONFIRM" && (
             <Button
               size="small"
-              icon={<CarOutlined />}
-              onClick={() => handleConfirmRequest(record)}
+              icon={<CheckCircleOutlined />}
+              onClick={async () => {
+                await updateOrder(String(record.id), {
+                  status: "KIT_NOT_SENT",
+                  updatedAt: new Date().toLocaleString("vi-VN"),
+                });
+                loadSamplingRequests();
+                message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
+              }}
               style={{
-                background: "#10B981",
+                background: "#16a34a",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #10B98122",
+                boxShadow: "0 2px 8px #16a34a22",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#059669")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#10B981")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
             >
               Xác nhận
             </Button>
           )}
-          {/* Nút Gửi Kit - chỉ hiện khi trạng thái là "Chưa gửi kit" */}
+          {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' */}
           {record.status === "KIT_NOT_SENT" && (
             <Button
               size="small"
@@ -380,25 +380,25 @@ const HomeSampling = () => {
               Gửi Kit
             </Button>
           )}
-          {/* Nút Cập nhật - chỉ hiện khi KHÔNG phải 2 trạng thái trên và KHÔNG phải 'KIT_SENT' */}
-          {record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && record.status !== "KIT_SENT" && (
+          {/* Ẩn nút Cập nhật khi đã gửi kit hoặc đã nhận mẫu */}
+          {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && (
             <Button
               size="small"
               icon={<CarOutlined />}
               onClick={() => handleUpdateStatus(record)}
               style={{
-                background: "#fa8c16",
+                background: record.status === "KIT_NOT_SENT" ? "#2563EB" : "#fa8c16",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #fa8c1622",
+                boxShadow: record.status === "KIT_NOT_SENT" ? "0 2px 8px #2563EB22" : "0 2px 8px #fa8c1622",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+              onMouseOver={(e) => (e.currentTarget.style.background = record.status === "KIT_NOT_SENT" ? "#1D4ED8" : "#d46b08")}
+              onMouseOut={(e) => (e.currentTarget.style.background = record.status === "KIT_NOT_SENT" ? "#2563EB" : "#fa8c16")}
             >
-              Cập nhật
+              {record.status === "KIT_NOT_SENT" ? "Gửi Kit" : "Cập nhật"}
             </Button>
           )}
           {record.status === "SAMPLE_RECEIVED" && (

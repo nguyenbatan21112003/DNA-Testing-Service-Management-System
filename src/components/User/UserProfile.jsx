@@ -114,7 +114,7 @@ const UserProfile = () => {
 
     // Cleanup function
     return () => {
-      window.removeEventListener("storage", () => {});
+      window.removeEventListener("storage", () => { });
     };
   }, [user, getAllOrders]);
 
@@ -214,29 +214,17 @@ const UserProfile = () => {
   };
 
   // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
-  const getStatusText = (
-    status,
-    sampleMethod,
-    kitStatus,
-    appointmentStatus
-  ) => {
-    // Ưu tiên trạng thái xác nhận, kit, hoặc trạng thái chính
-    if (sampleMethod === "home" && kitStatus) {
-      switch (kitStatus) {
-        case "chua_gui":
-          return "Chưa gửi kit";
-        case "da_gui":
-          return "Đã gửi kit";
-        case "da_nhan":
-          return "Đã nhận mẫu";
-        default:
-          break;
-      }
+  const getStatusText = (status, sampleMethod) => {
+    // Luồng lấy mẫu tại nhà
+    if (sampleMethod === "home") {
+      if (status === "PENDING_CONFIRM") return "Chờ xác nhận";
+      if (status === "CONFIRMED") return "Đã xác nhận";
+      if (status === "KIT_SENT") return "Đã gửi kit";
+      if (status === "SAMPLE_RECEIVED" || status === "PROCESSING" || status === "WAITING_APPROVAL") return "Đang xử lý";
+      if (status === "COMPLETED") return "Đã có kết quả";
+      if (status === "REJECTED") return "Đang xử lý";
     }
-    if (appointmentStatus) {
-      if (appointmentStatus === "CONFIRMED" || appointmentStatus === "Xác nhận")
-        return "Xác nhận";
-    }
+    // ... fallback cho các trường hợp khác ...
     switch (status) {
       case "PENDING":
       case "PENDING_CONFIRM":
@@ -249,14 +237,6 @@ const UserProfile = () => {
         return "Hoàn thành";
       case "REJECTED":
         return "Từ chối";
-      case "KIT_SENT":
-        return "Đã gửi kit";
-      case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu";
-      case "CONFIRMED":
-        return "Xác nhận";
-      case "CANCELLED":
-        return "Đã hủy";
       default:
         return status;
     }
@@ -756,17 +736,17 @@ const UserProfile = () => {
                         (order.result || order.status === "COMPLETED")) ||
                       order.status === filterStatus
                   ).length === 0 && (
-                    <div
-                      style={{
-                        color: "#888",
-                        fontSize: 18,
-                        textAlign: "center",
-                        margin: "32px 0",
-                      }}
-                    >
-                      Chưa có thông tin đơn.
-                    </div>
-                  )}
+                      <div
+                        style={{
+                          color: "#888",
+                          fontSize: 18,
+                          textAlign: "center",
+                          margin: "32px 0",
+                        }}
+                      >
+                        Chưa có thông tin đơn.
+                      </div>
+                    )}
                   {userOrders
                     .filter(
                       (order) =>
@@ -838,20 +818,20 @@ const UserProfile = () => {
                                   borderRadius: 8,
                                   background:
                                     order.status === "Hoàn thành" ||
-                                    order.appointmentStatus === "Xác nhận" ||
-                                    order.status === "Xác nhận"
+                                      order.appointmentStatus === "Xác nhận" ||
+                                      order.status === "Xác nhận"
                                       ? "#c6f6d5"
                                       : order.status === "Chờ xử lý"
-                                      ? "#ffe6b0"
-                                      : "#e6f7f1",
+                                        ? "#ffe6b0"
+                                        : "#e6f7f1",
                                   color:
                                     order.status === "Hoàn thành" ||
-                                    order.appointmentStatus === "Xác nhận" ||
-                                    order.status === "Xác nhận"
+                                      order.appointmentStatus === "Xác nhận" ||
+                                      order.status === "Xác nhận"
                                       ? "#009e74"
                                       : order.status === "Chờ xử lý"
-                                      ? "#b88900"
-                                      : "#009e74",
+                                        ? "#b88900"
+                                        : "#009e74",
                                   fontWeight: 600,
                                   fontSize: 14,
                                   display: "inline-flex",
@@ -865,9 +845,7 @@ const UserProfile = () => {
                               >
                                 {getStatusText(
                                   order.status,
-                                  order.sampleMethod,
-                                  order.kitStatus,
-                                  order.appointmentStatus
+                                  order.sampleMethod
                                 )}
                               </span>
                             </div>
@@ -888,8 +866,8 @@ const UserProfile = () => {
                               {order.category === "civil"
                                 ? "Dân sự"
                                 : order.category === "admin"
-                                ? "Hành chính"
-                                : order.category}
+                                  ? "Hành chính"
+                                  : order.category}
                             </div>
                             <div
                               style={{
@@ -1056,12 +1034,12 @@ const UserProfile = () => {
                                 outline: "none",
                                 cursor:
                                   order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
+                                    order.status === "Hoàn thành"
                                     ? "pointer"
                                     : "not-allowed",
                                 opacity:
                                   order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
+                                    order.status === "Hoàn thành"
                                     ? 1
                                     : 0.6,
                               }}
@@ -1100,7 +1078,7 @@ const UserProfile = () => {
                                     // Lấy đánh giá mới nhất
                                     const latestFeedback =
                                       order.feedbacks[
-                                        order.feedbacks.length - 1
+                                      order.feedbacks.length - 1
                                       ];
                                     setOverallRating(
                                       latestFeedback.rating || 0
@@ -1289,9 +1267,8 @@ const UserProfile = () => {
                     </button>
                     {pwMsg && (
                       <div
-                        className={`form-msg${
-                          pwMsg.includes("thành công") ? " success" : " error"
-                        }`}
+                        className={`form-msg${pwMsg.includes("thành công") ? " success" : " error"
+                          }`}
                       >
                         {pwMsg}
                       </div>
@@ -1318,9 +1295,8 @@ const UserProfile = () => {
                     </button>
                     {pwMsg && (
                       <div
-                        className={`form-msg${
-                          pwMsg.includes("thành công") ? " success" : " error"
-                        }`}
+                        className={`form-msg${pwMsg.includes("thành công") ? " success" : " error"
+                          }`}
                       >
                         {pwMsg}
                       </div>
@@ -1441,7 +1417,7 @@ const UserProfile = () => {
                     style={{
                       cursor:
                         feedbackOrder.feedbacks &&
-                        feedbackOrder.feedbacks.length > 0
+                          feedbackOrder.feedbacks.length > 0
                           ? "default"
                           : "pointer",
                     }}
@@ -1497,7 +1473,7 @@ const UserProfile = () => {
                   fontSize: 16,
                   background:
                     feedbackOrder.feedbacks &&
-                    feedbackOrder.feedbacks.length > 0
+                      feedbackOrder.feedbacks.length > 0
                       ? "#f6f8fa"
                       : "#fff",
                 }}
@@ -1582,12 +1558,12 @@ const UserProfile = () => {
                 style={{
                   background:
                     feedbackOrder.feedbacks &&
-                    feedbackOrder.feedbacks.length > 0
+                      feedbackOrder.feedbacks.length > 0
                       ? "#009e74"
                       : "#eee",
                   color:
                     feedbackOrder.feedbacks &&
-                    feedbackOrder.feedbacks.length > 0
+                      feedbackOrder.feedbacks.length > 0
                       ? "#fff"
                       : "#666",
                   border: "none",
@@ -1692,12 +1668,10 @@ const UserProfile = () => {
                 <Tag
                   color={(() => {
                     switch (
-                      getStatusText(
-                        selectedOrder.status,
-                        selectedOrder.sampleMethod,
-                        selectedOrder.kitStatus,
-                        selectedOrder.appointmentStatus
-                      )
+                    getStatusText(
+                      selectedOrder.status,
+                      selectedOrder.sampleMethod
+                    )
                     ) {
                       case "Xác nhận":
                         return "#1890ff";
@@ -1717,9 +1691,7 @@ const UserProfile = () => {
                 >
                   {getStatusText(
                     selectedOrder.status,
-                    selectedOrder.sampleMethod,
-                    selectedOrder.kitStatus,
-                    selectedOrder.appointmentStatus
+                    selectedOrder.sampleMethod
                   )}
                 </Tag>
                 <span style={{ fontWeight: 600, color: "#888", marginLeft: 8 }}>
@@ -1734,8 +1706,8 @@ const UserProfile = () => {
                   {selectedOrder.category === "civil"
                     ? "Dân sự"
                     : selectedOrder.category === "admin"
-                    ? "Hành chính"
-                    : selectedOrder.category}
+                      ? "Hành chính"
+                      : selectedOrder.category}
                 </Tag>
               </div>
               {/* Thông tin người dùng */}
