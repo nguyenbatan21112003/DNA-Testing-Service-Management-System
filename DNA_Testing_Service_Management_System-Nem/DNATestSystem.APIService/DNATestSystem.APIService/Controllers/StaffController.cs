@@ -3,6 +3,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
+using DNATestSystem.Services.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,24 +55,19 @@ namespace DNATestSystem.APIService.Controllers
          {
                 var result = await _staffService.AtHomeTestRequestAsync();
                 return Ok(result);
-         }
-        
+         }        
         [HttpGet("at-center-administrative")]
         public async Task<IActionResult> GetAtCenterAdministrativeRequests([FromQuery] int staffId)
         {
             var result = await _staffService.GetAtCenterAdministrativeRequestsAsync(staffId);
             return Ok(result);
         }
-        [HttpGet("staff/{staffId}")]
-        public async Task<IActionResult> GetByStaffId(int staffId)
+        [HttpGet("test-processes/{staffId}")]
+        public async Task<IActionResult> GetTestProcessesByStaffId(int staffId)
         {
             var result = await _staffService.GetTestProcessesByStaffIdAsync(staffId);
-            if (result == null || !result.Any())
-            {
-                return NotFound("No test processes found.");
-            }
-
             return Ok(result);
         }
+
     }
 }

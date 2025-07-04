@@ -59,8 +59,6 @@ namespace DNATestSystem.Services.Service
             return true;
         }
 
-
-
         public async Task<List<TestRequestViewDto>> PendingTestRequestAsync()
         {
 
@@ -244,18 +242,33 @@ namespace DNATestSystem.Services.Service
 
         public async Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId)
         {
-            var testProcesses = await _context.TestProcesses
-                                    .Include(tp => tp.Request)
-                                        .ThenInclude(r => r.Service)
-                                    .Include(tp => tp.Request)
-                                        .ThenInclude(r => r.CollectType)
-                                    .Include(tp => tp.Request)
-                                        .ThenInclude(r => r.RequestDeclarants)
-                                    .Include(tp => tp.Request)
-                                        .ThenInclude(r => r.TestSamples)
-                                    .Where(tp => tp.StaffId == staffId && tp.Request != null && tp.Request.Status != "COMPLETED")
-                                    .ToListAsync();
+            //var testProcesses = await _context.TestProcesses
+            //                        .Include(tp => tp.Request)
+            //                            .ThenInclude(r => r.Service)
+            //                        .Include(tp => tp.Request)
+            //                            .ThenInclude(r => r.CollectType)
+            //                        .Include(tp => tp.Request)
+            //                            .ThenInclude(r => r.RequestDeclarants)
+            //                        .Include(tp => tp.Request)
 
+            //                        .ToListAsync();
+
+            var testProcesses = await _context.TestProcesses
+                          .Include(tp => tp.Request)
+                              .ThenInclude(r => r.Service)
+                          .Include(tp => tp.Request)
+                              .ThenInclude(r => r.CollectType)
+                          .Include(tp => tp.Request)
+                              .ThenInclude(r => r.RequestDeclarants)
+                          .Include(tp => tp.Request)
+                              .ThenInclude(r => r.TestSamples)
+                          .Where(tp =>
+                              tp.Request != null &&
+                              tp.Request.UserId == staffId &&
+                              tp.Request.Status != "COMPLETED" &&
+                              tp.Request.Category == "Voluntary"
+                          )
+                          .ToListAsync();
 
 
             var result = testProcesses.Select(tp => new TestProcessDto
@@ -294,17 +307,7 @@ namespace DNATestSystem.Services.Service
                     Address = tp.Request.RequestDeclarants.First().Address,
                     Phone = tp.Request.RequestDeclarants.First().Phone,
                     Email = tp.Request.RequestDeclarants.First().Email
-                },
-
-                Samples = tp.Request.TestSamples.Select(tr => new TestRequestSampleDto
-                {
-                    OwnerName = tr.OwnerName,
-                    Gender = tr.Gender,
-                    Relationship = tr.Relationship,
-                    Yob = tr.Yob,
-                    SampleType = tr.SampleType,
-                    CollectedAt = tr.CollectedAt
-                }).ToList()
+                },     
             }).ToList();
 
             return result;

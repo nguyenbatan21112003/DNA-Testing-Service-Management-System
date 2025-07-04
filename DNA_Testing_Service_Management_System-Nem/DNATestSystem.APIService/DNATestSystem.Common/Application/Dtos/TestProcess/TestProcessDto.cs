@@ -14,6 +14,6 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.TestProcess
         public RequestDto Request { get; set; }
         public TestProcessInfoDto TestProcess { get; set; }
         public DeclarantDto Declarant { get; set; }
-        public List<TestRequestSampleDto> Samples { get; set; }
+        //public List<TestRequestSampleDto> Samples { get; set; }
     }
 }
