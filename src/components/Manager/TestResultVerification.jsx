@@ -37,10 +37,16 @@ const TestResultVerification = () => {
   const [rejectNote, setRejectNote] = useState("");
   const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [filteredOrders, setFilteredOrders] = useState([]);
 
   useEffect(() => {
     loadOrdersNeedingApproval();
   }, []);
+
+  useEffect(() => {
+    const allOrders = getAllOrders();
+    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));
+  }, [ordersNeedingApproval, getAllOrders]);
 
   const loadOrdersNeedingApproval = () => {
     const orders = getOrdersNeedingApproval();
@@ -73,7 +79,7 @@ const TestResultVerification = () => {
     setApproveConfirmVisible(false);
     setPendingApproveOrder(null);
     message.success("Đã phê duyệt kết quả xét nghiệm thành công!");
-    loadOrdersNeedingApproval();
+    setFilteredOrders(prev => prev.filter(order => order.id !== pendingApproveOrder.id));
   };
 
   const confirmReject = async () => {
@@ -91,7 +97,26 @@ const TestResultVerification = () => {
     setRejectNote("");
     setPendingRejectOrder(null);
     message.success("Đã từ chối kết quả xét nghiệm!");
-    await loadOrdersNeedingApproval();
+    setFilteredOrders(prev => prev.filter(order => order.id !== pendingRejectOrder.id));
+  };
+
+  // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa
+  function normalizeStatus(str) {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .replace(/\s+/g, '')
+      .trim();
+  }
+  const getStatusText = (status) => {
+    const s = normalizeStatus(status);
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
+    if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
+    if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
+    return "Đang xử lý";
   };
 
   const columns = [
@@ -198,16 +223,6 @@ const TestResultVerification = () => {
     rejected: getAllOrders().filter(o => o.status === "Từ chối").length,
     waiting: getAllOrders().filter(o => o.status === "Chờ xác thực").length,
   };
-
-  const allOrders = getAllOrders();
-  let filteredOrders = allOrders.filter(order => {
-    const text = searchText.toLowerCase();
-    return (
-      order.name?.toLowerCase().includes(text) ||
-      order.id?.toString().toLowerCase().includes(text) ||
-      order.type?.toLowerCase().includes(text)
-    );
-  });
 
   return (
     <div style={{ padding: "0" }}>

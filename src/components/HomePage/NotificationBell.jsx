@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Badge, Popover, List, Button, Typography, Space, Tag } from "antd";
 import { BellOutlined, CheckOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useNotification } from "../../context/NotificationContext";
+import { useNotification, ROLES } from "../../context/NotificationContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,8 +21,10 @@ const NotificationBell = () => {
   const navigate = useNavigate();
 
   // Lọc thông báo theo role hiện tại và loại mong muốn
-  let roleId = user?.role_id;
-  if (!roleId || (roleId !== 2 && roleId !== 3)) roleId = 3;
+  let roleId = null;
+  if (user?.role_id === ROLES.MANAGER) roleId = ROLES.MANAGER;
+  else if (user?.role_id === ROLES.STAFF) roleId = ROLES.STAFF;
+  else roleId = ROLES.MANAGER; // fallback, ưu tiên manager
   const allowedTypes = [
     "order_new",
     "order_needs_approval",

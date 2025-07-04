@@ -62,7 +62,6 @@ export function OrderProvider({ children }) {
   const {
     notifyNewOrder,
     notifyOrderStatusUpdate,
-    notifyOrderApproval,
     notifyNewFeedback,
     notifyFeedbackResponse,
     notifyPricingUpdate
@@ -167,31 +166,35 @@ export function OrderProvider({ children }) {
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
 
-      // Luôn gọi notifyOrderStatusUpdate nếu có thay đổi trạng thái
-      if (updates.status && updates.status !== oldOrder.status) {
+      // Chỉ gửi thông báo cho manager khi staff chuyển trạng thái sang 'Chờ xác thực'
+      if (
+        updates.status &&
+        updates.status !== oldOrder.status &&
+        updates.status === "Chờ xác thực" &&
+        user?.role_id !== 2 // Không phải manager
+      ) {
         const updatedBy = user?.name || user?.email || "Hệ thống";
         notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
       }
 
-      // Tạo thông báo khi Manager phê duyệt/từ chối
-      if (updates.managerConfirm !== undefined && updates.managerConfirm !== oldOrder.managerConfirm) {
-        const approvedBy = user?.name || user?.email || "Manager";
-        const approved = updates.managerConfirm;
-
-        if (approved) {
+      // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
+      // (Nếu cần gửi cho staff hoặc khách hàng thì giữ lại logic ở đây)
+      if (
+        updates.managerConfirm !== undefined &&
+        updates.managerConfirm !== oldOrder.managerConfirm
+      ) {
+        if (updates.managerConfirm) {
           // Nếu được phê duyệt, cập nhật trạng thái thành "Hoàn thành"
           const finalOrder = { ...updatedOrder, status: "Hoàn thành" };
           allOrders[idx] = finalOrder;
           localStorage.setItem("dna_orders", JSON.stringify(allOrders));
           setOrders(allOrders);
-          notifyOrderApproval(finalOrder, true, approvedBy);
         } else {
           // Nếu bị từ chối, cập nhật trạng thái thành "Từ chối"
           const rejectedOrder = { ...updatedOrder, status: "Từ chối" };
           allOrders[idx] = rejectedOrder;
           localStorage.setItem("dna_orders", JSON.stringify(allOrders));
           setOrders(allOrders);
-          notifyOrderApproval(rejectedOrder, false, approvedBy);
         }
       }
     }

@@ -88,14 +88,8 @@ const TestingResults = () => {
   }, [editModalVisible, form]);
 
   useEffect(() => {
-    const handleStorageChange = (event) => {
-      if (event.key === 'dna_orders') {
-        if (typeof getAllOrders === 'function') setOrders(getAllOrders());
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    if (typeof getAllOrders === 'function') setOrders(getAllOrders());
+  });
 
   const handleViewResult = (order) => {
     setSelectedOrder(order);
@@ -311,7 +305,18 @@ const TestingResults = () => {
       key: "status",
       width: 120,
       render: (status) => (
-        <Tag style={{background: getStatusColor(status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>{getStatusText(status)}</Tag>
+        <Tag style={{
+          background: getStatusColor(status),
+          color: '#fff',
+          fontWeight: 700,
+          border: 'none',
+          fontSize: 15,
+          padding: '4px 0',
+          boxShadow: '0 2px 8px #0001',
+          width: 120,
+          textAlign: 'center',
+          display: 'inline-block',
+        }}>{getStatusText(status)}</Tag>
       ),
     },
     {
@@ -928,7 +933,7 @@ const TestingResults = () => {
           onValuesChange={handleFormValuesChange}
         >
           <Form.Item label="Trạng thái">
-            <Tag style={{background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 18px', boxShadow: '0 2px 8px #0001'}}>
+            <Tag style={{background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 0', boxShadow: '0 2px 8px #0001'}}>
               {getStatusText(selectedOrder?.status)}
             </Tag>
           </Form.Item>
