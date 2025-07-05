@@ -205,8 +205,8 @@ const UserProfile = () => {
     if (!kitInfo) return;
     // Cập nhật kitStatus và trạng thái đơn
     updateOrder(kitInfo.id, {
-      kitStatus: "SAMPLE_RECEIVED",
-      status: "SAMPLE_RECEIVED",
+      kitStatus: "Đã nhận mẫu",
+      status: "Đã nhận mẫu",
     });
 
     setShowConfirmKitModal(false);
@@ -303,6 +303,15 @@ const UserProfile = () => {
             borderBottom: "1px solid #fff2",
           }}
           onClick={() => navigate("/")}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate("/");
+            }
+          }}
+          tabIndex={0}
+          role="button"
+          aria-label="Về trang chủ"
         >
           <span style={{ fontSize: 28, color: "#fff" }}>🧬</span>
           {!collapsed && (
@@ -344,6 +353,15 @@ const UserProfile = () => {
               e.stopPropagation();
               setCollapsed((c) => !c);
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCollapsed((c) => !c);
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
           >
             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             {!collapsed && (
@@ -369,6 +387,16 @@ const UserProfile = () => {
               <div
                 className={`profile-tab${tab === tabItem.key ? " active" : ""}`}
                 onClick={() => setTab(tabItem.key)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setTab(tabItem.key);
+                  }
+                }}
+                tabIndex={0}
+                role="tab"
+                aria-selected={tab === tabItem.key}
+                aria-label={tabItem.label}
                 style={{
                   cursor: "pointer",
                   padding: collapsed ? "18px 0" : "18px 32px",
@@ -749,11 +777,13 @@ const UserProfile = () => {
                   </div>
                   {(() => {
                     const filteredOrders = userOrders
-                      .filter(
-                        (order) =>
-                          filterStatus === "Tất cả" ||
-                          getStatusText(order.status, order.sampleMethod) === filterStatus
-                      )
+                      .filter((order) => {
+                        if (filterStatus === "Tất cả") return true;
+                        if (filterStatus === "Có kết quả") {
+                          return getStatusText(order.status, order.sampleMethod) === "Hoàn thành";
+                        }
+                        return getStatusText(order.status, order.sampleMethod) === filterStatus;
+                      })
                       .filter(
                         (order) =>
                           searchOrder.trim() === "" ||
@@ -1123,14 +1153,13 @@ const UserProfile = () => {
                                     setShowFeedbackModal(true);
                                   }
                                 }
-                              }
-                                >
-                              <Star size={20} style={{ marginRight: 6 }} /> Đánh
-                              giá
+                              }}
+                            >
+                              <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
                             </button>
                             {order.sampleMethod === "home" &&
-                              (order.kitStatus === "da_gui" ||
-                                order.kitStatus === "KIT_SENT") && (
+                              (order.kitStatus === "Đã gửi kit" ||
+                                order.kitStatus === "Đã gửi kit") && (
                                 <button
                                   style={{
                                     marginTop: 4,
@@ -1193,7 +1222,7 @@ const UserProfile = () => {
                   })()}
                 </div>
               </div>
-            )}
+            )
           )}
           {tab === "settings" && (
             <div
@@ -1884,7 +1913,6 @@ const UserProfile = () => {
                 {(() => {
                   // Try to get the table data from either resultTableData or by parsing result
                   let tableData = null;
-                  console.log("selectedOrder", selectedOrder);
 
                   // First, try directly from resultTableData if it exists
                   if (
@@ -1903,9 +1931,8 @@ const UserProfile = () => {
                       if (Array.isArray(parsedData)) {
                         tableData = parsedData;
                       }
-                    } catch (err) {
+                    } catch {
                       // Not a JSON string or not an array, so we'll show as regular result later
-                      console.error("Failed to parse result as JSON array:", err);
                     }
                   }
 
