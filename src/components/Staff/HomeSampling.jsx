@@ -424,7 +424,14 @@ const HomeSampling = () => {
                 }}
                 onMouseOver={(e) => (e.currentTarget.style.background = "#5b21b6")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
-                onClick={() => {/* TODO: Xử lý logic xét nghiệm */ }}
+                onClick={async () => {
+                  await updateOrder(String(record.id), {
+                    status: "PROCESSING",
+                    updatedAt: new Date().toLocaleString("vi-VN"),
+                  });
+                  loadSamplingRequests();
+                  message.success("Đơn đã chuyển sang trạng thái 'Đang xử lý'.");
+                }}
               >
                 Xét Nghiệm
               </Button>

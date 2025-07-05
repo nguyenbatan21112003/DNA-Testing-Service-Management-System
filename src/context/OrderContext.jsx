@@ -119,7 +119,7 @@ export function OrderProvider({ children }) {
       feedback: "",
       rating: 0,
       resultFile: "",
-      kitStatus: order.sampleMethod === "home" ? "chua_gui" : undefined,
+      kitStatus: order.sampleMethod === "home" ? "PENDING_CONFIRM" : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

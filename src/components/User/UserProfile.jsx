@@ -205,8 +205,8 @@ const UserProfile = () => {
     if (!kitInfo) return;
     // Cập nhật kitStatus và trạng thái đơn
     updateOrder(kitInfo.id, {
-      kitStatus: "Đã nhận mẫu",
-      status: "Đã nhận mẫu",
+      kitStatus: "SAMPLE_RECEIVED",
+      status: "SAMPLE_RECEIVED",
     });
 
     setShowConfirmKitModal(false);
@@ -220,10 +220,10 @@ const UserProfile = () => {
       if (status === "PENDING_CONFIRM") return "Chờ xác nhận";
       if (status === "KIT_NOT_SENT") return "Chưa gửi kit";
       if (status === "KIT_SENT") return "Đã gửi kit";
-      if (status === "SAMPLE_RECEIVED") return "Đã nhận mẫu";
+      if (status === "SAMPLE_RECEIVED") return "Đã gửi mẫu";
       if (status === "PROCESSING") return "Đang xử lý";
       if (status === "WAITING_APPROVAL" || status === "Chờ xác thực") return "Chờ xác nhận";
-      if (status === "COMPLETED") return "Đã có kết quả";
+      if (status === "COMPLETED" || status === "Hoàn thành") return "Đã có kết quả";
       if (status === "REJECTED") return "Từ chối";
       return status;
     }
@@ -237,13 +237,16 @@ const UserProfile = () => {
         return "Chưa gửi kit";
       case "KIT_SENT":
         return "Đã gửi kit";
+      case "SAMPLE_RECEIVED":
+        return "Đã gửi mẫu";
       case "PROCESSING":
         return "Đang xử lý";
       case "WAITING_APPROVAL":
       case "Chờ xác thực":
         return "Chờ xác nhận";
       case "COMPLETED":
-        return "Hoàn thành";
+      case "Hoàn thành":
+        return "Đã có kết quả";
       case "REJECTED":
         return "Từ chối";
       default:
@@ -780,7 +783,7 @@ const UserProfile = () => {
                       .filter((order) => {
                         if (filterStatus === "Tất cả") return true;
                         if (filterStatus === "Có kết quả") {
-                          return getStatusText(order.status, order.sampleMethod) === "Hoàn thành";
+                          return getStatusText(order.status, order.sampleMethod) === "Đã có kết quả";
                         }
                         return getStatusText(order.status, order.sampleMethod) === filterStatus;
                       })
@@ -1158,8 +1161,8 @@ const UserProfile = () => {
                               <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
                             </button>
                             {order.sampleMethod === "home" &&
-                              (order.kitStatus === "Đã gửi kit" ||
-                                order.kitStatus === "Đã gửi kit") && (
+                              (order.kitStatus === "KIT_SENT" ||
+                                order.status === "KIT_SENT") && (
                                 <button
                                   style={{
                                     marginTop: 4,
