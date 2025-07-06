@@ -151,9 +151,14 @@ export function OrderProvider({ children }) {
 
   // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác thực)
   const updateOrder = async (orderId, updates) => {
+    let currentUser = user;
+    if (!currentUser) {
+      currentUser = JSON.parse(localStorage.getItem('dna_user') || 'null');
+      console.log('[DEBUG][updateOrder] fallback user from localStorage:', currentUser);
+    }
+    console.log('[DEBUG][updateOrder] user:', currentUser);
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
-
     if (idx !== -1) {
       const oldOrder = allOrders[idx];
       const updatedOrder = {
@@ -161,19 +166,21 @@ export function OrderProvider({ children }) {
         ...updates,
         updatedAt: new Date().toISOString()
       };
-
       allOrders[idx] = updatedOrder;
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
-
-      // Chỉ gửi thông báo cho manager khi staff chuyển trạng thái sang 'Chờ xác thực'
+      console.log('[DEBUG][updateOrder] notify condition:', {
+        updatesStatus: updates.status,
+        oldStatus: oldOrder.status,
+        userRole: currentUser?.role_id
+      });
       if (
         updates.status &&
-        updates.status !== oldOrder.status &&
-        updates.status === "Chờ xác thực" &&
-        user?.role_id !== 2 // Không phải manager
+        (updates.status === "Chờ xác thực" || updates.status === "WAITING_APPROVAL") &&
+        currentUser?.role_id !== 2 // Không phải manager
       ) {
-        const updatedBy = user?.name || user?.email || "Hệ thống";
+        const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
+        console.log('[DEBUG][updateOrder] CALL notifyOrderStatusUpdate');
         notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
       }
 

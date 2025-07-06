@@ -114,17 +114,6 @@ const CenterSampling = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadAppointments();
-    // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener("storage", (event) => {
-      if (event.key === "dna_orders") {
-        loadAppointments();
-      }
-    });
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener("storage", () => {});
-    };
   }, []);
 
   const handleViewAppointment = (appointment) => {
@@ -451,10 +440,10 @@ const CenterSampling = () => {
               value={
                 stats.scheduled > 0
                   ? Math.round(
-                      (stats.arrived /
-                        (stats.scheduled + stats.arrived + stats.missed)) *
-                        100
-                    )
+                    (stats.arrived /
+                      (stats.scheduled + stats.arrived + stats.missed)) *
+                    100
+                  )
                   : 0
               }
               suffix="%"
@@ -541,7 +530,7 @@ const CenterSampling = () => {
                   >
                     <UserOutlined style={{ marginRight: 4 }} />
                     {apt.staffAssigned ||
-                    (apt.status === "Xác nhận" && user?.name)
+                      (apt.status === "Xác nhận" && user?.name)
                       ? `Nhân viên: ${apt.staffAssigned || user?.name}`
                       : "Chưa phân công"}
                   </p>

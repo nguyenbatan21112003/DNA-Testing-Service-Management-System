@@ -122,7 +122,6 @@ export function NotificationProvider({ children }) {
 
   // Tạo thông báo mới
   const createNotification = (type, title, messageText, data = {}, targetRoles = []) => {
-    console.log('DEBUG: createNotification', { type, title, messageText, data, targetRoles });
     const notification = {
       type,
       title,
@@ -130,7 +129,7 @@ export function NotificationProvider({ children }) {
       data,
       targetRoles,
     };
-
+    console.log('[DEBUG][createNotification]', notification);
     dispatch({ type: "ADD_NOTIFICATION", payload: notification });
 
     // Hiển thị thông báo popup cho role hiện tại
@@ -228,7 +227,7 @@ export function NotificationProvider({ children }) {
     );
 
     // Thông báo cho Manager nếu cần xác thực
-    if (newStatus === "Chờ xác thực") {
+    if (newStatus === "Chờ xác thực" || newStatus === "WAITING_APPROVAL") {
       createNotification(
         NOTIFICATION_TYPES.ORDER_NEEDS_APPROVAL,
         "Cần xác thực kết quả",

@@ -42,7 +42,7 @@ const { TabPane } = Tabs;
 const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
-  const { orders, updateOrder, getAllOrders, setOrders } = useOrderContext();
+  const { orders, updateOrder } = useOrderContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -63,16 +63,22 @@ const TestingResults = () => {
   const STATUS_COMPLETED = "Hoàn thành";
 
   useEffect(() => {
-    setFilteredOrders(orders.filter((order) => !order.isHidden));
+    setFilteredOrders(orders.filter((order) => !order.isHidden && [
+      'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+    ].includes(getStatusText(order.status))));
   }, [orders]);
 
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders.filter((order) => !order.isHidden));
+      setFilteredOrders(orders.filter((order) => !order.isHidden && [
+        'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+      ].includes(getStatusText(order.status))));
     } else {
       setFilteredOrders(
         orders.filter(
-          (order) => !order.isHidden && order.status === filterStatus
+          (order) => !order.isHidden && [
+            'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+          ].includes(getStatusText(order.status)) && getStatusText(order.status) === filterStatus
         )
       );
     }
@@ -86,10 +92,6 @@ const TestingResults = () => {
       }
     }
   }, [editModalVisible, form]);
-
-  useEffect(() => {
-    if (typeof getAllOrders === 'function') setOrders(getAllOrders());
-  });
 
   const handleViewResult = (order) => {
     setSelectedOrder(order);
@@ -179,13 +181,23 @@ const TestingResults = () => {
       // Kiểm tra nếu là lỗi mẫu
       const isErrorSample = (values.conclusion || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').trim() === 'loi mau';
       if (isErrorSample) {
+        console.log('[DEBUG][handleSaveResult] updateOrder called with (error sample):', {
+          id: selectedOrder.id,
+          status: selectedOrder.status,
+          result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+          testingMethod: values.testingMethod,
+          testingNotes: values.conclusion,
+          conclusion: values.conclusion,
+          resultTableData: resultTableDataCopy,
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        });
         updateOrder(selectedOrder.id, {
           // Không đổi trạng thái, chỉ update kết quả và các trường khác
           result: resultTableDataCopy
             ? JSON.stringify(resultTableDataCopy)
             : values.result,
           testingMethod: values.testingMethod,
-          testingNotes: values.testingNotes,
+          testingNotes: values.conclusion,
           conclusion: values.conclusion,
           resultTableData: resultTableDataCopy,
           updatedAt: new Date().toLocaleString("vi-VN"),
@@ -194,17 +206,26 @@ const TestingResults = () => {
         setCurrentEditOrderId(null);
         setEditModalVisible(false);
         message.warning("Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!");
-        // TODO: Gửi thông báo cho khách hàng ở đây nếu có tích hợp notification
         return;
       }
-      // Trường hợp bình thường
+      // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác thực'
+      console.log('[DEBUG][handleSaveResult] updateOrder called with:', {
+        id: selectedOrder.id,
+        status: "Chờ xác thực",
+        result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+        testingMethod: values.testingMethod,
+        testingNotes: values.conclusion,
+        conclusion: values.conclusion,
+        resultTableData: resultTableDataCopy,
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      });
       updateOrder(selectedOrder.id, {
-        status: STATUS_WAITING_APPROVAL,
+        status: "Chờ xác thực",
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
         testingMethod: values.testingMethod,
-        testingNotes: values.testingNotes,
+        testingNotes: values.conclusion,
         conclusion: values.conclusion,
         resultTableData: resultTableDataCopy,
         updatedAt: new Date().toLocaleString("vi-VN"),
@@ -1095,19 +1116,12 @@ const TestingResults = () => {
             </div>
           </Form.Item>
 
-          <Form.Item name="conclusion" label="Kết luận">
-            <Select placeholder="Chọn kết luận">
-              <Option value="Có huyết thống">Có huyết thống</Option>
-              <Option value="Không có huyết thống">Không có huyết thống</Option>
-              <Option value="Lỗi mẫu">Lỗi mẫu</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
-            <TextArea
-              rows={3}
-              placeholder="Nhập ghi chú về quá trình xét nghiệm, chất lượng mẫu..."
-            />
+          <Form.Item
+            name="conclusion"
+            label="Kết luận"
+            rules={[{ required: true, message: "Vui lòng nhập kết luận!" }]}
+          >
+            <TextArea rows={3} placeholder="Nhập kết luận và ghi chú kỹ thuật..." />
           </Form.Item>
 
           <Form.Item label="Tải lên file kết quả">

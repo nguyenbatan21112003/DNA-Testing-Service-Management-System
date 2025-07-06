@@ -237,78 +237,22 @@ const ManagerDashboard = () => {
         </div>
       </Sider>
       <Layout>
-        <Content
-          style={{
-            margin: 0,
-            minHeight: 280,
-            background: "#f5f5f5",
-            overflow: "auto",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              height: 48,
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              padding: "0 32px",
-              borderBottom: "1px solid #f0f0f0",
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#722ed1",
-              position: "sticky",
-              top: 0,
-              zIndex: 10,
-              gap: 16,
-            }}
-          >
-            <NotificationBell />
-            {user && (
-              <>
-                {user.avatar || user.image ? (
-                  <img
-                    src={user.avatar || user.image}
-                    alt="avatar"
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      marginRight: 10,
-                      border: "2px solid #722ed1",
-                      background: "#f3f0fa",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      background: "#f3f0fa",
-                      color: "#722ed1",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: 700,
-                      fontSize: 18,
-                      marginRight: 10,
-                      border: "2px solid #722ed1",
-                    }}
-                  >
-                    {(user.name || user.fullName || user.email || "M")
-                      .charAt(0)
-                      .toUpperCase()}
-                  </div>
-                )}
-                <span>
-                  Xin chào, {user.name || user.fullName || user.email}
-                </span>
-              </>
-            )}
-          </div>
+        {/* Header with NotificationBell */}
+        <div style={{
+          height: 64,
+          background: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          padding: '0 32px',
+          borderBottom: '1px solid #f0f0f0',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+        }}>
+          <NotificationBell />
+        </div>
+        <Content style={{ margin: 0, padding: 0, background: "#f5f5f5", minHeight: "100vh" }}>
           {renderContent()}
         </Content>
       </Layout>

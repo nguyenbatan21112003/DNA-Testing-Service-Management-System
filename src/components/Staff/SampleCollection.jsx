@@ -885,7 +885,7 @@ const SampleCollection = () => {
             </Paragraph>
 
             {Array.isArray(selectedForm.donors) &&
-            selectedForm.donors.length > 0 ? (
+              selectedForm.donors.length > 0 ? (
               selectedForm.donors.map((donor, index) => (
                 <div
                   key={index}

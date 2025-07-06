@@ -53,17 +53,6 @@ const OrderManagement = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadOrders();
-
-    // Lắng nghe sự thay đổi của localStorage để reload orders khi có cập nhật từ manager
-    const handleStorageChange = (event) => {
-      if (event.key === "dna_orders") {
-        loadOrders();
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
   }, []);
 
   useEffect(() => {
