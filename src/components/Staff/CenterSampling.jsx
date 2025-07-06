@@ -36,6 +36,7 @@ import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
 import { StaffDashboardContext } from "./StaffDashboard";
 import { AuthContext } from "../../context/AuthContext";
+import SampleCollection from "./SampleCollection";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -218,6 +219,14 @@ const CenterSampling = () => {
     );
   };
 
+  // Hàm xác định phân loại
+  const getCaseType = (type) => {
+    if (!type) return '';
+    if (type.toLowerCase().includes('dân sự')) return 'Dân sự';
+    if (type.toLowerCase().includes('hành chính')) return 'Hành chính';
+    return '';
+  };
+
   const columns = [
     {
       title: "Mã đơn",
@@ -249,6 +258,21 @@ const CenterSampling = () => {
       dataIndex: "type",
       key: "type",
       width: 180,
+    },
+    {
+      title: "Phân loại",
+      dataIndex: "type",
+      key: "caseType",
+      width: 100,
+      render: (type) => {
+        const caseType = getCaseType(type);
+        if (!caseType) return null;
+        return (
+          <Tag color={caseType === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14 }}>
+            {caseType}
+          </Tag>
+        );
+      },
     },
     {
       title: "Ngày hẹn",
@@ -376,18 +400,45 @@ const CenterSampling = () => {
   );
 
   const handleGoToSampleCollection = (record) => {
-    // Lưu thông tin đơn hàng vào localStorage để SampleCollection lấy ra điền tự động
-    localStorage.setItem(
-      "dna_sample_collection_prefill",
-      JSON.stringify({
-        orderId: record.id,
-        collectionDate: record.appointmentDate || "",
-        requesterName: record.name || "",
-      })
-    );
-    // Chuyển tab sang Lấy mẫu xét nghiệm
-    if (dashboardCtx?.setActiveTab) {
-      dashboardCtx.setActiveTab("sample-collection");
+    const caseType = getCaseType(record.type);
+    if (caseType === 'Dân sự') {
+      // Lưu thông tin đơn hàng vào localStorage để CivilSampleCollectionForm lấy ra điền tự động
+      localStorage.setItem(
+        "dna_sample_collection_prefill",
+        JSON.stringify({
+          orderId: record.id,
+          collectionDate: record.appointmentDate || "",
+          requesterName: record.name || "",
+          appointmentDate: record.appointmentDate || "",
+          fullName: record.name || "",
+          email: record.email || "",
+          phone: record.phone || "",
+          address: record.address || "",
+          cccd: record.idNumber || record.cccd || ""
+        })
+      );
+      // Đổi trạng thái sang 'Đang lấy mẫu'
+      updateOrder(record.id, {
+        status: "Đang lấy mẫu",
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      });
+      // Chuyển tab sang lấy mẫu dân sự
+      if (dashboardCtx?.setActiveTab) {
+        dashboardCtx.setActiveTab("civil-sample-collection");
+      }
+    } else {
+      // Hành chính: giữ logic cũ
+      localStorage.setItem(
+        "dna_sample_collection_prefill",
+        JSON.stringify({
+          orderId: record.id,
+          collectionDate: record.appointmentDate || "",
+          requesterName: record.name || "",
+        })
+      );
+      if (dashboardCtx?.setActiveTab) {
+        dashboardCtx.setActiveTab("sample-collection");
+      }
     }
   };
 
@@ -546,6 +597,12 @@ const CenterSampling = () => {
                     <Tag color={getStatusColor(apt.status)}>
                       {getStatusText(apt.status)}
                     </Tag>
+                    {/* Hiển thị phân loại */}
+                    {getCaseType(apt.type) && (
+                      <Tag color={getCaseType(apt.type) === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14, marginLeft: 8 }}>
+                        {getCaseType(apt.type)}
+                      </Tag>
+                    )}
                   </div>
                   {apt.type && (
                     <p style={{ margin: 0, fontSize: 12, color: "#666" }}>

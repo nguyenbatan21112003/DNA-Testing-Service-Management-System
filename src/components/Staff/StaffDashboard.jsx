@@ -28,6 +28,7 @@ import HomeSampling from "./HomeSampling";
 import CenterSampling from "./CenterSampling";
 import OrderManagement from "./OrderManagement";
 import SampleCollection from "./SampleCollection";
+import CivilSampleCollectionForm from "./CivilSampleCollectionForm";
 
 const { Sider, Content } = Layout;
 
@@ -65,7 +66,12 @@ const menuItems = [
   {
     key: "sample-collection",
     icon: <FormOutlined />,
-    label: "Lấy mẫu xét nghiệm",
+    label: "Lấy mẫu hành chính",
+  },
+  {
+    key: "civil-sample-collection",
+    icon: <FormOutlined />,
+    label: "Lấy mẫu dân sự",
   },
   {
     key: "order-management",
@@ -311,6 +317,8 @@ const StaffDashboard = () => {
         return <SampleCollection />;
       case "order-management":
         return <OrderManagement />;
+      case "civil-sample-collection":
+        return <CivilSampleCollectionForm />;
       default:
         return <StaffOverview />;
     }

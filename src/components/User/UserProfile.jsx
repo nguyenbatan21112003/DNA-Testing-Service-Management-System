@@ -876,6 +876,7 @@ const UserProfile = () => {
                                   borderRadius: 8,
                                   marginLeft: 12,
                                   minWidth: 90,
+                                  padding: '3px 12px',
                                   textAlign: 'center',
                                   display: 'inline-block',
                                 }}
@@ -910,7 +911,7 @@ const UserProfile = () => {
                                 marginBottom: 8,
                               }}
                             >
-                              <b>Hình thức thu mẫu:</b>{" "}
+                              <b>Địa điểm thu mẫu:</b>{" "}
                               {getSampleMethodLabel(order.sampleMethod)}
                             </div>
                             <div
@@ -1745,6 +1746,7 @@ const UserProfile = () => {
                       borderRadius: 8,
                       marginLeft: 12,
                       minWidth: 90,
+                      padding: '3px 12px',
                       textAlign: 'center',
                       display: 'inline-block',
                     }}
@@ -1790,7 +1792,7 @@ const UserProfile = () => {
                 />
                 {/* Thông tin đơn hàng còn lại */}
                 <div>
-                  <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                  <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
                   <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
                 </div>
                 <div>
