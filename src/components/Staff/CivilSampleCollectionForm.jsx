@@ -300,8 +300,8 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                         </button>
                     </div>
                 </div>
-                <div style={{ width: '100%', margin: '32px 0 0 0' }}>
-                    <button type="submit" style={{ background: "#00b894", color: "#fff", border: "none", borderRadius: 6, padding: "12px 24px", cursor: "pointer" }}>Lưu thông tin</button>
+                <div style={{ width: '100%', margin: '32px 0 0 0', display: 'flex', justifyContent: 'center' }}>
+                    <button type="submit" style={{ background: "#00b894", color: "#fff", border: "none", borderRadius: 6, padding: "12px 32px", cursor: "pointer", fontWeight: 600, fontSize: 16 }}>Xác nhận lấy mẫu</button>
                 </div>
             </form>
         </div>
