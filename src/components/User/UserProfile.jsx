@@ -214,6 +214,10 @@ const UserProfile = () => {
 
   // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
   const getStatusText = (status, sampleMethod) => {
+    // Nếu là lấy mẫu tại trung tâm và trạng thái là 'Xác nhận' thì chuyển thành 'Đã hẹn'
+    if ((sampleMethod === 'center') && (status === 'Xác nhận')) {
+      return 'Đã hẹn';
+    }
     // Luồng lấy mẫu tại nhà
     if (sampleMethod === "home") {
       if (status === "PENDING_CONFIRM") return "Chờ xác nhận";
@@ -243,6 +247,9 @@ const UserProfile = () => {
       case "WAITING_APPROVAL":
       case "Chờ xác thực":
         return "Chờ xác nhận";
+      case "Xác nhận":
+        if (sampleMethod === 'center') return 'Đã hẹn';
+        return 'Xác nhận';
       case "COMPLETED":
       case "Hoàn thành":
         return "Đã có kết quả";
@@ -836,58 +843,39 @@ const UserProfile = () => {
                           }}
                         >
                           <div className="order-info" style={{ flex: 1 }}>
-                            <div
-                              className="order-id"
-                              style={{
-                                fontWeight: 600,
-                                fontSize: 18,
-                                marginBottom: 8,
-                              }}
-                            >
-                              Mã đơn đăng ký:{" "}
-                              <span
-                                className="order-id-highlight"
-                                style={{ color: "#009e74", fontWeight: 700 }}
-                              >
-                                #{order.id}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, color: '#009e74', fontSize: 17 }}>
+                                Mã đơn đăng ký: #{order.id}
                               </span>
-                              <span
+                              <Tag
                                 style={{
-                                  marginLeft: 16,
-                                  padding: "2px 12px",
-                                  borderRadius: 8,
-                                  background:
-                                    order.status === "Hoàn thành" ||
-                                      order.appointmentStatus === "Xác nhận" ||
-                                      order.status === "Xác nhận"
-                                      ? "#c6f6d5"
-                                      : order.status === "Chờ xử lý"
-                                        ? "#ffe6b0"
-                                        : "#e6f7f1",
-                                  color:
-                                    order.status === "Hoàn thành" ||
-                                      order.appointmentStatus === "Xác nhận" ||
-                                      order.status === "Xác nhận"
-                                      ? "#009e74"
-                                      : order.status === "Chờ xử lý"
-                                        ? "#b88900"
-                                        : "#009e74",
                                   fontWeight: 600,
-                                  fontSize: 14,
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  whiteSpace: "nowrap",
-                                  minWidth: 80,
-                                  maxWidth: 120,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
+                                  fontSize: 15,
+                                  background: (() => {
+                                    const statusText = getStatusText(order.status, order.sampleMethod);
+                                    switch (statusText) {
+                                      case "Chờ xác nhận": return "#00b894";
+                                      case "Chưa gửi kit": return "#722ed1";
+                                      case "Đã gửi kit": return "#1890ff";
+                                      case "Đã gửi mẫu": return "#faad14";
+                                      case "Đang xử lý": return "#fa8c16";
+                                      case "Đã có kết quả": return "#52c41a";
+                                      case "Từ chối": return "#ff4d4f";
+                                      default: return "#bfbfbf";
+                                    }
+                                  })(),
+                                  color: "#fff",
+                                  border: "none",
+                                  boxShadow: "none",
+                                  borderRadius: 8,
+                                  marginLeft: 12,
+                                  minWidth: 90,
+                                  textAlign: 'center',
+                                  display: 'inline-block',
                                 }}
                               >
-                                {getStatusText(
-                                  order.status,
-                                  order.sampleMethod
-                                )}
-                              </span>
+                                {getStatusText(order.status, order.sampleMethod)}
+                              </Tag>
                             </div>
                             <div
                               className="order-type"
@@ -1660,33 +1648,33 @@ const UserProfile = () => {
                     Trạng thái:
                   </span>
                   <Tag
-                    color={(() => {
-                      switch (
-                      getStatusText(
-                        selectedOrder.status,
-                        selectedOrder.sampleMethod
-                      )
-                      ) {
-                        case "Xác nhận":
-                          return "#1890ff";
-                        case "Hoàn thành":
-                          return "#52c41a";
-                        case "Chờ xử lý":
-                          return "#fa8c16";
-                        case "Từ chối":
-                          return "#ff4d4f";
-                        case "Đã gửi mẫu":
-                          return "#52c41a";
-                        default:
-                          return "#bfbfbf";
-                      }
-                    })()}
-                    style={{ fontWeight: 600, fontSize: 15 }}
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 15,
+                      background: (() => {
+                        const statusText = getStatusText(selectedOrder.status, selectedOrder.sampleMethod);
+                        switch (statusText) {
+                          case "Chờ xác nhận": return "#00b894";
+                          case "Chưa gửi kit": return "#722ed1";
+                          case "Đã gửi kit": return "#1890ff";
+                          case "Đã gửi mẫu": return "#faad14";
+                          case "Đang xử lý": return "#fa8c16";
+                          case "Đã có kết quả": return "#52c41a";
+                          case "Từ chối": return "#ff4d4f";
+                          default: return "#bfbfbf";
+                        }
+                      })(),
+                      color: "#fff",
+                      border: "none",
+                      boxShadow: "none",
+                      borderRadius: 8,
+                      marginLeft: 12,
+                      minWidth: 90,
+                      textAlign: 'center',
+                      display: 'inline-block',
+                    }}
                   >
-                    {getStatusText(
-                      selectedOrder.status,
-                      selectedOrder.sampleMethod
-                    )}
+                    {getStatusText(selectedOrder.status, selectedOrder.sampleMethod)}
                   </Tag>
                   <span style={{ fontWeight: 600, color: "#888", marginLeft: 8 }}>
                     Thể loại:
@@ -1880,7 +1868,7 @@ const UserProfile = () => {
                             borderRadius: 8,
                             padding: 12,
                             marginBottom: 16,
-                            overflowX: "auto", // Add horizontal scroll if needed
+                            overflowX: "auto", // Add horiđzontal scroll if needed
                           }}
                         >
                           <table

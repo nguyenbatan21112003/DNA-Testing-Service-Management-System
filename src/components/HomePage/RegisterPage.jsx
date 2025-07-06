@@ -77,51 +77,103 @@ const RegisterPage = () => {
               required
             />
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
+          <div className="form-group" style={{ position: 'relative' }}>
             <label htmlFor="register-password">Mật khẩu</label>
-            <input
-              className="input-register bg-white"
-              type={showPassword ? "text" : "password"}
-              id="register-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{ paddingRight: 36 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-              tabIndex={0}
-              aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <div style={{ position: 'relative', width: '100%' }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="register-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  height: 44,
+                  padding: '0 44px 0 12px',
+                  width: '100%',
+                  background: '#fff',
+                  borderRadius: 10,
+                  border: '1.5px solid #e0e7ef',
+                  fontSize: 16,
+                  fontWeight: 500,
+                  outline: 'none',
+                  boxShadow: 'none',
+                  transition: 'border 0.2s',
+                }}
+                className="input-register"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 12,
+                  height: '100%',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  margin: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#888'
+                }}
+                tabIndex={0}
+                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
-            <label htmlFor="register-confirm-password">
-              Xác nhận mật khẩu
-            </label>
-            <input
-              className="input-register bg-white"
-              type={showConfirmPassword ? "text" : "password"}
-              id="register-confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              style={{ paddingRight: 36 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-              tabIndex={0}
-              aria-label={
-                showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-              }
-            >
-              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+          <div className="form-group" style={{ position: 'relative' }}>
+            <label htmlFor="register-confirm-password">Xác nhận mật khẩu</label>
+            <div style={{ position: 'relative', width: '100%' }}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="register-confirm-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                style={{
+                  height: 44,
+                  padding: '0 44px 0 12px',
+                  width: '100%',
+                  background: '#fff',
+                  borderRadius: 10,
+                  border: '1.5px solid #e0e7ef',
+                  fontSize: 16,
+                  fontWeight: 500,
+                  outline: 'none',
+                  boxShadow: 'none',
+                  transition: 'border 0.2s',
+                }}
+                className="input-register"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 12,
+                  height: '100%',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  margin: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#888'
+                }}
+                tabIndex={0}
+                aria-label={showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           <div className="form-options">
             <label className="checkbox-label">

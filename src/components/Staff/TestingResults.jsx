@@ -62,6 +62,16 @@ const TestingResults = () => {
   const STATUS_REJECTED = "Từ chối";
   const STATUS_COMPLETED = "Hoàn thành";
 
+  // Đưa getStatusText ra ngoài component để không bị thay đổi reference mỗi lần render
+  const getStatusText = (status) => {
+    const s = normalizeStatus(status);
+    if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
+    if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
+    return "Đang xử lý";
+  };
+
   useEffect(() => {
     setFilteredOrders(orders.filter((order) => !order.isHidden && [
       'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
@@ -287,15 +297,6 @@ const TestingResults = () => {
       .replace(/\s+/g, '')
       .trim();
   }
-
-  const getStatusText = (status) => {
-    const s = normalizeStatus(status);
-    if (['dangxuly', 'processing'].includes(s)) return 'Đang xử lý';
-    if (['choxacthuc', 'waitingapproval'].includes(s)) return 'Chờ xác thực';
-    if (['hoanthanh', 'completed'].includes(s)) return 'Hoàn thành';
-    if (['tuchoi', 'rejected'].includes(s)) return 'Từ chối';
-    return 'Đang xử lý';
-  };
 
   const getStatusColor = (status) => {
     switch (getStatusText(status)) {
