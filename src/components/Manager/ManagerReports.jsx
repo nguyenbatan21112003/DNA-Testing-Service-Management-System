@@ -14,6 +14,18 @@ const ManagerReports = () => {
     const [staffPerformance, setStaffPerformance] = useState([])
     const [serviceDistribution, setServiceDistribution] = useState([])
 
+    // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
+    useEffect(() => {
+        const handleStorageChange = (event) => {
+            if (event.key === "dna_orders") {
+                // Force re-render để cập nhật báo cáo
+                window.location.reload();
+            }
+        };
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
+
     useEffect(() => {
         // Tạo dữ liệu báo cáo mẫu
         const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")

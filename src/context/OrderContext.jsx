@@ -93,17 +93,18 @@ export function OrderProvider({ children }) {
     // Load orders khi component mount và khi user thay đổi
     loadOrders();
 
-    //   // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
-    //   window.addEventListener('storage', (event) => {
-    //     if (event.key === 'dna_orders') {
-    //       loadOrders();
-    //     }
-    //   });
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
+    const handleStorageChange = (event) => {
+      if (event.key === 'dna_orders') {
+        loadOrders();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
 
-    //   // Cleanup function
-    //   return () => {
-    //     window.removeEventListener('storage', () => {});
-    //   };
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user]);
 
   const addOrder = (order) => {
@@ -195,13 +196,27 @@ export function OrderProvider({ children }) {
           const finalOrder = { ...updatedOrder, status: "Hoàn thành" };
           allOrders[idx] = finalOrder;
           localStorage.setItem("dna_orders", JSON.stringify(allOrders));
-          setOrders(allOrders);
+          // Cập nhật state cho tất cả users
+          if (user && user.role_id === 2) {
+            // Nếu là staff, cập nhật toàn bộ orders
+            setOrders(allOrders);
+          } else {
+            // Nếu là customer, chỉ cập nhật orders của họ
+            setOrders(allOrders.filter((o) => o.email === user.email));
+          }
         } else {
           // Nếu bị từ chối, cập nhật trạng thái thành "Từ chối"
           const rejectedOrder = { ...updatedOrder, status: "Từ chối" };
           allOrders[idx] = rejectedOrder;
           localStorage.setItem("dna_orders", JSON.stringify(allOrders));
-          setOrders(allOrders);
+          // Cập nhật state cho tất cả users
+          if (user && user.role_id === 2) {
+            // Nếu là staff, cập nhật toàn bộ orders
+            setOrders(allOrders);
+          } else {
+            // Nếu là customer, chỉ cập nhật orders của họ
+            setOrders(allOrders.filter((o) => o.email === user.email));
+          }
         }
       }
     }

@@ -116,6 +116,18 @@ const CenterSampling = () => {
     loadAppointments();
   }, []);
 
+  // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "dna_orders") {
+        // Force re-render bằng cách reload data
+        loadAppointments();
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
     setModalVisible(true);

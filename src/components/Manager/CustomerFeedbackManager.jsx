@@ -66,8 +66,14 @@ const CustomerFeedbackManager = () => {
 
     useEffect(() => {
         loadFeedbacks()
-        window.addEventListener("storage", loadFeedbacks)
-        return () => window.removeEventListener("storage", loadFeedbacks)
+        // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
+        const handleStorageChange = (event) => {
+            if (event.key === "dna_orders") {
+                loadFeedbacks(); // Chỉ reload dữ liệu thay vì reload cả trang
+            }
+        };
+        window.addEventListener("storage", handleStorageChange)
+        return () => window.removeEventListener("storage", handleStorageChange)
     }, [])
 
     // Khi Manager phản hồi, cập nhật lại feedback trong đơn hàng (localStorage)
