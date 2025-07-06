@@ -228,6 +228,7 @@ const UserProfile = () => {
       if (status === "WAITING_APPROVAL" || status === "Chờ xác thực") return "Chờ xác nhận";
       if (status === "COMPLETED" || status === "Hoàn thành") return "Đã có kết quả";
       if (status === "REJECTED") return "Từ chối";
+      if (status === "ARRIVED") return "Đã đến";
       return status;
     }
     // ... fallback cho các trường hợp khác ...
@@ -255,6 +256,9 @@ const UserProfile = () => {
         return "Đã có kết quả";
       case "REJECTED":
         return "Từ chối";
+      case "ARRIVED":
+      case "Đã đến":
+        return "Đã đến";
       default:
         return status;
     }
@@ -854,11 +858,13 @@ const UserProfile = () => {
                                   background: (() => {
                                     const statusText = getStatusText(order.status, order.sampleMethod);
                                     switch (statusText) {
-                                      case "Chờ xác nhận": return "#00b894";
-                                      case "Chưa gửi kit": return "#722ed1";
-                                      case "Đã gửi kit": return "#1890ff";
-                                      case "Đã gửi mẫu": return "#faad14";
-                                      case "Đang xử lý": return "#fa8c16";
+                                      case "Chờ xác nhận": return "#1890ff";
+                                      case "Chưa gửi kit": return "#b37feb";
+                                      case "Đã gửi kit": return "#00b894";
+                                      case "Đã gửi mẫu": return "#13c2c2";
+                                      case "Đang xử lý": return "#1890ff";
+                                      case "Đã hẹn": return "#40a9ff";
+                                      case "Đã đến": return "#006d75";
                                       case "Đã có kết quả": return "#52c41a";
                                       case "Từ chối": return "#ff4d4f";
                                       default: return "#bfbfbf";
@@ -1043,9 +1049,9 @@ const UserProfile = () => {
                               <button
                                 className="order-btn"
                                 style={{
-                                  border: "1.5px solid #ff9800",
+                                  border: "1.5px solid #ffc53d",
                                   color: "#fff",
-                                  background: "#ff9800",
+                                  background: "#ffc53d",
                                   borderRadius: 12,
                                   padding: "10px 22px",
                                   fontWeight: 600,
@@ -1056,17 +1062,17 @@ const UserProfile = () => {
                                   transition: "background 0.2s, color 0.2s, border 0.2s",
                                   outline: "none",
                                   cursor: "pointer",
-                                  boxShadow: "0 2px 8px #ff980022",
+                                  boxShadow: "0 2px 8px #ffc53d22",
                                 }}
                                 onMouseOver={e => {
                                   e.currentTarget.style.background = "#fff";
-                                  e.currentTarget.style.color = "#ff9800";
-                                  e.currentTarget.style.border = "1.5px solid #ff9800";
+                                  e.currentTarget.style.color = "#ffc53d";
+                                  e.currentTarget.style.border = "1.5px solid #ffc53d";
                                 }}
                                 onMouseOut={e => {
-                                  e.currentTarget.style.background = "#ff9800";
+                                  e.currentTarget.style.background = "#ffc53d";
                                   e.currentTarget.style.color = "#fff";
-                                  e.currentTarget.style.border = "1.5px solid #ff9800";
+                                  e.currentTarget.style.border = "1.5px solid #ffc53d";
                                 }}
                                 onClick={() => {
                                   setSelectedOrder(order);
@@ -1170,80 +1176,147 @@ const UserProfile = () => {
                   <>
                     <div className="form-group password-group">
                       <label>Mật khẩu hiện tại</label>
-                      <input
-                        type={showPw.current ? "text" : "password"}
-                        name="current"
-                        value={pwForm.current}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, current: !p.current }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.current ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.current ? "text" : "password"}
+                          name="current"
+                          value={pwForm.current}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, current: !p.current }))}
+                          tabIndex={0}
+                          aria-label={showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.current ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="form-group password-group">
                       <label>Mật khẩu mới</label>
-                      <input
-                        type={showPw.new ? "text" : "password"}
-                        name="new"
-                        value={pwForm.new}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, new: !p.new }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.new ? "text" : "password"}
+                          name="new"
+                          value={pwForm.new}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, new: !p.new }))}
+                          tabIndex={0}
+                          aria-label={showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="form-group password-group">
                       <label>Xác nhận mật khẩu mới</label>
-                      <input
-                        type={showPw.confirm ? "text" : "password"}
-                        name="confirm"
-                        value={pwForm.confirm}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, confirm: !p.confirm }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.confirm ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.confirm ? "text" : "password"}
+                          name="confirm"
+                          value={pwForm.confirm}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, confirm: !p.confirm }))}
+                          tabIndex={0}
+                          aria-label={showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <button className="submit-button" type="submit">
                       Gửi mã xác thực
@@ -1654,11 +1727,13 @@ const UserProfile = () => {
                       background: (() => {
                         const statusText = getStatusText(selectedOrder.status, selectedOrder.sampleMethod);
                         switch (statusText) {
-                          case "Chờ xác nhận": return "#00b894";
-                          case "Chưa gửi kit": return "#722ed1";
-                          case "Đã gửi kit": return "#1890ff";
-                          case "Đã gửi mẫu": return "#faad14";
-                          case "Đang xử lý": return "#fa8c16";
+                          case "Chờ xác nhận": return "#1890ff";
+                          case "Chưa gửi kit": return "#b37feb";
+                          case "Đã gửi kit": return "#00b894";
+                          case "Đã gửi mẫu": return "#13c2c2";
+                          case "Đang xử lý": return "#1890ff";
+                          case "Đã hẹn": return "#40a9ff";
+                          case "Đã đến": return "#006d75";
                           case "Đã có kết quả": return "#52c41a";
                           case "Từ chối": return "#ff4d4f";
                           default: return "#bfbfbf";

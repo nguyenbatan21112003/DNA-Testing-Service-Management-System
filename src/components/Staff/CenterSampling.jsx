@@ -145,7 +145,7 @@ const CenterSampling = () => {
       case "CONFIRMED":
       case "Xác nhận":
       case "Đã xác nhận":
-        return "#00b894"; // xanh ngọc
+        return "#40a9ff"; // xanh dương nhạt (Đã hẹn)
       case "SAMPLE_COLLECTING":
       case "SAMPLE_COLLECTING_WITH_DOC":
       case "Đang lấy mẫu":
@@ -162,6 +162,8 @@ const CenterSampling = () => {
       case "Đã hủy":
       case "Vắng mặt":
         return "#d63031"; // đỏ tươi
+      case "Đã đến":
+        return "#52c41a"; // xanh lá
       default:
         return "#b2bec3"; // xám nhạt
     }
@@ -172,7 +174,8 @@ const CenterSampling = () => {
       case "PENDING_CONFIRM":
         return "Đang chờ xác nhận";
       case "CONFIRMED":
-        return "Đã xác nhận";
+      case "Xác nhận":
+        return "Đã hẹn";
       case "WAITING_FOR_APPOINTMENT":
         return "Chờ đến ngày hẹn";
       case "SAMPLE_COLLECTING":
@@ -185,6 +188,9 @@ const CenterSampling = () => {
         return "Đang xét nghiệm";
       case "COMPLETED":
         return "Đã trả kết quả";
+      case "ARRIVED":
+      case "Đã đến":
+        return "Đã đến";
       default:
         return status;
     }
@@ -272,73 +278,92 @@ const CenterSampling = () => {
       title: "Thao tác",
       key: "action",
       width: 200,
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewAppointment(record)}
-            style={{
-              background: "#1890ff",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #1890ff22",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
-          >
-            Xem
-          </Button>
-          {!record.confirmed && (
+      render: (_, record) => {
+        const statusText = getStatusText(record.status);
+        return (
+          <Space size="small">
             <Button
+              type="primary"
               size="small"
-              icon={<CheckCircleOutlined />}
+              icon={<EyeOutlined />}
+              onClick={() => handleViewAppointment(record)}
               style={{
-                background: "#52c41a",
+                background: "#1890ff",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #52c41a22",
+                boxShadow: "0 2px 8px #1890ff22",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#389e0d")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
-              onClick={() => handleConfirmAppointment(record)}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
             >
-              Xác nhận
+              Xem
             </Button>
-          )}
-          {record.confirmed && (
-            <Button
-              size="small"
-              icon={<ExperimentOutlined />}
-              style={{
-                background: "#fa8c16",
-                color: "#fff",
-                fontWeight: 700,
-                borderRadius: 6,
-                border: "none",
-                boxShadow: "0 2px 8px #fa8c1622",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#d46b08")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-              onClick={() => handleGoToSampleCollection(record)}
-            >
-              Lấy mẫu
-            </Button>
-          )}
-        </Space>
-      ),
+            {statusText === "Đã hẹn" && (
+              <Button
+                size="small"
+                icon={<CheckCircleOutlined />}
+                style={{
+                  background: "#52c41a",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #52c41a22",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
+                onClick={() => handleArrivedAppointment(record)}
+              >
+                Đã đến
+              </Button>
+            )}
+            {statusText === "Đã đến" && (
+              <Button
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+                onClick={() => handleGoToSampleCollection(record)}
+              >
+                Lấy mẫu
+              </Button>
+            )}
+            {statusText !== "Đã hẹn" && statusText !== "Đã đến" && record.confirmed && (
+              <Button
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+                onClick={() => handleGoToSampleCollection(record)}
+              >
+                Lấy mẫu
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -349,20 +374,6 @@ const CenterSampling = () => {
         "DD/MM/YYYY"
       ) === today
   );
-
-  const handleConfirmAppointment = (record) => {
-    // Cập nhật trạng thái xác nhận, giữ nguyên ngày hẹn cũ, gán người phân công là staff hiện tại
-    updateOrder(record.id, {
-      confirmed: true,
-      status: "Xác nhận",
-      appointmentStatus: "Xác nhận",
-      appointmentDate: record.appointmentDate, // giữ nguyên ngày hẹn
-      staffAssigned: user?.name || "",
-      updatedAt: new Date().toLocaleString("vi-VN"),
-    });
-    loadAppointments();
-    message.success("Đã xác nhận lịch hẹn!");
-  };
 
   const handleGoToSampleCollection = (record) => {
     // Lưu thông tin đơn hàng vào localStorage để SampleCollection lấy ra điền tự động
@@ -378,6 +389,16 @@ const CenterSampling = () => {
     if (dashboardCtx?.setActiveTab) {
       dashboardCtx.setActiveTab("sample-collection");
     }
+  };
+
+  const handleArrivedAppointment = (record) => {
+    updateOrder(record.id, {
+      status: "Đã đến",
+      appointmentStatus: "Đã đến",
+      updatedAt: new Date().toLocaleString("vi-VN"),
+    });
+    loadAppointments();
+    message.success("Đã cập nhật trạng thái: Đã đến!");
   };
 
   return (
