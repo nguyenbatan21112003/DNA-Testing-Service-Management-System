@@ -71,7 +71,6 @@ const UserProfile = () => {
 
   // Thêm state cho modal feedback
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [feedbackOrder, setFeedbackOrder] = useState(null);
 
   // State cho 2 modal riêng biệt
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -971,223 +970,158 @@ const UserProfile = () => {
                             style={{
                               display: "flex",
                               flexDirection: "column",
-                              gap: 10,
+                              gap: 12,
                               alignItems: "stretch",
                               minWidth: 200,
+                              marginTop: 8,
+                              marginBottom: 8,
                             }}
                           >
+                            {/* Nút Xem chi tiết */}
                             <button
                               className="order-btn"
                               style={{
-                                border: "1px solid #16a34a",
-                                color: "#16a34a",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
+                                border: "1.5px solid #16a34a",
+                                color: "#fff",
+                                background: "#16a34a",
+                                borderRadius: 12,
+                                padding: "10px 22px",
                                 fontWeight: 600,
                                 fontSize: 16,
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition:
-                                  "border 0.2s, color 0.2s, background 0.2s",
+                                transition: "background 0.2s, color 0.2s, border 0.2s",
                                 outline: "none",
                                 cursor: "pointer",
+                                boxShadow: "0 2px 8px #16a34a22",
                               }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "#e6f7ef";
-                                e.currentTarget.style.color = "#15803d";
-                                e.currentTarget.style.border =
-                                  "1px solid #15803d";
-                              }}
-                              onMouseOut={(e) => {
+                              onMouseOver={e => {
                                 e.currentTarget.style.background = "#fff";
                                 e.currentTarget.style.color = "#16a34a";
-                                e.currentTarget.style.border =
-                                  "1px solid #16a34a";
+                                e.currentTarget.style.border = "1.5px solid #16a34a";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#16a34a";
+                                e.currentTarget.style.color = "#fff";
+                                e.currentTarget.style.border = "1.5px solid #16a34a";
                               }}
                               onClick={() => {
                                 setSelectedOrder(order);
                                 setShowDetailModal(true);
                               }}
                             >
-                              <Eye size={20} style={{ marginRight: 6 }} /> Xem
-                              chi tiết
+                              <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
                             </button>
-                            <button
-                              className="order-btn"
-                              style={{
-                                border: "1px solid #2563eb",
-                                color: "#2563eb",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition:
-                                  "border 0.2s, color 0.2s, background 0.2s",
-                                outline: "none",
-                                cursor: "pointer",
-                              }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "#e0edff";
-                                e.currentTarget.style.color = "#1d4ed8";
-                                e.currentTarget.style.border =
-                                  "1px solid #1d4ed8";
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.background = "#fff";
-                                e.currentTarget.style.color = "#2563eb";
-                                e.currentTarget.style.border =
-                                  "1px solid #2563eb";
-                              }}
-                              onClick={() => {
-                                setSelectedOrder(order);
-                                setShowResultModal(true);
-                              }}
-                            >
-                              <FileText size={20} style={{ marginRight: 6 }} />{" "}
-                              Xem kết quả
-                            </button>
-                            <button
-                              className="order-btn"
-                              style={{
-                                border: "none",
-                                color: "#fff",
-                                background: "#fbbf24",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition: "background 0.2s, color 0.2s",
-                                outline: "none",
-                                cursor:
-                                  order.status === "Có kết quả" ||
-                                    order.status === "Hoàn thành"
-                                    ? "pointer"
-                                    : "not-allowed",
-                                opacity:
-                                  order.status === "Có kết quả" ||
-                                    order.status === "Hoàn thành"
-                                    ? 1
-                                    : 0.6,
-                              }}
-                              disabled={
-                                !(
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                              }
-                              onMouseOver={(e) => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                                  e.currentTarget.style.background = "#f59e1b";
-                              }}
-                              onMouseOut={(e) => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                                  e.currentTarget.style.background = "#fbbf24";
-                              }}
-                              onClick={() => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                ) {
-                                  setFeedbackOrder(order);
-
-                                  // Kiểm tra nếu đã đánh giá trước đó
-                                  if (
-                                    order.feedbacks &&
-                                    order.feedbacks.length > 0
-                                  ) {
-                                    // Lấy đánh giá mới nhất
-                                    const latestFeedback =
-                                      order.feedbacks[
-                                      order.feedbacks.length - 1
-                                      ];
-                                    setOverallRating(
-                                      latestFeedback.rating || 0
-                                    );
-                                    setFeedbackInput(
-                                      latestFeedback.feedback || ""
-                                    );
-                                  } else {
-                                    // Chưa đánh giá, reset form
-                                    setOverallRating(0);
-                                    // Kiểm tra nếu đã đánh giá trước đó
-                                    if (
-                                      order.feedbacks &&
-                                      order.feedbacks.length > 0
-                                    ) {
-                                      // Lấy đánh giá mới nhất
-                                      const latestFeedback =
-                                        order.feedbacks[
-                                        order.feedbacks.length - 1
-                                        ];
-                                      setOverallRating(
-                                        latestFeedback.rating || 0
-                                      );
-                                      setFeedbackInput(
-                                        latestFeedback.feedback || ""
-                                      );
-                                    } else {
-                                      // Chưa đánh giá, reset form
-                                      setOverallRating(0);
-                                      setFeedbackInput("");
-                                    }
-
-                                    setFeedbackSuccess("");
-                                    setShowFeedbackModal(true);
-                                  }
-                                }
-                              }}
-                            >
-                              <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
-                            </button>
-                            {order.sampleMethod === "home" &&
-                              (order.kitStatus === "KIT_SENT" ||
-                                order.status === "KIT_SENT") && (
-                                <button
-                                  style={{
-                                    marginTop: 4,
-                                    border: "1px solid #009e74",
-                                    color: "#fff",
-                                    background: "#009e74",
-                                    borderRadius: 10,
-                                    padding: "10px 24px",
-                                    fontWeight: 600,
-                                    fontSize: 16,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 8,
-                                    width: "100%",
-                                    height: 48,
-                                    transition: "background 0.2s, color 0.2s",
-                                    outline: "none",
-                                    cursor: "pointer",
-                                    justifyContent: "center",
-                                  }}
-                                  onClick={() => handleUserConfirmKit(order)}
-                                >
-                                  Xác nhận đã nhận kit
-                                </button>
-                              )}
+                            {/* Nút Xem kết quả */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #1677ff",
+                                  color: "#fff",
+                                  background: "#1677ff",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #1677ff22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#1677ff";
+                                  e.currentTarget.style.border = "1.5px solid #1677ff";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#1677ff";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #1677ff";
+                                }}
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setShowResultModal(true);
+                                }}
+                              >
+                                <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
+                              </button>
+                            )}
+                            {/* Nút Đánh giá */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && (
+                              <button
+                                className="order-btn"
+                                style={{
+                                  border: "1.5px solid #ff9800",
+                                  color: "#fff",
+                                  background: "#ff9800",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #ff980022",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#ff9800";
+                                  e.currentTarget.style.border = "1.5px solid #ff9800";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#ff9800";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #ff9800";
+                                }}
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setShowResultModal(true);
+                                }}
+                              >
+                                <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
+                              </button>
+                            )}
+                            {/* Nút Xác nhận đã nhận kit */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã gửi kit" && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #00bfae",
+                                  color: "#fff",
+                                  background: "#00bfae",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #00bfae22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#00bfae";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#00bfae";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onClick={() => handleUserConfirmKit(order)}
+                              >
+                                Xác nhận đã nhận kit
+                              </button>
+                            )}
                           </div>
                         </div>
                         {/* Nút ẩn/hiện timeline */}
@@ -1395,9 +1329,9 @@ const UserProfile = () => {
       {/* Modal feedback */}
       {
         showFeedbackModal &&
-        feedbackOrder &&
-        (feedbackOrder.status === "Hoàn thành" ||
-          feedbackOrder.status === "Có kết quả") && (
+        selectedOrder &&
+        (getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Hoàn thành" ||
+          getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Có kết quả") && (
           <div
             style={{
               position: "fixed",
@@ -1453,14 +1387,10 @@ const UserProfile = () => {
                   textAlign: "center",
                 }}
               >
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
-                  ? "Đánh giá của bạn"
-                  : "Đánh giá dịch vụ"}
+                Đánh giá của bạn
               </h3>
               <p style={{ textAlign: "center" }}>
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
-                  ? "Bạn đã đánh giá dịch vụ này trước đó"
-                  : "Bạn hãy đánh giá dịch vụ của chúng tôi"}
+                Bạn hãy đánh giá dịch vụ của chúng tôi
               </p>
               {/* Star rating tổng thể */}
               <div
@@ -1478,16 +1408,16 @@ const UserProfile = () => {
                     color={overallRating >= star ? "#ffc107" : "#ddd"}
                     style={{
                       cursor:
-                        feedbackOrder.feedbacks &&
-                          feedbackOrder.feedbacks.length > 0
+                        selectedOrder.feedbacks &&
+                          selectedOrder.feedbacks.length > 0
                           ? "default"
                           : "pointer",
                     }}
                     onClick={() => {
                       if (
                         !(
-                          feedbackOrder.feedbacks &&
-                          feedbackOrder.feedbacks.length > 0
+                          selectedOrder.feedbacks &&
+                          selectedOrder.feedbacks.length > 0
                         )
                       ) {
                         setOverallRating(star);
@@ -1516,15 +1446,15 @@ const UserProfile = () => {
                 onChange={(e) => {
                   if (
                     !(
-                      feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                      selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                     )
                   ) {
                     setFeedbackInput(e.target.value);
                   }
                 }}
                 readOnly={
-                  feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
+                  selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0
                 }
                 style={{
                   width: "100%",
@@ -1534,14 +1464,14 @@ const UserProfile = () => {
                   border: "1px solid #ccc",
                   fontSize: 16,
                   background:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#f6f8fa"
                       : "#fff",
                 }}
               />
               {/* Nút đánh giá hoặc đóng tùy theo đã đánh giá hay chưa */}
-              {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? (
+              {selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0 ? (
                 <div
                   style={{
                     display: "flex",
@@ -1564,8 +1494,8 @@ const UserProfile = () => {
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>
                       Đánh giá vào ngày:{" "}
                       {
-                        feedbackOrder.feedbacks[
-                          feedbackOrder.feedbacks.length - 1
+                        selectedOrder.feedbacks[
+                          selectedOrder.feedbacks.length - 1
                         ].date
                       }
                     </div>
@@ -1579,7 +1509,7 @@ const UserProfile = () => {
                       return;
                     }
                     addFeedback(
-                      feedbackOrder.id,
+                      selectedOrder.id,
                       feedbackInput,
                       overallRating,
                       { overall: overallRating }
@@ -1619,13 +1549,13 @@ const UserProfile = () => {
                 onClick={() => setShowFeedbackModal(false)}
                 style={{
                   background:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#009e74"
                       : "#eee",
                   color:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#fff"
                       : "#666",
                   border: "none",
@@ -1638,7 +1568,7 @@ const UserProfile = () => {
                   fontSize: 16,
                 }}
               >
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
+                {selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0
                   ? "Đóng"
                   : "Hủy"}
               </button>
