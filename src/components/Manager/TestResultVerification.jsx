@@ -43,6 +43,17 @@ const TestResultVerification = () => {
     loadOrdersNeedingApproval();
   }, []);
 
+  // Lắng nghe sự kiện storage để tự động reload orders khi localStorage thay đổi
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "dna_orders") {
+        loadOrdersNeedingApproval(); // Chỉ reload dữ liệu thay vì reload cả trang
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   useEffect(() => {
     const allOrders = getAllOrders();
     setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));

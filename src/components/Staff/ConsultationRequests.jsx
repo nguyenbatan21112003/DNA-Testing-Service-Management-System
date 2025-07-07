@@ -75,11 +75,11 @@ const ConsultationRequests = () => {
       const updatedConsultations = consultations.map((consultation) =>
         consultation.id === selectedConsultation.id
           ? {
-              ...consultation,
-              status: "Đã phản hồi",
-              reply: values.reply,
-              repliedAt: new Date().toLocaleString("vi-VN"),
-            }
+            ...consultation,
+            status: "Đã phản hồi",
+            reply: values.reply,
+            repliedAt: new Date().toLocaleString("vi-VN"),
+          }
           : consultation
       );
       // Cập nhật state và localStorage
@@ -274,8 +274,8 @@ const ConsultationRequests = () => {
                     selectedConsultation.priority === "Cao"
                       ? "red"
                       : selectedConsultation.priority === "Trung bình"
-                      ? "orange"
-                      : "green"
+                        ? "orange"
+                        : "green"
                   }
                 >
                   {selectedConsultation.priority}

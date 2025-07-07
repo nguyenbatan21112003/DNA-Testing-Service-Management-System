@@ -79,6 +79,7 @@ const HomeSampling = () => {
           case "KIT_NOT_SENT":
           case "KIT_SENT":
           case "SAMPLE_RECEIVED":
+          case "PROCESSING":
             break;
           // Nếu là các status khác thì map về PENDING_CONFIRM
           default:
@@ -102,17 +103,18 @@ const HomeSampling = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadSamplingRequests();
-    // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener("storage", (event) => {
+  }, []);
+
+  // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
+  useEffect(() => {
+    const handleStorageChange = (event) => {
       if (event.key === "dna_orders") {
+        // Force re-render bằng cách reload data
         loadSamplingRequests();
       }
-    });
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener("storage", () => { });
     };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const handleViewRequest = (request) => {
@@ -135,11 +137,6 @@ const HomeSampling = () => {
       notes: request.notes || "",
     });
     setUpdateModalVisible(true);
-  };
-
-  const handleViewReport = (request) => {
-    setSelectedRequest(request);
-    setReportModalVisible(true);
   };
 
   const generateKitId = (request) => {
@@ -176,6 +173,8 @@ const HomeSampling = () => {
         return "#16a34a"; // xanh lá
       case "CANCELLED":
         return "#d63031"; // đỏ tươi
+      case "PROCESSING":
+        return "#fa8c16"; // xanh dương
       default:
         return "#b2bec3"; // xám nhạt
     }
@@ -193,34 +192,10 @@ const HomeSampling = () => {
         return "Đã nhận mẫu";
       case "CANCELLED":
         return "Đã hủy";
+      case "PROCESSING":
+        return "Đang xử lý";
       default:
         return status;
-    }
-  };
-
-  const getStepStatus = (currentStatus, stepStatus) => {
-    const statusOrder = ["chua_gui", "da_gui", "da_nhan"];
-    const currentIndex = statusOrder.indexOf(currentStatus);
-    const stepIndex = statusOrder.indexOf(stepStatus);
-
-    if (currentStatus === "huy") return "error";
-    if (stepIndex < currentIndex) return "finish";
-    if (stepIndex === currentIndex) return "process";
-    return "wait";
-  };
-
-  // Hàm ánh xạ status sang step tiến trình
-  const mapStatusToStep = (status) => {
-    switch (status) {
-      case "PENDING_CONFIRM":
-      case "KIT_NOT_SENT":
-        return "chua_gui";
-      case "KIT_SENT":
-        return "da_gui";
-      case "SAMPLE_RECEIVED":
-        return "da_nhan";
-      default:
-        return "chua_gui";
     }
   };
 
@@ -336,78 +311,79 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          {/* Nếu là Chờ xác nhận thì hiện nút Xác nhận màu xanh lá */}
-          {record.status === "PENDING_CONFIRM" && (
-            <Button
-              size="small"
-              icon={<CheckOutlined />}
-              onClick={async () => {
-                await updateOrder(String(record.id), {
-                  status: "KIT_NOT_SENT",
-                  updatedAt: new Date().toLocaleString("vi-VN"),
-                });
-                loadSamplingRequests();
-                message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
-              }}
-              style={{
-                background: "#16a34a",
-                color: "#fff",
-                fontWeight: 700,
-                borderRadius: 6,
-                border: "none",
-                boxShadow: "0 2px 8px #16a34a55",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
-            >
-              Xác nhận
-            </Button>
-          )}
-          {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' và không render thêm nút nào khác cho trạng thái này */}
-          {record.status === "KIT_NOT_SENT" && (
-            <Button
-              size="small"
-              icon={<GiftOutlined />}
-              onClick={() => handleUpdateStatus(record)}
-              style={{
-                background: "#fa8c16",
-                color: "#fff",
-                fontWeight: 700,
-                borderRadius: 6,
-                border: "none",
-                boxShadow: "0 2px 8px #fa8c1655",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-            >
-              Gửi Kit
-            </Button>
-          )}
-          {/* Ẩn nút Cập nhật cho trạng thái KIT_NOT_SENT */}
-          {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && (
-            <Button
-              size="small"
-              icon={<GiftOutlined />}
-              onClick={() => handleUpdateStatus(record)}
-              style={{
-                background: "#fa8c16",
-                color: "#fff",
-                fontWeight: 700,
-                borderRadius: 6,
-                border: "none",
-                boxShadow: "0 2px 8px #fa8c1622",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-            >
-              Cập nhật
-            </Button>
-          )}
-          {record.status === "SAMPLE_RECEIVED" && (
-            <>
+          {/* Ẩn các nút thao tác khác nếu đã sang trạng thái xét nghiệm trở đi */}
+          {!(record.status === "PROCESSING" || record.status === "COMPLETED" || record.status === "Hoàn thành") && <>
+            {/* Nếu là Chờ xác nhận thì hiện nút Xác nhận màu xanh lá */}
+            {record.status === "PENDING_CONFIRM" && (
+              <Button
+                size="small"
+                icon={<CheckOutlined />}
+                onClick={async () => {
+                  await updateOrder(String(record.id), {
+                    status: "KIT_NOT_SENT",
+                    updatedAt: new Date().toLocaleString("vi-VN"),
+                  });
+                  loadSamplingRequests();
+                  message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
+                }}
+                style={{
+                  background: "#16a34a",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #16a34a55",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
+              >
+                Xác nhận
+              </Button>
+            )}
+            {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' và không render thêm nút nào khác cho trạng thái này */}
+            {record.status === "KIT_NOT_SENT" && (
+              <Button
+                size="small"
+                icon={<GiftOutlined />}
+                onClick={() => handleUpdateStatus(record)}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1655",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+              >
+                Gửi Kit
+              </Button>
+            )}
+            {/* Ẩn nút Cập nhật cho trạng thái KIT_NOT_SENT, PROCESSING, COMPLETED, Hoàn thành */}
+            {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && record.status !== "PROCESSING" && record.status !== "COMPLETED" && record.status !== "Hoàn thành" && (
+              <Button
+                size="small"
+                icon={<GiftOutlined />}
+                onClick={() => handleUpdateStatus(record)}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+              >
+                Cập nhật
+              </Button>
+            )}
+            {record.status === "SAMPLE_RECEIVED" && (
               <Button
                 type="primary"
                 size="small"
@@ -435,8 +411,8 @@ const HomeSampling = () => {
               >
                 Xét Nghiệm
               </Button>
-            </>
-          )}
+            )}
+          </>}
         </Space>
       ),
     },
@@ -540,12 +516,29 @@ const HomeSampling = () => {
               scroll={{ x: 1200 }}
             />
           </TabPane>
+          <TabPane tab="Đang xử lý" key="processing">
+            <Table
+              columns={columns}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "PROCESSING"
+              )}
+              rowKey="id"
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
+              }}
+              scroll={{ x: 1200 }}
+            />
+          </TabPane>
         </Tabs>
       </Card>
 
       {/* Modal xem chi tiết */}
       <Modal
-        title={`Chi tiết yêu cầu lấy mẫu #${selectedRequest?.id}`}
+        title={null}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
@@ -557,9 +550,25 @@ const HomeSampling = () => {
       >
         {selectedRequest && (
           <div>
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <h2 style={{ fontSize: 28, fontWeight: 800, color: '#00a67e', margin: 0, letterSpacing: 1 }}>
+                Chi tiết yêu cầu lấy mẫu #{selectedRequest.id}
+              </h2>
+            </div>
+            <div style={{ marginBottom: 16 }}>
               <h3>Thông tin khách hàng:</h3>
+              <p><strong>Họ tên:</strong> {selectedRequest.name}</p>
+              <p><strong>Email:</strong> {selectedRequest.email}</p>
+              <p><strong>Số điện thoại:</strong> {selectedRequest.phone}</p>
+              <p><strong>Địa chỉ:</strong> {selectedRequest.address}</p>
+            </div>
+            <Divider style={{ margin: '16px 0' }} />
+            <div style={{ marginBottom: 16 }}>
+              <h3>Thông tin xét nghiệm:</h3>
+              <p><strong>Loại xét nghiệm:</strong> {selectedRequest.type}</p>
+              <p><strong>Mã kit:</strong> {selectedRequest.kitId || 'Chưa cấp mã kit'}</p>
               <p>
+<<<<<<< HEAD
                 <strong>Họ tên:</strong> {selectedRequest.name}
               </p>
               <p>
@@ -587,99 +596,78 @@ const HomeSampling = () => {
               <p>
                 <strong>Mã kit:</strong>{" "}
                 {selectedRequest.kitId || "Chưa cấp mã kit"}
+=======
+                <strong>Trạng thái hiện tại:</strong>{' '}
+                <Tag color={getStatusColor(selectedRequest.status)} style={{ fontWeight: 600, fontSize: 15 }}>
+                  {getStatusText(selectedRequest.status)}
+                </Tag>
+>>>>>>> df92105fc52168823e39ede134e46c0222976fa2
               </p>
             </div>
-
+            <Divider style={{ margin: '16px 0' }} />
             <div style={{ marginBottom: 24 }}>
               <h3>Tiến trình lấy mẫu:</h3>
               <Steps
-                current={["chua_gui", "da_gui", "da_nhan"].indexOf(mapStatusToStep(selectedRequest.status))}
+                current={(() => {
+                  switch (selectedRequest.status) {
+                    case "PENDING_CONFIRM":
+                    case "KIT_NOT_SENT":
+                      return 0;
+                    case "KIT_SENT":
+                      return 1;
+                    case "SAMPLE_RECEIVED":
+                      return 2;
+                    case "PROCESSING":
+                      return 3;
+                    case "COMPLETED":
+                    case "Hoàn thành":
+                      return 4;
+                    default:
+                      return 0;
+                  }
+                })()}
               >
                 <Step
                   title="Chuẩn bị kit"
                   description="Chuẩn bị và gửi kit lấy mẫu"
-                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "chua_gui")}
+                  status={(() => {
+                    const s = selectedRequest.status;
+                    if (["PENDING_CONFIRM", "KIT_NOT_SENT", "KIT_SENT", "SAMPLE_RECEIVED", "PROCESSING", "COMPLETED", "Hoàn thành"].includes(s)) return "finish";
+                    return "wait";
+                  })()}
                 />
                 <Step
                   title="Đã gửi kit"
                   description="Kit đã được gửi đến khách hàng"
-                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_gui")}
+                  status={(() => {
+                    const s = selectedRequest.status;
+                    if (["KIT_SENT", "SAMPLE_RECEIVED", "PROCESSING", "COMPLETED", "Hoàn thành"].includes(s)) return "finish";
+                    if (["PENDING_CONFIRM", "KIT_NOT_SENT"].includes(s)) return "wait";
+                    return "wait";
+                  })()}
                 />
                 <Step
                   title="Nhận mẫu"
                   description="Đã nhận được mẫu từ khách hàng"
-                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_nhan")}
+                  status={(() => {
+                    const s = selectedRequest.status;
+                    if (["SAMPLE_RECEIVED", "PROCESSING", "COMPLETED", "Hoàn thành"].includes(s)) return "finish";
+                    if (["KIT_SENT"].includes(s)) return "process";
+                    return "wait";
+                  })()}
+                />
+                <Step
+                  title="Xét nghiệm & Kết quả"
+                  description="Xét nghiệm mẫu của khách hàng và cho kết quả"
+                  status={(() => {
+                    const s = selectedRequest.status;
+                    if (["PROCESSING"].includes(s)) return "process";
+                    if (["COMPLETED", "Hoàn thành"].includes(s)) return "finish";
+                    return "wait";
+                  })()}
                 />
               </Steps>
             </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin bổ sung:</h3>
-              <p>
-                <strong>Trạng thái hiện tại:</strong>{" "}
-                <Tag color={getStatusColor(selectedRequest.status)}>
-                  {getStatusText(selectedRequest.status)}
-                </Tag>
-              </p>
-              {selectedRequest.scheduledDate && (
-                <p>
-                  <strong>Ngày hẹn:</strong> {selectedRequest.scheduledDate}
-                </p>
-              )}
-              {selectedRequest.samplerName && (
-                <p>
-                  <strong>Nhân viên phụ trách:</strong>{" "}
-                  {selectedRequest.samplerName}
-                </p>
-              )}
-              {selectedRequest.kitId && (
-                <p>
-                  <strong>Mã kit:</strong> {selectedRequest.kitId}
-                </p>
-              )}
-              {selectedRequest.notes && (
-                <div>
-                  <strong>Ghi chú:</strong>
-                  <div
-                    style={{
-                      background: "#f6f6f6",
-                      padding: 12,
-                      borderRadius: 4,
-                      marginTop: 8,
-                    }}
-                  >
-                    {selectedRequest.notes}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {selectedRequest.sampleInfo && (
-              <div>
-                <h3>Thông tin người lấy mẫu:</h3>
-                <div
-                  style={{
-                    background: "#f6f6f6",
-                    padding: 12,
-                    borderRadius: 4,
-                    marginTop: 8,
-                  }}
-                >
-                  <p>
-                    <strong>Địa điểm lấy mẫu:</strong>{" "}
-                    {selectedRequest.sampleInfo.location}
-                  </p>
-                  <p>
-                    <strong>Nhân viên thu mẫu:</strong>{" "}
-                    {selectedRequest.sampleInfo.collector}
-                  </p>
-                  <p>
-                    <strong>Ngày lấy mẫu:</strong>{" "}
-                    {selectedRequest.sampleInfo.collectionDate}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </Modal>
@@ -752,50 +740,6 @@ const HomeSampling = () => {
               <Divider style={{ margin: "12px 0" }} />
               <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
             </div>
-
-            {/* Thông tin user gửi từ form yêu cầu xét nghiệm
-            <div style={{ marginBottom: 24, background: "#f6f6f6", padding: 16, borderRadius: 6 }}>
-              <h3>Thông tin yêu cầu xét nghiệm từ khách hàng</h3>
-              <p><strong>Họ tên người yêu cầu:</strong> {selectedRequest.name}</p>
-              <p><strong>Số điện thoại:</strong> {selectedRequest.phone}</p>
-              <p><strong>Email:</strong> {selectedRequest.email}</p>
-              <p><strong>Địa chỉ:</strong> {selectedRequest.address}</p>
-              <p><strong>Loại xét nghiệm:</strong> {selectedRequest.type}</p>
-              {selectedRequest.date && (
-                <p><strong>Ngày đăng ký:</strong> {selectedRequest.date}</p>
-              )}
-              {selectedRequest.idNumber && (
-                <p><strong>Số CCCD:</strong> {selectedRequest.idNumber}</p>
-              )}
-               //Danh sách thành viên cung cấp mẫu 
-              {selectedRequest.members && Array.isArray(selectedRequest.members) && selectedRequest.members.length > 0 ? (
-                <div style={{ marginTop: 16 }}>
-                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
-                  <ul>
-                    {selectedRequest.members.map((mem, idx) => (
-                      <li key={idx}>
-                        {mem.name} {mem.birth ? `- Năm sinh: ${mem.birth}` : ""}
-                        {mem.relation ? `- Mối quan hệ: ${mem.relation}` : ""}
-                        {mem.sampleType ? `- Loại mẫu: ${mem.sampleType}` : ""}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (selectedRequest.sampleInfo && selectedRequest.sampleInfo.donors && Array.isArray(selectedRequest.sampleInfo.donors) && selectedRequest.sampleInfo.donors.length > 0) ? (
-                <div style={{ marginTop: 16 }}>
-                  <strong>Danh sách thành viên cung cấp mẫu:</strong>
-                  <ul>
-                    {selectedRequest.sampleInfo.donors.map((donor, idx) => (
-                      <li key={idx}>
-                        {donor.name} {donor.dob ? `- Năm sinh: ${donor.dob}` : ""}
-                        {donor.relationship ? `- Mối quan hệ: ${donor.relationship}` : ""}
-                        {donor.sampleType ? `- Loại mẫu: ${donor.sampleType}` : ""}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-                </div> */}
 
             <Paragraph>
               Hôm nay, ngày {selectedRequest.sampleInfo.collectionDate}, tại{" "}

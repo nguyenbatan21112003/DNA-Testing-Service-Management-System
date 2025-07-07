@@ -97,22 +97,46 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
-            <label htmlFor="login-password">Mật khẩu</label>
-
+          <div style={{ position: 'relative', width: '100%' }}>
             <input
               type={showPassword ? "text" : "password"}
               id="login-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ paddingRight: 36 }}
-              className="bg-white p-4 password-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 duration-200"
+              style={{
+                height: 44,
+                padding: '0 44px 0 12px',
+                width: '100%',
+                background: '#eaf3ff',
+                borderRadius: 10,
+                border: '1.5px solid #e0e7ef',
+                fontSize: 16,
+                fontWeight: 500,
+                outline: 'none',
+                boxShadow: 'none',
+                transition: 'border 0.2s',
+              }}
+              className="password-input"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 12,
+                height: '100%',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                color: '#888'
+              }}
               tabIndex={0}
               aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
             >

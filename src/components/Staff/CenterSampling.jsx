@@ -36,6 +36,7 @@ import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
 import { StaffDashboardContext } from "./StaffDashboard";
 import { AuthContext } from "../../context/AuthContext";
+import SampleCollection from "./SampleCollection";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -64,27 +65,16 @@ const CenterSampling = () => {
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center" && !order.isHidden)
       .map((order) => {
-        // Map status cũ sang chuẩn
+        // Map trạng thái cũ sang flow mới
         let status = order.status || order.appointmentStatus;
-        switch (status) {
-          case "da_hen":
-            status = "WAITING_FOR_APPOINTMENT";
-            break;
-          case "da_den":
-            status = "SAMPLE_COLLECTING";
-            break;
-          case "vang_mat":
-            status = "CANCELLED";
-            break;
-          case "huy":
-            status = "CANCELLED";
-            break;
-          default:
-            break;
-        }
+        if (["Chờ xử lý", "PENDING", "PENDING_CONFIRM"].includes(status)) status = "Chờ xác nhận";
+        if (status === "PROCESSING") status = "Đang lấy mẫu";
+        if (status === "da_hen") status = "Đã hẹn";
+        if (status === "da_den") status = "Đã đến";
+        if (status === "vang_mat" || status === "huy") status = "Đã hủy";
         return {
           ...order,
-          status: status || "PENDING_CONFIRM",
+          status: status,
           appointmentDate: order.appointmentDate || null,
           staffAssigned: order.staffAssigned || null,
           notes: order.notes || "",
@@ -114,17 +104,18 @@ const CenterSampling = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadAppointments();
-    // Thêm event listener để cập nhật orders khi localStorage thay đổi
-    window.addEventListener("storage", (event) => {
+  }, []);
+
+  // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
+  useEffect(() => {
+    const handleStorageChange = (event) => {
       if (event.key === "dna_orders") {
+        // Force re-render bằng cách reload data
         loadAppointments();
       }
-    });
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener("storage", () => {});
     };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const handleViewAppointment = (appointment) => {
@@ -136,30 +127,17 @@ const CenterSampling = () => {
   // Dùng chung cho cả lịch hẹn và thống kê
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-      case "WAITING_FOR_APPOINTMENT":
       case "Chờ xác nhận":
-      case "Chờ đến ngày hẹn":
         return "#fdcb6e"; // vàng cam
-      case "CONFIRMED":
-      case "Xác nhận":
-      case "Đã xác nhận":
-        return "#00b894"; // xanh ngọc
-      case "SAMPLE_COLLECTING":
-      case "SAMPLE_COLLECTING_WITH_DOC":
+      case "Đã hẹn":
+        return "#40a9ff"; // xanh dương nhạt
+      case "Đã đến":
+        return "#52c41a"; // xanh lá
       case "Đang lấy mẫu":
-      case "Đang lấy mẫu và lập biên bản":
-      case "TESTING":
-      case "Đang xét nghiệm":
+        return "#fa8c16"; // cam
+      case "Đang xử lý":
         return "#0984e3"; // xanh dương tươi
-      case "SAMPLE_RECEIVED":
-      case "COMPLETED":
-      case "Đã nhận mẫu":
-      case "Đã trả kết quả":
-        return "#b2bec3"; // xám nhạt
-      case "CANCELLED":
       case "Đã hủy":
-      case "Vắng mặt":
         return "#d63031"; // đỏ tươi
       default:
         return "#b2bec3"; // xám nhạt
@@ -168,22 +146,18 @@ const CenterSampling = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "Đang chờ xác nhận";
-      case "CONFIRMED":
-        return "Đã xác nhận";
-      case "WAITING_FOR_APPOINTMENT":
-        return "Chờ đến ngày hẹn";
-      case "SAMPLE_COLLECTING":
+      case "Chờ xác nhận":
+        return "Chờ xác nhận";
+      case "Đã hẹn":
+        return "Đã hẹn";
+      case "Đã đến":
+        return "Đã đến";
+      case "Đang lấy mẫu":
         return "Đang lấy mẫu";
-      case "SAMPLE_COLLECTING_WITH_DOC":
-        return "Đang lấy mẫu và lập biên bản";
-      case "SAMPLE_RECEIVED":
-        return "Đã nhận mẫu";
-      case "TESTING":
-        return "Đang xét nghiệm";
-      case "COMPLETED":
-        return "Đã trả kết quả";
+      case "Đang xử lý":
+        return "Đang xử lý";
+      case "Đã hủy":
+        return "Đã hủy";
       default:
         return status;
     }
@@ -209,6 +183,14 @@ const CenterSampling = () => {
         ))}
       </ul>
     );
+  };
+
+  // Hàm xác định phân loại
+  const getCaseType = (type) => {
+    if (!type) return '';
+    if (type.toLowerCase().includes('dân sự')) return 'Dân sự';
+    if (type.toLowerCase().includes('hành chính')) return 'Hành chính';
+    return '';
   };
 
   const columns = [
@@ -244,6 +226,21 @@ const CenterSampling = () => {
       width: 180,
     },
     {
+      title: "Phân loại",
+      dataIndex: "type",
+      key: "caseType",
+      width: 100,
+      render: (type) => {
+        const caseType = getCaseType(type);
+        if (!caseType) return null;
+        return (
+          <Tag color={caseType === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14 }}>
+            {caseType}
+          </Tag>
+        );
+      },
+    },
+    {
       title: "Ngày hẹn",
       dataIndex: "appointmentDate",
       key: "appointmentDate",
@@ -271,73 +268,134 @@ const CenterSampling = () => {
       title: "Thao tác",
       key: "action",
       width: 200,
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewAppointment(record)}
-            style={{
-              background: "#1890ff",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #1890ff22",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
-          >
-            Xem
-          </Button>
-          {!record.confirmed && (
+      render: (_, record) => {
+        const statusText = getStatusText(record.status);
+        return (
+          <Space size="small">
             <Button
+              type="primary"
               size="small"
-              icon={<CheckCircleOutlined />}
+              icon={<EyeOutlined />}
+              onClick={() => handleViewAppointment(record)}
               style={{
-                background: "#52c41a",
+                background: "#1890ff",
                 color: "#fff",
                 fontWeight: 700,
                 borderRadius: 6,
                 border: "none",
-                boxShadow: "0 2px 8px #52c41a22",
+                boxShadow: "0 2px 8px #1890ff22",
                 transition: "background 0.2s",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#389e0d")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
-              onClick={() => handleConfirmAppointment(record)}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#1765ad")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#1890ff")}
             >
-              Xác nhận
+              Xem
             </Button>
-          )}
-          {record.confirmed && (
-            <Button
-              size="small"
-              icon={<ExperimentOutlined />}
-              style={{
-                background: "#fa8c16",
-                color: "#fff",
-                fontWeight: 700,
-                borderRadius: 6,
-                border: "none",
-                boxShadow: "0 2px 8px #fa8c1622",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#d46b08")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-              onClick={() => handleGoToSampleCollection(record)}
-            >
-              Lấy mẫu
-            </Button>
-          )}
-        </Space>
-      ),
+            {/* Chờ xác nhận: Xác nhận */}
+            {statusText === "Chờ xác nhận" && (
+              <Button
+                size="small"
+                icon={<CheckCircleOutlined />}
+                style={{
+                  background: "#52c41a",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #52c41a22",
+                  transition: "background 0.2s",
+                  marginLeft: 8
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
+                onClick={() => {
+                  updateOrder(record.id, {
+                    status: "Đã hẹn",
+                    updatedAt: new Date().toLocaleString("vi-VN"),
+                  });
+                  loadAppointments();
+                  message.success("Đã chuyển trạng thái sang Đã hẹn!");
+                }}
+              >
+                Xác nhận
+              </Button>
+            )}
+            {/* Đã hẹn: Đã đến */}
+            {statusText === "Đã hẹn" && (
+              <Button
+                size="small"
+                icon={<CheckCircleOutlined />}
+                style={{
+                  background: "#52c41a",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #52c41a22",
+                  transition: "background 0.2s",
+                  marginLeft: 8
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
+                onClick={() => {
+                  updateOrder(record.id, {
+                    status: "Đã đến",
+                    updatedAt: new Date().toLocaleString("vi-VN"),
+                  });
+                  loadAppointments();
+                  message.success("Đã chuyển trạng thái sang Đã đến!");
+                }}
+              >
+                Đã đến
+              </Button>
+            )}
+            {/* Đã đến: Lấy mẫu */}
+            {statusText === "Đã đến" && (
+              <Button
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                  marginLeft: 8
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+                onClick={() => handleGoToSampleCollection(record, true)}
+              >
+                Lấy mẫu
+              </Button>
+            )}
+            {/* Đang lấy mẫu: Tiếp tục lấy mẫu */}
+            {statusText === "Đang lấy mẫu" && (
+              <Button
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                  marginLeft: 8
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+                onClick={() => handleGoToSampleCollection(record, false)}
+              >
+                Tiếp tục lấy mẫu
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -349,33 +407,50 @@ const CenterSampling = () => {
       ) === today
   );
 
-  const handleConfirmAppointment = (record) => {
-    // Cập nhật trạng thái xác nhận, giữ nguyên ngày hẹn cũ, gán người phân công là staff hiện tại
-    updateOrder(record.id, {
-      confirmed: true,
-      status: "Xác nhận",
-      appointmentStatus: "Xác nhận",
-      appointmentDate: record.appointmentDate, // giữ nguyên ngày hẹn
-      staffAssigned: user?.name || "",
-      updatedAt: new Date().toLocaleString("vi-VN"),
-    });
-    loadAppointments();
-    message.success("Đã xác nhận lịch hẹn!");
-  };
-
-  const handleGoToSampleCollection = (record) => {
-    // Lưu thông tin đơn hàng vào localStorage để SampleCollection lấy ra điền tự động
-    localStorage.setItem(
-      "dna_sample_collection_prefill",
-      JSON.stringify({
-        orderId: record.id,
-        collectionDate: record.appointmentDate || "",
-        requesterName: record.name || "",
-      })
-    );
-    // Chuyển tab sang Lấy mẫu xét nghiệm
-    if (dashboardCtx?.setActiveTab) {
-      dashboardCtx.setActiveTab("sample-collection");
+  const handleGoToSampleCollection = (record, isFirst) => {
+    const caseType = getCaseType(record.type);
+    if (caseType === 'Dân sự') {
+      localStorage.setItem(
+        "dna_sample_collection_prefill",
+        JSON.stringify({
+          orderId: record.id,
+          collectionDate: record.appointmentDate || "",
+          requesterName: record.name || "",
+          appointmentDate: record.appointmentDate || "",
+          fullName: record.name || "",
+          email: record.email || "",
+          phone: record.phone || "",
+          address: record.address || "",
+          cccd: record.idNumber || record.cccd || "",
+          serviceType: record.type || "",
+        })
+      );
+      // Nếu là lần đầu bấm Lấy mẫu thì chuyển trạng thái sang Đang lấy mẫu
+      if (isFirst) {
+        updateOrder(record.id, {
+          status: "Đang lấy mẫu",
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        });
+        loadAppointments();
+      }
+      // Chuyển tab sang lấy mẫu dân sự
+      if (dashboardCtx?.setActiveTab) {
+        dashboardCtx.setActiveTab("civil-sample-collection");
+      }
+    } else {
+      // Hành chính: giữ logic cũ
+      localStorage.setItem(
+        "dna_sample_collection_prefill",
+        JSON.stringify({
+          orderId: record.id,
+          collectionDate: record.appointmentDate || "",
+          requesterName: record.name || "",
+          serviceType: record.type || "",
+        })
+      );
+      if (dashboardCtx?.setActiveTab) {
+        dashboardCtx.setActiveTab("sample-collection");
+      }
     }
   };
 
@@ -451,10 +526,10 @@ const CenterSampling = () => {
               value={
                 stats.scheduled > 0
                   ? Math.round(
-                      (stats.arrived /
-                        (stats.scheduled + stats.arrived + stats.missed)) *
-                        100
-                    )
+                    (stats.arrived /
+                      (stats.scheduled + stats.arrived + stats.missed)) *
+                    100
+                  )
                   : 0
               }
               suffix="%"
@@ -524,6 +599,12 @@ const CenterSampling = () => {
                     <Tag color={getStatusColor(apt.status)}>
                       {getStatusText(apt.status)}
                     </Tag>
+                    {/* Hiển thị phân loại */}
+                    {getCaseType(apt.type) && (
+                      <Tag color={getCaseType(apt.type) === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14, marginLeft: 8 }}>
+                        {getCaseType(apt.type)}
+                      </Tag>
+                    )}
                   </div>
                   {apt.type && (
                     <p style={{ margin: 0, fontSize: 12, color: "#666" }}>
@@ -541,7 +622,7 @@ const CenterSampling = () => {
                   >
                     <UserOutlined style={{ marginRight: 4 }} />
                     {apt.staffAssigned ||
-                    (apt.status === "Xác nhận" && user?.name)
+                      (apt.status === "Xác nhận" && user?.name)
                       ? `Nhân viên: ${apt.staffAssigned || user?.name}`
                       : "Chưa phân công"}
                   </p>
@@ -696,6 +777,36 @@ const CenterSampling = () => {
                 >
                   {selectedAppointment.notes}
                 </div>
+              </div>
+            )}
+
+            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <h3>Thành viên cung cấp mẫu:</h3>
+                <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+                  <thead>
+                    <tr style={{ background: '#e6f7ff' }}>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
+                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedAppointment.members.map((mem, idx) => (
+                      <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
+                        <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
+                        <td style={{ padding: 6 }}>{mem.name}</td>
+                        <td style={{ padding: 6 }}>{mem.birth}</td>
+                        <td style={{ padding: 6 }}>{mem.gender}</td>
+                        <td style={{ padding: 6 }}>{mem.relation}</td>
+                        <td style={{ padding: 6 }}>{mem.sampleType}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

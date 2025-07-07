@@ -42,7 +42,7 @@ const { TabPane } = Tabs;
 const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
-  const { orders, updateOrder, getAllOrders, setOrders } = useOrderContext();
+  const { orders, updateOrder } = useOrderContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -62,17 +62,45 @@ const TestingResults = () => {
   const STATUS_REJECTED = "Từ chối";
   const STATUS_COMPLETED = "Hoàn thành";
 
+  // Đưa getStatusText ra ngoài component để không bị thay đổi reference mỗi lần render
+  const getStatusText = (status) => {
+    const s = normalizeStatus(status);
+    if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
+    if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
+    return "Đang xử lý";
+  };
+
   useEffect(() => {
-    setFilteredOrders(orders.filter((order) => !order.isHidden));
+    setFilteredOrders(orders.filter((order) => !order.isHidden && [
+      'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+    ].includes(getStatusText(order.status))));
   }, [orders]);
+
+  // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "dna_orders") {
+        // Force re-render bằng cách trigger một state change
+        setFilteredOrders(prev => [...prev]);
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders.filter((order) => !order.isHidden));
+      setFilteredOrders(orders.filter((order) => !order.isHidden && [
+        'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+      ].includes(getStatusText(order.status))));
     } else {
       setFilteredOrders(
         orders.filter(
-          (order) => !order.isHidden && order.status === filterStatus
+          (order) => !order.isHidden && [
+            'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+          ].includes(getStatusText(order.status)) && getStatusText(order.status) === filterStatus
         )
       );
     }
@@ -86,10 +114,6 @@ const TestingResults = () => {
       }
     }
   }, [editModalVisible, form]);
-
-  useEffect(() => {
-    if (typeof getAllOrders === 'function') setOrders(getAllOrders());
-  });
 
   const handleViewResult = (order) => {
     setSelectedOrder(order);
@@ -127,7 +151,6 @@ const TestingResults = () => {
 
       if (
         initialTableData.length === 0 &&
-        order.sampleMethod === "home" &&
         Array.isArray(order.members) && order.members.length > 0
       ) {
         initialTableData = order.members.map((mem, idx) => ({
@@ -179,13 +202,23 @@ const TestingResults = () => {
       // Kiểm tra nếu là lỗi mẫu
       const isErrorSample = (values.conclusion || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').trim() === 'loi mau';
       if (isErrorSample) {
+        console.log('[DEBUG][handleSaveResult] updateOrder called with (error sample):', {
+          id: selectedOrder.id,
+          status: selectedOrder.status,
+          result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+          testingMethod: values.testingMethod,
+          testingNotes: values.conclusion,
+          conclusion: values.conclusion,
+          resultTableData: resultTableDataCopy,
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        });
         updateOrder(selectedOrder.id, {
           // Không đổi trạng thái, chỉ update kết quả và các trường khác
           result: resultTableDataCopy
             ? JSON.stringify(resultTableDataCopy)
             : values.result,
           testingMethod: values.testingMethod,
-          testingNotes: values.testingNotes,
+          testingNotes: values.conclusion,
           conclusion: values.conclusion,
           resultTableData: resultTableDataCopy,
           updatedAt: new Date().toLocaleString("vi-VN"),
@@ -194,17 +227,26 @@ const TestingResults = () => {
         setCurrentEditOrderId(null);
         setEditModalVisible(false);
         message.warning("Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!");
-        // TODO: Gửi thông báo cho khách hàng ở đây nếu có tích hợp notification
         return;
       }
-      // Trường hợp bình thường
+      // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác thực'
+      console.log('[DEBUG][handleSaveResult] updateOrder called with:', {
+        id: selectedOrder.id,
+        status: "Chờ xác thực",
+        result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
+        testingMethod: values.testingMethod,
+        testingNotes: values.conclusion,
+        conclusion: values.conclusion,
+        resultTableData: resultTableDataCopy,
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      });
       updateOrder(selectedOrder.id, {
-        status: STATUS_WAITING_APPROVAL,
+        status: "Chờ xác thực",
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
         testingMethod: values.testingMethod,
-        testingNotes: values.testingNotes,
+        testingNotes: values.conclusion,
         conclusion: values.conclusion,
         resultTableData: resultTableDataCopy,
         updatedAt: new Date().toLocaleString("vi-VN"),
@@ -254,15 +296,6 @@ const TestingResults = () => {
       .replace(/\s+/g, '')
       .trim();
   }
-
-  const getStatusText = (status) => {
-    const s = normalizeStatus(status);
-    if (['dangxuly', 'processing'].includes(s)) return 'Đang xử lý';
-    if (['choxacthuc', 'waitingapproval'].includes(s)) return 'Chờ xác thực';
-    if (['hoanthanh', 'completed'].includes(s)) return 'Hoàn thành';
-    if (['tuchoi', 'rejected'].includes(s)) return 'Từ chối';
-    return 'Đang xử lý';
-  };
 
   const getStatusColor = (status) => {
     switch (getStatusText(status)) {
@@ -667,142 +700,33 @@ const TestingResults = () => {
 
                 if (hasTableData) {
                   return (
-                    <div
-                      style={{
-                        background: "#f6ffed",
-                        border: "1px solid #b7eb8f",
-                        padding: 16,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Table
-                        bordered
-                        dataSource={
-                          Array.isArray(selectedOrder.resultTableData)
-                            ? selectedOrder.resultTableData
-                            : []
-                        }
-                        pagination={false}
-                        rowKey={(record) => record.key || String(Math.random())}
-                        size="small"
-                      >
-                        <Table.Column
-                          title="STT"
-                          key="index"
-                          render={(text, record, index) => index + 1}
-                          width={60}
-                        />
-                        <Table.Column
-                          title="Họ và tên"
-                          dataIndex="name"
-                          key="name"
-                          width={220}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Năm sinh"
-                          dataIndex="birthYear"
-                          key="birthYear"
-                          width={80}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Giới tính"
-                          dataIndex="gender"
-                          key="gender"
-                          width={80}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Mối quan hệ"
-                          dataIndex="relationship"
-                          key="relationship"
-                          width={90}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Loại mẫu"
-                          dataIndex="sampleType"
-                          key="sampleType"
-                          width={90}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                      </Table>
+                    <div style={{ background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 12, padding: 16, margin: '16px 0' }}>
+                      <table className="result-table" style={{ minWidth: '100%', tableLayout: 'auto', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>STT</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Họ và tên</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Năm sinh</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Giới tính</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Mối quan hệ</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Loại mẫu</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Array.isArray(selectedOrder.resultTableData)
+                            ? selectedOrder.resultTableData.map((data, index) => (
+                              <tr key={data.key}>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{index + 1}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.name}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.birthYear}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.gender}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.relationship}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.sampleType}</td>
+                              </tr>
+                            ))
+                            : null}
+                        </tbody>
+                      </table>
 
                       {selectedOrder.conclusion && (
                         <div style={{ marginTop: 16 }}>
@@ -966,148 +890,41 @@ const TestingResults = () => {
                 marginBottom: "16px",
               }}
             >
-              <Table
-                bordered
-                dataSource={Array.isArray(tableData) ? tableData : []}
-                pagination={false}
-                rowKey={(record) =>
-                  record.key || record.id || String(Math.random())
-                }
-              >
-                <Table.Column
-                  title="STT"
-                  dataIndex="key"
-                  key="key"
-                  width={60}
-                  render={(text, record, index) => index + 1}
-                />
-                <Table.Column
-                  title="Họ và tên"
-                  dataIndex="name"
-                  key="name"
-                  width={220}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Năm sinh"
-                  dataIndex="birthYear"
-                  key="birthYear"
-                  width={80}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Giới tính"
-                  dataIndex="gender"
-                  key="gender"
-                  width={80}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Mối quan hệ"
-                  dataIndex="relationship"
-                  key="relationship"
-                  width={90}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Loại mẫu"
-                  dataIndex="sampleType"
-                  key="sampleType"
-                  width={90}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-              </Table>
+              <div style={{ background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 12, padding: 16, margin: '16px 0' }}>
+                <table className="result-table" style={{ minWidth: '100%', tableLayout: 'auto', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>STT</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Họ và tên</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Năm sinh</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Giới tính</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Mối quan hệ</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Loại mẫu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(tableData) ? tableData.map((data, index) => (
+                      <tr key={data.key}>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{index + 1}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.name}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.birthYear}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.gender}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.relationship}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.sampleType}</td>
+                      </tr>
+                    )) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Form.Item>
 
-          <Form.Item name="conclusion" label="Kết luận">
-            <Select placeholder="Chọn kết luận">
-              <Option value="Có huyết thống">Có huyết thống</Option>
-              <Option value="Không có huyết thống">Không có huyết thống</Option>
-              <Option value="Lỗi mẫu">Lỗi mẫu</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
-            <TextArea
-              rows={3}
-              placeholder="Nhập ghi chú về quá trình xét nghiệm, chất lượng mẫu..."
-            />
+          <Form.Item
+            name="conclusion"
+            label="Kết luận"
+            rules={[{ required: true, message: "Vui lòng nhập kết luận!" }]}
+          >
+            <TextArea rows={3} placeholder="Nhập kết luận và ghi chú kỹ thuật..." />
           </Form.Item>
 
           <Form.Item label="Tải lên file kết quả">

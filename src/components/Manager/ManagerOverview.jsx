@@ -1,8 +1,21 @@
 "use client"
 import { Card, Row, Col, Statistic, Progress, Table, Tag, Timeline, Button } from "antd"
 import { ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, AlertOutlined } from "@ant-design/icons"
+import { useEffect } from "react"
 
 const ManagerOverview = () => {
+    // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
+    useEffect(() => {
+        const handleStorageChange = (event) => {
+            if (event.key === "dna_orders") {
+                // Force re-render để cập nhật thống kê
+                window.location.reload();
+            }
+        };
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
+
     // Dữ liệu thống kê
     const stats = [
         {

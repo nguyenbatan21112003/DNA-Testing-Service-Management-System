@@ -37,7 +37,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
-const SampleCollection = () => {
+const SampleCollection = ({ caseType }) => {
   const location = useLocation();
   const [form] = Form.useForm();
   const [sampleForms, setSampleForms] = useState([]);
@@ -61,6 +61,8 @@ const SampleCollection = () => {
     },
   ]);
   const { user } = useContext(AuthContext);
+
+  const title = caseType === 'Dân sự' ? 'Lấy mẫu xét nghiệm dân sự' : 'Lấy mẫu xét nghiệm hành chính';
 
   useEffect(() => {
     const savedForms = JSON.parse(
@@ -361,10 +363,10 @@ const SampleCollection = () => {
         <h1
           style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
         >
-          Lấy mẫu xét nghiệm
+          {title}
         </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
-          Tạo biên bản lấy mẫu cho xét nghiệm ADN hành chính
+          Tạo biên bản lấy mẫu cho xét nghiệm ADN {caseType === 'Dân sự' ? 'dân sự' : 'hành chính'}
         </p>
       </div>
 
@@ -880,7 +882,7 @@ const SampleCollection = () => {
             </Paragraph>
 
             {Array.isArray(selectedForm.donors) &&
-            selectedForm.donors.length > 0 ? (
+              selectedForm.donors.length > 0 ? (
               selectedForm.donors.map((donor, index) => (
                 <div
                   key={index}

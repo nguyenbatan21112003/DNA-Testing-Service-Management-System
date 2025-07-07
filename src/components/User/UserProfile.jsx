@@ -71,7 +71,6 @@ const UserProfile = () => {
 
   // Thêm state cho modal feedback
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [feedbackOrder, setFeedbackOrder] = useState(null);
 
   // State cho 2 modal riêng biệt
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -215,6 +214,10 @@ const UserProfile = () => {
 
   // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
   const getStatusText = (status, sampleMethod) => {
+    // Nếu là lấy mẫu tại trung tâm và trạng thái là 'Xác nhận' thì chuyển thành 'Đã hẹn'
+    if ((sampleMethod === 'center') && (status === 'Xác nhận')) {
+      return 'Đã hẹn';
+    }
     // Luồng lấy mẫu tại nhà
     if (sampleMethod === "home") {
       if (status === "PENDING_CONFIRM") return "Chờ xác nhận";
@@ -225,6 +228,7 @@ const UserProfile = () => {
       if (status === "WAITING_APPROVAL" || status === "Chờ xác thực") return "Chờ xác nhận";
       if (status === "COMPLETED" || status === "Hoàn thành") return "Đã có kết quả";
       if (status === "REJECTED") return "Từ chối";
+      if (status === "ARRIVED") return "Đã đến";
       return status;
     }
     // ... fallback cho các trường hợp khác ...
@@ -244,11 +248,17 @@ const UserProfile = () => {
       case "WAITING_APPROVAL":
       case "Chờ xác thực":
         return "Chờ xác nhận";
+      case "Xác nhận":
+        if (sampleMethod === 'center') return 'Đã hẹn';
+        return 'Xác nhận';
       case "COMPLETED":
       case "Hoàn thành":
         return "Đã có kết quả";
       case "REJECTED":
         return "Từ chối";
+      case "ARRIVED":
+      case "Đã đến":
+        return "Đã đến";
       default:
         return status;
     }
@@ -837,58 +847,42 @@ const UserProfile = () => {
                           }}
                         >
                           <div className="order-info" style={{ flex: 1 }}>
-                            <div
-                              className="order-id"
-                              style={{
-                                fontWeight: 600,
-                                fontSize: 18,
-                                marginBottom: 8,
-                              }}
-                            >
-                              Mã đơn đăng ký:{" "}
-                              <span
-                                className="order-id-highlight"
-                                style={{ color: "#009e74", fontWeight: 700 }}
-                              >
-                                #{order.id}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, color: '#009e74', fontSize: 17 }}>
+                                Mã đơn đăng ký: #{order.id}
                               </span>
-                              <span
+                              <Tag
                                 style={{
-                                  marginLeft: 16,
-                                  padding: "2px 12px",
-                                  borderRadius: 8,
-                                  background:
-                                    order.status === "Hoàn thành" ||
-                                      order.appointmentStatus === "Xác nhận" ||
-                                      order.status === "Xác nhận"
-                                      ? "#c6f6d5"
-                                      : order.status === "Chờ xử lý"
-                                        ? "#ffe6b0"
-                                        : "#e6f7f1",
-                                  color:
-                                    order.status === "Hoàn thành" ||
-                                      order.appointmentStatus === "Xác nhận" ||
-                                      order.status === "Xác nhận"
-                                      ? "#009e74"
-                                      : order.status === "Chờ xử lý"
-                                        ? "#b88900"
-                                        : "#009e74",
                                   fontWeight: 600,
-                                  fontSize: 14,
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  whiteSpace: "nowrap",
-                                  minWidth: 80,
-                                  maxWidth: 120,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
+                                  fontSize: 15,
+                                  background: (() => {
+                                    const statusText = getStatusText(order.status, order.sampleMethod);
+                                    switch (statusText) {
+                                      case "Chờ xác nhận": return "#1890ff";
+                                      case "Chưa gửi kit": return "#b37feb";
+                                      case "Đã gửi kit": return "#00b894";
+                                      case "Đã gửi mẫu": return "#13c2c2";
+                                      case "Đang xử lý": return "#1890ff";
+                                      case "Đã hẹn": return "#40a9ff";
+                                      case "Đã đến": return "#006d75";
+                                      case "Đã có kết quả": return "#52c41a";
+                                      case "Từ chối": return "#ff4d4f";
+                                      default: return "#bfbfbf";
+                                    }
+                                  })(),
+                                  color: "#fff",
+                                  border: "none",
+                                  boxShadow: "none",
+                                  borderRadius: 8,
+                                  marginLeft: 12,
+                                  minWidth: 90,
+                                  padding: '3px 12px',
+                                  textAlign: 'center',
+                                  display: 'inline-block',
                                 }}
                               >
-                                {getStatusText(
-                                  order.status,
-                                  order.sampleMethod
-                                )}
-                              </span>
+                                {getStatusText(order.status, order.sampleMethod)}
+                              </Tag>
                             </div>
                             <div
                               className="order-type"
@@ -917,7 +911,7 @@ const UserProfile = () => {
                                 marginBottom: 8,
                               }}
                             >
-                              <b>Hình thức thu mẫu:</b>{" "}
+                              <b>Địa điểm thu mẫu:</b>{" "}
                               {getSampleMethodLabel(order.sampleMethod)}
                             </div>
                             <div
@@ -971,223 +965,158 @@ const UserProfile = () => {
                             style={{
                               display: "flex",
                               flexDirection: "column",
-                              gap: 10,
+                              gap: 12,
                               alignItems: "stretch",
                               minWidth: 200,
+                              marginTop: 8,
+                              marginBottom: 8,
                             }}
                           >
+                            {/* Nút Xem chi tiết */}
                             <button
                               className="order-btn"
                               style={{
-                                border: "1px solid #16a34a",
-                                color: "#16a34a",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
+                                border: "1.5px solid #16a34a",
+                                color: "#fff",
+                                background: "#16a34a",
+                                borderRadius: 12,
+                                padding: "10px 22px",
                                 fontWeight: 600,
                                 fontSize: 16,
                                 display: "flex",
                                 alignItems: "center",
                                 gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition:
-                                  "border 0.2s, color 0.2s, background 0.2s",
+                                transition: "background 0.2s, color 0.2s, border 0.2s",
                                 outline: "none",
                                 cursor: "pointer",
+                                boxShadow: "0 2px 8px #16a34a22",
                               }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "#e6f7ef";
-                                e.currentTarget.style.color = "#15803d";
-                                e.currentTarget.style.border =
-                                  "1px solid #15803d";
-                              }}
-                              onMouseOut={(e) => {
+                              onMouseOver={e => {
                                 e.currentTarget.style.background = "#fff";
                                 e.currentTarget.style.color = "#16a34a";
-                                e.currentTarget.style.border =
-                                  "1px solid #16a34a";
+                                e.currentTarget.style.border = "1.5px solid #16a34a";
+                              }}
+                              onMouseOut={e => {
+                                e.currentTarget.style.background = "#16a34a";
+                                e.currentTarget.style.color = "#fff";
+                                e.currentTarget.style.border = "1.5px solid #16a34a";
                               }}
                               onClick={() => {
                                 setSelectedOrder(order);
                                 setShowDetailModal(true);
                               }}
                             >
-                              <Eye size={20} style={{ marginRight: 6 }} /> Xem
-                              chi tiết
+                              <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
                             </button>
-                            <button
-                              className="order-btn"
-                              style={{
-                                border: "1px solid #2563eb",
-                                color: "#2563eb",
-                                background: "#fff",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition:
-                                  "border 0.2s, color 0.2s, background 0.2s",
-                                outline: "none",
-                                cursor: "pointer",
-                              }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "#e0edff";
-                                e.currentTarget.style.color = "#1d4ed8";
-                                e.currentTarget.style.border =
-                                  "1px solid #1d4ed8";
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.background = "#fff";
-                                e.currentTarget.style.color = "#2563eb";
-                                e.currentTarget.style.border =
-                                  "1px solid #2563eb";
-                              }}
-                              onClick={() => {
-                                setSelectedOrder(order);
-                                setShowResultModal(true);
-                              }}
-                            >
-                              <FileText size={20} style={{ marginRight: 6 }} />{" "}
-                              Xem kết quả
-                            </button>
-                            <button
-                              className="order-btn"
-                              style={{
-                                border: "none",
-                                color: "#fff",
-                                background: "#fbbf24",
-                                borderRadius: 10,
-                                padding: "10px 24px",
-                                fontWeight: 600,
-                                fontSize: 16,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                width: "100%",
-                                height: 48,
-                                transition: "background 0.2s, color 0.2s",
-                                outline: "none",
-                                cursor:
-                                  order.status === "Có kết quả" ||
-                                    order.status === "Hoàn thành"
-                                    ? "pointer"
-                                    : "not-allowed",
-                                opacity:
-                                  order.status === "Có kết quả" ||
-                                    order.status === "Hoàn thành"
-                                    ? 1
-                                    : 0.6,
-                              }}
-                              disabled={
-                                !(
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                              }
-                              onMouseOver={(e) => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                                  e.currentTarget.style.background = "#f59e1b";
-                              }}
-                              onMouseOut={(e) => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                )
-                                  e.currentTarget.style.background = "#fbbf24";
-                              }}
-                              onClick={() => {
-                                if (
-                                  order.status === "Có kết quả" ||
-                                  order.status === "Hoàn thành"
-                                ) {
-                                  setFeedbackOrder(order);
-
-                                  // Kiểm tra nếu đã đánh giá trước đó
-                                  if (
-                                    order.feedbacks &&
-                                    order.feedbacks.length > 0
-                                  ) {
-                                    // Lấy đánh giá mới nhất
-                                    const latestFeedback =
-                                      order.feedbacks[
-                                      order.feedbacks.length - 1
-                                      ];
-                                    setOverallRating(
-                                      latestFeedback.rating || 0
-                                    );
-                                    setFeedbackInput(
-                                      latestFeedback.feedback || ""
-                                    );
-                                  } else {
-                                    // Chưa đánh giá, reset form
-                                    setOverallRating(0);
-                                    // Kiểm tra nếu đã đánh giá trước đó
-                                    if (
-                                      order.feedbacks &&
-                                      order.feedbacks.length > 0
-                                    ) {
-                                      // Lấy đánh giá mới nhất
-                                      const latestFeedback =
-                                        order.feedbacks[
-                                        order.feedbacks.length - 1
-                                        ];
-                                      setOverallRating(
-                                        latestFeedback.rating || 0
-                                      );
-                                      setFeedbackInput(
-                                        latestFeedback.feedback || ""
-                                      );
-                                    } else {
-                                      // Chưa đánh giá, reset form
-                                      setOverallRating(0);
-                                      setFeedbackInput("");
-                                    }
-
-                                    setFeedbackSuccess("");
-                                    setShowFeedbackModal(true);
-                                  }
-                                }
-                              }}
-                            >
-                              <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
-                            </button>
-                            {order.sampleMethod === "home" &&
-                              (order.kitStatus === "KIT_SENT" ||
-                                order.status === "KIT_SENT") && (
-                                <button
-                                  style={{
-                                    marginTop: 4,
-                                    border: "1px solid #009e74",
-                                    color: "#fff",
-                                    background: "#009e74",
-                                    borderRadius: 10,
-                                    padding: "10px 24px",
-                                    fontWeight: 600,
-                                    fontSize: 16,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 8,
-                                    width: "100%",
-                                    height: 48,
-                                    transition: "background 0.2s, color 0.2s",
-                                    outline: "none",
-                                    cursor: "pointer",
-                                    justifyContent: "center",
-                                  }}
-                                  onClick={() => handleUserConfirmKit(order)}
-                                >
-                                  Xác nhận đã nhận kit
-                                </button>
-                              )}
+                            {/* Nút Xem kết quả */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #1677ff",
+                                  color: "#fff",
+                                  background: "#1677ff",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #1677ff22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#1677ff";
+                                  e.currentTarget.style.border = "1.5px solid #1677ff";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#1677ff";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #1677ff";
+                                }}
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setShowResultModal(true);
+                                }}
+                              >
+                                <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
+                              </button>
+                            )}
+                            {/* Nút Đánh giá */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && (
+                              <button
+                                className="order-btn"
+                                style={{
+                                  border: "1.5px solid #ffc53d",
+                                  color: "#fff",
+                                  background: "#ffc53d",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #ffc53d22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#ffc53d";
+                                  e.currentTarget.style.border = "1.5px solid #ffc53d";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#ffc53d";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #ffc53d";
+                                }}
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setShowResultModal(true);
+                                }}
+                              >
+                                <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
+                              </button>
+                            )}
+                            {/* Nút Xác nhận đã nhận kit */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã gửi kit" && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #00bfae",
+                                  color: "#fff",
+                                  background: "#00bfae",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #00bfae22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#00bfae";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#00bfae";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onClick={() => handleUserConfirmKit(order)}
+                              >
+                                Xác nhận đã nhận kit
+                              </button>
+                            )}
                           </div>
                         </div>
                         {/* Nút ẩn/hiện timeline */}
@@ -1248,80 +1177,147 @@ const UserProfile = () => {
                   <>
                     <div className="form-group password-group">
                       <label>Mật khẩu hiện tại</label>
-                      <input
-                        type={showPw.current ? "text" : "password"}
-                        name="current"
-                        value={pwForm.current}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, current: !p.current }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.current ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.current ? "text" : "password"}
+                          name="current"
+                          value={pwForm.current}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, current: !p.current }))}
+                          tabIndex={0}
+                          aria-label={showPw.current ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.current ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="form-group password-group">
                       <label>Mật khẩu mới</label>
-                      <input
-                        type={showPw.new ? "text" : "password"}
-                        name="new"
-                        value={pwForm.new}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, new: !p.new }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.new ? "text" : "password"}
+                          name="new"
+                          value={pwForm.new}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, new: !p.new }))}
+                          tabIndex={0}
+                          aria-label={showPw.new ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.new ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="form-group password-group">
                       <label>Xác nhận mật khẩu mới</label>
-                      <input
-                        type={showPw.confirm ? "text" : "password"}
-                        name="confirm"
-                        value={pwForm.confirm}
-                        onChange={handlePwChange}
-                        required
-                        style={{ paddingRight: 40 }}
-                      />
-                      <button
-                        className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-                        onClick={() =>
-                          setShowPw((p) => ({ ...p, confirm: !p.confirm }))
-                        }
-                        tabIndex={0}
-                        aria-label={
-                          showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                        }
-                      >
-                        {showPw.confirm ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        <input
+                          type={showPw.confirm ? "text" : "password"}
+                          name="confirm"
+                          value={pwForm.confirm}
+                          onChange={handlePwChange}
+                          required
+                          style={{
+                            height: 44,
+                            padding: '0 44px 0 12px',
+                            width: '100%',
+                            background: '#fff',
+                            borderRadius: 10,
+                            border: '1.5px solid #e0e7ef',
+                            fontSize: 16,
+                            fontWeight: 500,
+                            outline: 'none',
+                            boxShadow: 'none',
+                            transition: 'border 0.2s',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 12,
+                            height: '100%',
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            margin: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#888'
+                          }}
+                          onClick={() => setShowPw((p) => ({ ...p, confirm: !p.confirm }))}
+                          tabIndex={0}
+                          aria-label={showPw.confirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                          {showPw.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
                     </div>
                     <button className="submit-button" type="submit">
                       Gửi mã xác thực
@@ -1395,9 +1391,9 @@ const UserProfile = () => {
       {/* Modal feedback */}
       {
         showFeedbackModal &&
-        feedbackOrder &&
-        (feedbackOrder.status === "Hoàn thành" ||
-          feedbackOrder.status === "Có kết quả") && (
+        selectedOrder &&
+        (getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Hoàn thành" ||
+          getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Có kết quả") && (
           <div
             style={{
               position: "fixed",
@@ -1453,14 +1449,10 @@ const UserProfile = () => {
                   textAlign: "center",
                 }}
               >
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
-                  ? "Đánh giá của bạn"
-                  : "Đánh giá dịch vụ"}
+                Đánh giá của bạn
               </h3>
               <p style={{ textAlign: "center" }}>
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
-                  ? "Bạn đã đánh giá dịch vụ này trước đó"
-                  : "Bạn hãy đánh giá dịch vụ của chúng tôi"}
+                Bạn hãy đánh giá dịch vụ của chúng tôi
               </p>
               {/* Star rating tổng thể */}
               <div
@@ -1478,16 +1470,16 @@ const UserProfile = () => {
                     color={overallRating >= star ? "#ffc107" : "#ddd"}
                     style={{
                       cursor:
-                        feedbackOrder.feedbacks &&
-                          feedbackOrder.feedbacks.length > 0
+                        selectedOrder.feedbacks &&
+                          selectedOrder.feedbacks.length > 0
                           ? "default"
                           : "pointer",
                     }}
                     onClick={() => {
                       if (
                         !(
-                          feedbackOrder.feedbacks &&
-                          feedbackOrder.feedbacks.length > 0
+                          selectedOrder.feedbacks &&
+                          selectedOrder.feedbacks.length > 0
                         )
                       ) {
                         setOverallRating(star);
@@ -1516,15 +1508,15 @@ const UserProfile = () => {
                 onChange={(e) => {
                   if (
                     !(
-                      feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                      selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                     )
                   ) {
                     setFeedbackInput(e.target.value);
                   }
                 }}
                 readOnly={
-                  feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
+                  selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0
                 }
                 style={{
                   width: "100%",
@@ -1534,14 +1526,14 @@ const UserProfile = () => {
                   border: "1px solid #ccc",
                   fontSize: 16,
                   background:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#f6f8fa"
                       : "#fff",
                 }}
               />
               {/* Nút đánh giá hoặc đóng tùy theo đã đánh giá hay chưa */}
-              {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0 ? (
+              {selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0 ? (
                 <div
                   style={{
                     display: "flex",
@@ -1564,8 +1556,8 @@ const UserProfile = () => {
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>
                       Đánh giá vào ngày:{" "}
                       {
-                        feedbackOrder.feedbacks[
-                          feedbackOrder.feedbacks.length - 1
+                        selectedOrder.feedbacks[
+                          selectedOrder.feedbacks.length - 1
                         ].date
                       }
                     </div>
@@ -1579,7 +1571,7 @@ const UserProfile = () => {
                       return;
                     }
                     addFeedback(
-                      feedbackOrder.id,
+                      selectedOrder.id,
                       feedbackInput,
                       overallRating,
                       { overall: overallRating }
@@ -1619,13 +1611,13 @@ const UserProfile = () => {
                 onClick={() => setShowFeedbackModal(false)}
                 style={{
                   background:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#009e74"
                       : "#eee",
                   color:
-                    feedbackOrder.feedbacks &&
-                      feedbackOrder.feedbacks.length > 0
+                    selectedOrder.feedbacks &&
+                      selectedOrder.feedbacks.length > 0
                       ? "#fff"
                       : "#666",
                   border: "none",
@@ -1638,7 +1630,7 @@ const UserProfile = () => {
                   fontSize: 16,
                 }}
               >
-                {feedbackOrder.feedbacks && feedbackOrder.feedbacks.length > 0
+                {selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0
                   ? "Đóng"
                   : "Hủy"}
               </button>
@@ -1730,33 +1722,36 @@ const UserProfile = () => {
                     Trạng thái:
                   </span>
                   <Tag
-                    color={(() => {
-                      switch (
-                      getStatusText(
-                        selectedOrder.status,
-                        selectedOrder.sampleMethod
-                      )
-                      ) {
-                        case "Xác nhận":
-                          return "#1890ff";
-                        case "Hoàn thành":
-                          return "#52c41a";
-                        case "Chờ xử lý":
-                          return "#fa8c16";
-                        case "Từ chối":
-                          return "#ff4d4f";
-                        case "Đã gửi mẫu":
-                          return "#52c41a";
-                        default:
-                          return "#bfbfbf";
-                      }
-                    })()}
-                    style={{ fontWeight: 600, fontSize: 15 }}
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 15,
+                      background: (() => {
+                        const statusText = getStatusText(selectedOrder.status, selectedOrder.sampleMethod);
+                        switch (statusText) {
+                          case "Chờ xác nhận": return "#1890ff";
+                          case "Chưa gửi kit": return "#b37feb";
+                          case "Đã gửi kit": return "#00b894";
+                          case "Đã gửi mẫu": return "#13c2c2";
+                          case "Đang xử lý": return "#1890ff";
+                          case "Đã hẹn": return "#40a9ff";
+                          case "Đã đến": return "#006d75";
+                          case "Đã có kết quả": return "#52c41a";
+                          case "Từ chối": return "#ff4d4f";
+                          default: return "#bfbfbf";
+                        }
+                      })(),
+                      color: "#fff",
+                      border: "none",
+                      boxShadow: "none",
+                      borderRadius: 8,
+                      marginLeft: 12,
+                      minWidth: 90,
+                      padding: '3px 12px',
+                      textAlign: 'center',
+                      display: 'inline-block',
+                    }}
                   >
-                    {getStatusText(
-                      selectedOrder.status,
-                      selectedOrder.sampleMethod
-                    )}
+                    {getStatusText(selectedOrder.status, selectedOrder.sampleMethod)}
                   </Tag>
                   <span style={{ fontWeight: 600, color: "#888", marginLeft: 8 }}>
                     Thể loại:
@@ -1797,7 +1792,7 @@ const UserProfile = () => {
                 />
                 {/* Thông tin đơn hàng còn lại */}
                 <div>
-                  <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                  <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
                   <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
                 </div>
                 <div>
@@ -1950,7 +1945,7 @@ const UserProfile = () => {
                             borderRadius: 8,
                             padding: 12,
                             marginBottom: 16,
-                            overflowX: "auto", // Add horizontal scroll if needed
+                            overflowX: "auto", // Add horiđzontal scroll if needed
                           }}
                         >
                           <table
@@ -2211,25 +2206,25 @@ const UserProfile = () => {
         }}
       >
         <style>{`
-        .kit-confirm-btn {
-          background: #009e74 !important;
-          border-color: #009e74 !important;
-          color: #fff !important;
-          font-weight: 700;
-          font-size: 16px;
-          border-radius: 8px;
-          min-width: 120px;
-          transition: background 0.2s;
-          outline: none;
-          box-shadow: none !important;
-        }
-        .kit-confirm-btn:hover {
-          background: #00c896 !important;
-          border-color: #00c896 !important;
-          box-shadow: none !important;
-          filter: brightness(1.08);
-        }
-      `}</style>
+          .kit-confirm-btn {
+            background: #009e74 !important;
+            border-color: #009e74 !important;
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 8px;
+            min-width: 120px;
+            transition: background 0.2s;
+            outline: none;
+            box-shadow: none !important;
+          }
+          .kit-confirm-btn:hover {
+            background: #00c896 !important;
+            border-color: #00c896 !important;
+            box-shadow: none !important;
+            filter: brightness(1.08);
+          }
+        `}</style>
         {kitInfo && (
           <div
             style={{
