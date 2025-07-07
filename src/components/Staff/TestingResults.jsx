@@ -151,7 +151,6 @@ const TestingResults = () => {
 
       if (
         initialTableData.length === 0 &&
-        order.sampleMethod === "home" &&
         Array.isArray(order.members) && order.members.length > 0
       ) {
         initialTableData = order.members.map((mem, idx) => ({
@@ -701,142 +700,33 @@ const TestingResults = () => {
 
                 if (hasTableData) {
                   return (
-                    <div
-                      style={{
-                        background: "#f6ffed",
-                        border: "1px solid #b7eb8f",
-                        padding: 16,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Table
-                        bordered
-                        dataSource={
-                          Array.isArray(selectedOrder.resultTableData)
-                            ? selectedOrder.resultTableData
-                            : []
-                        }
-                        pagination={false}
-                        rowKey={(record) => record.key || String(Math.random())}
-                        size="small"
-                      >
-                        <Table.Column
-                          title="STT"
-                          key="index"
-                          render={(text, record, index) => index + 1}
-                          width={60}
-                        />
-                        <Table.Column
-                          title="Họ và tên"
-                          dataIndex="name"
-                          key="name"
-                          width={220}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Năm sinh"
-                          dataIndex="birthYear"
-                          key="birthYear"
-                          width={80}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Giới tính"
-                          dataIndex="gender"
-                          key="gender"
-                          width={80}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Mối quan hệ"
-                          dataIndex="relationship"
-                          key="relationship"
-                          width={90}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                        <Table.Column
-                          title="Loại mẫu"
-                          dataIndex="sampleType"
-                          key="sampleType"
-                          width={90}
-                          render={(text) => (
-                            <Input
-                              value={text}
-                              disabled
-                              style={{
-                                background: '#fff',
-                                color: '#222',
-                                fontSize: 16,
-                                fontWeight: 600,
-                                border: '1.5px solid #bfbfbf',
-                                borderRadius: 6,
-                                textAlign: 'center',
-                                letterSpacing: 0.2
-                              }}
-                            />
-                          )}
-                        />
-                      </Table>
+                    <div style={{ background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 12, padding: 16, margin: '16px 0' }}>
+                      <table className="result-table" style={{ minWidth: '100%', tableLayout: 'auto', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>STT</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Họ và tên</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Năm sinh</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Giới tính</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Mối quan hệ</th>
+                            <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Loại mẫu</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Array.isArray(selectedOrder.resultTableData)
+                            ? selectedOrder.resultTableData.map((data, index) => (
+                              <tr key={data.key}>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{index + 1}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.name}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.birthYear}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.gender}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.relationship}</td>
+                                <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.sampleType}</td>
+                              </tr>
+                            ))
+                            : null}
+                        </tbody>
+                      </table>
 
                       {selectedOrder.conclusion && (
                         <div style={{ marginTop: 16 }}>
@@ -1000,132 +890,32 @@ const TestingResults = () => {
                 marginBottom: "16px",
               }}
             >
-              <Table
-                bordered
-                dataSource={Array.isArray(tableData) ? tableData : []}
-                pagination={false}
-                rowKey={(record) =>
-                  record.key || record.id || String(Math.random())
-                }
-              >
-                <Table.Column
-                  title="STT"
-                  dataIndex="key"
-                  key="key"
-                  width={60}
-                  render={(text, record, index) => index + 1}
-                />
-                <Table.Column
-                  title="Họ và tên"
-                  dataIndex="name"
-                  key="name"
-                  width={220}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Năm sinh"
-                  dataIndex="birthYear"
-                  key="birthYear"
-                  width={80}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Giới tính"
-                  dataIndex="gender"
-                  key="gender"
-                  width={80}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Mối quan hệ"
-                  dataIndex="relationship"
-                  key="relationship"
-                  width={90}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-                <Table.Column
-                  title="Loại mẫu"
-                  dataIndex="sampleType"
-                  key="sampleType"
-                  width={90}
-                  render={(text) => (
-                    <Input
-                      value={text}
-                      disabled
-                      style={{
-                        background: '#fff',
-                        color: '#222',
-                        fontSize: 16,
-                        fontWeight: 600,
-                        border: '1.5px solid #bfbfbf',
-                        borderRadius: 6,
-                        textAlign: 'center',
-                        letterSpacing: 0.2
-                      }}
-                    />
-                  )}
-                />
-              </Table>
+              <div style={{ background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 12, padding: 16, margin: '16px 0' }}>
+                <table className="result-table" style={{ minWidth: '100%', tableLayout: 'auto', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>STT</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Họ và tên</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Năm sinh</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Giới tính</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Mối quan hệ</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>Loại mẫu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(tableData) ? tableData.map((data, index) => (
+                      <tr key={data.key}>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{index + 1}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.name}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.birthYear}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.gender}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.relationship}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, wordBreak: 'break-word', whiteSpace: 'normal', textAlign: 'center' }}>{data.sampleType}</td>
+                      </tr>
+                    )) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Form.Item>
 

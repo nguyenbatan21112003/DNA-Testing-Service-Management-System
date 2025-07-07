@@ -68,7 +68,7 @@ const CenterSampling = () => {
         // Map trạng thái cũ sang flow mới
         let status = order.status || order.appointmentStatus;
         if (["Chờ xử lý", "PENDING", "PENDING_CONFIRM"].includes(status)) status = "Chờ xác nhận";
-        if (["Đang xử lý", "PROCESSING"].includes(status)) status = "Đang lấy mẫu";
+        if (status === "PROCESSING") status = "Đang lấy mẫu";
         if (status === "da_hen") status = "Đã hẹn";
         if (status === "da_den") status = "Đã đến";
         if (status === "vang_mat" || status === "huy") status = "Đã hủy";
@@ -421,7 +421,8 @@ const CenterSampling = () => {
           email: record.email || "",
           phone: record.phone || "",
           address: record.address || "",
-          cccd: record.idNumber || record.cccd || ""
+          cccd: record.idNumber || record.cccd || "",
+          serviceType: record.type || "",
         })
       );
       // Nếu là lần đầu bấm Lấy mẫu thì chuyển trạng thái sang Đang lấy mẫu
@@ -444,6 +445,7 @@ const CenterSampling = () => {
           orderId: record.id,
           collectionDate: record.appointmentDate || "",
           requesterName: record.name || "",
+          serviceType: record.type || "",
         })
       );
       if (dashboardCtx?.setActiveTab) {

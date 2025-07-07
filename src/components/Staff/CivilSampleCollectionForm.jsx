@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+import { useOrderContext } from "../../context/OrderContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { UserMinus, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 
 const CivilSampleCollectionForm = ({ appointmentDate }) => {
     const [form, setForm] = useState({
@@ -20,28 +21,36 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
             { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
         ],
     });
+    const { updateOrder } = useOrderContext();
     const [errors, setErrors] = useState({});
-    const [success, setSuccess] = useState("");
     const [prefill, setPrefill] = useState({});
+    const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
     useEffect(() => {
         const data = localStorage.getItem("dna_sample_collection_prefill");
         if (data) setPrefill(JSON.parse(data));
     }, []);
 
+    useEffect(() => {
+        if (prefill) {
+            setForm((prev) => ({
+                ...prev,
+                fullName: prefill.fullName || "",
+                phone: prefill.phone || "",
+                email: prefill.email || "",
+                address: prefill.address || "",
+                cccd: prefill.cccd || "",
+                serviceType: prefill.serviceType || prefill.type || prev.serviceType,
+            }));
+        }
+    }, [prefill]);
+
     const validate = () => {
         const newErrors = {};
-        if (!form.fullName.trim()) newErrors.fullName = "Bắt buộc";
-        if (!form.phone.match(/^0\d{9}$/)) newErrors.phone = "SĐT không hợp lệ";
-        if (!form.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) newErrors.email = "Email không hợp lệ";
-        if (!form.address.trim()) newErrors.address = "Bắt buộc";
-        if (!form.serviceType) newErrors.serviceType = "Bắt buộc";
-        if (!form.sampleMethod) newErrors.sampleMethod = "Bắt buộc";
-        if (!form.cccd.match(/^\d{9,12}$/)) newErrors.cccd = "CCCD không hợp lệ";
-        if (!form.testDate) newErrors.testDate = "Bắt buộc";
+        // Chỉ validate thành viên cung cấp mẫu
         form.members.forEach((m, i) => {
             if (!m.name.trim()) newErrors[`member_name_${i}`] = "Bắt buộc";
-            if (!m.birth.trim()) newErrors[`member_birth_${i}`] = "Bắt buộc";
+            if (!/^(19|20)\d{2}$/.test(m.birth.trim())) newErrors[`member_birth_${i}`] = "Năm sinh không hợp lệ";
             if (!m.gender) newErrors[`member_gender_${i}`] = "Bắt buộc";
             if (!m.relation.trim()) newErrors[`member_relation_${i}`] = "Bắt buộc";
             if (!m.sampleType.trim()) newErrors[`member_sampleType_${i}`] = "Bắt buộc";
@@ -83,29 +92,51 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!validate()) return;
+        console.log('[DEBUG] handleSubmit called');
+        if (!validate()) {
+            console.warn('[DEBUG] validate fail', errors, form);
+            return;
+        }
         const data = { ...form, testDate: form.testDate?.toLocaleDateString("vi-VN") };
         const saved = JSON.parse(localStorage.getItem("civil_sample_collections") || "[]");
         localStorage.setItem("civil_sample_collections", JSON.stringify([...saved, data]));
-        setSuccess("Lưu thông tin thu mẫu dân sự thành công!");
-        setTimeout(() => setSuccess(""), 2000);
-        setForm({
-            fullName: "",
-            phone: "",
-            email: "",
-            address: "",
-            serviceType: "",
-            serviceCategory: "Dân sự",
-            sampleMethod: "center",
-            cccd: "",
-            testDate: null,
-            note: "",
-            members: [
-                { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
-                { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
-            ],
-        });
-        setErrors({});
+        setShowSuccessOverlay(true);
+        setTimeout(() => {
+            setShowSuccessOverlay(false);
+            setForm({
+                fullName: "",
+                phone: "",
+                email: "",
+                address: "",
+                serviceType: "",
+                serviceCategory: "Dân sự",
+                sampleMethod: "center",
+                cccd: "",
+                testDate: null,
+                note: "",
+                members: [
+                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+                ],
+            });
+            setErrors({});
+        }, 5000);
+
+        if (prefill && prefill.orderId) {
+            console.log('[DEBUG] prefill:', prefill);
+            const allOrders = JSON.parse(localStorage.getItem('dna_orders') || '[]');
+            const foundOrder = allOrders.find(o => String(o.id) === String(prefill.orderId));
+            if (!foundOrder) {
+                console.warn('[DEBUG] Không tìm thấy đơn với orderId:', prefill.orderId, 'Tất cả id:', allOrders.map(o => o.id));
+            } else {
+                console.log('[DEBUG] Đã tìm thấy đơn:', foundOrder);
+            }
+            console.log('[DEBUG] prefill.orderId:', prefill.orderId);
+            updateOrder(prefill.orderId, {
+                status: "Đang xử lý",
+                members: form.members,
+            });
+        }
     };
 
     const textFieldStyle = {
@@ -122,8 +153,54 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         marginBottom: 8
     };
 
+    // DNA emoji icon giống logo
+    const dnaIcon = (
+        <div style={{ fontSize: 64, marginBottom: 18, lineHeight: 1 }}>🧬</div>
+    );
+
     return (
-        <div style={{ maxWidth: 1200, margin: "32px auto", background: "#fff", borderRadius: 18, boxShadow: "0 8px 32px #0002", padding: 36 }}>
+        <div style={{ maxWidth: 1200, margin: "32px auto", background: "#fff", borderRadius: 18, boxShadow: "0 8px 32px #0002", padding: 36, position: 'relative' }}>
+            {showSuccessOverlay && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(255,255,255,0.97)',
+                    zIndex: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 18,
+                    boxShadow: '0 8px 32px #0002',
+                    animation: 'fadeIn 0.3s',
+                }}>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #e0f7fa 0%, #e6ffe6 100%)',
+                        border: '2.5px solid #00b894',
+                        borderRadius: 20,
+                        padding: '48px 40px',
+                        boxShadow: '0 4px 32px #00b89422',
+                        textAlign: 'center',
+                        maxWidth: 480,
+                        minWidth: 320
+                    }}>
+                        <div style={{ marginBottom: 18 }}>{dnaIcon}</div>
+                        <div style={{ fontSize: 30, fontWeight: 900, color: '#009e74', marginBottom: 14, letterSpacing: 0.5 }}>
+                            Lấy mẫu thành công!
+                        </div>
+                        <div style={{ fontSize: 20, color: '#222', marginBottom: 10, fontWeight: 500 }}>
+                            Mẫu sinh phẩm đã được tiếp nhận và chuyển đến phòng xét nghiệm.
+                        </div>
+                        <div style={{ fontSize: 16, color: '#555', marginTop: 18, lineHeight: 1.6 }}>
+                            Cảm ơn bạn đã hoàn thành quy trình lấy mẫu.<br/>
+                            Bạn có thể tiếp tục nhập đơn mới hoặc quay lại danh sách.
+                        </div>
+                    </div>
+                </div>
+            )}
             <h2 style={{ textAlign: "center", color: "#009e74", fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Lấy mẫu dân sự</h2>
             <form onSubmit={handleSubmit}>
                 {/* Nhóm thông tin khách hàng */}
@@ -135,23 +212,23 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Họ và tên</label>
-                            <div style={textFieldStyle}>{prefill.fullName || ""}</div>
+                            <input type="text" name="fullName" value={form.fullName} onChange={handleChange} style={textFieldStyle} required />
                         </div>
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Số điện thoại</label>
-                            <div style={textFieldStyle}>{prefill.phone || ""}</div>
+                            <input type="text" name="phone" value={form.phone} onChange={handleChange} style={textFieldStyle} required />
                         </div>
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Email</label>
-                            <div style={textFieldStyle}>{prefill.email || ""}</div>
+                            <input type="email" name="email" value={form.email} onChange={handleChange} style={textFieldStyle} required />
                         </div>
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Địa chỉ</label>
-                            <div style={textFieldStyle}>{prefill.address || ""}</div>
+                            <input type="text" name="address" value={form.address} onChange={handleChange} style={textFieldStyle} required />
                         </div>
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Số CCCD</label>
-                            <div style={textFieldStyle}>{prefill.cccd || ""}</div>
+                            <input type="text" name="cccd" value={form.cccd} onChange={handleChange} style={textFieldStyle} required />
                         </div>
                     </div>
                 </div>

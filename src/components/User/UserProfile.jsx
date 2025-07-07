@@ -2206,25 +2206,25 @@ const UserProfile = () => {
         }}
       >
         <style>{`
-        .kit-confirm-btn {
-          background: #009e74 !important;
-          border-color: #009e74 !important;
-          color: #fff !important;
-          font-weight: 700;
-          font-size: 16px;
-          border-radius: 8px;
-          min-width: 120px;
-          transition: background 0.2s;
-          outline: none;
-          box-shadow: none !important;
-        }
-        .kit-confirm-btn:hover {
-          background: #00c896 !important;
-          border-color: #00c896 !important;
-          box-shadow: none !important;
-          filter: brightness(1.08);
-        }
-      `}</style>
+          .kit-confirm-btn {
+            background: #009e74 !important;
+            border-color: #009e74 !important;
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 8px;
+            min-width: 120px;
+            transition: background 0.2s;
+            outline: none;
+            box-shadow: none !important;
+          }
+          .kit-confirm-btn:hover {
+            background: #00c896 !important;
+            border-color: #00c896 !important;
+            box-shadow: none !important;
+            filter: brightness(1.08);
+          }
+        `}</style>
         {kitInfo && (
           <div
             style={{
