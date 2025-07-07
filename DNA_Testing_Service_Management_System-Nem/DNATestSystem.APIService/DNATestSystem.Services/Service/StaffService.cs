@@ -343,13 +343,14 @@ namespace DNATestSystem.Services.Service
 
             var forms = request.sampleProviders.Select(p => new SampleCollectionForm
             {
+                CollectionId = request.CollectionId,
                 ProcessId = request.ProcessId,
                 RequestId = process.RequestId,
                 Location = request.location,
                 FullName = p.FullName,
                 Yob = p.Yob,
                 Gender = p.Gender,
-                Idtype = p.Idtype,
+                Idtype = p.IdType,
                 Idnumber = p.Idnumber,
                 IdissuedDate = p.IdissuedDate,
                 IdissuedPlace = p.IdissuedPlace,
@@ -370,5 +371,20 @@ namespace DNATestSystem.Services.Service
 
             return true;
         }
+
+        public async Task<bool> MarkTestProcessSampleReceivedAsync(UpdateTestProcessModel model)
+        {
+            var process = await _context.TestProcesses
+                .FirstOrDefaultAsync(p => p.ProcessId == model.ProcessId && p.StaffId == model.StaffId);
+
+            if (process == null)
+                return false;
+
+            process.CurrentStatus = "SAMPLE_RECEIVED";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

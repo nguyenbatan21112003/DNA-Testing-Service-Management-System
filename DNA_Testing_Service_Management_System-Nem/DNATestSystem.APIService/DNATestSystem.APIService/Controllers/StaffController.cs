@@ -96,5 +96,25 @@ namespace DNATestSystem.APIService.Controllers
                 message = "Sample collection saved successfully"
             });
         }
+        [HttpPut("test-process/mark-sample-received")]
+        public async Task<IActionResult> MarkSampleReceived([FromBody] UpdateTestProcessModel model)
+        {
+            var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(staffIdClaim, out var staffId))
+                return Unauthorized("Invalid staff identity");
+
+            model.StaffId = staffId; // gán vào model
+
+            var result = await _staffService.MarkTestProcessSampleReceivedAsync(model);
+
+            if (!result)
+                return NotFound("Không tìm thấy TestProcess phù hợp với staff hiện tại.");
+
+            return Ok(new
+            {
+                success = true,
+                message = "Cập nhật trạng thái SAMPLE_RECEIVED thành công."
+            });
+        }
     }
 }

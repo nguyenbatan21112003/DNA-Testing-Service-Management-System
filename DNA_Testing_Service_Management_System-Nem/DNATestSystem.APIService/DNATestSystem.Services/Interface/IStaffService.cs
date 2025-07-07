@@ -30,6 +30,8 @@ namespace DNATestSystem.Services.Interface
         Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int staffId, int requestId);
         //gửi đơn
         Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
+        //update
+        Task<bool> MarkTestProcessSampleReceivedAsync(UpdateTestProcessModel model);
 
     }
 }

@@ -14,7 +14,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms
 
         public string? Gender { get; set; }
 
-        public string? Idtype { get; set; }
+        public string? IdType { get; set; }
 
         public string? Idnumber { get; set; }
 
