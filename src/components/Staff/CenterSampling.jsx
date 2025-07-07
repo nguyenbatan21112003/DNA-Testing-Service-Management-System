@@ -140,30 +140,29 @@ const CenterSampling = () => {
       case "WAITING_FOR_APPOINTMENT":
       case "Chờ xác nhận":
       case "Chờ đến ngày hẹn":
-        return "#fa8c16"; // Cam
+        return "#fdcb6e"; // vàng cam
       case "CONFIRMED":
       case "Xác nhận":
       case "Đã xác nhận":
-        return "#1890ff"; // Xanh dương
+        return "#00b894"; // xanh ngọc
       case "SAMPLE_COLLECTING":
       case "SAMPLE_COLLECTING_WITH_DOC":
       case "Đang lấy mẫu":
       case "Đang lấy mẫu và lập biên bản":
-        return "#722ed1"; // Tím
+      case "TESTING":
+      case "Đang xét nghiệm":
+        return "#0984e3"; // xanh dương tươi
       case "SAMPLE_RECEIVED":
       case "COMPLETED":
       case "Đã nhận mẫu":
       case "Đã trả kết quả":
-        return "#52c41a"; // Xanh lá
+        return "#b2bec3"; // xám nhạt
       case "CANCELLED":
       case "Đã hủy":
       case "Vắng mặt":
-        return "#ff4d4f"; // Đỏ
-      case "TESTING":
-      case "Đang xét nghiệm":
-        return "#1890ff"; // Xanh dương nhạt
+        return "#d63031"; // đỏ tươi
       default:
-        return "#d9d9d9";
+        return "#b2bec3"; // xám nhạt
     }
   };
 

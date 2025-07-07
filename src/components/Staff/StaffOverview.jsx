@@ -185,19 +185,6 @@ const StaffOverview = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "Cao":
-        return "red";
-      case "Trung bình":
-        return "orange";
-      case "Thấp":
-        return "green";
-      default:
-        return "default";
-    }
-  };
-
   const urgentColumns = [
     {
       title: "Mã đơn",
@@ -225,15 +212,6 @@ const StaffOverview = () => {
       width: 120,
       render: (status) => (
         <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
-      ),
-    },
-    {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 100,
-      render: (priority) => (
-        <Tag color={getPriorityColor(priority)}>{priority}</Tag>
       ),
     },
     {

@@ -38,7 +38,7 @@ const RegisterPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'url("/ImgRegister/Vice_City_08.jpg") center/cover no-repeat',
+        background: 'linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)',
       }}
     >
       <div style={{ background: '#fff', borderRadius: 18, maxWidth: 420, width: '100%', boxShadow: '0 8px 32px #0002', padding: 36 }}>

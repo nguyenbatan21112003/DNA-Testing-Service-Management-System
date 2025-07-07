@@ -218,11 +218,33 @@ const CustomerFeedback = () => {
       render: (_, record) => (
         <Button
           type="primary"
-          size="small"
-          icon={<EyeOutlined />}
+          icon={<EyeOutlined style={{ fontSize: 14 }} />}
+          style={{
+            background: '#1890ff',
+            borderColor: '#1890ff',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: 14,
+            height: 28,
+            padding: '0 10px',
+            transition: 'background 0.2s, color 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.background = '#1765ad';
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#1765ad';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.background = '#1890ff';
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#1890ff';
+          }}
           onClick={() => handleViewFeedback(record)}
         >
-          Xem
+          <span style={{ marginLeft: 4 }}>Xem</span>
         </Button>
       ),
     },
@@ -244,10 +266,10 @@ const CustomerFeedback = () => {
     percentage:
       feedbacks.length > 0
         ? (
-            (feedbacks.filter((f) => f.rating === rating).length /
-              feedbacks.length) *
-            100
-          ).toFixed(1)
+          (feedbacks.filter((f) => f.rating === rating).length /
+            feedbacks.length) *
+          100
+        ).toFixed(1)
         : 0,
   }));
 
@@ -348,10 +370,10 @@ const CustomerFeedback = () => {
                         item.rating >= 4
                           ? "#52c41a"
                           : item.rating === 3
-                          ? "#faad14"
-                          : item.rating <= 2
-                          ? "#ff4d4f"
-                          : "#00a67e",
+                            ? "#faad14"
+                            : item.rating <= 2
+                              ? "#ff4d4f"
+                              : "#00a67e",
                       borderRadius: 4,
                     }}
                   />
@@ -496,13 +518,12 @@ const CustomerFeedback = () => {
                   background: "#f6f6f6",
                   padding: 16,
                   borderRadius: 6,
-                  borderLeft: `4px solid ${
-                    selectedFeedback.rating >= 4
-                      ? "#52c41a"
-                      : selectedFeedback.rating >= 3
+                  borderLeft: `4px solid ${selectedFeedback.rating >= 4
+                    ? "#52c41a"
+                    : selectedFeedback.rating >= 3
                       ? "#faad14"
                       : "#ff4d4f"
-                  }`,
+                    }`,
                 }}
               >
                 {selectedFeedback.comment}

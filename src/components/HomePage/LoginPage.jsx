@@ -42,7 +42,7 @@ const LoginPage = () => {
         alignItems: "center",
         justifyContent: "center",
         background:
-          'url("/ImgLogin/Leonida_Keys_01.jpg") center/cover no-repeat',
+          'linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)',
       }}
     >
       {showToast && (

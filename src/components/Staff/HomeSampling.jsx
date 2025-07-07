@@ -22,12 +22,14 @@ import {
 } from "antd";
 import {
   HomeOutlined,
-  CarOutlined,
+  GiftOutlined,
   PhoneOutlined,
   EnvironmentOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
   PrinterOutlined,
+  CheckOutlined,
+  ExperimentOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
@@ -53,27 +55,41 @@ const HomeSampling = () => {
     const homeSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "home" && !order.isHidden)
       .map((order) => {
-        // Map status cũ sang chuẩn
-        let status = order.status || order.kitStatus;
-        switch (status) {
+        let mappedStatus = order.status || order.kitStatus;
+        let mappedKitStatus = order.kitStatus || order.status;
+        switch (mappedStatus) {
           case "chua_gui":
-            status = "PENDING_CONFIRM";
+            mappedStatus = "PENDING_CONFIRM";
+            mappedKitStatus = "PENDING_CONFIRM";
             break;
           case "da_gui":
-            status = "KIT_SENT";
+            mappedStatus = "KIT_SENT";
+            mappedKitStatus = "KIT_SENT";
             break;
           case "da_nhan":
-            status = "SAMPLE_RECEIVED";
+            mappedStatus = "SAMPLE_RECEIVED";
+            mappedKitStatus = "SAMPLE_RECEIVED";
             break;
           case "huy":
-            status = "CANCELLED";
+            mappedStatus = "CANCELLED";
+            mappedKitStatus = "CANCELLED";
             break;
+          // Nếu là các status hợp lệ thì giữ nguyên
+          case "PENDING_CONFIRM":
+          case "KIT_NOT_SENT":
+          case "KIT_SENT":
+          case "SAMPLE_RECEIVED":
+            break;
+          // Nếu là các status khác thì map về PENDING_CONFIRM
           default:
+            mappedStatus = "PENDING_CONFIRM";
+            mappedKitStatus = "PENDING_CONFIRM";
             break;
         }
         return {
           ...order,
-          status: status || "PENDING_CONFIRM",
+          status: mappedStatus,
+          kitStatus: mappedKitStatus,
           scheduledDate: order.scheduledDate || null,
           samplerName: order.samplerName || null,
           notes: order.notes || "",
@@ -95,7 +111,7 @@ const HomeSampling = () => {
 
     // Cleanup function
     return () => {
-      window.removeEventListener("storage", () => {});
+      window.removeEventListener("storage", () => { });
     };
   }, []);
 
@@ -133,71 +149,48 @@ const HomeSampling = () => {
 
   const handleSaveUpdate = async (values) => {
     try {
-      // Sử dụng updateOrder từ context để cập nhật đơn hàng
-      updateOrder(selectedRequest.id, {
-        kitStatus: values.samplingStatus,
-        status: values.samplingStatus,
-        scheduledDate:
-          values.scheduledDate && values.scheduledTime
-            ? `${values.scheduledDate.format("DD/MM/YYYY")} ${
-                values.scheduledTime
-              }`
-            : null,
-        samplerName: values.samplerName,
+      await updateOrder(String(selectedRequest.id), {
+        status: "KIT_SENT",
+        kitStatus: "KIT_SENT",
         kitId: values.kitId,
         notes: values.notes,
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
-
-      // Cập nhật lại danh sách đơn hàng
       loadSamplingRequests();
-
       setUpdateModalVisible(false);
-      message.success("Cập nhật trạng thái thành công!");
+      message.success("Đã gửi kit thành công! Trạng thái chuyển sang 'Đã gửi kit'.");
     } catch {
-      message.error("Có lỗi xảy ra khi cập nhật!");
+      message.error("Có lỗi xảy ra khi gửi kit!");
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING_CONFIRM":
-        return "#EA580C";
-      case "CONFIRMED":
-        return "#10B981";
+        return "#00b894"; // xanh ngọc bích
+      case "KIT_NOT_SENT":
+        return "#7c3aed"; // tím
       case "KIT_SENT":
-        return "#2563EB";
-      case "KIT_DELIVERED":
-        return "#6366F1";
+        return "#0984e3"; // xanh dương
       case "SAMPLE_RECEIVED":
-        return "#22C55E";
-      case "TESTING":
-        return "#EC4899";
-      case "COMPLETED":
-        return "#F59E42";
+        return "#16a34a"; // xanh lá
       case "CANCELLED":
-        return "#EF4444";
+        return "#d63031"; // đỏ tươi
       default:
-        return "#e5e7eb";
+        return "#b2bec3"; // xám nhạt
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
       case "PENDING_CONFIRM":
-        return "Đang chờ xác nhận";
-      case "CONFIRMED":
-        return "Đã xác nhận";
+        return "Chờ xác nhận";
+      case "KIT_NOT_SENT":
+        return "Chưa gửi kit";
       case "KIT_SENT":
         return "Đã gửi kit";
-      case "KIT_DELIVERED":
-        return "Đang thu mẫu tại nhà";
       case "SAMPLE_RECEIVED":
         return "Đã nhận mẫu";
-      case "TESTING":
-        return "Đang xét nghiệm";
-      case "COMPLETED":
-        return "Đã trả kết quả";
       case "CANCELLED":
         return "Đã hủy";
       default:
@@ -216,13 +209,19 @@ const HomeSampling = () => {
     return "wait";
   };
 
-  // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
-  const disabledDate = (current) => {
-    // Không cho chọn ngày trước hôm nay
-    const today = dayjs().startOf("day");
-    if (!current) return false;
-    // current.day() === 0 là Chủ nhật
-    return current < today || current.day() === 0;
+  // Hàm ánh xạ status sang step tiến trình
+  const mapStatusToStep = (status) => {
+    switch (status) {
+      case "PENDING_CONFIRM":
+      case "KIT_NOT_SENT":
+        return "chua_gui";
+      case "KIT_SENT":
+        return "da_gui";
+      case "SAMPLE_RECEIVED":
+        return "da_nhan";
+      default:
+        return "chua_gui";
+    }
   };
 
   const columns = [
@@ -277,9 +276,24 @@ const HomeSampling = () => {
       key: "status",
       width: 130,
       render: (_, record) => (
-        <Tag color={getStatusColor(record.status)}>
-          {getStatusText(record.status)}
-        </Tag>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Tag
+            style={{
+              background: getStatusColor(record.status),
+              color: '#fff',
+              fontWeight: 600,
+              borderRadius: 8,
+              padding: '4px 16px',
+              fontSize: 14,
+              border: 'none',
+              letterSpacing: 0.5,
+              textAlign: 'center',
+              minWidth: 110,
+            }}
+          >
+            {getStatusText(record.status)}
+          </Tag>
+        </div>
       ),
     },
     {
@@ -300,7 +314,7 @@ const HomeSampling = () => {
     {
       title: "Thao tác",
       key: "action",
-      width: 200,
+      width: 280,
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -322,33 +336,106 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          <Button
-            size="small"
-            icon={<CarOutlined />}
-            onClick={() => handleUpdateStatus(record)}
-            style={{
-              background: "#fa8c16",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-          >
-            Cập nhật
-          </Button>
-          {record.kitStatus === "da_nhan" && (
+          {/* Nếu là Chờ xác nhận thì hiện nút Xác nhận màu xanh lá */}
+          {record.status === "PENDING_CONFIRM" && (
             <Button
-              type="default"
               size="small"
-              icon={<FileTextOutlined />}
-              onClick={() => handleViewReport(record)}
+              icon={<CheckOutlined />}
+              onClick={async () => {
+                await updateOrder(String(record.id), {
+                  status: "KIT_NOT_SENT",
+                  updatedAt: new Date().toLocaleString("vi-VN"),
+                });
+                loadSamplingRequests();
+                message.success("Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'.");
+              }}
+              style={{
+                background: "#16a34a",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #16a34a55",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#15803d")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#16a34a")}
             >
-              Biên bản
+              Xác nhận
             </Button>
+          )}
+          {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' và không render thêm nút nào khác cho trạng thái này */}
+          {record.status === "KIT_NOT_SENT" && (
+            <Button
+              size="small"
+              icon={<GiftOutlined />}
+              onClick={() => handleUpdateStatus(record)}
+              style={{
+                background: "#fa8c16",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #fa8c1655",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+            >
+              Gửi Kit
+            </Button>
+          )}
+          {/* Ẩn nút Cập nhật cho trạng thái KIT_NOT_SENT */}
+          {record.status !== "KIT_SENT" && record.status !== "SAMPLE_RECEIVED" && record.status !== "PENDING_CONFIRM" && record.status !== "KIT_NOT_SENT" && (
+            <Button
+              size="small"
+              icon={<GiftOutlined />}
+              onClick={() => handleUpdateStatus(record)}
+              style={{
+                background: "#fa8c16",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #fa8c1622",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+            >
+              Cập nhật
+            </Button>
+          )}
+          {record.status === "SAMPLE_RECEIVED" && (
+            <>
+              <Button
+                type="primary"
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#7c3aed",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #7c3aed55",
+                  transition: "background 0.2s",
+                  marginLeft: 8,
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#5b21b6")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
+                onClick={async () => {
+                  await updateOrder(String(record.id), {
+                    status: "PROCESSING",
+                    updatedAt: new Date().toLocaleString("vi-VN"),
+                  });
+                  loadSamplingRequests();
+                  message.success("Đơn đã chuyển sang trạng thái 'Đang xử lý'.");
+                }}
+              >
+                Xét Nghiệm
+              </Button>
+            </>
           )}
         </Space>
       ),
@@ -385,11 +472,28 @@ const HomeSampling = () => {
               scroll={{ x: 1200 }}
             />
           </TabPane>
-          <TabPane tab="Chưa gửi kit" key="pending">
+          <TabPane tab="Chờ xác nhận" key="pending">
             <Table
               columns={columns}
               dataSource={samplingRequests.filter(
                 (req) => req.status === "PENDING_CONFIRM"
+              )}
+              rowKey="id"
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
+              }}
+              scroll={{ x: 1200 }}
+            />
+          </TabPane>
+          <TabPane tab="Chưa gửi kit" key="not_sent">
+            <Table
+              columns={columns}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "KIT_NOT_SENT"
               )}
               rowKey="id"
               pagination={{
@@ -448,28 +552,6 @@ const HomeSampling = () => {
           <Button key="close" onClick={() => setModalVisible(false)}>
             Đóng
           </Button>,
-          <Button
-            key="update"
-            type="primary"
-            icon={<CarOutlined />}
-            onClick={() => {
-              setModalVisible(false);
-              handleUpdateStatus(selectedRequest);
-            }}
-            style={{
-              background: "#fa8c16",
-              color: "#fff",
-              fontWeight: 700,
-              borderRadius: 6,
-              border: "none",
-              boxShadow: "0 2px 8px #fa8c1622",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
-          >
-            Cập nhật trạng thái
-          </Button>,
         ]}
         width={800}
       >
@@ -511,24 +593,22 @@ const HomeSampling = () => {
             <div style={{ marginBottom: 24 }}>
               <h3>Tiến trình lấy mẫu:</h3>
               <Steps
-                current={["chua_gui", "da_gui", "da_nhan"].indexOf(
-                  selectedRequest.kitStatus
-                )}
+                current={["chua_gui", "da_gui", "da_nhan"].indexOf(mapStatusToStep(selectedRequest.status))}
               >
                 <Step
                   title="Chuẩn bị kit"
                   description="Chuẩn bị và gửi kit lấy mẫu"
-                  status={getStepStatus(selectedRequest.kitStatus, "chua_gui")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "chua_gui")}
                 />
                 <Step
                   title="Đã gửi kit"
                   description="Kit đã được gửi đến khách hàng"
-                  status={getStepStatus(selectedRequest.kitStatus, "da_gui")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_gui")}
                 />
                 <Step
                   title="Nhận mẫu"
                   description="Đã nhận được mẫu từ khách hàng"
-                  status={getStepStatus(selectedRequest.kitStatus, "da_nhan")}
+                  status={getStepStatus(mapStatusToStep(selectedRequest.status), "da_nhan")}
                 />
               </Steps>
             </div>
@@ -537,8 +617,8 @@ const HomeSampling = () => {
               <h3>Thông tin bổ sung:</h3>
               <p>
                 <strong>Trạng thái hiện tại:</strong>{" "}
-                <Tag color={getStatusColor(selectedRequest.kitStatus)}>
-                  {getStatusText(selectedRequest.kitStatus)}
+                <Tag color={getStatusColor(selectedRequest.status)}>
+                  {getStatusText(selectedRequest.status)}
                 </Tag>
               </p>
               {selectedRequest.scheduledDate && (
@@ -609,38 +689,19 @@ const HomeSampling = () => {
         title={`Cập nhật trạng thái lấy mẫu #${selectedRequest?.id}`}
         open={updateModalVisible}
         onCancel={() => setUpdateModalVisible(false)}
-        onOk={() => form.submit()}
-        okText="Cập nhật"
-        cancelText="Hủy"
+        footer={null}
         width={600}
-        okButtonProps={{
-          style: {
-            background: "#fa8c16",
-            color: "#fff",
-            fontWeight: 700,
-            borderRadius: 6,
-            border: "none",
-            boxShadow: "0 2px 8px #fa8c1622",
-            transition: "background 0.2s",
-          },
-          onMouseOver: (e) => (e.currentTarget.style.background = "#d46b08"),
-          onMouseOut: (e) => (e.currentTarget.style.background = "#fa8c16"),
-        }}
       >
         <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
-          <Form.Item
-            name="samplingStatus"
-            label="Trạng thái kit"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="PENDING_CONFIRM">Chưa gửi kit</Option>
+          <Form.Item label="Trạng thái kit">
+            <Select value={selectedRequest?.status} disabled>
+              <Option value="PENDING_CONFIRM">Chờ xác nhận</Option>
+              <Option value="KIT_NOT_SENT">Chưa gửi kit</Option>
               <Option value="KIT_SENT">Đã gửi kit</Option>
               <Option value="SAMPLE_RECEIVED">Đã nhận mẫu</Option>
               <Option value="CANCELLED">Đã hủy</Option>
             </Select>
           </Form.Item>
-
           <Form.Item
             name="kitId"
             label="Mã kit"
@@ -648,22 +709,17 @@ const HomeSampling = () => {
           >
             <Input placeholder="Nhập mã kit" />
           </Form.Item>
-
-          <Form.Item name="scheduledDate" label="Ngày hẹn">
-            <DatePicker
-              format="DD/MM/YYYY"
-              placeholder="Chọn ngày hẹn"
-              style={{ width: "100%" }}
-              disabledDate={disabledDate}
-            />
-          </Form.Item>
-
           <Form.Item name="notes" label="Ghi chú">
-            <TextArea
-              rows={4}
-              placeholder="Nhập ghi chú về quá trình lấy mẫu..."
-            />
+            <TextArea rows={3} placeholder="Nhập ghi chú về quá trình lấy mẫu..." />
           </Form.Item>
+          <div style={{ textAlign: "right" }}>
+            <Button onClick={() => setUpdateModalVisible(false)} style={{ marginRight: 8 }}>
+              Hủy
+            </Button>
+            <Button type="primary" htmlType="submit" style={{ background: "#fa8c16", border: "none" }}>
+              Gửi Kit
+            </Button>
+          </div>
         </Form>
       </Modal>
 

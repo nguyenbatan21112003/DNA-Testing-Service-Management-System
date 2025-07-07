@@ -47,7 +47,7 @@ const SampleCollection = () => {
     {
       id: 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -145,7 +145,7 @@ const SampleCollection = () => {
     const newDonor = {
       id: donors.length + 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -237,7 +237,7 @@ const SampleCollection = () => {
         {
           id: 1,
           name: "",
-          idType: "PASSPORT",
+          idType: "CCCD",
           idNumber: "",
           idIssueDate: null,
           idIssuePlace: "",
@@ -528,24 +528,19 @@ const SampleCollection = () => {
                             updateDonor(donor.id, "idType", value)
                           }
                         >
-                          <Option value="PASSPORT">Passport</Option>
                           <Option value="CCCD">CCCD</Option>
                           <Option value="CMND">CMND</Option>
-                          <Option value="Giấy Chứng Sinh">
-                            Giấy Chứng Sinh
-                          </Option>
-                          <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
                         </Select>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Số/quyển số" required>
+                      <Form.Item label="Số CCCD" required>
                         <Input
                           value={donor.idNumber}
                           onChange={(e) =>
                             updateDonor(donor.id, "idNumber", e.target.value)
                           }
-                          placeholder="Số giấy tờ"
+                          placeholder="Số CCCD"
                         />
                       </Form.Item>
                     </Col>
