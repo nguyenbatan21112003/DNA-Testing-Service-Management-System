@@ -192,13 +192,7 @@ namespace DNATestSystem.Controllers
             return result.Success ? Ok(result) : StatusCode(500, result);
         }
 
-        [HttpPost("assign-test-process")]
-        public async Task<IActionResult> AssignTestProcess([FromBody] AssignTestProcessDto dto)
-        {
-            var result = await _userService.AssignTestProcessAsync(dto);
-            return result.Success ? Ok(result) : StatusCode(500, result);
-        }
-
+        
 
     }
 }

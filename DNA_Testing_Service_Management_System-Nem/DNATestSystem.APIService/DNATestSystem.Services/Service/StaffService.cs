@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
@@ -484,6 +485,50 @@ namespace DNATestSystem.Services.Service
             return samples;
         }
 
+        public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
+        {
+
+            var process = new TestProcess
+            {
+                RequestId = dto.RequestId,
+                StaffId = dto.StaffId,
+                ClaimedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Notes = dto.Notes,
+            };
+
+            if (dto.CollectionType == "At Home")
+            {
+                process.KitCode = dto.KitCode;
+                process.CurrentStatus = "KIT SENT";
+            }
+            else if (dto.CollectionType == "At Center")
+            {
+                process.KitCode = "";
+                process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+            }
+            else
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Invalid CollectType."
+                };
+
+            }
+            // là như thế này , nếu mà staff để là At home thì lưu kit
+            // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+            _context.TestProcesses.Add(process);
+            await _context.SaveChangesAsync();
+
+            return new ApiResponseDto
+            {
+                Success = true,
+                Message = "Assigned test process successfully."
+            };
+
+        }
+    
         public async Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request)
         {
             var process = await _context.TestProcesses

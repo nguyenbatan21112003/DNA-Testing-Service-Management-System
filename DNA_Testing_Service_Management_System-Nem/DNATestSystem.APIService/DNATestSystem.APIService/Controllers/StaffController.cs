@@ -171,6 +171,12 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(new { success = true, message = "Cập nhật mẫu thành công." });
         }
 
+        [HttpPost("assign-test-process")]
+        public async Task<IActionResult> AssignTestProcess([FromBody] AssignTestProcessDto dto)
+        {
+            var result = await _staffService.AssignTestProcessAsync(dto);
+            return result.Success ? Ok(result) : StatusCode(500, result);
+        }
 
     }
 }

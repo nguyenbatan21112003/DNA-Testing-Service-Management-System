@@ -46,7 +46,6 @@ namespace DNATestSystem.Services.Interface
         //đăng ký tư vấn
         Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model);
         Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
-        Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto);
 
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
@@ -22,6 +23,8 @@ namespace DNATestSystem.Services.Interface
         Task<List<TestRequestViewDto>> PendingTestRequestAsync();
         Task<List<TestRequestViewDto>> AtCenterTestRequestAsync();
         Task<List<TestRequestViewDto>> AtHomeTestRequestAsync();
+        Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto);
+
         //
         Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync();
         //
