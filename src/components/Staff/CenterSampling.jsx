@@ -139,6 +139,8 @@ const CenterSampling = () => {
         return "#0984e3"; // xanh dương tươi
       case "Đã hủy":
         return "#d63031"; // đỏ tươi
+      case "Hoàn thành":
+        return "#00b894"; // xanh ngọc nổi bật
       default:
         return "#b2bec3"; // xám nhạt
     }

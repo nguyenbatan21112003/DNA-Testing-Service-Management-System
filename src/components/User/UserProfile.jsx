@@ -214,13 +214,11 @@ const UserProfile = () => {
 
   // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
   const getStatusText = (status, sampleMethod) => {
-    // Nếu là lấy mẫu tại trung tâm và trạng thái là 'Xác nhận' thì chuyển thành 'Đã hẹn'
     if ((sampleMethod === 'center') && (status === 'Xác nhận')) {
       return 'Đã hẹn';
     }
-    // Luồng lấy mẫu tại nhà
     if (sampleMethod === "home") {
-      if (status === "PENDING_CONFIRM") return "Chờ xác nhận";
+      if (status === "PENDING_CONFIRM" || status === "pending_staff" || status === "Chờ xử lý" || status === "PENDING" || status === "Chờ xác nhận") return "Chờ xác nhận";
       if (status === "KIT_NOT_SENT") return "Chưa gửi kit";
       if (status === "KIT_SENT") return "Đã gửi kit";
       if (status === "SAMPLE_RECEIVED") return "Đã gửi mẫu";
@@ -231,11 +229,12 @@ const UserProfile = () => {
       if (status === "ARRIVED") return "Đã đến";
       return status;
     }
-    // ... fallback cho các trường hợp khác ...
     switch (status) {
+      case "pending_staff":
+      case "Chờ xử lý":
       case "PENDING":
-        return "Chờ xử lý";
       case "PENDING_CONFIRM":
+      case "Chờ xác nhận":
         return "Chờ xác nhận";
       case "KIT_NOT_SENT":
         return "Chưa gửi kit";
@@ -682,111 +681,42 @@ const UserProfile = () => {
                     />
                     <NewOrderButton />
                   </div>
-                  <div
-                    className="orders-filter"
-                    style={{ display: "flex", gap: 40, marginBottom: 32 }}
-                  >
-                    <span
-                      className={filterStatus === "Tất cả" ? "active" : ""}
+                  {/* Thanh lọc trạng thái: cải thiện giao diện */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "24px 0 36px 0", justifyContent: "flex-start" }}>
+                    <label htmlFor="statusFilter" style={{ fontWeight: 700, fontSize: 17, color: "#009e74", letterSpacing: 0.2, marginRight: 8 }}>
+                      Lọc theo trạng thái:
+                    </label>
+                    <select
+                      id="statusFilter"
+                      value={filterStatus}
+                      onChange={e => setFilterStatus(e.target.value)}
                       style={{
-                        color: filterStatus === "Tất cả" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Tất cả" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Tất cả"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
+                        padding: "10px 24px",
+                        borderRadius: 12,
+                        fontSize: 16,
+                        border: "2px solid #009e74",
+                        minWidth: 200,
+                        background: "#f8fffc",
+                        color: "#222",
+                        fontWeight: 600,
+                        boxShadow: "0 2px 8px #009e7422",
+                        outline: "none",
+                        transition: "border 0.2s, box-shadow 0.2s",
                         cursor: "pointer",
+                        textAlign: "left"
                       }}
-                      onClick={() => setFilterStatus("Tất cả")}
                     >
-                      Tất cả
-                    </span>
-                    <span
-                      className={filterStatus === "Chờ xác nhận" ? "active" : ""}
-                      style={{
-                        color:
-                          filterStatus === "Chờ xác nhận" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Chờ xác nhận" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Chờ xác nhận"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setFilterStatus("Chờ xác nhận")}
-                    >
-                      Chờ xác nhận
-                    </span>
-                    <span
-                      className={filterStatus === "Chưa gửi kit" ? "active" : ""}
-                      style={{
-                        color:
-                          filterStatus === "Chưa gửi kit" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Chưa gửi kit" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Chưa gửi kit"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setFilterStatus("Chưa gửi kit")}
-                    >
-                      Chưa gửi kit
-                    </span>
-                    <span
-                      className={filterStatus === "Đã gửi kit" ? "active" : ""}
-                      style={{
-                        color:
-                          filterStatus === "Đã gửi kit" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Đã gửi kit" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Đã gửi kit"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setFilterStatus("Đã gửi kit")}
-                    >
-                      Đã gửi kit
-                    </span>
-                    <span
-                      className={filterStatus === "Đã gửi mẫu" ? "active" : ""}
-                      style={{
-                        color:
-                          filterStatus === "Đã gửi mẫu" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Đã gửi mẫu" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Đã gửi mẫu"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setFilterStatus("Đã gửi mẫu")}
-                    >
-                      Đã gửi mẫu
-                    </span>
-                    <span
-                      className={filterStatus === "Có kết quả" ? "active" : ""}
-                      style={{
-                        color:
-                          filterStatus === "Có kết quả" ? "#009e74" : "#888",
-                        fontWeight: filterStatus === "Có kết quả" ? 600 : 500,
-                        borderBottom:
-                          filterStatus === "Có kết quả"
-                            ? "2px solid #009e74"
-                            : "none",
-                        paddingBottom: 4,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setFilterStatus("Có kết quả")}
-                    >
-                      Có kết quả
-                    </span>
+                      <option value="Tất cả">Tất cả</option>
+                      <option value="Chờ xác nhận">Chờ xác nhận</option>
+                      <option value="Chưa gửi kit">Chưa gửi kit</option>
+                      <option value="Đã gửi kit">Đã gửi kit</option>
+                      <option value="Đã gửi mẫu">Đã gửi mẫu</option>
+                      <option value="Đang xử lý">Đang xử lý</option>
+                      <option value="Đã hẹn">Đã hẹn</option>
+                      <option value="Đã đến">Đã đến</option>
+                      <option value="Đã có kết quả">Đã có kết quả</option>
+                      <option value="Từ chối">Từ chối</option>
+                    </select>
                   </div>
                   {(() => {
                     const filteredOrders = userOrders

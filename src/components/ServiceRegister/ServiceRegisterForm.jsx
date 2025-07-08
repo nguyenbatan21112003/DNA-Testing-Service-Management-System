@@ -68,7 +68,7 @@ const ServiceRegisterForm = () => {
       type: form.serviceType.options[form.serviceType.selectedIndex].text,
       date: new Date().toLocaleDateString("vi-VN"),
       price: 0,
-      status: form.sampleMethod.value === "home" ? "PENDING_CONFIRM" : "Chờ xử lý",
+      status: "Chờ xác nhận",
       name: user ? user.fullName || user.name : form.fullName.value,
       phone: form.phone.value,
       email: user ? user.email : form.email.value,
