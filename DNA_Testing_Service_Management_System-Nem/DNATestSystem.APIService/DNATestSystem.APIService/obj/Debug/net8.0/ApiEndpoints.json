@@ -269,13 +269,7 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "staffId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -299,6 +293,22 @@
       {
         "Name": "model",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "MarkSampleReceived",
+    "RelativePath": "Staff/mark-sample-received",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel",
         "IsRequired": true
       }
     ],
@@ -358,15 +368,15 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
-    "Method": "MarkSampleReceived",
-    "RelativePath": "Staff/test-process/mark-sample-received",
+    "Method": "UpdateSamplesByRequest",
+    "RelativePath": "Staff/samples/update-by-request",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel",
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto",
         "IsRequired": true
       }
     ],
@@ -375,17 +385,11 @@
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetTestProcessesByStaffId",
-    "RelativePath": "Staff/test-processes/{staffId}",
+    "RelativePath": "Staff/test-processes",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "staffId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

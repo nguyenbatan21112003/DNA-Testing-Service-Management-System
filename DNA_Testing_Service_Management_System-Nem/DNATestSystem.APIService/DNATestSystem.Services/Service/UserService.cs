@@ -183,27 +183,48 @@ namespace DNATestSystem.Services.Service
                                     .Include(s => s.PriceDetails)
                                     .Where(s => s.IsPublished == true)
                                     .ToListAsync();
-            //tạo ra priceDetails khi đã join với Service
-            var service = priceDetails
-                            .Select(s =>
-                            {
-                                var price = s.PriceDetails.FirstOrDefault();
-                                //lấy tk Price ra
+            ////tạo ra priceDetails khi đã join với Service
+            //var service = priceDetails
+            //                .Select(s =>
+            //                {
+            //                    var price = s.PriceDetails.FirstOrDefault();
+            //                    //lấy tk Price ra
 
-                                return new ServiceSummaryDto
-                                {
-                                    Id = s.ServiceId,
-                                    Slug = s.Slug,
-                                    ServiceName = s.ServiceName,
-                                    Description = s.Description,
-                                    Category = s.Category,
-                                    IsUrgent = (bool)s.IsUrgent,
-                                    IncludeVAT = true,
-                                    Price2Samples = price?.Price2Samples,
-                                    Price3Samples = price?.Price3Samples,
-                                    TimeToResult = price?.TimeToResult
-                                };
-                            }).ToList();
+            //                    return new ServiceSummaryDto
+            //                    {
+            //                        Id = s.ServiceId,
+            //                        Slug = s.Slug,
+            //                        ServiceName = s.ServiceName,
+            //                        Description = s.Description,
+            //                        Category = s.Category,
+            //                        IsUrgent = (bool)s.IsUrgent,
+            //                        IncludeVAT = true,
+            //                        Price2Samples = price?.Price2Samples,
+            //                        Price3Samples = price?.Price3Samples,
+            //                        TimeToResult = price?.TimeToResult
+            //                    };
+            //                }).ToList();
+            //return service;
+            var service = priceDetails
+                        .Select(s =>
+                        {
+                            var price = s.PriceDetails.FirstOrDefault(); // có thể null
+
+                            return new ServiceSummaryDto
+                            {
+                                Id = s.ServiceId,
+                                Slug = s.Slug,
+                                ServiceName = s.ServiceName,
+                                Description = s.Description,
+                                Category = s.Category,
+                                IsUrgent = s.IsUrgent ?? false, // null-safe
+                                IncludeVAT = price?.IncludeVat ?? false,  // dùng trong PriceDetails
+                                Price2Samples = price?.Price2Samples ?? 0,
+                                Price3Samples = price?.Price3Samples ?? 0,
+                                TimeToResult = price?.TimeToResult ?? "N/A"
+                            };
+                        })
+                        .ToList();
             return service;
         }
 

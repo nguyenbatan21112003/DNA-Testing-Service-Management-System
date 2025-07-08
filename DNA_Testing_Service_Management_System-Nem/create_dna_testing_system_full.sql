@@ -342,16 +342,16 @@ VALUES
 
 SELECT * FROM Users
 -- Services
-INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent)
+INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent,IsPublished)
 VALUES
-(N'Xét nghiệm ADN cha con', N'Xác định quan hệ huyết thống giữa cha và con', 'xet-nghiem-adn-cha-con', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN mẹ con', N'Xác định quan hệ giữa mẹ và con', 'xet-nghiem-adn-me-con', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN anh/chị em', N'Xác định quan hệ giữa anh/chị và em', 'xet-nghiem-adn-anh-chi-em', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN họ hàng', N'Xác định quan hệ giữa các thành viên trong gia đình', 'xet-nghiem-adn-ho-hang', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN làm giấy khai sinh', N'Dùng cho thủ tục khai sinh', 'xet-nghiem-adn-lam-giay-khai-sinh', N'Hành chính', 2, 0),
-(N'Xét nghiệm ADN thẻ ADN cá nhân', N'Dùng làm thẻ ADN cá nhân', 'xet-nghiem-adn-the-ca-nhan', N'Hành chính', 2, 0),
-(N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Dân sự', 2, 1),
-(N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Hành chính', 2, 1);
+(N'Xét nghiệm ADN cha con', N'Xác định quan hệ huyết thống giữa cha và con', 'xet-nghiem-adn-cha-con', N'Dân sự', 2, 0,1),
+(N'Xét nghiệm ADN mẹ con', N'Xác định quan hệ giữa mẹ và con', 'xet-nghiem-adn-me-con', N'Dân sự', 2, 0, 1),
+(N'Xét nghiệm ADN anh/chị em', N'Xác định quan hệ giữa anh/chị và em', 'xet-nghiem-adn-anh-chi-em', N'Dân sự', 2, 0, 1),
+(N'Xét nghiệm ADN họ hàng', N'Xác định quan hệ giữa các thành viên trong gia đình', 'xet-nghiem-adn-ho-hang', N'Dân sự', 2, 0, 1),
+(N'Xét nghiệm ADN làm giấy khai sinh', N'Dùng cho thủ tục khai sinh', 'xet-nghiem-adn-lam-giay-khai-sinh', N'Hành chính', 2, 0,1),
+(N'Xét nghiệm ADN thẻ ADN cá nhân', N'Dùng làm thẻ ADN cá nhân', 'xet-nghiem-adn-the-ca-nhan', N'Hành chính', 2, 0, 1),
+(N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Dân sự', 2, 1,1),
+(N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Hành chính', 2, 1,1);
 GO
 SELECT * FROM ConsultRequests
 SELECT * FROM Services
@@ -494,3 +494,9 @@ VALUES
 (4, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL),
 (5, NULL, N'Nguyễn Văn A', 'Nam', N'Cha', N'Tế bào niêm mạc', 1985, NULL),
 (5, NULL, N'Nguyễn Văn B', 'Nam', N'Con', N'Máu', 2015, NULL);
+SELECT * FROM Services
+SELECT * FROM PriceDetails
+SELECT * 
+FROM Services s
+LEFT JOIN PriceDetails p ON s.ServiceID = p.ServiceID
+WHERE s.IsPublished = 1

@@ -528,16 +528,6 @@
         "tags": [
           "Staff"
         ],
-        "parameters": [
-          {
-            "name": "staffId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -545,21 +535,10 @@
         }
       }
     },
-    "/Staff/test-processes/{staffId}": {
+    "/Staff/test-processes": {
       "get": {
         "tags": [
           "Staff"
-        ],
-        "parameters": [
-          {
-            "name": "staffId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -621,7 +600,7 @@
         }
       }
     },
-    "/Staff/test-process/mark-sample-received": {
+    "/Staff/mark-sample-received": {
       "put": {
         "tags": [
           "Staff"
@@ -641,6 +620,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/samples/update-by-request": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
               }
             }
           }
@@ -1637,10 +1647,40 @@
           "processId": {
             "type": "integer",
             "format": "int32"
-          },
-          "staffId": {
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTestSampleDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
             "type": "integer",
             "format": "int32"
+          },
+          "ownerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "yob": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "collectedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
