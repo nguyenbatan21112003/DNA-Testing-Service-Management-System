@@ -1046,7 +1046,7 @@ const UserProfile = () => {
                               </button>
                             )}
                             {/* Nút Đánh giá */}
-                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && (
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && !(order.feedbacks && order.feedbacks.length > 0) && (
                               <button
                                 className="order-btn"
                                 style={{
@@ -1077,10 +1077,48 @@ const UserProfile = () => {
                                 }}
                                 onClick={() => {
                                   setSelectedOrder(order);
-                                  setShowResultModal(true);
+                                  setOverallRating(0);
+                                  setFeedbackInput("");
+                                  setShowFeedbackModal(true);
                                 }}
                               >
                                 <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
+                              </button>
+                            )}
+                            {/* Nút Xem đánh giá */}
+                            {getStatusText(order.status, order.sampleMethod) === "Đã có kết quả" && order.feedbacks && order.feedbacks.length > 0 && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #ffc53d",
+                                  color: "#ffc53d",
+                                  background: "#fff",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #ffc53d22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff7e6";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                }}
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  const lastFb = order.feedbacks[order.feedbacks.length - 1];
+                                  setOverallRating(lastFb.rating);
+                                  setFeedbackInput(lastFb.feedback);
+                                  setShowFeedbackModal(true);
+                                }}
+                              >
+                                <Star size={20} style={{ marginRight: 6 }} /> Xem đánh giá
                               </button>
                             )}
                             {/* Nút Xác nhận đã nhận kit */}
@@ -1120,8 +1158,8 @@ const UserProfile = () => {
                           </div>
                         </div>
                         {/* Nút ẩn/hiện timeline */}
-                        <button
-                          style={{
+                              <button
+                                style={{
                             background: showTimeline[order.id]
                               ? "#e6f7f1"
                               : "#fff",
@@ -1160,7 +1198,7 @@ const UserProfile = () => {
             <div
               style={{
                 width: "100%",
-                background: "#fff",
+                                  background: "#fff",
                 borderRadius: 14,
                 boxShadow: "0 2px 12px #e6e6e6",
                 padding: 48,
@@ -1191,7 +1229,7 @@ const UserProfile = () => {
                             background: '#fff',
                             borderRadius: 10,
                             border: '1.5px solid #e0e7ef',
-                            fontSize: 16,
+                                  fontSize: 16,
                             fontWeight: 500,
                             outline: 'none',
                             boxShadow: 'none',
@@ -1393,7 +1431,8 @@ const UserProfile = () => {
         showFeedbackModal &&
         selectedOrder &&
         (getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Hoàn thành" ||
-          getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Có kết quả") && (
+          getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Có kết quả" ||
+          getStatusText(selectedOrder.status, selectedOrder.sampleMethod) === "Đã có kết quả") && (
           <div
             style={{
               position: "fixed",
@@ -1403,8 +1442,8 @@ const UserProfile = () => {
               bottom: 0,
               background: "rgba(0,0,0,0.18)",
               zIndex: 9999,
-              display: "flex",
-              alignItems: "center",
+                                  display: "flex",
+                                  alignItems: "center",
               justifyContent: "center",
             }}
             onClick={() => setShowFeedbackModal(false)}
@@ -1434,7 +1473,7 @@ const UserProfile = () => {
                   border: "none",
                   fontSize: 26,
                   color: "#888",
-                  cursor: "pointer",
+                                  cursor: "pointer",
                 }}
               >
                 &times;
@@ -1474,8 +1513,8 @@ const UserProfile = () => {
                           selectedOrder.feedbacks.length > 0
                           ? "default"
                           : "pointer",
-                    }}
-                    onClick={() => {
+                                }}
+                                onClick={() => {
                       if (
                         !(
                           selectedOrder.feedbacks &&
@@ -1576,6 +1615,25 @@ const UserProfile = () => {
                       overallRating,
                       { overall: overallRating }
                     );
+                    // Cập nhật state userOrders ngay lập tức để ẩn nút Đánh giá
+                    setUserOrders((prev) =>
+                      prev.map((o) =>
+                        o.id === selectedOrder.id
+                          ? {
+                              ...o,
+                              feedbacks: [
+                                {
+                                  rating: overallRating,
+                                  feedback: feedbackInput,
+                                  date: `${new Date().getDate()}/${
+                                    new Date().getMonth() + 1
+                                  }/${new Date().getFullYear()}`,
+                                },
+                              ],
+                            }
+                          : o
+                      )
+                    );
                     setShowFeedbackModal(false);
                     setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
                     setTimeout(() => setFeedbackSuccess(""), 2000);
@@ -1594,8 +1652,8 @@ const UserProfile = () => {
                   }}
                 >
                   Gửi đánh giá
-                </button>
-              )}
+                              </button>
+                            )}
               {feedbackSuccess && (
                 <div
                   style={{
@@ -1605,7 +1663,7 @@ const UserProfile = () => {
                   }}
                 >
                   {feedbackSuccess}
-                </div>
+                          </div>
               )}
               <button
                 onClick={() => setShowFeedbackModal(false)}
@@ -1634,7 +1692,7 @@ const UserProfile = () => {
                   ? "Đóng"
                   : "Hủy"}
               </button>
-            </div>
+                        </div>
           </div>
         )
       }
@@ -1670,9 +1728,9 @@ const UserProfile = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
+                        <button
                 onClick={() => setShowDetailModal(false)}
-                style={{
+                          style={{
                   position: "absolute",
                   top: 14,
                   right: 18,
@@ -1690,7 +1748,7 @@ const UserProfile = () => {
                   fontWeight: 800,
                   fontSize: 26,
                   marginBottom: 18,
-                  color: "#009e74",
+                            color: "#009e74",
                   letterSpacing: -1,
                   textAlign: "center",
                 }}

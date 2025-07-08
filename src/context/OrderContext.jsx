@@ -236,6 +236,12 @@ export function OrderProvider({ children }) {
 
       if (!order.feedbacks) order.feedbacks = [];
 
+      // Chỉ cho phép đánh giá 1 lần cho mỗi đơn
+      if (order.feedbacks.length > 0) {
+        // Đã có feedback, không thêm mới
+        return;
+      }
+
       const newFeedback = {
         rating,
         feedback,

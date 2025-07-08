@@ -495,6 +495,14 @@ const StaffDashboard = () => {
                 <span>
                   Xin chào, {user.name || user.fullName || user.email}
                 </span>
+                <Button
+                  type="text"
+                  icon={<LogoutOutlined />}
+                  onClick={handleLogout}
+                  style={{ color: "#ff4d4f", fontWeight: 500 }}
+                >
+                  Đăng xuất
+                </Button>
               </>
             )}
           </div>
