@@ -1,4 +1,6 @@
-﻿using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+﻿using DNATestSystem.BusinessObjects.Application.Dtos.BlogPost;
+using System.Security.Claims;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +13,66 @@ namespace DNATestSystem.APIService.Controllers
     public class ManagerController : Controller
     {
         private readonly IManagerService _managerService;
-        public ManagerController(IManagerService managerService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ManagerController(IManagerService managerService, IHttpContextAccessor httpContextAccessor)
         {
             _managerService = managerService;
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet("test-results/pending")]
         public IActionResult GetPendingTestResults()
         {
-            var results = _managerService.GetPendingTestResults();
+            var results = _managerService.GetPendingTestResultsAsync();
             return Ok(results);
         }
         [HttpPut("verify")]
-        public IActionResult VerifyTestResult([FromBody] VertifyTestResult dto)
+        public async Task<IActionResult> VerifyTestResult([FromBody] VertifyTestResult dto)
         {
-            var success = _managerService.VerifyTestResult(dto);
-            return success ? Ok("Verified successfully.") : NotFound("TestResult not found or already verified.");
+            var success = await _managerService.VerifyTestResultAsync(dto);
+
+            if (!success)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "TestResult not found or already verified."
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = "Verified successfully."
+            });
+        }
+        [HttpPost("create-BlogPost")]
+        public async Task<IActionResult> CreateBlogPost([FromBody] BlogPostDto dto)
+        {
+            // Lấy AuthorId từ JWT nếu cần
+            var authorId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(authorId, out var parsedId))
+            {
+                return Unauthorized("Không xác định được người viết.");
+            }
+
+            dto.AuthorId = parsedId;
+
+            var result = await _managerService.AssignBolgPostsAsync(dto);
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = result.Message
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
 
     }
