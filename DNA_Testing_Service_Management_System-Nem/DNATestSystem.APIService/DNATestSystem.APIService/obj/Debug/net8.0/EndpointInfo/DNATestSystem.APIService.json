@@ -590,7 +590,7 @@
         }
       }
     },
-    "/Staff": {
+    "/Staff/post-SampleCollection": {
       "post": {
         "tags": [
           "Staff"
@@ -610,6 +610,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/test-process/mark-sample-received": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
               }
             }
           }
@@ -1174,6 +1205,10 @@
       "SampleCollectionFormsSummaryDto": {
         "type": "object",
         "properties": {
+          "collectionId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "processId": {
             "type": "integer",
             "format": "int32"
@@ -1208,7 +1243,7 @@
             "type": "string",
             "nullable": true
           },
-          "idtype": {
+          "idType": {
             "type": "string",
             "nullable": true
           },
@@ -1592,6 +1627,20 @@
           },
           "status": {
             "$ref": "#/components/schemas/StatusNum"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTestProcessModel": {
+        "type": "object",
+        "properties": {
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

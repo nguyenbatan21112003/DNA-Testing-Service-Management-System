@@ -254,22 +254,6 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
-    "Method": "Post",
-    "RelativePath": "Staff",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetAtCenterTestRequests",
     "RelativePath": "Staff/at-center",
     "HttpMethod": "GET",
@@ -342,6 +326,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "Post",
+    "RelativePath": "Staff/post-SampleCollection",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetSamplesByRequest",
     "RelativePath": "Staff/samples",
     "HttpMethod": "GET",
@@ -352,6 +352,22 @@
         "Name": "requestId",
         "Type": "System.Int32",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "MarkSampleReceived",
+    "RelativePath": "Staff/test-process/mark-sample-received",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

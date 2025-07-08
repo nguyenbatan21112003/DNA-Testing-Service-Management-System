@@ -81,6 +81,7 @@ builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IMailService, MailService>();
 // ✅ Đăng ký HttpClient và MailgunService
 builder.Services.AddHttpClient<MailgunService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(

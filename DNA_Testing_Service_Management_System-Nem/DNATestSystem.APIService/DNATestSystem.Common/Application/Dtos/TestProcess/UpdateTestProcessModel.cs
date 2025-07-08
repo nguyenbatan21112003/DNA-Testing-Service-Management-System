@@ -9,7 +9,5 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.TestProcess
     public class UpdateTestProcessModel
     {
         public int ProcessId { get; set; }
-        public int StaffId { get; set; }
-
     }
 }

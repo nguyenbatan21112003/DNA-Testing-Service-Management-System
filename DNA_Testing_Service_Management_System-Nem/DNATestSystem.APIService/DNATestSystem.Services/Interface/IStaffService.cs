@@ -23,15 +23,18 @@ namespace DNATestSystem.Services.Interface
         Task<List<TestRequestViewDto>> AtCenterTestRequestAsync();
         Task<List<TestRequestViewDto>> AtHomeTestRequestAsync();
         //
-        Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId);
+        Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync();
         //
-        Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId);
+        Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync();
         //
-        Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int staffId, int requestId);
+        //Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int requestId);
+        //đổi lại tên method
+        Task<List<TestSampleDto>> GetSamplesByRequestAsync(int requestId);
         //gửi đơn
         Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
-        //update
+        //update TestProcess 49
         Task<bool> MarkTestProcessSampleReceivedAsync(UpdateTestProcessModel model);
-
+        // update Sample 51
+        Task<bool> UpdateTestSamplesByRequestAsync(UpdateTestSampleDto dto);
     }
 }
