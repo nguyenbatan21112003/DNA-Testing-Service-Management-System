@@ -61,7 +61,7 @@ namespace DNATestSystem.Controllers
             var accessToken = await _userService.GenerateJwtAsync(user);
             var refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
-            return Ok(new { accessToken  , user.RoleId});
+            return Ok(new { accessToken  , user.RoleId, user.UserId, user.FullName});
         }
 
         [HttpPost("refresh-token")]

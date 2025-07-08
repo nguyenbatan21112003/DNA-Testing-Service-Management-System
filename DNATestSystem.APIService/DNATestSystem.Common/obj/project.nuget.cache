@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SSB2yK5LEuY=",
+  "dgSpecHash": "K3V0OWwfQns=",
   "success": true,
-  "projectFilePath": "D:\\fileCode\\SWP391\\BE\\BE-Nam\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+  "projectFilePath": "D:\\fileCode\\SWP391\\BE\\BE-Phi\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Asus\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

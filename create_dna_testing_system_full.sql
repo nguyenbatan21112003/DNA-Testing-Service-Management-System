@@ -35,7 +35,7 @@ CREATE TABLE Users (
   Email NVARCHAR(40),
   Password NVARCHAR(255),
   RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
-  CreatedAt DATETIME,
+  CreatedAt DATETIME DEFAULT GETDATE(),
   UpdatedAt DATETIME,
   Status INT
 );
@@ -63,7 +63,7 @@ CREATE TABLE BlogPosts (
   Title NVARCHAR(255),
   Slug NVARCHAR(100) UNIQUE,
   Summary NVARCHAR(500),
-  Content NVARCHAR(500),
+  Content NVARCHAR(MAX),
   AuthorID INT FOREIGN KEY REFERENCES Users(UserID),
   IsPublished BIT DEFAULT 1,
   CreatedAt DATETIME DEFAULT GETDATE(),
@@ -94,9 +94,9 @@ CREATE TABLE Services (
   Category NVARCHAR(50),
   NumberSample TINYINT DEFAULT 1,
   IsUrgent BIT DEFAULT 0,
+  IsPublished BIT DEFAULT 1,
   CreatedAt DATETIME DEFAULT GETDATE(),
   UpdatedAt DATETIME,
-  IsPublished BIT DEFAULT 0
 );
 GO
 --ALTER TABLE Services ADD Slug NVARCHAR(100);
@@ -125,7 +125,7 @@ CREATE TABLE UserSelectedServices (
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   ServiceID INT FOREIGN KEY REFERENCES Services(ServiceID),
   SelectedAt DATETIME,
-  Note TEXT,
+  Note Nvarchar(MAX),
   ConvertedToRequest BIT DEFAULT 0,
   IncludeVAT BIT DEFAULT 0
 );
@@ -155,7 +155,7 @@ CREATE TABLE TestRequests (
   ScheduleDate DATE,
   Address NVARCHAR(255),
   Status NVARCHAR(50),
-  CreatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE() 
 );
 GO
 
@@ -163,11 +163,11 @@ CREATE TABLE TestProcesses (
   ProcessID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
   StaffID INT FOREIGN KEY REFERENCES Users(UserID),
-  ClaimedAt DATETIME,
+  ClaimedAt DATETIME DEFAULT GETDATE()  ,
   KitCode VARCHAR(50),
   CurrentStatus NVARCHAR(50),
-  ProcessState NVARCHAR(50),
-  Notes TEXT,
+  --ProcessState NVARCHAR(50),-- bỏ này nha
+  Notes Nvarchar(MAX),
   UpdatedAt DATETIME
 );
 GO
@@ -188,7 +188,7 @@ IdentityIssuedDate DATE,
 CREATE TABLE TestSamples (
   SampleID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
-  ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
+  --ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),--bỏ này nha
   OwnerName NVARCHAR(100),
   Gender VARCHAR(10),
   Relationship NVARCHAR(30),
@@ -246,11 +246,11 @@ CREATE TABLE TestResults (
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
   EnteredBy INT FOREIGN KEY REFERENCES Users(UserID),
   VerifiedBy INT FOREIGN KEY REFERENCES Users(UserID),
-  ResultData TEXT,
+  ResultData Nvarchar(MAX),
   Status NVARCHAR(50),
-  EnteredAt DATETIME,
+  EnteredAt DATETIME DEFAULT GETDATE() ,
   VerifiedAt DATETIME,
-  CollectedAt DATETIME,
+  --CollectedAt DATETIME,--bỏ do quá dư thừa
 );
 GO
 ALTER TABLE TestResults ADD CollectedAt DATETIME;
@@ -278,7 +278,7 @@ CREATE TABLE Feedbacks (
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   Rating INT,
   Comment NVARCHAR(1000),
-  CreatedAt DATETIME
+  CreatedAt DATETIME DEFAULT GETDATE()
 );
 GO
 
@@ -294,7 +294,7 @@ CREATE TABLE ConsultRequests (
   Message TEXT,
 --  ReplyMessage TEXT,
   Status NVARCHAR(50),
-  CreatedAt DATETIME,
+  CreatedAt DATETIME DEFAULT GETDATE() ,
   RepliedAt DATETIME
 );
 GO
@@ -305,7 +305,7 @@ CREATE TABLE RefreshTokens (
   UserID INT FOREIGN KEY REFERENCES Users(UserID),
   Token NVARCHAR(500),
   ExpiresAt DATETIME,
-  CreatedAt DATETIME,
+  CreatedAt DATETIME DEFAULT GETDATE(),
   Revoked BIT
 );
 GO
@@ -339,17 +339,18 @@ VALUES
 (3, N'Nam', N'56 Lý Thường Kiệt, Quận 10, TP.HCM', '1992-11-10', '/uploads/identity/tranvanc.png', '/uploads/fingerprint/tranvanc.fgp', GETDATE());
 
 SELECT * FROM Users
+DELETE Services
 -- Services
-INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent)
+INSERT INTO Services (ServiceName, Description, Slug, Category, NumberSample, IsUrgent, IsPublished)
 VALUES
-(N'Xét nghiệm ADN cha con', N'Xác định quan hệ huyết thống giữa cha và con', 'xet-nghiem-adn-cha-con', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN mẹ con', N'Xác định quan hệ giữa mẹ và con', 'xet-nghiem-adn-me-con', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN anh/chị em', N'Xác định quan hệ giữa anh/chị và em', 'xet-nghiem-adn-anh-chi-em', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN họ hàng', N'Xác định quan hệ giữa các thành viên trong gia đình', 'xet-nghiem-adn-ho-hang', N'Dân sự', 2, 0),
-(N'Xét nghiệm ADN làm giấy khai sinh', N'Dùng cho thủ tục khai sinh', 'xet-nghiem-adn-lam-giay-khai-sinh', N'Hành chính', 2, 0),
-(N'Xét nghiệm ADN thẻ ADN cá nhân', N'Dùng làm thẻ ADN cá nhân', 'xet-nghiem-adn-the-ca-nhan', N'Hành chính', 2, 0),
-(N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Dân sự', 2, 1),
-(N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Hành chính', 2, 1);
+(N'Xét nghiệm ADN cha con', N'Xác định quan hệ huyết thống giữa cha và con', 'xet-nghiem-adn-cha-con', N'Voluntary', 2, 0, 1),
+(N'Xét nghiệm ADN mẹ con', N'Xác định quan hệ giữa mẹ và con', 'xet-nghiem-adn-me-con', N'Voluntary', 2, 0, 1),
+(N'Xét nghiệm ADN anh/chị em', N'Xác định quan hệ giữa anh/chị và em', 'xet-nghiem-adn-anh-chi-em', N'Voluntary', 2,  0, 1),
+(N'Xét nghiệm ADN họ hàng', N'Xác định quan hệ giữa các thành viên trong gia đình', 'xet-nghiem-adn-ho-hang', N'Voluntary', 2,  0, 1),
+(N'Xét nghiệm ADN làm giấy khai sinh', N'Dùng cho thủ tục khai sinh', 'xet-nghiem-adn-lam-giay-khai-sinh', N'Administrative', 2,  0, 1),
+(N'Xét nghiệm ADN thẻ ADN cá nhân', N'Dùng làm thẻ ADN cá nhân', 'xet-nghiem-adn-the-ca-nhan', N'Administrative', 2,  0, 1),
+(N'Xét nghiệm ADN nhanh (dân sự)', N'Dịch vụ xét nghiệm nhanh trong 24-48 giờ', 'xet-nghiem-adn-nhanh-dan-su', N'Voluntary', 2,  0, 1),
+(N'Xét nghiệm ADN hành chính nhanh', N'Dịch vụ hành chính trả kết quả nhanh 48-72 giờ', 'xet-nghiem-adn-hanh-chinh-nhanh', N'Administrative', 2,  0, 1);
 GO
 SELECT * FROM ConsultRequests
 SELECT * FROM Services
@@ -360,14 +361,14 @@ SELECT * FROM PriceDetails
 -- PriceDetails
 INSERT INTO PriceDetails (ServiceID, Price2Samples, Price3Samples, TimeToResult, IncludeVAT)
 VALUES
-(1, 4500000, 1800000, N'3-5 ngày', 0),
-(2, 4500000, 1800000, N'3-5 ngày', 0),
-(3, 6000000, 2000000, N'5-7 ngày', 0),
-(4, 7500000, 2000000, N'7-10 ngày', 0),
-(5, 6500000, 2000000, N'5-7 ngày', 0),
-(6, 10000000, 3000000, N'48-72 giờ', 0),
-(7, 6500000, 3000000, N'24-48 giờ', 0),
-(8, 10000000, 3000000, N'48-72 giờ', 0);
+(33, 4500000, 1800000, N'3-5 ngày', 0),
+(34, 4500000, 1800000, N'3-5 ngày', 0),
+(35, 6000000, 2000000, N'5-7 ngày', 0),
+(36, 7500000, 2000000, N'7-10 ngày', 0),
+(37, 6500000, 2000000, N'5-7 ngày', 0),
+(38, 10000000, 3000000, N'48-72 giờ', 0),
+(39, 6500000, 3000000, N'24-48 giờ', 0),
+(40, 10000000, 3000000, N'48-72 giờ', 0);
 GO
 
 -- Blog Posts
