@@ -170,20 +170,10 @@ export function OrderProvider({ children }) {
       allOrders[idx] = updatedOrder;
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
-      console.log('[DEBUG][updateOrder] notify condition:', {
-        updatesStatus: updates.status,
-        oldStatus: oldOrder.status,
-        userRole: currentUser?.role_id
-      });
-      if (
-        updates.status &&
-        (updates.status === "Chờ xác thực" || updates.status === "WAITING_APPROVAL") &&
-        currentUser?.role_id !== 2 // Không phải manager
-      ) {
-        const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
-        console.log('[DEBUG][updateOrder] CALL notifyOrderStatusUpdate');
-        notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
-      }
+      // Gọi notifyOrderStatusUpdate ở mọi lần updateOrder để debug
+      const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
+      console.log('[DEBUG][updateOrder] CALL notifyOrderStatusUpdate');
+      notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
 
       // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
       // (Nếu cần gửi cho staff hoặc khách hàng thì giữ lại logic ở đây)

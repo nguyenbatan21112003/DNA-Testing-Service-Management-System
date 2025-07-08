@@ -207,6 +207,7 @@ export function NotificationProvider({ children }) {
 
   // Tạo thông báo cập nhật trạng thái đơn hàng
   const notifyOrderStatusUpdate = (order, oldStatus, newStatus, updatedBy) => {
+    console.log('[DEBUG][notifyOrderStatusUpdate] called', { order, oldStatus, newStatus, updatedBy });
     const statusMessages = {
       "Chờ xử lý": "đã được nhận",
       "Đang xử lý": "đang được xử lý",

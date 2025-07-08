@@ -12,6 +12,7 @@ import {
   LogoutOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import NotificationBell from "../HomePage/NotificationBell";
@@ -237,7 +238,7 @@ const ManagerDashboard = () => {
         </div>
       </Sider>
       <Layout>
-        {/* Header with NotificationBell */}
+        {/* Header with NotificationBell và dòng chào tên manager */}
         <div style={{
           height: 64,
           background: '#fff',
@@ -249,8 +250,36 @@ const ManagerDashboard = () => {
           position: 'sticky',
           top: 0,
           zIndex: 100,
+          gap: 20,
         }}>
           <NotificationBell />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Avatar hoặc chữ cái đầu */}
+            {user?.avatar ? (
+              <img src={user.avatar} alt="avatar" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', marginLeft: 0, border: '2px solid #722ed1' }} />
+            ) : (
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: '#722ed1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 20,
+                fontWeight: 700,
+                marginLeft: 0,
+                textTransform: 'uppercase',
+                userSelect: 'none',
+              }}>
+                {(user?.name || user?.fullName || user?.email || 'M').charAt(0)}
+              </div>
+            )}
+            <span style={{ fontWeight: 600, fontSize: 16, color: '#722ed1' }}>
+              Chào, {user?.name || user?.fullName || user?.email || 'Manager'}
+            </span>
+          </div>
         </div>
         <Content style={{ margin: 0, padding: 0, background: "#f5f5f5", minHeight: "100vh" }}>
           {renderContent()}
