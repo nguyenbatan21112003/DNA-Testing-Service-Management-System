@@ -134,16 +134,21 @@ const ManagerDashboard = () => {
   }
 
   return (
-    <Layout style={{ minHeight: "100vh", height: "100vh", overflow: "hidden" }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         width={220}
         style={{
           background: "#fff",
-          position: "relative",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          height: "100vh",
+          zIndex: 100,
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
           paddingBottom: 0,
+          boxShadow: "2px 0 8px #eee"
         }}
         collapsible
         collapsed={collapsed}
@@ -237,7 +242,7 @@ const ManagerDashboard = () => {
           </Button>
         </div>
       </Sider>
-      <Layout>
+      <Layout style={{ marginLeft: 220 }}>
         {/* Header with NotificationBell và dòng chào tên manager */}
         <div style={{
           height: 64,
@@ -281,7 +286,7 @@ const ManagerDashboard = () => {
             </span>
           </div>
         </div>
-        <Content style={{ margin: 0, padding: 0, background: "#f5f5f5", minHeight: "100vh" }}>
+        <Content style={{ margin: 0, padding: 0, background: "#f5f5f5" }}>
           {renderContent()}
         </Content>
       </Layout>

@@ -48,82 +48,6 @@ const ManagerOverview = () => {
         },
     ]
 
-    // Dữ liệu đơn hàng cần xử lý gấp
-    const urgentOrders = [
-        {
-            key: "1",
-            orderId: "DNA-2024-001",
-            customer: "Nguyễn Văn A",
-            type: "Xét nghiệm cha con",
-            deadline: "2024-01-15",
-            status: "urgent",
-            priority: "Cao",
-        },
-        {
-            key: "2",
-            orderId: "DNA-2024-002",
-            customer: "Trần Thị B",
-            type: "Xét nghiệm huyết thống",
-            deadline: "2024-01-16",
-            status: "processing",
-            priority: "Trung bình",
-        },
-        {
-            key: "3",
-            orderId: "DNA-2024-003",
-            customer: "Lê Văn C",
-            type: "Xét nghiệm anh em",
-            deadline: "2024-01-17",
-            status: "pending",
-            priority: "Cao",
-        },
-    ]
-
-    const columns = [
-        {
-            title: "Mã đơn",
-            dataIndex: "orderId",
-            key: "orderId",
-            render: (text) => <span style={{ fontWeight: 600, color: "#722ed1" }}>{text}</span>,
-        },
-        {
-            title: "Khách hàng",
-            dataIndex: "customer",
-            key: "customer",
-        },
-        {
-            title: "Loại xét nghiệm",
-            dataIndex: "type",
-            key: "type",
-        },
-        {
-            title: "Hạn xử lý",
-            dataIndex: "deadline",
-            key: "deadline",
-        },
-        {
-            title: "Ưu tiên",
-            dataIndex: "priority",
-            key: "priority",
-            render: (priority) => (
-                <Tag color={priority === "Cao" ? "red" : priority === "Trung bình" ? "orange" : "blue"}>{priority}</Tag>
-            ),
-        },
-        {
-            title: "Trạng thái",
-            dataIndex: "status",
-            key: "status",
-            render: (status) => {
-                const statusMap = {
-                    urgent: { color: "red", text: "Khẩn cấp" },
-                    processing: { color: "blue", text: "Đang xử lý" },
-                    pending: { color: "orange", text: "Chờ xử lý" },
-                }
-                return <Tag color={statusMap[status]?.color}>{statusMap[status]?.text}</Tag>
-            },
-        },
-    ]
-
     // Timeline hoạt động
     const activities = [
         {
@@ -236,25 +160,6 @@ const ManagerOverview = () => {
                         </Card>
                     </Col>
                 </Row>
-            </div>
-
-            {/* Đơn hàng cần xử lý gấp */}
-            <div
-                style={{
-                    background: "#fff",
-                    padding: "24px",
-                    borderRadius: "12px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                    border: "1px solid #f0f0f0",
-                }}
-            >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                    <h3 style={{ margin: 0, color: "#722ed1" }}>Đơn hàng cần xử lý gấp</h3>
-                    <Button type="primary" style={{ background: "#722ed1", borderColor: "#722ed1" }}>
-                        Xem tất cả
-                    </Button>
-                </div>
-                <Table columns={columns} dataSource={urgentOrders} pagination={false} size="middle" scroll={{ x: 800 }} />
             </div>
         </div>
     )
