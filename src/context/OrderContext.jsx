@@ -214,13 +214,53 @@ export function OrderProvider({ children }) {
     return Promise.resolve();
   };
 
-  // Khi cập nhật trạng thái thu mẫu, chỉ update samplingStatus
+  // Khi cập nhật trạng thái thu mẫu, update cả samplingStatus và status chính
   const updateSamplingStatus = (orderId, newSamplingStatus) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
+      console.log('[DEBUG][updateSamplingStatus] BEFORE:', allOrders[idx]);
       allOrders[idx].samplingStatus = newSamplingStatus;
       allOrders[idx].updatedAt = new Date().toISOString();
+
+      // Mapping đầy đủ các trạng thái staff sang status chính cho khách hàng
+      let statusForCustomer = newSamplingStatus;
+      switch (newSamplingStatus) {
+        case "Chờ xác nhận":
+        case "WAITING_APPROVAL":
+        case "Chờ xác thực":
+          statusForCustomer = "Chờ xác nhận"; break;
+        case "Chưa gửi kit":
+        case "KIT_NOT_SENT":
+          statusForCustomer = "Chưa gửi kit"; break;
+        case "Đã gửi kit":
+        case "KIT_SENT":
+          statusForCustomer = "Đã gửi kit"; break;
+        case "Đã gửi mẫu":
+        case "SAMPLE_RECEIVED":
+          statusForCustomer = "Đã gửi mẫu"; break;
+        case "Đang xử lý":
+        case "PROCESSING":
+          statusForCustomer = "Đang xử lý"; break;
+        case "Đã hẹn":
+        case "scheduled":
+          statusForCustomer = "Đã hẹn"; break;
+        case "Đã đến":
+        case "ARRIVED":
+          statusForCustomer = "Đã đến"; break;
+        case "Đã có kết quả":
+        case "COMPLETED":
+        case "Hoàn thành":
+          statusForCustomer = "Đã có kết quả"; break;
+        case "Từ chối":
+        case "REJECTED":
+          statusForCustomer = "Từ chối"; break;
+        default:
+          statusForCustomer = newSamplingStatus;
+      }
+      allOrders[idx].status = statusForCustomer;
+      console.log('[DEBUG][updateSamplingStatus] AFTER:', allOrders[idx]);
+
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
     }
