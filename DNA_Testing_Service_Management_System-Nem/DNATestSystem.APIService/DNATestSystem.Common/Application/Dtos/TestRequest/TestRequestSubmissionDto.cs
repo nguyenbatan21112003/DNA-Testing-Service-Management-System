@@ -11,7 +11,6 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.TestRequest
 {
     public class TestRequestSubmissionDto
     {
-        public InvoiceDto Invoice { get; set; }
         public TestRequestDto TestRequest { get; set; }
         public DeclarantDto Declarant { get; set; }
         public List<TestSampleDto> Samples { get; set; }

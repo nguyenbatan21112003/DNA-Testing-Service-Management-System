@@ -16,6 +16,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
+using Microsoft.AspNetCore.Http;
 
 namespace DNATestSystem.Services.Service
 {
@@ -23,13 +24,20 @@ namespace DNATestSystem.Services.Service
     {
         private readonly IApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings)
+        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings
+                           , IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
-
+        private int GetCurrentUserId()
+        {
+            var claim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(claim, out var id) ? id : 0;
+        }
         //public User? Login(UserLoginModel loginModel)
         //{
         //    var user = _context.Users

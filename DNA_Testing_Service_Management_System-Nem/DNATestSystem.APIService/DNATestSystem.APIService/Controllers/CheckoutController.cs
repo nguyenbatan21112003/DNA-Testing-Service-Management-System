@@ -36,36 +36,13 @@ namespace DNATestSystem.APIService.Controllers
                     });
                 }
 
-                if (!int.TryParse(response.OrderId, out var requestId))
-                {
-                    return BadRequest(new { success = false, message = "OrderId không hợp lệ" });
-                }
-
-                // Kiểm tra nếu invoice đã tồn tại -> bỏ qua tạo lại
-                var existingInvoice = await _context.Invoices
-                    .FirstOrDefaultAsync(i => i.RequestId == requestId);
-                if (existingInvoice != null)
-                {
-                    return Ok(new
-                    {
-                        success = true,
-                        message = "Đơn đã được thanh toán trước đó",
-                        requestId = requestId,
-                        paidAt = existingInvoice.PaidAt
-                    });
-                }
-
-                // ✅ Ghi nhận thanh toán
                 var invoice = new Invoice
                 {
-                    RequestId = requestId,
+                    RequestId = int.Parse(response.OrderId), // Giả định luôn đúng
                     PaidAt = DateTime.UtcNow
                 };
 
                 _context.Invoices.Add(invoice);
-
-               
-
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -73,7 +50,7 @@ namespace DNATestSystem.APIService.Controllers
                     success = true,
                     message = "Thanh toán thành công",
                     transactionId = response.TransactionId,
-                    requestId = requestId,
+                    requestId = invoice.RequestId,
                     paidAt = invoice.PaidAt
                 });
             }

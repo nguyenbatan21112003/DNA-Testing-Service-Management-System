@@ -21,7 +21,7 @@ namespace DNATestSystem.APIService.Controllers
             var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
             return Ok(new
             {
-                status = "true",
+                success = true,
                 paymentUrl = url
             });
         }
