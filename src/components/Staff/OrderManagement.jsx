@@ -53,7 +53,7 @@ const OrderManagement = () => {
   useEffect(() => {
     // Load orders khi component mount
     loadOrders();
-  }, []);
+  }, [loadOrders]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
   useEffect(() => {
@@ -65,7 +65,7 @@ const OrderManagement = () => {
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  }, [loadOrders]);
 
   useEffect(() => {
     let filtered = orders;
@@ -140,7 +140,7 @@ const OrderManagement = () => {
       case "PROCESSING":
         return "Đang xử lý";
       case "WAITING_APPROVAL":
-        return "Chờ xác thực";
+        return "Chờ xác nhận";
       case "COMPLETED":
         return "Hoàn thành";
       case "REJECTED":
@@ -155,7 +155,7 @@ const OrderManagement = () => {
         if (status === "Chờ xử lý") return "Chờ xử lý";
         if (status === "Đang xử lý") return "Đang xử lý";
         if (status === "Hoàn thành") return "Hoàn thành";
-        if (status === "Chờ xác thực") return "Chờ xác thực";
+        if (status === "Chờ xác nhận") return "Chờ xác nhận";
         if (status === "Từ chối") return "Từ chối";
         if (status === "Đã gửi kit") return "Đã gửi kit";
         if (status === "Đã nhận mẫu") return "Đã nhận mẫu";
@@ -174,7 +174,7 @@ const OrderManagement = () => {
       case "Đang xử lý":
         return "blue";
       case "WAITING_APPROVAL":
-      case "Chờ xác thực":
+      case "Chờ xác nhận":
         return "purple";
       case "COMPLETED":
       case "Hoàn thành":
@@ -323,7 +323,7 @@ const OrderManagement = () => {
       (order) => order.status === "Hoàn thành" && !order.isHidden
     ).length,
     waitingApproval: orders.filter(
-      (order) => order.status === "Chờ xác thực" && !order.isHidden
+      (order) => order.status === "Chờ xác nhận" && !order.isHidden
     ).length,
     rejected: orders.filter(
       (order) => order.status === "Từ chối" && !order.isHidden
@@ -432,7 +432,7 @@ const OrderManagement = () => {
           <TabPane tab={`Chờ xử lý (${stats.pending})`} key="PENDING" />
           <TabPane tab={`Đang xử lý (${stats.processing})`} key="PROCESSING" />
           <TabPane
-            tab={`Chờ xác thực (${stats.waitingApproval || 0})`}
+            tab={`Chờ xác nhận (${stats.waitingApproval || 0})`}
             key="WAITING_APPROVAL"
           />
           <TabPane tab={`Hoàn thành (${stats.completed})`} key="COMPLETED" />

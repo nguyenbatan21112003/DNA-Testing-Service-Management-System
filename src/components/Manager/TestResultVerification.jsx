@@ -56,7 +56,7 @@ const TestResultVerification = () => {
 
   useEffect(() => {
     const allOrders = getAllOrders();
-    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));
+    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác nhận"));
   }, [ordersNeedingApproval, getAllOrders]);
 
   const loadOrdersNeedingApproval = () => {
@@ -123,7 +123,7 @@ const TestResultVerification = () => {
   }
   const getStatusText = (status) => {
     const s = normalizeStatus(status);
-    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["choxacnhan", "waitingapproval"].includes(s)) return "Chờ xác nhận";
     if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
     if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
@@ -232,7 +232,7 @@ const TestResultVerification = () => {
     total: ordersNeedingApproval.length,
     approved: getAllOrders().filter(o => o.status === "Hoàn thành").length,
     rejected: getAllOrders().filter(o => o.status === "Từ chối").length,
-    waiting: getAllOrders().filter(o => o.status === "Chờ xác thực").length,
+    waiting: getAllOrders().filter(o => o.status === "Chờ xác nhận").length,
   };
 
   return (
@@ -260,7 +260,7 @@ const TestResultVerification = () => {
           <Col xs={24} sm={6}>
             <Card>
               <Statistic
-                title="Tổng đơn chờ xác thực"
+                title="Tổng đơn chờ xác nhận"
                 value={stats.total}
                 prefix={<SafetyCertificateOutlined style={{ color: "#722ed1" }} />}
                 valueStyle={{ color: "#722ed1", fontWeight: 600 }}

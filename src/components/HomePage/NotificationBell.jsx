@@ -31,14 +31,14 @@ const NotificationBell = () => {
     userNotifications = getNotificationsByRole(ROLES.MANAGER).filter(n => n.type === "order_needs_approval");
   } else if (user?.role_id === ROLES.CUSTOMER) {
     // Khách hàng chỉ nhận các thông báo liên quan đến đơn của mình, không nhận order_needs_approval
-    const allowedTypes = [
-      "order_new",
+  const allowedTypes = [
+    "order_new",
       "order_status_update",
       "order_completed",
-      "order_rejected",
+    "order_rejected",
       "feedback_response",
       "pricing_update"
-    ];
+  ];
     userNotifications = getNotificationsByRole(ROLES.CUSTOMER).filter(n => allowedTypes.includes(n.type));
   }
   console.log('[DEBUG][NotificationBell] user:', user);
@@ -123,20 +123,20 @@ const NotificationBell = () => {
               }}
             >
               <span style={{ fontSize: 20, marginRight: 4, flexShrink: 0, marginTop: 2 }}>
-                {getNotificationIcon(notification.type)}
-              </span>
+                    {getNotificationIcon(notification.type)}
+                  </span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                   <Text strong style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120 }}>
-                    {notification.title}
-                  </Text>
+                      {notification.title}
+                    </Text>
                   <Tag color={getNotificationColor(notification.type)} size="small" style={{ fontSize: 11, height: 20, marginLeft: 4 }}>
-                    {formatTime(notification.timestamp)}
-                  </Tag>
-                </div>
+                      {formatTime(notification.timestamp)}
+                    </Tag>
+                  </div>
                 <div style={{ fontSize: 12, color: "#444", padding: '2px 0 0 0', wordBreak: 'break-word', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
-                  {notification.message}
-                </div>
+                    {notification.message}
+                  </div>
               </div>
             </List.Item>
           )}
@@ -212,16 +212,16 @@ const NotificationBell = () => {
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }} ref={bellRef}>
-      <Button
-        type="text"
-        icon={<BellOutlined style={{ fontSize: 18 }} />}
-        style={{
-          color: "#666",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 40,
-          height: 40,
+        <Button
+          type="text"
+          icon={<BellOutlined style={{ fontSize: 18 }} />}
+          style={{
+            color: "#666",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 40,
+            height: 40,
           position: 'relative',
         }}
         onClick={() => setVisible(v => !v)}

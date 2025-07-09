@@ -190,12 +190,13 @@ const HomeSampling = () => {
         return "Đã gửi kit";
       case "SAMPLE_RECEIVED":
         return "Đã nhận mẫu";
-      case "CANCELLED":
-        return "Đã hủy";
       case "PROCESSING":
         return "Đang xử lý";
+      case "COMPLETED":
+      case "Hoàn thành":
+        return "Hoàn thành";
       default:
-        return status;
+        return "Đang xử lý";
     }
   };
 

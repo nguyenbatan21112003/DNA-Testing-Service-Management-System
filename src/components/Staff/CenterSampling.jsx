@@ -43,7 +43,7 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 const CenterSampling = () => {
-  const { getAllOrders, updateOrder } = useOrderContext();
+  const { getAllOrders, updateOrder, updateSamplingStatus } = useOrderContext();
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -65,13 +65,8 @@ const CenterSampling = () => {
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center" && !order.isHidden)
       .map((order) => {
-        // Map trạng thái cũ sang flow mới
-        let status = order.status || order.appointmentStatus;
-        if (["Chờ xử lý", "PENDING", "PENDING_CONFIRM"].includes(status)) status = "Chờ xác nhận";
-        if (status === "PROCESSING") status = "Đang lấy mẫu";
-        if (status === "da_hen") status = "Đã hẹn";
-        if (status === "da_den") status = "Đã đến";
-        if (status === "vang_mat" || status === "huy") status = "Đã hủy";
+        let status = order.samplingStatus || "Chờ xác nhận";
+        // Map các trạng thái samplingStatus như cũ
         return {
           ...order,
           status: status,
@@ -158,10 +153,10 @@ const CenterSampling = () => {
         return "Đang lấy mẫu";
       case "Đang xử lý":
         return "Đang xử lý";
-      case "Đã hủy":
-        return "Đã hủy";
+      case "Hoàn thành":
+        return "Hoàn thành";
       default:
-        return status;
+        return "Đang xử lý";
     }
   };
 
@@ -311,10 +306,7 @@ const CenterSampling = () => {
                 onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
                 onClick={() => {
-                  updateOrder(record.id, {
-                    status: "Đã hẹn",
-                    updatedAt: new Date().toLocaleString("vi-VN"),
-                  });
+                  updateSamplingStatus(record.id, "Đã hẹn");
                   loadAppointments();
                   message.success("Đã chuyển trạng thái sang Đã hẹn!");
                 }}
@@ -340,10 +332,7 @@ const CenterSampling = () => {
                 onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
                 onClick={() => {
-                  updateOrder(record.id, {
-                    status: "Đã đến",
-                    updatedAt: new Date().toLocaleString("vi-VN"),
-                  });
+                  updateSamplingStatus(record.id, "Đã đến");
                   loadAppointments();
                   message.success("Đã chuyển trạng thái sang Đã đến!");
                 }}

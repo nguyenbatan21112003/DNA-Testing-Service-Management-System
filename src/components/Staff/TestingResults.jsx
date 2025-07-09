@@ -58,7 +58,7 @@ const TestingResults = () => {
   const [reasonText, setReasonText] = useState("");
 
   const STATUS_PROCESSING = "Đang xử lý";
-  const STATUS_WAITING_APPROVAL = "Chờ xác thực";
+  const STATUS_WAITING_APPROVAL = "Chờ xác nhận";
   const STATUS_REJECTED = "Từ chối";
   const STATUS_COMPLETED = "Hoàn thành";
 
@@ -66,7 +66,7 @@ const TestingResults = () => {
   const getStatusText = (status) => {
     const s = normalizeStatus(status);
     if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
-    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["choxacnhan", "waitingapproval"].includes(s)) return "Chờ xác nhận";
     if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
     return "Đang xử lý";
@@ -74,7 +74,7 @@ const TestingResults = () => {
 
   useEffect(() => {
     setFilteredOrders(orders.filter((order) => !order.isHidden && [
-      'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+      'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
     ].includes(getStatusText(order.status))));
   }, [orders]);
 
@@ -93,13 +93,13 @@ const TestingResults = () => {
   useEffect(() => {
     if (filterStatus === "all") {
       setFilteredOrders(orders.filter((order) => !order.isHidden && [
-        'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+        'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
       ].includes(getStatusText(order.status))));
     } else {
       setFilteredOrders(
         orders.filter(
           (order) => !order.isHidden && [
-            'Đang xử lý', 'Hoàn thành', 'Chờ xác thực', 'Từ chối'
+            'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
           ].includes(getStatusText(order.status)) && getStatusText(order.status) === filterStatus
         )
       );
@@ -229,10 +229,10 @@ const TestingResults = () => {
         message.warning("Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!");
         return;
       }
-      // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác thực'
+      // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác nhận'
       console.log('[DEBUG][handleSaveResult] updateOrder called with:', {
         id: selectedOrder.id,
-        status: "Chờ xác thực",
+        status: "Chờ xác nhận",
         result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
         testingMethod: values.testingMethod,
         testingNotes: values.conclusion,
@@ -241,7 +241,7 @@ const TestingResults = () => {
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
       updateOrder(selectedOrder.id, {
-        status: "Chờ xác thực",
+        status: "Chờ xác nhận",
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
@@ -301,7 +301,7 @@ const TestingResults = () => {
     switch (getStatusText(status)) {
       case "Đang xử lý":
         return "#00b894";
-      case "Chờ xác thực":
+      case "Chờ xác nhận":
         return "#722ed1";
       case "Hoàn thành":
         return "#52c41a";
@@ -473,7 +473,7 @@ const TestingResults = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="Chờ xác thực"
+              title="Chờ xác nhận"
               value={stats.waitingApproval}
               valueStyle={{ color: "#722ed1" }}
               prefix={<ClockCircleOutlined />}
@@ -575,7 +575,7 @@ const TestingResults = () => {
             },
             {
               key: "waitingApproval",
-              label: "Chờ xác thực",
+              label: "Chờ xác nhận",
               children: (
                 <Table
                   columns={columns}
