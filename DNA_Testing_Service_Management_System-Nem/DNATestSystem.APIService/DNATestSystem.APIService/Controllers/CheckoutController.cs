@@ -43,6 +43,14 @@ namespace DNATestSystem.APIService.Controllers
                 };
 
                 _context.Invoices.Add(invoice);
+
+                var testRequest = await _context.TestRequests.FindAsync(invoice.RequestId);
+                if (testRequest != null)
+                {
+                    testRequest.Status = "pending";
+                    _context.TestRequests.Update(testRequest);
+                }
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new
