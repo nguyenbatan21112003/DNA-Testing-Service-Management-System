@@ -94,8 +94,6 @@ const TestResultVerification = () => {
   };
 
   const confirmReject = async () => {
-    console.log('DEBUG: pendingRejectOrder', pendingRejectOrder);
-    console.log('DEBUG: rejectNote', rejectNote);
     if (!pendingRejectOrder) return;
     await updateOrder(pendingRejectOrder.id, {
       managerConfirm: false,
@@ -103,7 +101,6 @@ const TestResultVerification = () => {
       approvedAt: new Date().toISOString(),
       managerNote: rejectNote
     });
-    console.log('DEBUG: updateOrder called, should reload list');
     setRejectModalVisible(false);
     setRejectNote("");
     setPendingRejectOrder(null);

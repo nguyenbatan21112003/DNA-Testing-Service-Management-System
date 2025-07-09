@@ -129,7 +129,6 @@ export function NotificationProvider({ children }) {
       data,
       targetRoles,
     };
-    console.log('[DEBUG][createNotification]', notification);
     dispatch({ type: "ADD_NOTIFICATION", payload: notification });
 
     // Hiển thị thông báo popup cho role hiện tại
@@ -175,7 +174,6 @@ export function NotificationProvider({ children }) {
     const filtered = state.notifications.filter((notif) =>
       notif.targetRoles.includes(roleId)
     );
-    console.log('DEBUG: getNotificationsByRole', { roleId, filtered });
     return filtered;
   };
 
@@ -207,7 +205,6 @@ export function NotificationProvider({ children }) {
 
   // Tạo thông báo cập nhật trạng thái đơn hàng
   const notifyOrderStatusUpdate = (order, oldStatus, newStatus, updatedBy) => {
-    console.log('[DEBUG][notifyOrderStatusUpdate] called', { order, oldStatus, newStatus, updatedBy });
     const statusMessages = {
       "Chờ xử lý": "đã được nhận",
       "Đang xử lý": "đang được xử lý",

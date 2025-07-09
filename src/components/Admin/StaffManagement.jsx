@@ -193,7 +193,6 @@ const StaffManagement = () => {
   };
 
   const handleDelete = async (staff) => {
-    console.log("Staff to delete:", staff); // debug
     const roleText = staff.role_id === 4 ? "quản lý" : "nhân viên";
     if (
       !window.confirm(

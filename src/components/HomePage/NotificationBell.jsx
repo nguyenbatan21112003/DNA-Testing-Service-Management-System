@@ -41,8 +41,6 @@ const NotificationBell = () => {
   ];
     userNotifications = getNotificationsByRole(ROLES.CUSTOMER).filter(n => allowedTypes.includes(n.type));
   }
-  console.log('[DEBUG][NotificationBell] user:', user);
-  console.log('[DEBUG][NotificationBell] userNotifications:', userNotifications);
   // Nếu không có thông báo, hiển thị rõ lý do
   let notificationContent;
   if (!user) {

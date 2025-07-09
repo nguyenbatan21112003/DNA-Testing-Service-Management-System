@@ -202,16 +202,6 @@ const TestingResults = () => {
       // Kiểm tra nếu là lỗi mẫu
       const isErrorSample = (values.conclusion || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').trim() === 'loi mau';
       if (isErrorSample) {
-        console.log('[DEBUG][handleSaveResult] updateOrder called with (error sample):', {
-          id: selectedOrder.id,
-          status: selectedOrder.status,
-          result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
-          testingMethod: values.testingMethod,
-          testingNotes: values.conclusion,
-          conclusion: values.conclusion,
-          resultTableData: resultTableDataCopy,
-          updatedAt: new Date().toLocaleString("vi-VN"),
-        });
         updateOrder(selectedOrder.id, {
           // Không đổi trạng thái, chỉ update kết quả và các trường khác
           result: resultTableDataCopy
@@ -230,16 +220,6 @@ const TestingResults = () => {
         return;
       }
       // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác nhận'
-      console.log('[DEBUG][handleSaveResult] updateOrder called with:', {
-        id: selectedOrder.id,
-        status: "Chờ xác nhận",
-        result: resultTableDataCopy ? JSON.stringify(resultTableDataCopy) : values.result,
-        testingMethod: values.testingMethod,
-        testingNotes: values.conclusion,
-        conclusion: values.conclusion,
-        resultTableData: resultTableDataCopy,
-        updatedAt: new Date().toLocaleString("vi-VN"),
-      });
       updateOrder(selectedOrder.id, {
         status: "Chờ xác nhận",
         result: resultTableDataCopy

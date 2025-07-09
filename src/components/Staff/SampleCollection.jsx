@@ -138,7 +138,7 @@ const SampleCollection = ({ caseType }) => {
           setDonors(data.donors);
         }
       } catch (error) {
-        console.log("Error parsing sample collection draft:", error);
+        // Xoá các dòng console.log debug
       }
     }
   }, [form]);

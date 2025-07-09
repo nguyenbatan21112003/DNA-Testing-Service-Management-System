@@ -92,9 +92,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('[DEBUG] handleSubmit called');
         if (!validate()) {
-            console.warn('[DEBUG] validate fail', errors, form);
             return;
         }
         const data = { ...form, testDate: form.testDate?.toLocaleDateString("vi-VN") };
@@ -123,15 +121,6 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         }, 5000);
 
         if (prefill && prefill.orderId) {
-            console.log('[DEBUG] prefill:', prefill);
-            const allOrders = JSON.parse(localStorage.getItem('dna_orders') || '[]');
-            const foundOrder = allOrders.find(o => String(o.id) === String(prefill.orderId));
-            if (!foundOrder) {
-                console.warn('[DEBUG] Không tìm thấy đơn với orderId:', prefill.orderId, 'Tất cả id:', allOrders.map(o => o.id));
-            } else {
-                console.log('[DEBUG] Đã tìm thấy đơn:', foundOrder);
-            }
-            console.log('[DEBUG] prefill.orderId:', prefill.orderId);
             updateOrder(prefill.orderId, {
                 status: "Đang xử lý",
                 members: form.members,

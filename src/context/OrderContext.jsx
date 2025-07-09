@@ -156,9 +156,7 @@ export function OrderProvider({ children }) {
     let currentUser = user;
     if (!currentUser) {
       currentUser = JSON.parse(localStorage.getItem('dna_user') || 'null');
-      console.log('[DEBUG][updateOrder] fallback user from localStorage:', currentUser);
     }
-    console.log('[DEBUG][updateOrder] user:', currentUser);
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
@@ -173,7 +171,6 @@ export function OrderProvider({ children }) {
       setOrders(allOrders);
       // Gọi notifyOrderStatusUpdate ở mọi lần updateOrder để debug
       const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
-      console.log('[DEBUG][updateOrder] CALL notifyOrderStatusUpdate');
       notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
 
       // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
@@ -219,7 +216,6 @@ export function OrderProvider({ children }) {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
-      console.log('[DEBUG][updateSamplingStatus] BEFORE:', allOrders[idx]);
       allOrders[idx].samplingStatus = newSamplingStatus;
       allOrders[idx].updatedAt = new Date().toISOString();
 
@@ -259,7 +255,6 @@ export function OrderProvider({ children }) {
           statusForCustomer = newSamplingStatus;
       }
       allOrders[idx].status = statusForCustomer;
-      console.log('[DEBUG][updateSamplingStatus] AFTER:', allOrders[idx]);
 
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
