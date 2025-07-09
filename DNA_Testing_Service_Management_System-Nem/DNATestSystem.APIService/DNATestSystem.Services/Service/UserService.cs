@@ -456,13 +456,13 @@ namespace DNATestSystem.Services.Service
                     _context.TestSamples.Add(sample);
                 }
 
-                var invoice = new Invoice
-                {
-                    RequestId = testRequest.RequestId,
-                    PaidAt = dto.Invoice.PaidAt
-                };
+                //var invoice = new Invoice
+                //{
+                //    RequestId = testRequest.RequestId,
+                //    PaidAt = dto.Invoice.PaidAt
+                //};
 
-                _context.Invoices.Add(invoice);
+                //_context.Invoices.Add(invoice);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();

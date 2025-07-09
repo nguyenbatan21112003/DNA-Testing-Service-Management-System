@@ -124,7 +124,7 @@ namespace DNATestSystem.Services.Service
                 .Include(x => x.RequestDeclarants)
                 .Include(x => x.TestSamples)
                 .Include(x => x.CollectType)
-                .Where(x => x.CollectType.CollectName == "At Center")
+                .Where(x => x.CollectType.CollectName.ToLower() == "at center")
                 .Select(x => new TestRequestViewDto
                 {
                     RequestId = x.RequestId,
@@ -168,7 +168,7 @@ namespace DNATestSystem.Services.Service
                 .Include(x => x.RequestDeclarants)
                 .Include(x => x.TestSamples)
                 .Include(x => x.CollectType)
-                .Where(x => x.CollectType.CollectName == "At Home")
+                .Where(x => x.CollectType.CollectName.ToLower() == "at home")
                 .Select(x => new TestRequestViewDto
                 {
                     RequestId = x.RequestId,
@@ -268,8 +268,8 @@ namespace DNATestSystem.Services.Service
                 .Include(p => p.Request)
                     .ThenInclude(r => r.TestSamples)
                 .Where(p => p.StaffId == staffId &&
-                            p.Request.CollectType.CollectName == "At Center" &&
-                            p.Request.Category == "Administrative")
+                            p.Request.CollectType.CollectName.ToLower() == "at center" &&
+                            p.Request.Category.ToLower() == "administrative")
                 .Select(p => new TestRequestViewDto
                 {
                     RequestId = p.Request.RequestId,
@@ -412,8 +412,8 @@ namespace DNATestSystem.Services.Service
                     .ThenInclude(r => r.TestSamples)
                 .Where(tp =>
                     tp.StaffId == staffId &&
-                    tp.Request.Status != "COMPLETED" &&
-                    tp.Request.Category == "Voluntary"
+                    tp.Request.Status.ToLower() != "completed" &&
+                    tp.Request.Category.ToLower() == "voluntary"
                 )
                 .ToListAsync();
 
@@ -485,8 +485,52 @@ namespace DNATestSystem.Services.Service
             return samples;
         }
 
+        //public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
+        //{
+
+        //    var process = new TestProcess
+        //    {
+        //        RequestId = dto.RequestId,
+        //        StaffId = dto.StaffId,
+        //        ClaimedAt = DateTime.Now,
+        //        UpdatedAt = DateTime.Now,
+        //        Notes = dto.Notes,
+        //    };
+
+        //    if (dto.CollectionType == "At Home")
+        //    {
+        //        process.KitCode = dto.KitCode;
+        //        process.CurrentStatus = "KIT SENT";
+        //    }
+        //    else if (dto.CollectionType == "At Center")
+        //    {
+        //        process.KitCode = "";
+        //        process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+        //    }
+        //    else
+        //    {
+        //        return new ApiResponseDto
+        //        {
+        //            Success = false,
+        //            Message = "Invalid CollectType."
+        //        };
+
+        //    }
+        //    // là như thế này , nếu mà staff để là At home thì lưu kit
+        //    // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+        //    _context.TestProcesses.Add(process);
+        //    await _context.SaveChangesAsync();
+
+        //    return new ApiResponseDto
+        //    {
+        //        Success = true,
+        //        Message = "Assigned test process successfully."
+        //    };
+
+        //}
         public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
         {
+            var collectionType = dto.CollectionType?.Trim().ToLower();
 
             var process = new TestProcess
             {
@@ -494,30 +538,29 @@ namespace DNATestSystem.Services.Service
                 StaffId = dto.StaffId,
                 ClaimedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                Notes = dto.Notes,
+                Notes = dto.Notes
             };
 
-            if (dto.CollectionType == "At Home")
+            switch (collectionType)
             {
-                process.KitCode = dto.KitCode;
-                process.CurrentStatus = "KIT SENT";
-            }
-            else if (dto.CollectionType == "At Center")
-            {
-                process.KitCode = "";
-                process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
-            }
-            else
-            {
-                return new ApiResponseDto
-                {
-                    Success = false,
-                    Message = "Invalid CollectType."
-                };
+                case "at home":
+                    process.KitCode = dto.KitCode;
+                    process.CurrentStatus = "KIT SENT";
+                    break;
 
+                case "at center":
+                    process.KitCode = string.Empty;
+                    process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
+                    break;
+
+                default:
+                    return new ApiResponseDto
+                    {
+                        Success = false,
+                        Message = "Invalid CollectionType. Accepted values: 'At Home', 'At Center'."
+                    };
             }
-            // là như thế này , nếu mà staff để là At home thì lưu kit
-            // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
+
             _context.TestProcesses.Add(process);
             await _context.SaveChangesAsync();
 
@@ -526,9 +569,9 @@ namespace DNATestSystem.Services.Service
                 Success = true,
                 Message = "Assigned test process successfully."
             };
-
         }
-    
+
+
         public async Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request)
         {
             var process = await _context.TestProcesses

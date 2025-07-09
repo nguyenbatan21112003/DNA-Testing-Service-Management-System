@@ -9,6 +9,5 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse
     public class ApiResponseDtoWithReqId : ApiResponseDto
     {
         public int? RequestId { get; set; }
-
     }
 }

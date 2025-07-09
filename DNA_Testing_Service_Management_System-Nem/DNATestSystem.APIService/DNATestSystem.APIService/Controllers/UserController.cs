@@ -191,8 +191,7 @@ namespace DNATestSystem.Controllers
             var result = await _userService.SubmitTestRequestAsync(dto);
             return result.Success ? Ok(result) : StatusCode(500, result);
         }
-
-        
+        //[HttpGet("test-results/history")]
 
     }
 }

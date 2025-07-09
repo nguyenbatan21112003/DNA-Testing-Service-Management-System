@@ -2,6 +2,7 @@
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -35,14 +36,36 @@ namespace DNATestSystem.APIService.Controllers
                     });
                 }
 
-                // ✅ Ghi nhận thanh toán vào bảng Invoice
+                if (!int.TryParse(response.OrderId, out var requestId))
+                {
+                    return BadRequest(new { success = false, message = "OrderId không hợp lệ" });
+                }
+
+                // Kiểm tra nếu invoice đã tồn tại -> bỏ qua tạo lại
+                var existingInvoice = await _context.Invoices
+                    .FirstOrDefaultAsync(i => i.RequestId == requestId);
+                if (existingInvoice != null)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "Đơn đã được thanh toán trước đó",
+                        requestId = requestId,
+                        paidAt = existingInvoice.PaidAt
+                    });
+                }
+
+                // ✅ Ghi nhận thanh toán
                 var invoice = new Invoice
                 {
-                    RequestId = int.TryParse(response.OrderId, out var requestId) ? requestId : null,
+                    RequestId = requestId,
                     PaidAt = DateTime.UtcNow
                 };
 
                 _context.Invoices.Add(invoice);
+
+               
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -50,7 +73,7 @@ namespace DNATestSystem.APIService.Controllers
                     success = true,
                     message = "Thanh toán thành công",
                     transactionId = response.TransactionId,
-                    requestId = invoice.RequestId,
+                    requestId = requestId,
                     paidAt = invoice.PaidAt
                 });
             }
@@ -58,7 +81,7 @@ namespace DNATestSystem.APIService.Controllers
             {
                 return StatusCode(500, new
                 {
-                     success = false,
+                    success = false,
                     message = "Lỗi hệ thống",
                     error = ex.Message
                 });
