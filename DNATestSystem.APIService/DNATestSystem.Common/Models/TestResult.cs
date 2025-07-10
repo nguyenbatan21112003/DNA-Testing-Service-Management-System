@@ -21,7 +21,8 @@ public partial class TestResult
 
     public DateTime? VerifiedAt { get; set; }
 
-    public DateTime? CollectedAt { get; set; }
+    //public DateTime? CollectedAt { get; set; }
+    //bỏ
 
     public virtual User? EnteredByNavigation { get; set; }
 

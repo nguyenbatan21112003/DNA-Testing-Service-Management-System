@@ -23,6 +23,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.TestRequest
         public DateTime? CreatedAt { get; set; }
 
         public DeclarantDto Declarant { get; set; }
-        public List<TestSampleDto> Sample { get; set; }   
+        public List<TestSampleDto> Sample { get; set; }
+         
     }
 }

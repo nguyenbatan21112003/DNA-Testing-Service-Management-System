@@ -84,6 +84,38 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.MailController",
+    "Method": "SendMail",
+    "RelativePath": "Mail/send",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Mail.SendMailDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "CreateBlogPost",
+    "RelativePath": "Manager/create-BlogPost",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.BlogPostDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "GetPendingTestResults",
     "RelativePath": "Manager/test-results/pending",
@@ -269,13 +301,7 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "staffId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -306,6 +332,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "MarkSampleReceived",
+    "RelativePath": "Staff/mark-sample-received",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetPendingTestRequests",
     "RelativePath": "Staff/pending",
     "HttpMethod": "GET",
@@ -326,18 +368,60 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
-    "Method": "SubmitTestRequest",
-    "RelativePath": "Staff/submit",
+    "Method": "Post",
+    "RelativePath": "Staff/post-SampleCollection",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "dto",
-        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto",
+        "Name": "request",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto",
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetSamplesByRequest",
+    "RelativePath": "Staff/samples",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "requestId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "UpdateSamplesByRequest",
+    "RelativePath": "Staff/samples/update-by-request",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetTestProcessesByStaffId",
+    "RelativePath": "Staff/test-processes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -487,6 +571,22 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "SubmitTestRequest",
+    "RelativePath": "user/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto",
         "IsRequired": true
       }
     ],

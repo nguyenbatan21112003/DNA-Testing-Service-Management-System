@@ -307,7 +307,6 @@ public partial class DNAContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.Notes).HasColumnType("text");
-            entity.Property(e => e.ProcessState).HasMaxLength(50);
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -352,7 +351,6 @@ public partial class DNAContext : DbContext
             entity.HasKey(e => e.ResultId).HasName("PK__TestResu__97690228F6F7D0EE");
 
             entity.Property(e => e.ResultId).HasColumnName("ResultID");
-            entity.Property(e => e.CollectedAt).HasColumnType("datetime");
             entity.Property(e => e.EnteredAt).HasColumnType("datetime");
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.ResultData).HasColumnType("text");
@@ -382,14 +380,12 @@ public partial class DNAContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false);
             entity.Property(e => e.OwnerName).HasMaxLength(100);
-            entity.Property(e => e.ProcessId).HasColumnName("ProcessID");
             entity.Property(e => e.Relationship).HasMaxLength(30);
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.SampleType).HasMaxLength(50);
             entity.Property(e => e.Yob).HasColumnName("YOB");
 
             entity.HasOne(d => d.Process).WithMany(p => p.TestSamples)
-                .HasForeignKey(d => d.ProcessId)
                 .HasConstraintName("FK__TestSampl__Proce__797309D9");
 
             entity.HasOne(d => d.Request).WithMany(p => p.TestSamples)

@@ -9,16 +9,21 @@ namespace DNATestSystem.APIService.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IVnPayService _vnPayService;
-        public PaymentController(IVnPayService vnPayService)
+        private readonly IUserService _userService;
+        public PaymentController(IVnPayService vnPayService , IUserService userService)
         {
-
+            _userService = userService;
             _vnPayService = vnPayService;
         }
         [HttpPost("create-vnpay-url")]
         public IActionResult CreatePaymentUrlVnpay([FromBody] PaymentInformationModel model)
         {
             var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
-            return Redirect(url);
+            return Ok(new
+            {
+                success = true,
+                paymentUrl = url
+            });
         }
 
     }

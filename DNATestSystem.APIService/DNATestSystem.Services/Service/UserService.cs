@@ -13,6 +13,10 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using Microsoft.EntityFrameworkCore;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
+using Microsoft.AspNetCore.Http;
 
 namespace DNATestSystem.Services.Service
 {
@@ -20,13 +24,20 @@ namespace DNATestSystem.Services.Service
     {
         private readonly IApplicationDbContext _context;
         private readonly JwtSettings _jwtSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings)
+        public UserService(IApplicationDbContext context, IOptions<JwtSettings> jwtSettings
+                           , IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
-
+        private int GetCurrentUserId()
+        {
+            var claim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(claim, out var id) ? id : 0;
+        }
         //public User? Login(UserLoginModel loginModel)
         //{
         //    var user = _context.Users
@@ -50,6 +61,8 @@ namespace DNATestSystem.Services.Service
                 .FirstOrDefaultAsync(x => x.Email == loginModel.Email);
 
             if (user == null) return null;
+
+            if(user.Status == -1) return null;
 
             var password = loginModel.Password;
 
@@ -117,25 +130,25 @@ namespace DNATestSystem.Services.Service
         }
 
         public async Task<string> GenerateRefreshTokenAsync(int userId)
-        {
-            string refreshToken = HashHelper.GenerateRandomString(64);
-            //refresh Token nên hash lại
-            string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
-
-            var data = new BusinessObjects.Models.RefreshToken
             {
-                UserId = userId,
-                Token = hashRefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
-                Revoked = false
-            };
+                string refreshToken = HashHelper.GenerateRandomString(64);
+                //refresh Token nên hash lại
+                string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
 
-            _context.RefreshTokens.Add(data);
+                var data = new BusinessObjects.Models.RefreshToken
+                {
+                    UserId = userId,
+                    Token = hashRefreshToken,
+                    ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
+                    Revoked = false
+                };
 
-            await _context.SaveChangesAsync();
+                _context.RefreshTokens.Add(data);
 
-            return hashRefreshToken;
-        }
+                await _context.SaveChangesAsync();
+
+                return hashRefreshToken;
+            }
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
@@ -178,27 +191,48 @@ namespace DNATestSystem.Services.Service
                                     .Include(s => s.PriceDetails)
                                     .Where(s => s.IsPublished == true)
                                     .ToListAsync();
-            //tạo ra priceDetails khi đã join với Service
-            var service = priceDetails
-                            .Select(s =>
-                            {
-                                var price = s.PriceDetails.FirstOrDefault();
-                                //lấy tk Price ra
+            ////tạo ra priceDetails khi đã join với Service
+            //var service = priceDetails
+            //                .Select(s =>
+            //                {
+            //                    var price = s.PriceDetails.FirstOrDefault();
+            //                    //lấy tk Price ra
 
-                                return new ServiceSummaryDto
-                                {
-                                    Id = s.ServiceId,
-                                    Slug = s.Slug,
-                                    ServiceName = s.ServiceName,
-                                    Description = s.Description,
-                                    Category = s.Category,
-                                    IsUrgent = (bool)s.IsUrgent,
-                                    IncludeVAT = true,
-                                    Price2Samples = price?.Price2Samples,
-                                    Price3Samples = price?.Price3Samples,
-                                    TimeToResult = price?.TimeToResult
-                                };
-                            }).ToList();
+            //                    return new ServiceSummaryDto
+            //                    {
+            //                        Id = s.ServiceId,
+            //                        Slug = s.Slug,
+            //                        ServiceName = s.ServiceName,
+            //                        Description = s.Description,
+            //                        Category = s.Category,
+            //                        IsUrgent = (bool)s.IsUrgent,
+            //                        IncludeVAT = true,
+            //                        Price2Samples = price?.Price2Samples,
+            //                        Price3Samples = price?.Price3Samples,
+            //                        TimeToResult = price?.TimeToResult
+            //                    };
+            //                }).ToList();
+            //return service;
+            var service = priceDetails
+                        .Select(s =>
+                        {
+                            var price = s.PriceDetails.FirstOrDefault(); // có thể null
+
+                            return new ServiceSummaryDto
+                            {
+                                Id = s.ServiceId,
+                                Slug = s.Slug,
+                                ServiceName = s.ServiceName,
+                                Description = s.Description,
+                                Category = s.Category,
+                                IsUrgent = s.IsUrgent ?? false, // null-safe
+                                IncludeVAT = price?.IncludeVat ?? false,  // dùng trong PriceDetails
+                                Price2Samples = price?.Price2Samples ?? 0,
+                                Price3Samples = price?.Price3Samples ?? 0,
+                                TimeToResult = price?.TimeToResult ?? "N/A"
+                            };
+                        })
+                        .ToList();
             return service;
         }
 
@@ -372,6 +406,96 @@ namespace DNATestSystem.Services.Service
             _context.SaveChangesAsync();
             return Task.FromResult(consultRequest);
         }
+
+        public async Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto)
+        {
+            using var transaction = await (_context as DbContext)!.Database.BeginTransactionAsync();
+            try
+            {
+                int collectTypeId = dto.TestRequest.TypeId switch
+                {
+                    1 => 1, // At Center
+                    2 => 2, // At Home
+                    _ => throw new ArgumentException("Invalid TypeId")
+                };
+                var testRequest = new TestRequest
+                {
+                    UserId = dto.TestRequest.UserId,
+                    ServiceId = dto.TestRequest.ServiceId,
+                    TypeId = dto.TestRequest.TypeId,
+                    Category = dto.TestRequest.Category,
+                    ScheduleDate = dto.TestRequest.ScheduleDate,
+                    Address = dto.TestRequest.Address,
+                    Status = "unpaid", // luôn đặt là unpaid khi mới đăng ký
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.TestRequests.Add(testRequest);
+                await _context.SaveChangesAsync();
+
+                var declarant = new RequestDeclarant
+                {
+                    RequestId = testRequest.RequestId,
+                    FullName = dto.Declarant.FullName,
+                    Gender = dto.Declarant.Gender,
+                    Address = dto.Declarant.Address,
+                    IdentityNumber = dto.Declarant.IdentityNumber,
+                    IdentityIssuedDate = dto.Declarant.IdentityIssuedDate,
+                    IdentityIssuedPlace = dto.Declarant.IdentityIssuedPlace,
+                    Phone = dto.Declarant.Phone,
+                    Email = dto.Declarant.Email
+                };
+
+                _context.RequestDeclarants.Add(declarant);
+
+                foreach (var s in dto.Samples)
+                {
+                    var sample = new TestSample
+                    {
+                        RequestId = testRequest.RequestId,
+                        OwnerName = s.OwnerName,
+                        Gender = s.Gender,
+                        Relationship = s.Relationship,
+                        SampleType = s.SampleType,
+                        Yob = s.Yob,
+                        CollectedAt = DateTime.Now
+                    };
+
+                    _context.TestSamples.Add(sample);
+                }
+
+                //var invoice = new Invoice
+                //{
+                //    RequestId = testRequest.RequestId,
+                //    PaidAt = dto.Invoice.PaidAt
+                //};
+
+                //_context.Invoices.Add(invoice);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new ApiResponseDtoWithReqId
+                {
+                    Success = true,
+                    Message = "Đăng ký xét nghiệm thành công",
+                    RequestId = testRequest.RequestId
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new ApiResponseDtoWithReqId
+                {
+                    Success = false,
+                    Message = ex.InnerException?.Message ?? ex.Message,
+                    RequestId = null
+                };
+
+            }
+        }
+
+        
     }
 }
 

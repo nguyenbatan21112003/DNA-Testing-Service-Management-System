@@ -3,14 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using DNATestSystem.BusinessObjects.Entities;
-using DNATestSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using DNATestSystem.Services.Interface;
 using DNATestSystem.BusinessObjects.Application.Dtos.User;
-using DNATestSystem.BusinessObjects.Application.Dtos.Service;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 
 namespace DNATestSystem.Controllers
 {
@@ -45,23 +43,27 @@ namespace DNATestSystem.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]UserLoginModel users)
+        public async Task<IActionResult> Login(UserLoginModel users)
         {
             var user = await _userService.LoginAsync(users);
             if (user == null)
             {
                 return BadRequest("Username or password is wrong");
+            }else if(user.Status == -1)
+            {
+                return BadRequest("This account have been banned pls contact to admin !");
             }
 
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true
+                Secure = true,
+                SameSite = SameSiteMode.None, // ⚠️ Bắt buộc để gửi cookie cross-site
             };
             var accessToken = await _userService.GenerateJwtAsync(user);
             var refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
-            return Ok(new { accessToken  , user.RoleId, user.UserId, user.FullName});
+            return Ok(new { accessToken , user.RoleId, user.UserId, user.FullName, refreshToken});
         }
 
         [HttpPost("refresh-token")]
@@ -83,7 +85,8 @@ namespace DNATestSystem.Controllers
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true
+                Secure = true,
+                SameSite = SameSiteMode.None, // ⚠️ Bắt buộc để gửi cookie cross-site
             };
             var accessToken = await _userService.GenerateJwtAsync(user);
             var mew_refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
@@ -94,8 +97,16 @@ namespace DNATestSystem.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
+            // Phải truyền lại options giống khi tạo cookie
+            var options = new CookieOptions
+            {
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(-1) // ép hết hạn
+            };
             HttpContext.Session.Clear();
-            HttpContext.Response.Cookies.Delete("refreshToken");
+            HttpContext.Response.Cookies.Delete("refreshToken", options);
             return Ok();
         }
 
@@ -183,8 +194,14 @@ namespace DNATestSystem.Controllers
             var data = _userService.SendConsultRequestAsync(model);
             return Ok(data);
         }
-        
 
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitTestRequest([FromBody] TestRequestSubmissionDto dto)
+        {
+            var result = await _userService.SubmitTestRequestAsync(dto);
+            return result.Success ? Ok(result) : StatusCode(500, result);
+        }
+        //[HttpGet("test-results/history")]
 
     }
 }

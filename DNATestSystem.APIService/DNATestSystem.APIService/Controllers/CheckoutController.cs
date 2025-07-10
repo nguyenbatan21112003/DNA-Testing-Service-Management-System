@@ -2,6 +2,7 @@
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -35,14 +36,21 @@ namespace DNATestSystem.APIService.Controllers
                     });
                 }
 
-                // ✅ Ghi nhận thanh toán vào bảng Invoice
                 var invoice = new Invoice
                 {
-                    RequestId = int.TryParse(response.OrderId, out var requestId) ? requestId : null,
+                    RequestId = int.Parse(response.OrderId), // Giả định luôn đúng
                     PaidAt = DateTime.UtcNow
                 };
 
                 _context.Invoices.Add(invoice);
+
+                var testRequest = await _context.TestRequests.FindAsync(invoice.RequestId);
+                if (testRequest != null)
+                {
+                    testRequest.Status = "pending";
+                    _context.TestRequests.Update(testRequest);
+                }
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -58,7 +66,7 @@ namespace DNATestSystem.APIService.Controllers
             {
                 return StatusCode(500, new
                 {
-                     success = false,
+                    success = false,
                     message = "Lỗi hệ thống",
                     error = ex.Message
                 });

@@ -17,7 +17,8 @@ public partial class TestProcess
 
     public string? CurrentStatus { get; set; }
 
-    public string? ProcessState { get; set; }
+    //public string? ProcessState { get; set; }
+    //bỏ
 
     public string? Notes { get; set; }
 

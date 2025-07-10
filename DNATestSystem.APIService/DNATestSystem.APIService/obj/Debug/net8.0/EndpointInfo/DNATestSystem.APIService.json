@@ -146,6 +146,37 @@
         }
       }
     },
+    "/Mail/send": {
+      "post": {
+        "tags": [
+          "Mail"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Manager/test-results/pending": {
       "get": {
         "tags": [
@@ -178,6 +209,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/VertifyTestResult"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/create-BlogPost": {
+      "post": {
+        "tags": [
+          "Manager"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlogPostDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlogPostDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlogPostDto"
               }
             }
           }
@@ -456,37 +518,6 @@
         }
       }
     },
-    "/Staff/submit": {
-      "post": {
-        "tags": [
-          "Staff"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/Staff/pending": {
       "get": {
         "tags": [
@@ -523,6 +554,145 @@
         }
       }
     },
+    "/Staff/at-center-administrative": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/test-processes": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/samples": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/post-SampleCollection": {
+      "post": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/mark-sample-received": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestProcessModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/samples/update-by-request": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSampleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Staff/assign-test-process": {
       "post": {
         "tags": [
@@ -547,28 +717,6 @@
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/Staff/at-center-administrative": {
-      "get": {
-        "tags": [
-          "Staff"
-        ],
-        "parameters": [
-          {
-            "name": "staffId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -887,6 +1035,37 @@
           }
         }
       }
+    },
+    "/user/submit": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -915,6 +1094,51 @@
             "nullable": true
           },
           "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BlogPostDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "authorId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isPublished": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "thumbnailUrl": {
             "type": "string",
             "nullable": true
           }
@@ -960,20 +1184,6 @@
         },
         "additionalProperties": false
       },
-      "InvoiceDto": {
-        "type": "object",
-        "properties": {
-          "requestId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "paidAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
       "ManagerCreateModel": {
         "type": "object",
         "properties": {
@@ -1002,6 +1212,10 @@
       "PaymentInformationModel": {
         "type": "object",
         "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "orderType": {
             "type": "string",
             "nullable": true
@@ -1060,6 +1274,99 @@
         "type": "integer",
         "format": "int32"
       },
+      "SampleCollectionFormsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "collectionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleProviders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SampleProviders"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SampleProviders": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "yob": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "idType": {
+            "type": "string",
+            "nullable": true
+          },
+          "idnumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "idissuedDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "idissuedPlace": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasGeneticDiseaseHistory": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "fingerprintImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SendConsultRequestModel": {
         "type": "object",
         "properties": {
@@ -1081,6 +1388,24 @@
             "nullable": true
           },
           "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendMailDto": {
+        "type": "object",
+        "properties": {
+          "toAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
             "type": "string",
             "nullable": true
           }
@@ -1253,9 +1578,6 @@
       "TestRequestSubmissionDto": {
         "type": "object",
         "properties": {
-          "invoice": {
-            "$ref": "#/components/schemas/InvoiceDto"
-          },
           "testRequest": {
             "$ref": "#/components/schemas/TestRequestDto"
           },
@@ -1378,6 +1700,50 @@
         },
         "additionalProperties": false
       },
+      "UpdateTestProcessModel": {
+        "type": "object",
+        "properties": {
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTestSampleDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ownerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "yob": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "collectedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "UserChangePasswordModel": {
         "type": "object",
         "properties": {
@@ -1413,19 +1779,19 @@
       "UserRegisterModel": {
         "type": "object",
         "properties": {
-          "fullName": {
-            "type": "string",
-            "nullable": true
-          },
           "emailAddress": {
             "type": "string",
             "nullable": true
           },
-          "phoneNumber": {
+          "password": {
             "type": "string",
             "nullable": true
           },
-          "password": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
             "type": "string",
             "nullable": true
           }

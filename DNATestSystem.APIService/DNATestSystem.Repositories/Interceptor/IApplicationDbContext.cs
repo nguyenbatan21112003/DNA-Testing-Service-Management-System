@@ -44,6 +44,8 @@ namespace DNATestSystem.Repositories
 
         DbSet<CollectType> CollectTypes { get; set; }
 
+        DbSet<SampleCollectionForm> SampleCollectionForms { get; set; }
+
 
         // Save changes
         int SaveChanges();

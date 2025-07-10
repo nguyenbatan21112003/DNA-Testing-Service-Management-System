@@ -9,7 +9,8 @@ public partial class TestSample
 
     public int? RequestId { get; set; }
 
-    public int? ProcessId { get; set; }
+    //public int? ProcessId { get; set; }
+    //bỏ
 
     public string? OwnerName { get; set; }
 
