@@ -177,6 +177,12 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.AssignTestProcessAsync(dto);
             return result.Success ? Ok(result) : StatusCode(500, result);
         }
-
+        [HttpGet("get-staff-feedback")]
+        public async Task<IActionResult> GetMyFeedbacks()
+        {
+            var staffId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var result = await _staffService.GetFeedbacksByStaffIdAsync(staffId);
+            return Ok(new { success = true, data = result });
+        }
     }
 }

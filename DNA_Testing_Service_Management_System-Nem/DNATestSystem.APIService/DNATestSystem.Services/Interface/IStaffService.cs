@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
@@ -39,5 +40,8 @@ namespace DNATestSystem.Services.Interface
         Task<bool> MarkTestProcessSampleReceivedAsync(UpdateTestProcessModel model);
         // update Sample 51
         Task<bool> UpdateTestSamplesByRequestAsync(UpdateTestSampleDto dto);
+
+        Task<List<StaffFeedbackViewDto>> GetFeedbacksByStaffIdAsync(int staffId);
+
     }
 }

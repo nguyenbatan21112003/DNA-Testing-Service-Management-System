@@ -74,6 +74,11 @@ namespace DNATestSystem.APIService.Controllers
                 message = result.Message
             });
         }
-
+        [HttpGet("get-all-feedBack")]
+        public async Task<IActionResult> GetAllFeedbacks()
+        {
+            var result = await _managerService.GetAllFeedbacksAsync();
+            return Ok(new { success = true, data = result });
+        }
     }
 }

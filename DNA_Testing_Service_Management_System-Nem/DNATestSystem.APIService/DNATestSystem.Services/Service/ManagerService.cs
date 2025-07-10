@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.BlogPost;
+using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Models;
@@ -141,7 +142,31 @@ namespace DNATestSystem.Services.Service
                 Message = "Đăng bài viết thành công",
             };
         }
-    
-        
+
+        public async Task<List<FeedbackViewDto>> GetAllFeedbacksAsync()
+        {
+            var feedbacks = await _context.Feedbacks
+                .Include(f => f.User)
+                .Include(f => f.Result)
+                .Select(f => new FeedbackViewDto
+                {
+                    FeedbackId = f.FeedbackId,
+                    ResultId = f.ResultId ?? 0,
+                    UserId = f.UserId ?? 0,
+                    UserFullName = f.User!.FullName,
+                    Rating = f.Rating ?? 0,
+                    Comment = f.Comment,
+                    CreatedAt = f.CreatedAt,
+                    ResultStatus = f.Result!.Status,
+                    ResultFile = f.Result.ResultData
+                })
+                .ToListAsync();
+
+            return feedbacks;
+        }
+
+      
+
+
     }
 }

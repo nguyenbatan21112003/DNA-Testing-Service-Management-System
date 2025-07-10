@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
@@ -663,6 +664,25 @@ namespace DNATestSystem.Services.Service
             return true;
         }
 
+        public async Task<List<StaffFeedbackViewDto>> GetFeedbacksByStaffIdAsync(int staffId)
+        {
+            var feedbacks = await _context.Feedbacks
+                .Include(f => f.Result)
+                .Include(f => f.User)
+                .Where(f => f.Result != null && f.Result.EnteredBy == staffId)
+                .Select(f => new StaffFeedbackViewDto
+                {
+                    FeedbackId = f.FeedbackId,
+                    ResultId = f.ResultId ?? 0,
+                    UserId = f.UserId ?? 0,
+                    UserFullName = f.User!.FullName,
+                    Rating = f.Rating ?? 0,
+                    Comment = f.Comment,
+                    CreatedAt = f.CreatedAt
+                })
+                .ToListAsync();
 
+            return feedbacks;
+        }
     }
 }
