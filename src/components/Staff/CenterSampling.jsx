@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
   Card,
   Table,
@@ -60,7 +60,7 @@ const CenterSampling = () => {
   const { user } = useContext(AuthContext);
 
   // Lấy dữ liệu đơn hàng từ context
-  const loadAppointments = () => {
+  const loadAppointments = useCallback(() => {
     const allOrders = getAllOrders();
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center" && !order.isHidden)
@@ -94,12 +94,12 @@ const CenterSampling = () => {
         .length,
     };
     setStats(newStats);
-  };
+  }, [getAllOrders]);
 
   useEffect(() => {
     // Load orders khi component mount
     loadAppointments();
-  }, []);
+  }, [loadAppointments]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
   useEffect(() => {
@@ -111,7 +111,7 @@ const CenterSampling = () => {
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  }, [loadAppointments]);
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
@@ -418,10 +418,10 @@ const CenterSampling = () => {
       );
       // Nếu là lần đầu bấm Lấy mẫu thì chuyển trạng thái sang Đang lấy mẫu
       if (isFirst) {
-        updateOrder(record.id, {
+        safeUpdateOrder(record.id, {
           status: "Đang lấy mẫu",
           updatedAt: new Date().toLocaleString("vi-VN"),
-        });
+        }, record.status);
         loadAppointments();
       }
       // Chuyển tab sang lấy mẫu dân sự
@@ -442,6 +442,18 @@ const CenterSampling = () => {
       if (dashboardCtx?.setActiveTab) {
         dashboardCtx.setActiveTab("sample-collection");
       }
+    }
+  };
+
+  // ĐẢM BẢO KHÔNG ĐỔI TRẠNG THÁI KHI ĐÃ LÀ 'ĐANG XỬ LÝ', TRỪ KHI CHUYỂN SANG 'HOÀN THÀNH'
+  const safeUpdateOrder = (orderId, updates, currentStatus) => {
+    // Nếu trạng thái hiện tại là 'Đang xử lý' và cập nhật không phải sang 'Hoàn thành', giữ nguyên trạng thái
+    if (getStatusText(currentStatus) === 'Đang xử lý' && updates.status && getStatusText(updates.status) !== 'Hoàn thành') {
+      // eslint-disable-next-line no-unused-vars
+      const { status, ...rest } = updates;
+      updateOrder(orderId, rest); // chỉ update các trường khác, không đổi trạng thái
+    } else {
+      updateOrder(orderId, updates);
     }
   };
 

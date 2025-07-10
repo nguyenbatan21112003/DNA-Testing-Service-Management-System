@@ -56,7 +56,7 @@ const TestResultVerification = () => {
 
   useEffect(() => {
     const allOrders = getAllOrders();
-    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác nhận"));
+    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));
   }, [ordersNeedingApproval, getAllOrders]);
 
   const loadOrdersNeedingApproval = () => {
@@ -120,7 +120,7 @@ const TestResultVerification = () => {
   }
   const getStatusText = (status) => {
     const s = normalizeStatus(status);
-    if (["choxacnhan", "waitingapproval"].includes(s)) return "Chờ xác nhận";
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
     if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
     if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
@@ -226,10 +226,10 @@ const TestResultVerification = () => {
   ];
 
   const stats = {
-    total: ordersNeedingApproval.length,
-    approved: getAllOrders().filter(o => o.status === "Hoàn thành").length,
-    rejected: getAllOrders().filter(o => o.status === "Từ chối").length,
-    waiting: getAllOrders().filter(o => o.status === "Chờ xác nhận").length,
+    total: getAllOrders().filter(o => getStatusText(o.status) === "Chờ xác thực").length,
+    approved: getAllOrders().filter(o => getStatusText(o.status) === "Hoàn thành").length,
+    rejected: getAllOrders().filter(o => getStatusText(o.status) === "Từ chối").length,
+    waiting: getAllOrders().filter(o => getStatusText(o.status) === "Đang xử lý").length,
   };
 
   return (
@@ -257,7 +257,7 @@ const TestResultVerification = () => {
           <Col xs={24} sm={6}>
             <Card>
               <Statistic
-                title="Tổng đơn chờ xác nhận"
+                title="Tổng đơn chờ xác thực"
                 value={stats.total}
                 prefix={<SafetyCertificateOutlined style={{ color: "#722ed1" }} />}
                 valueStyle={{ color: "#722ed1", fontWeight: 600 }}
@@ -343,7 +343,7 @@ const TestResultVerification = () => {
 
       {/* Modal xem kết quả */}
       <Modal
-        title="Xem kết quả xét nghiệm"
+        title={null}
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
         footer={[
@@ -374,47 +374,38 @@ const TestResultVerification = () => {
             Từ chối
           </Button>,
         ]}
-        width={800}
+        width={700}
+        style={{ top: 32 }}
       >
         {selectedOrder && (
           <div>
-            <Descriptions title="Thông tin đơn hàng" bordered column={2}>
-              <Descriptions.Item label="Mã đơn" span={1}>
-                #{selectedOrder.id}
-              </Descriptions.Item>
-              <Descriptions.Item label="Khách hàng" span={1}>
-                {selectedOrder.name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Loại xét nghiệm" span={1}>
-                {selectedOrder.type}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày tạo" span={1}>
-                {selectedOrder.date}
-              </Descriptions.Item>
-              <Descriptions.Item label="Độ ưu tiên" span={1}>
-                <Tag color={selectedOrder.priority === "Cao" ? "red" : "orange"}>
-                  {selectedOrder.priority}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Phương pháp" span={1}>
-                {selectedOrder.testingMethod || "STR"}
-              </Descriptions.Item>
-            </Descriptions>
+            {/* Tiêu đề mới */}
+            <div style={{ fontSize: 28, fontWeight: 800, color: '#722ed1', marginBottom: 24, textAlign: 'center' }}>
+              Đơn cần xác thực
+            </div>
+            {/* Thêm dòng tiêu đề thông tin khách hàng */}
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Thông tin khách hàng</div>
+            {/* Thông tin khách hàng trong khung đơn giản */}
+            <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontSize: 18, marginBottom: 6 }}><b>Mã đơn:</b> #{selectedOrder.id}</div>
+              <div style={{ fontSize: 18, marginBottom: 6 }}><b>Khách hàng:</b> {selectedOrder.name}</div>
+              <div style={{ fontSize: 18, marginBottom: 6 }}><b>Loại xét nghiệm:</b> {selectedOrder.type}</div>
+              <div style={{ fontSize: 18 }}><b>Ngày tạo:</b> {selectedOrder.date}</div>
+            </div>
 
-            <Divider />
-
-            <div style={{ marginBottom: 16 }}>
-              <Title level={4}>Kết quả xét nghiệm</Title>
-              {selectedOrder.result ? (
-                (() => {
-                  let parsed = null;
-                  try {
-                    parsed = JSON.parse(selectedOrder.result);
-                  } catch {
-                    // Không parse được, giữ nguyên parsed = null
-                  }
-                  if (Array.isArray(parsed) && parsed.length > 0) {
-                    return (
+            {/* Dữ liệu đơn hàng (bảng mẫu khách hàng) */}
+            {selectedOrder.result ? (
+              (() => {
+                let parsed = null;
+                try {
+                  parsed = JSON.parse(selectedOrder.result);
+                } catch {
+                  // Không parse được, giữ nguyên parsed = null
+                }
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  return (
+                    <div style={{ marginBottom: 24 }}>
+                      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Dữ liệu đơn hàng</div>
                       <Table
                         dataSource={parsed}
                         columns={[
@@ -429,51 +420,19 @@ const TestResultVerification = () => {
                         rowKey={(row, idx) => row.key || idx}
                         style={{ background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 4 }}
                       />
-                    );
-                  }
-                  return (
-                    <div style={{ padding: 12, background: "#f6ffed", border: "1px solid #b7eb8f", borderRadius: 4 }}>
-                      <Text>{selectedOrder.result}</Text>
                     </div>
                   );
-                })()
-              ) : (
-                <div style={{ padding: 12, background: "#fff7e6", border: "1px solid #ffd591", borderRadius: 4 }}>
-                  <Text>Chưa có kết quả chi tiết</Text>
-                </div>
-              )}
-            </div>
+                }
+                return null;
+              })()
+            ) : null}
 
-            {selectedOrder.resultTableData && Array.isArray(selectedOrder.resultTableData) && selectedOrder.resultTableData.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Dữ liệu chi tiết</Title>
-                <Table
-                  dataSource={selectedOrder.resultTableData}
-                  columns={[
-                    { title: "Marker", dataIndex: "marker", key: "marker" },
-                    { title: "Allele 1", dataIndex: "allele1", key: "allele1" },
-                    { title: "Allele 2", dataIndex: "allele2", key: "allele2" },
-                  ]}
-                  pagination={false}
-                  size="small"
-                />
-              </div>
-            )}
-
+            {/* Kết luận */}
             {selectedOrder.conclusion && (
               <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Kết luận</Title>
+                <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Kết luận</div>
                 <div style={{ padding: 12, background: "#f0f5ff", border: "1px solid #d6e4ff", borderRadius: 4 }}>
                   <Text>{selectedOrder.conclusion}</Text>
-                </div>
-              </div>
-            )}
-
-            {selectedOrder.testingNotes && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Ghi chú kỹ thuật</Title>
-                <div style={{ padding: 12, background: "#f6f6f6", borderRadius: 4 }}>
-                  <Text>{selectedOrder.testingNotes}</Text>
                 </div>
               </div>
             )}

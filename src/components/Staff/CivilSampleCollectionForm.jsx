@@ -21,7 +21,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
             { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
         ],
     });
-    const { updateOrder } = useOrderContext();
+    const { updateOrder, updateSamplingStatus } = useOrderContext();
     const [errors, setErrors] = useState({});
     const [prefill, setPrefill] = useState({});
     const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
@@ -122,9 +122,12 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
 
         if (prefill && prefill.orderId) {
             updateOrder(prefill.orderId, {
-                status: "Đang xử lý",
                 members: form.members,
             });
+            // Đảm bảo cập nhật samplingStatus sang 'Đang xử lý'
+            if (typeof updateSamplingStatus === 'function') {
+                updateSamplingStatus(prefill.orderId, "Đang xử lý");
+            }
         }
     };
 

@@ -112,9 +112,10 @@ export function OrderProvider({ children }) {
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
+      id: order.id || Date.now().toString(), // Đảm bảo luôn có id duy nhất
       email: user.email,
-      samplingStatus: order.sampleMethod === "home" ? "PENDING_CONFIRM" : "Chờ xác nhận",
-      status: "Chờ xác nhận", // hoặc giá trị khởi tạo cho xét nghiệm
+      samplingStatus: order.sampleMethod === "home" ? "Chờ xác nhận" : "Chờ xác nhận",
+      status: "", // Không set trạng thái xét nghiệm & kết quả khi mới tạo đơn
       result: "",
       staffName: "",
       managerConfirm: false,
@@ -161,9 +162,15 @@ export function OrderProvider({ children }) {
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
       const oldOrder = allOrders[idx];
+      // Nếu cập nhật trạng thái, đồng bộ cả 3 trường
+      let newUpdates = { ...updates };
+      if (updates.status) {
+        newUpdates.samplingStatus = updates.status;
+        newUpdates.kitStatus = updates.status;
+      }
       const updatedOrder = {
         ...oldOrder,
-        ...updates,
+        ...newUpdates,
         updatedAt: new Date().toISOString()
       };
       allOrders[idx] = updatedOrder;
@@ -211,53 +218,21 @@ export function OrderProvider({ children }) {
     return Promise.resolve();
   };
 
-  // Khi cập nhật trạng thái thu mẫu, update cả samplingStatus và status chính
+  // Khi cập nhật trạng thái thu mẫu, chỉ update samplingStatus. Nếu chuyển sang 'Đang xử lý', thì cập nhật status sang 'Đang xử lý' cho xét nghiệm.
   const updateSamplingStatus = (orderId, newSamplingStatus) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
       allOrders[idx].samplingStatus = newSamplingStatus;
+      allOrders[idx].status = newSamplingStatus;
+      allOrders[idx].kitStatus = newSamplingStatus;
       allOrders[idx].updatedAt = new Date().toISOString();
-
-      // Mapping đầy đủ các trạng thái staff sang status chính cho khách hàng
-      let statusForCustomer = newSamplingStatus;
-      switch (newSamplingStatus) {
-        case "Chờ xác nhận":
-        case "WAITING_APPROVAL":
-        case "Chờ xác thực":
-          statusForCustomer = "Chờ xác nhận"; break;
-        case "Chưa gửi kit":
-        case "KIT_NOT_SENT":
-          statusForCustomer = "Chưa gửi kit"; break;
-        case "Đã gửi kit":
-        case "KIT_SENT":
-          statusForCustomer = "Đã gửi kit"; break;
-        case "Đã gửi mẫu":
-        case "SAMPLE_RECEIVED":
-          statusForCustomer = "Đã gửi mẫu"; break;
-        case "Đang xử lý":
-        case "PROCESSING":
-          statusForCustomer = "Đang xử lý"; break;
-        case "Đã hẹn":
-        case "scheduled":
-          statusForCustomer = "Đã hẹn"; break;
-        case "Đã đến":
-        case "ARRIVED":
-          statusForCustomer = "Đã đến"; break;
-        case "Đã có kết quả":
-        case "COMPLETED":
-        case "Hoàn thành":
-          statusForCustomer = "Đã có kết quả"; break;
-        case "Từ chối":
-        case "REJECTED":
-          statusForCustomer = "Từ chối"; break;
-        default:
-          statusForCustomer = newSamplingStatus;
-      }
-      allOrders[idx].status = statusForCustomer;
-
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
+      // Chỉ khi samplingStatus chuyển sang 'Đang xử lý' thì mới cập nhật status sang 'Đang xử lý'
+      if (newSamplingStatus === "PROCESSING") {
+        updateTestingStatus(orderId, "PROCESSING");
+      }
     }
   };
   // Khi cập nhật trạng thái xét nghiệm, chỉ update status

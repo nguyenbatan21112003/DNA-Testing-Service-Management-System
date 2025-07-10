@@ -100,12 +100,12 @@ const StaffOverview = () => {
     // Đơn hàng cập nhật trạng thái gần đây
     orders.slice(-5).forEach((order) => {
       if (order.status && order.status !== "Hoàn thành") {
-        activities.push({
+      activities.push({
           time: order.updatedAt ? dayjs(order.updatedAt).format('DD/MM/YYYY HH:mm') : 'Gần đây',
           content: `Cập nhật trạng thái đơn #${order.id} - ${order.status}`,
           type: "update",
           icon: <LoadingOutlined style={{ color: "#1890ff" }} />,
-        });
+      });
       }
     });
     // Sắp xếp theo thời gian mới nhất
@@ -170,8 +170,8 @@ const StaffOverview = () => {
         </Col>
       </Row>
 
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 280 }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Thu mẫu tại nhà"
@@ -190,8 +190,8 @@ const StaffOverview = () => {
               style={{ marginTop: 8 }}
             />
           </Card>
-        </div>
-        <div style={{ flex: 1, minWidth: 280 }}>
+        </Col>
+        <Col xs={24} sm={12}>
           <Card>
             <Statistic
               title="Thu mẫu tại trung tâm"
@@ -199,19 +199,19 @@ const StaffOverview = () => {
               prefix={<BankOutlined style={{ color: "#722ed1" }} />}
               valueStyle={{ color: "#722ed1", fontWeight: 600 }}
             />
-            <Progress
-              percent={
-                stats.total > 0
+              <Progress
+                percent={
+                  stats.total > 0
                   ? Math.round((stats.centerSampling / stats.total) * 100)
-                  : 0
-              }
+                    : 0
+                }
               strokeColor="#722ed1"
               showInfo={false}
               style={{ marginTop: 8 }}
             />
           </Card>
-        </div>
-      </div>
+        </Col>
+      </Row>
 
       {/* Hoạt động gần đây */}
       <Card title="Hoạt động gần đây" style={{ minHeight: 300, width: '100%', marginBottom: 24 }}>

@@ -202,65 +202,37 @@ const UserProfile = () => {
   };
   const handleUserConfirmKitOk = () => {
     if (!kitInfo) return;
-    // Cập nhật kitStatus và trạng thái đơn
     updateOrder(kitInfo.id, {
-      kitStatus: "SAMPLE_RECEIVED",
       status: "SAMPLE_RECEIVED",
+      samplingStatus: "SAMPLE_RECEIVED",
+      kitStatus: "SAMPLE_RECEIVED",
+      updatedAt: new Date().toISOString(),
     });
-
     setShowConfirmKitModal(false);
-    message.success("Bạn đã xác nhận nhận kit thành công!");
+    message.success("Bạn đã xác nhận đã nhận kit thành công!");
   };
 
   // Thêm hàm chuyển đổi trạng thái sang tiếng Việt cho user
-  const allowedStatuses = [
-    "Chờ xác nhận",
-    "Chưa gửi kit",
-    "Đã gửi kit",
-    "Đã gửi mẫu",
-    "Đang xử lý",
-    "Đã hẹn",
-    "Đã đến",
-    "Đã có kết quả",
-    "Từ chối"
-  ];
   const getStatusText = (status) => {
-    // Map các trạng thái hệ thống sang nhãn hiển thị
     switch (status) {
-      case "PENDING_CONFIRM":
-      case "pending_staff":
-      case "Chờ xử lý":
-      case "PENDING":
-      case "Chờ xác nhận":
+      case "PENDING_CONFIRM": return "Chờ xác nhận";
+      case "KIT_NOT_SENT": return "Chưa gửi kit";
+      case "KIT_SENT": return "Đã gửi kit";
+      case "SAMPLE_RECEIVED": return "Đã gửi mẫu";
+      case "PROCESSING": return "Đang xử lý";
+      case "COMPLETED": return "Hoàn thành";
       case "WAITING_APPROVAL":
+      case "CHO_XAC_THUC":
       case "Chờ xác thực":
-        return "Chờ xác nhận";
-      case "KIT_NOT_SENT":
-        return "Chưa gửi kit";
-      case "KIT_SENT":
-        return "Đã gửi kit";
-      case "SAMPLE_RECEIVED":
-        return "Đã gửi mẫu";
-      case "PROCESSING":
-        return "Đang xử lý";
-      case "scheduled":
-      case "Xác nhận":
-      case "Đã hẹn":
-        return "Đã hẹn";
-      case "ARRIVED":
-      case "Đã đến":
-        return "Đã đến";
-      case "COMPLETED":
-      case "Hoàn thành":
-        return "Đã có kết quả";
       case "REJECTED":
       case "Từ chối":
-        return "Từ chối";
-      default:
-        // Nếu status không nằm trong danh sách allowedStatuses thì trả về 'Đang xử lý'
-        if (allowedStatuses.includes(status)) return status;
         return "Đang xử lý";
+      default: return status;
     }
+  };
+
+  const getDisplayStatus = (order) => {
+    return order.status || order.samplingStatus || order.kitStatus || "PENDING_CONFIRM";
   };
 
   return (
@@ -723,9 +695,9 @@ const UserProfile = () => {
                       .filter((order) => {
                         if (filterStatus === "Tất cả") return true;
                         if (filterStatus === "Có kết quả") {
-                          return getStatusText(order.status) === "Đã có kết quả";
+                          return getStatusText(getDisplayStatus(order)) === "Đã có kết quả";
                         }
-                        return getStatusText(order.status) === filterStatus;
+                        return getStatusText(getDisplayStatus(order)) === filterStatus;
                       })
                       .filter(
                         (order) =>
@@ -786,7 +758,7 @@ const UserProfile = () => {
                                   fontWeight: 600,
                                   fontSize: 15,
                                   background: (() => {
-                                    const statusText = getStatusText(order.status);
+                                    const statusText = getStatusText(getDisplayStatus(order));
                                     switch (statusText) {
                                       case "Chờ xác nhận": return "#1890ff";      // blue
                                       case "Chưa gửi kit": return "#a259ec";     // light purple
@@ -811,7 +783,7 @@ const UserProfile = () => {
                                   display: 'inline-block',
                                 }}
                               >
-                                {getStatusText(order.status)}
+                                {getStatusText(getDisplayStatus(order))}
                               </Tag>
                             </div>
                             <div
@@ -939,7 +911,7 @@ const UserProfile = () => {
                               <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
                             </button>
                             {/* Nút Xem kết quả */}
-                            {getStatusText(order.status) === "Đã có kết quả" && (
+                            {getStatusText(getDisplayStatus(order)) === "Đã có kết quả" && (
                               <button
                                 style={{
                                   border: "1.5px solid #1677ff",
@@ -976,7 +948,7 @@ const UserProfile = () => {
                               </button>
                             )}
                             {/* Nút Đánh giá */}
-                            {getStatusText(order.status) === "Đã có kết quả" && (
+                            {getStatusText(getDisplayStatus(order)) === "Đã có kết quả" && (
                               <button
                                 className="order-btn"
                                 style={{
@@ -1014,7 +986,7 @@ const UserProfile = () => {
                               </button>
                             )}
                             {/* Nút Xác nhận đã nhận kit */}
-                            {getStatusText(order.status) === "Đã gửi kit" && (
+                            {getStatusText(getDisplayStatus(order)) === "Đã gửi kit" && (
                               <button
                                 style={{
                                   border: "1.5px solid #00bfae",
@@ -1322,8 +1294,8 @@ const UserProfile = () => {
       {
         showFeedbackModal &&
         selectedOrder &&
-        (getStatusText(selectedOrder.status) === "Hoàn thành" ||
-          getStatusText(selectedOrder.status) === "Có kết quả") && (
+        (getStatusText(getDisplayStatus(selectedOrder.status)) === "Hoàn thành" ||
+          getStatusText(getDisplayStatus(selectedOrder.status)) === "Có kết quả") && (
           <div
             style={{
               position: "fixed",
@@ -1656,7 +1628,7 @@ const UserProfile = () => {
                       fontWeight: 600,
                       fontSize: 15,
                       background: (() => {
-                        const statusText = getStatusText(selectedOrder.status);
+                        const statusText = getStatusText(getDisplayStatus(selectedOrder));
                         switch (statusText) {
                           case "Chờ xác nhận": return "#1890ff";      // blue
                           case "Chưa gửi kit": return "#a259ec";     // light purple
@@ -1681,7 +1653,7 @@ const UserProfile = () => {
                       display: 'inline-block',
                     }}
                   >
-                    {getStatusText(selectedOrder.status)}
+                    {getStatusText(getDisplayStatus(selectedOrder))}
                   </Tag>
                   <span style={{ fontWeight: 600, color: "#888", marginLeft: 8 }}>
                     Thể loại:

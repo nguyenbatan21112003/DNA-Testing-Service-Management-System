@@ -58,7 +58,7 @@ const TestingResults = () => {
   const [reasonText, setReasonText] = useState("");
 
   const STATUS_PROCESSING = "Đang xử lý";
-  const STATUS_WAITING_APPROVAL = "Chờ xác nhận";
+  const STATUS_WAITING_APPROVAL = "Chờ xác thực";
   const STATUS_REJECTED = "Từ chối";
   const STATUS_COMPLETED = "Hoàn thành";
 
@@ -66,16 +66,26 @@ const TestingResults = () => {
   const getStatusText = (status) => {
     const s = normalizeStatus(status);
     if (["dangxuly", "processing"].includes(s)) return "Đang xử lý";
-    if (["choxacnhan", "waitingapproval"].includes(s)) return "Chờ xác nhận";
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
     if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
     return "Đang xử lý";
   };
 
   useEffect(() => {
-    setFilteredOrders(orders.filter((order) => !order.isHidden && [
-      'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
-    ].includes(getStatusText(order.status))));
+    setFilteredOrders(
+      orders.filter(
+        (order) =>
+          !order.isHidden &&
+          [order.status, order.samplingStatus, order.kitStatus].some(s => getStatusText(s) === "Đang xử lý") &&
+          [
+            "Đang xử lý",
+            "Hoàn thành",
+            "Chờ xác thực",
+            "Từ chối"
+          ].includes(getStatusText(order.status))
+      )
+    );
   }, [orders]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
@@ -90,17 +100,18 @@ const TestingResults = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  // SỬA LOGIC FILTER ĐỂ HIỂN THỊ TOÀN BỘ ĐƠN HÀNG
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders.filter((order) => !order.isHidden && [
-        'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
-      ].includes(getStatusText(order.status))));
+      setFilteredOrders(
+        orders.filter((order) => !order.isHidden)
+      );
     } else {
       setFilteredOrders(
         orders.filter(
-          (order) => !order.isHidden && [
-            'Đang xử lý', 'Hoàn thành', 'Chờ xác nhận', 'Từ chối'
-          ].includes(getStatusText(order.status)) && getStatusText(order.status) === filterStatus
+          (order) =>
+            !order.isHidden &&
+            getStatusText(order.status) === filterStatus
         )
       );
     }
@@ -219,9 +230,9 @@ const TestingResults = () => {
         message.warning("Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!");
         return;
       }
-      // Trường hợp bình thường: luôn chuyển trạng thái sang 'Chờ xác nhận'
+      // Khi staff lưu kết quả, chuyển trạng thái sang 'Chờ xác thực'
       updateOrder(selectedOrder.id, {
-        status: "Chờ xác nhận",
+        status: "Chờ xác thực",
         result: resultTableDataCopy
           ? JSON.stringify(resultTableDataCopy)
           : values.result,
@@ -234,7 +245,7 @@ const TestingResults = () => {
       setTempFormData({});
       setCurrentEditOrderId(null);
       setEditModalVisible(false);
-      message.success("Đã gửi yêu cầu xác thực cho quản lý!");
+      message.success("Đã lưu kết quả và chuyển trạng thái sang Chờ xác thực!");
     } catch (error) {
       console.error("Error updating result:", error);
       message.error("Có lỗi xảy ra khi cập nhật kết quả!");
@@ -279,16 +290,11 @@ const TestingResults = () => {
 
   const getStatusColor = (status) => {
     switch (getStatusText(status)) {
-      case "Đang xử lý":
-        return "#00b894";
-      case "Chờ xác nhận":
-        return "#722ed1";
-      case "Hoàn thành":
-        return "#52c41a";
-      case "Từ chối":
-        return "#d63031";
-      default:
-        return "#00b894";
+      case "Chờ xác thực": return "#722ed1"; // tím
+      case "Đang xử lý": return "#1890ff"; // xanh dương
+      case "Hoàn thành": return "#52c41a"; // xanh lá
+      case "Từ chối": return "#ff4d4f"; // đỏ
+      default: return "#b2bec3"; // xám nhạt
     }
   };
 
@@ -453,7 +459,7 @@ const TestingResults = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="Chờ xác nhận"
+              title="Chờ xác thực"
               value={stats.waitingApproval}
               valueStyle={{ color: "#722ed1" }}
               prefix={<ClockCircleOutlined />}
@@ -555,13 +561,13 @@ const TestingResults = () => {
             },
             {
               key: "waitingApproval",
-              label: "Chờ xác nhận",
+              label: "Chờ xác thực",
               children: (
                 <Table
                   columns={columns}
                   dataSource={filteredOrders.filter(
                     (order) =>
-                      !order.isHidden && order.status === STATUS_WAITING_APPROVAL
+                      !order.isHidden && getStatusText(order.status) === STATUS_WAITING_APPROVAL
                   )}
                   rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
@@ -644,16 +650,19 @@ const TestingResults = () => {
               <h3>Thông tin xét nghiệm:</h3>
               <p>
                 <strong>Trạng thái:</strong>{" "}
-                <Tag
-                  color={
-                    selectedOrder.status === STATUS_COMPLETED
-                      ? "green"
-                      : selectedOrder.status === STATUS_PROCESSING
-                        ? "blue"
-                        : "orange"
-                  }
-                >
-                  {selectedOrder.status}
+                <Tag style={{
+                  background: getStatusColor(getStatusText(selectedOrder?.status)),
+                  color: '#fff',
+                  fontWeight: 700,
+                  border: 'none',
+                  fontSize: 15,
+                  padding: '4px 0',
+                  boxShadow: '0 2px 8px #0001',
+                  minWidth: 90,
+                  textAlign: 'center',
+                  display: 'inline-block',
+                }}>
+                  {getStatusText(selectedOrder?.status)}
                 </Tag>
               </p>
               {selectedOrder.testingMethod && (
@@ -789,6 +798,35 @@ const TestingResults = () => {
                 </div>
               </div>
             )}
+            {getStatusText(selectedOrder?.status) === "Đang xử lý" && Array.isArray(tableData) && tableData.length > 0 && (
+              <div style={{ margin: '16px 0' }}>
+                <div style={{ fontWeight: 700, marginBottom: 8 }}>Danh sách mẫu khách hàng:</div>
+                <table className="result-table" style={{ minWidth: '100%', tableLayout: 'auto', borderCollapse: 'collapse', background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 12 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>STT</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>Họ và tên</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>Năm sinh</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>Giới tính</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>Mối quan hệ</th>
+                      <th style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>Loại mẫu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.map((data, index) => (
+                      <tr key={data.key}>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{index + 1}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{data.name}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{data.birthYear}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{data.gender}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{data.relationship}</td>
+                        <td style={{ padding: '8px 12px', fontSize: 16, textAlign: 'center' }}>{data.sampleType}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </Modal>
@@ -837,7 +875,7 @@ const TestingResults = () => {
           onValuesChange={handleFormValuesChange}
         >
           <Form.Item label="Trạng thái">
-            <Tag style={{ background: getStatusColor(selectedOrder?.status), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 0', boxShadow: '0 2px 8px #0001' }}>
+            <Tag style={{ background: getStatusColor(getStatusText(selectedOrder?.status)), color: '#fff', fontWeight: 700, border: 'none', fontSize: 15, padding: '4px 0', boxShadow: '0 2px 8px #0001' }}>
               {getStatusText(selectedOrder?.status)}
             </Tag>
           </Form.Item>
