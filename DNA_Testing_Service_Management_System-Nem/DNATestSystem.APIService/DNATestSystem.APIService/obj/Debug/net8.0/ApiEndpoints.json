@@ -84,6 +84,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "SubmitFeedback",
+    "RelativePath": "Customer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.MailController",
     "Method": "SendMail",
     "RelativePath": "Mail/send",

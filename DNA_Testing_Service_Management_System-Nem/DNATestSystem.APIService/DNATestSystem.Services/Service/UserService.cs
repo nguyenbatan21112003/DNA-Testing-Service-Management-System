@@ -19,6 +19,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using Microsoft.AspNetCore.Http;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
+using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 
 namespace DNATestSystem.Services.Service
 {
@@ -533,7 +534,7 @@ namespace DNATestSystem.Services.Service
                 Message = "Xác minh kết quả thành công."
             };
         }
-    
+
         public async Task<List<TestResultHistory>> GetTestRequestHistoryAsync(int userId)
         {
             var result = await _context.TestRequests
@@ -582,6 +583,27 @@ namespace DNATestSystem.Services.Service
                .ToListAsync();
 
             return result;
+        }
+
+        public async Task<bool> CreateFeedBack(FeedBackDto feedBackDto)
+        {
+            var resultExists = await _context.TestResults.AnyAsync(r => r.ResultId == feedBackDto.ResultId);
+            var userExists = await _context.Users.AnyAsync(u => u.UserId == feedBackDto.UserId);
+
+            if (!resultExists || !userExists)
+                throw new Exception("Result hoặc User không tồn tại.");
+            var feedBack = new Feedback
+            {
+                ResultId = feedBackDto.ResultId,
+                UserId = feedBackDto.UserId,
+                Rating = feedBackDto.Rating,
+                Comment = feedBackDto.Comment,
+                CreatedAt = DateTime.Now
+            };
+            _context.Feedbacks.Add(feedBack);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
     }
 }

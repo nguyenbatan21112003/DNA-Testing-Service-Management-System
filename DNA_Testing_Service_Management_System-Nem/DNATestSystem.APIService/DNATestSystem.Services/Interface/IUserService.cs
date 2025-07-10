@@ -10,6 +10,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using System.Runtime.CompilerServices;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 
 
 namespace DNATestSystem.Services.Interface
@@ -51,5 +52,7 @@ namespace DNATestSystem.Services.Interface
         //coi lich su 
         Task<List<TestResultHistory>> GetTestRequestHistoryAsync(int userId);
         Task<ApiResponseDto> GetVerifiedTestResult(TestResultVerifyDto dto);
+        //
+        Task<bool> CreateFeedBack(FeedBackDto feedBackDto);
     }
 }
