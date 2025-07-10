@@ -177,8 +177,8 @@ export function OrderProvider({ children }) {
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
       // Gọi notifyOrderStatusUpdate ở mọi lần updateOrder để debug
-      const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
-      notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
+        const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
+        notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
 
       // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
       // (Nếu cần gửi cho staff hoặc khách hàng thì giữ lại logic ở đây)

@@ -277,7 +277,7 @@ const HomeSampling = () => {
               minWidth: 110,
             }}
           >
-             {getStatusText(record.status)}
+            {getStatusText(record.status)}
           </Tag>
         </div>
       ),
