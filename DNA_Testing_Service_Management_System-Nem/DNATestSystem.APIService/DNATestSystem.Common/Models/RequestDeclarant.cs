@@ -26,4 +26,6 @@ public partial class RequestDeclarant
     public string? Email { get; set; }
 
     public virtual TestRequest? Request { get; set; }
+
+
 }

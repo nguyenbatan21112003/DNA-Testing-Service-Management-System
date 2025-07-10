@@ -191,8 +191,26 @@ namespace DNATestSystem.Controllers
             var result = await _userService.SubmitTestRequestAsync(dto);
             return result.Success ? Ok(result) : StatusCode(500, result);
         }
-        //[HttpGet("test-results/history")]
+        [HttpGet("test-results/history")]
+        public async Task<IActionResult> GetTestHistory(int userId)
+        {
+            var result = await _userService.GetTestRequestHistoryAsync(userId);
 
+            if (result == null || !result.Any())
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Không tìm thấy lịch sử xét nghiệm."
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = result
+            });
+        }
     }
 }
 

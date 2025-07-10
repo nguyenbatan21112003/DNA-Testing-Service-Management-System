@@ -119,24 +119,42 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
         }
 
+
+        //đây là xóa cứng
+        //public async Task<int> DeleteServiceMethodAsync(int service_id)
+        //{
+        //    var service = await _context.Services
+        //                  .Include(u => u.PriceDetails)
+        //                  .Include(s => s.TestRequests)
+        //                  .Include(a => a.UserSelectedServices)
+        //                  .FirstOrDefaultAsync(s => s.ServiceId == service_id);
+        //    if (service == null)
+        //        throw new Exception("Service không tồn tại");
+
+        //    _context.PriceDetails.RemoveRange(service.PriceDetails);
+        //    _context.TestRequests.RemoveRange(service.TestRequests);
+        //    _context.UserSelectedServices.RemoveRange(service.UserSelectedServices);
+        //    _context.Services.Remove(service);
+
+        //    await _context.SaveChangesAsync();
+        //    return 1;
+        //}
+
         public async Task<int> DeleteServiceMethodAsync(int service_id)
         {
             var service = await _context.Services
-                          .Include(u => u.PriceDetails)
-                          .Include(s => s.TestRequests)
-                          .Include(a => a.UserSelectedServices)
-                          .FirstOrDefaultAsync(s => s.ServiceId == service_id);
+                .FirstOrDefaultAsync(s => s.ServiceId == service_id);
+
             if (service == null)
                 throw new Exception("Service không tồn tại");
 
-            _context.PriceDetails.RemoveRange(service.PriceDetails);
-            _context.TestRequests.RemoveRange(service.TestRequests);
-            _context.UserSelectedServices.RemoveRange(service.UserSelectedServices);
-            _context.Services.Remove(service);
+            service.IsPublished = false; 
+            service.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return 1;
         }
+
 
         public async Task<int> BanUserByIdAsync(int id)
         {

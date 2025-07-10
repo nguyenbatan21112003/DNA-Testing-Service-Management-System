@@ -594,6 +594,22 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "GetTestHistory",
+    "RelativePath": "user/test-results/history",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "UpdateProfileUser",
     "RelativePath": "user/UpdateUserProfile/{profile_id}",
     "HttpMethod": "PUT",

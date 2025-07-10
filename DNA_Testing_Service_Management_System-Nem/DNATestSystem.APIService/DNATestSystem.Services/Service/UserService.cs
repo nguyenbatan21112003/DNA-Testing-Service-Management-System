@@ -17,6 +17,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using Microsoft.AspNetCore.Http;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 
 namespace DNATestSystem.Services.Service
 {
@@ -62,7 +64,7 @@ namespace DNATestSystem.Services.Service
 
             if (user == null) return null;
 
-            if(user.Status == -1) return null;
+            if (user.Status == -1) return null;
 
             var password = loginModel.Password;
 
@@ -130,25 +132,25 @@ namespace DNATestSystem.Services.Service
         }
 
         public async Task<string> GenerateRefreshTokenAsync(int userId)
+        {
+            string refreshToken = HashHelper.GenerateRandomString(64);
+            //refresh Token nên hash lại
+            string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
+
+            var data = new BusinessObjects.Models.RefreshToken
             {
-                string refreshToken = HashHelper.GenerateRandomString(64);
-                //refresh Token nên hash lại
-                string hashRefreshToken = HashHelper.Hash256(refreshToken + userId);
+                UserId = userId,
+                Token = hashRefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
+                Revoked = false
+            };
 
-                var data = new BusinessObjects.Models.RefreshToken
-                {
-                    UserId = userId,
-                    Token = hashRefreshToken,
-                    ExpiresAt = DateTime.UtcNow.AddDays(7), // 7 ngày 
-                    Revoked = false
-                };
+            _context.RefreshTokens.Add(data);
 
-                _context.RefreshTokens.Add(data);
+            await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-
-                return hashRefreshToken;
-            }
+            return hashRefreshToken;
+        }
 
         public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
@@ -371,7 +373,7 @@ namespace DNATestSystem.Services.Service
             if (user == null) return false;
 
 
-             return HashHelper.BCriptVerify(model.CurrentPassword, user.Password);
+            return HashHelper.BCriptVerify(model.CurrentPassword, user.Password);
         }
 
         public async Task ChangePasswordAsync(UserChangePasswordModel model)
@@ -385,7 +387,7 @@ namespace DNATestSystem.Services.Service
                 throw new Exception("Current password is incorrect.");
             // Mã hóa mật khẩu mới
             user.Password = HashHelper.BCriptHash(model.NewPassword);
-            user.UpdatedAt = DateTime.UtcNow;   
+            user.UpdatedAt = DateTime.UtcNow;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
@@ -402,7 +404,7 @@ namespace DNATestSystem.Services.Service
                 CreatedAt = DateTime.UtcNow,
                 Status = "Pending"
             };
-             _context.ConsultRequests.Add(consultRequest);
+            _context.ConsultRequests.Add(consultRequest);
             _context.SaveChangesAsync();
             return Task.FromResult(consultRequest);
         }
@@ -495,7 +497,91 @@ namespace DNATestSystem.Services.Service
             }
         }
 
-        
+        public async Task<ApiResponseDto> GetVerifiedTestResult(TestResultVerifyDto dto)
+        {
+            var result = await _context.TestResults
+          .FirstOrDefaultAsync(r => r.ResultId == dto.ResultId);
+
+            if (result == null)
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Không tìm thấy kết quả xét nghiệm."
+                };
+            }
+
+            if (result.Status == "Verified")
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Kết quả này đã được xác minh trước đó."
+                };
+            }
+
+            result.Status = dto.Status; // Thường là "Verified"
+            result.VerifiedAt = DateTime.Now;
+            result.VerifiedBy = dto.ManagerId;
+
+            _context.TestResults.Update(result);
+            await _context.SaveChangesAsync();
+
+            return new ApiResponseDto
+            {
+                Success = true,
+                Message = "Xác minh kết quả thành công."
+            };
+        }
+    
+        public async Task<List<TestResultHistory>> GetTestRequestHistoryAsync(int userId)
+        {
+            var result = await _context.TestRequests
+               .Where(tr => tr.UserId == userId)
+               .Include(tr => tr.Service)
+               .Include(tr => tr.CollectType) // CollectType
+               .Include(tr => tr.TestProcesses)
+               .Include(tr => tr.RequestDeclarants) // đây là collection
+               .Select(tr => new TestResultHistory
+               {
+                   Request = new RequestDto
+                   {
+                       RequestId = tr.RequestId,
+                       ServiceId = tr.ServiceId ?? 0,
+                       ServiceName = tr.Service!.ServiceName,
+                       CollectType = tr.CollectType!.CollectName,
+                       Category = tr.Category,
+                       ScheduleDate = tr.ScheduleDate ?? DateTime.MinValue,
+                       Address = tr.Address,
+                       Status = tr.Status,
+                       CreatedAt = tr.CreatedAt ?? DateTime.MinValue
+                   },
+                   TestProcess = tr.TestProcesses
+                       .OrderByDescending(p => p.ProcessId)
+                       .Select(p => new TestProcessHistoryDto
+                       {
+                           ProcessId = p.ProcessId,
+                           RequestId = p.RequestId,
+                           CurrentStatus = p.CurrentStatus,
+                           Notes = p.Notes
+                       }).FirstOrDefault(),
+
+                   Declarant = tr.RequestDeclarants
+                       .Select(d => new DeclarantDto
+                       {
+                           FullName = d.FullName,
+                           Gender = d.Gender,
+                           IdentityNumber = d.IdentityNumber,
+                           IdentityIssuedDate = d.IdentityIssuedDate ?? DateTime.MinValue,
+                           IdentityIssuedPlace = d.IdentityIssuedPlace,
+                           Address = d.Address,
+                           Phone = d.Phone,
+                           Email = d.Email
+                       }).FirstOrDefault() // chỉ lấy người đầu tiên
+               })
+               .ToListAsync();
+
+            return result;
+        }
     }
 }
-
