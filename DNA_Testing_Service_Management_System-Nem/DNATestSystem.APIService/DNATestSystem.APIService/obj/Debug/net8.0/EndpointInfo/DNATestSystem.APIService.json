@@ -146,7 +146,7 @@
         }
       }
     },
-    "/Customer": {
+    "/send-FeedBack": {
       "post": {
         "tags": [
           "Customer"
@@ -275,6 +275,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/get-all-feedBack": {
+      "get": {
+        "tags": [
+          "Manager"
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -748,6 +760,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/get-staff-feedback": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
         "responses": {
           "200": {
             "description": "OK"

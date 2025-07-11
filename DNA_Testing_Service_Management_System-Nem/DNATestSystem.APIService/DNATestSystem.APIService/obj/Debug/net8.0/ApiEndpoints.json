@@ -84,22 +84,6 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
-    "Method": "SubmitFeedback",
-    "RelativePath": "Customer",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "dto",
-        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "DNATestSystem.APIService.Controllers.MailController",
     "Method": "SendMail",
     "RelativePath": "Mail/send",
@@ -129,6 +113,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllFeedbacks",
+    "RelativePath": "Manager/get-all-feedBack",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -221,6 +215,22 @@
       {
         "Name": "model",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "SubmitFeedback",
+    "RelativePath": "send-FeedBack",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto",
         "IsRequired": true
       }
     ],
@@ -344,6 +354,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetMyFeedbacks",
+    "RelativePath": "Staff/get-staff-feedback",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

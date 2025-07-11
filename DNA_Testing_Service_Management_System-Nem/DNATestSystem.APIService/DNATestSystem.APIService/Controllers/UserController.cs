@@ -9,6 +9,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.User;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 
 namespace DNATestSystem.Controllers
 {
@@ -211,6 +212,23 @@ namespace DNATestSystem.Controllers
                 data = result
             });
         }
+
+        [HttpPost("create")]
+        [Authorize]
+        public async Task<IActionResult> CreateUserProfile([FromBody] UserProfileDto dto)
+        {
+            try
+            {
+                var result = await _userService.CreateUserProfile(dto);
+                return Ok(new { success = result, message = "Tạo hồ sơ người dùng thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+
     }
 }
 

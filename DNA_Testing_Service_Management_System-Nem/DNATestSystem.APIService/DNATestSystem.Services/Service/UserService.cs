@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
+using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 
 namespace DNATestSystem.Services.Service
 {
@@ -604,6 +605,36 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
 
+        }
+       
+        public async Task<bool> CreateUserProfile(UserProfileDto userProfileDto)
+        {
+            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            {
+                throw new UnauthorizedAccessException("Không thể xác định người dùng.");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+            {
+                throw new Exception("User không tồn tại.");
+            }
+
+            var profile = new UserProfile
+            {
+                UserId = userId,
+                Gender = userProfileDto.Gender,
+                Address = userProfileDto.Address,
+                DateOfBirth = userProfileDto.DateOfBirth,
+                IdentityId = userProfileDto.IdentityId,
+                Fingerfile = userProfileDto.Fingerfile,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _context.UserProfiles.AddAsync(profile);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -11,6 +11,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using System.Runtime.CompilerServices;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
+using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 
 
 namespace DNATestSystem.Services.Interface
@@ -54,5 +55,7 @@ namespace DNATestSystem.Services.Interface
         Task<ApiResponseDto> GetVerifiedTestResult(TestResultVerifyDto dto);
         //
         Task<bool> CreateFeedBack(FeedBackDto feedBackDto);
+        //
+        Task<bool> CreateUserProfile(UserProfileDto userProfileDto);    
     }
 }
