@@ -6,8 +6,6 @@ import {
   AppstoreOutlined,
   FileProtectOutlined,
   LogoutOutlined,
-  StarOutlined,
-  ExclamationCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from "@ant-design/icons";
@@ -31,11 +29,6 @@ const menuItems = [
     key: "processing",
     icon: <FileProtectOutlined />,
     label: "Thời gian & Chi phí",
-  },
-  {
-    key: "policy-violation",
-    icon: <ExclamationCircleOutlined />,
-    label: "Vi phạm chính sách",
   },
   {
     key: "user-management",

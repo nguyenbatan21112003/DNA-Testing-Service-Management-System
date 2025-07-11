@@ -129,7 +129,6 @@ export function NotificationProvider({ children }) {
       data,
       targetRoles,
     };
-    console.log('[DEBUG][createNotification]', notification);
     dispatch({ type: "ADD_NOTIFICATION", payload: notification });
 
     // Hiển thị thông báo popup cho role hiện tại
@@ -175,7 +174,6 @@ export function NotificationProvider({ children }) {
     const filtered = state.notifications.filter((notif) =>
       notif.targetRoles.includes(roleId)
     );
-    console.log('DEBUG: getNotificationsByRole', { roleId, filtered });
     return filtered;
   };
 
@@ -210,7 +208,7 @@ export function NotificationProvider({ children }) {
     const statusMessages = {
       "Chờ xử lý": "đã được nhận",
       "Đang xử lý": "đang được xử lý",
-      "Chờ xác thực": "đã hoàn thành, chờ xác thực",
+      "Chờ xác nhận": "đã hoàn thành, chờ xác nhận",
       "Hoàn thành": "đã được xác thực và hoàn thành",
       "Từ chối": "bị từ chối, cần sửa lại",
     };
@@ -227,7 +225,7 @@ export function NotificationProvider({ children }) {
     );
 
     // Thông báo cho Manager nếu cần xác thực
-    if (newStatus === "Chờ xác thực" || newStatus === "WAITING_APPROVAL") {
+    if (newStatus === "Chờ xác nhận" || newStatus === "WAITING_APPROVAL") {
       createNotification(
         NOTIFICATION_TYPES.ORDER_NEEDS_APPROVAL,
         "Cần xác thực kết quả",

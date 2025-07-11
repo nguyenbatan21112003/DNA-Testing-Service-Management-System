@@ -8,7 +8,6 @@ import {
   DashboardOutlined,
   SafetyCertificateOutlined,
   BarChartOutlined,
-  MessageOutlined,
   LogoutOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -134,16 +133,21 @@ const ManagerDashboard = () => {
   }
 
   return (
-    <Layout style={{ minHeight: "100vh", height: "100vh", overflow: "hidden" }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         width={220}
         style={{
           background: "#fff",
-          position: "relative",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          height: "100vh",
+          zIndex: 100,
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
           paddingBottom: 0,
+          boxShadow: "2px 0 8px #eee",
         }}
         collapsible
         collapsed={collapsed}
@@ -237,23 +241,66 @@ const ManagerDashboard = () => {
           </Button>
         </div>
       </Sider>
-      <Layout>
-        {/* Header with NotificationBell */}
-        <div style={{
-          height: 64,
-          background: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          padding: '0 32px',
-          borderBottom: '1px solid #f0f0f0',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}>
+      <Layout style={{ marginLeft: 220 }}>
+        {/* Header with NotificationBell và dòng chào tên manager */}
+        <div
+          style={{
+            height: 64,
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            padding: "0 32px",
+            borderBottom: "1px solid #f0f0f0",
+            position: "sticky",
+            top: 0,
+            zIndex: 100,
+            gap: 20,
+          }}
+        >
           <NotificationBell />
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Avatar hoặc chữ cái đầu */}
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt="avatar"
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  marginLeft: 0,
+                  border: "2px solid #722ed1",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  background: "#722ed1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  marginLeft: 0,
+                  textTransform: "uppercase",
+                  userSelect: "none",
+                }}
+              >
+                {(user?.name || user?.fullName || user?.email || "M").charAt(0)}
+              </div>
+            )}
+            <span style={{ fontWeight: 600, fontSize: 16, color: "#722ed1" }}>
+              Chào, {user?.name || user?.fullName || user?.email || "Manager"}
+            </span>
+          </div>
         </div>
-        <Content style={{ margin: 0, padding: 0, background: "#f5f5f5", minHeight: "100vh" }}>
+        <Content style={{ margin: 0, padding: 0, background: "#f5f5f5" }}>
           {renderContent()}
         </Content>
       </Layout>

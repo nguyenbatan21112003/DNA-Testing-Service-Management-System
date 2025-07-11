@@ -27,6 +27,7 @@ import {
   CameraOutlined,
   SaveOutlined,
   EyeOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
@@ -41,8 +42,6 @@ const SampleCollection = ({ caseType }) => {
   const location = useLocation();
   const [form] = Form.useForm();
   const [sampleForms, setSampleForms] = useState([]);
-  const [selectedForm, setSelectedForm] = useState(null);
-  const [previewModalVisible, setPreviewModalVisible] = useState(false);
   const [donors, setDonors] = useState([
     {
       id: 1,
@@ -61,8 +60,22 @@ const SampleCollection = ({ caseType }) => {
     },
   ]);
   const { user } = useContext(AuthContext);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
-  const title = caseType === 'Dân sự' ? 'Lấy mẫu xét nghiệm dân sự' : 'Lấy mẫu xét nghiệm hành chính';
+  const title =
+    caseType === "Dân sự"
+      ? "Lấy mẫu xét nghiệm dân sự"
+      : "Lấy mẫu xét nghiệm hành chính";
+
+  // Danh sách loại xét nghiệm hành chính
+  const adminTestTypes = [
+    "Xét nghiệm ADN hành chính - Khai sinh",
+    "Xét nghiệm ADN hành chính - Di trú",
+    "Xét nghiệm ADN hành chính - Thừa kế",
+    "Xét nghiệm ADN hành chính - Tranh chấp",
+    "Xét nghiệm ADN hành chính - Nhanh",
+  ];
 
   useEffect(() => {
     const savedForms = JSON.parse(
@@ -91,6 +104,22 @@ const SampleCollection = ({ caseType }) => {
       const data = JSON.parse(prefill);
       if (data.orderId) {
         form.setFieldsValue({ orderId: data.orderId.toString() });
+        // Tìm đơn hàng tương ứng và set các trường liên quan
+        const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+        const order = orders.find(
+          (o) => o.id.toString() === data.orderId.toString()
+        );
+        if (order) {
+          setSelectedOrder(order);
+          form.setFieldsValue({
+            collectionDate: order.appointmentDate
+              ? dayjs(order.appointmentDate)
+              : undefined,
+            requesterName: order.name || "",
+            requesterAddress: order.address || "",
+            testType: order.type || "",
+          });
+        }
       }
       if (data.requesterName) {
         form.setFieldsValue({ requesterName: data.requesterName });
@@ -137,8 +166,8 @@ const SampleCollection = ({ caseType }) => {
         if (data.donors) {
           setDonors(data.donors);
         }
-      } catch (error) {
-        console.log("Error parsing sample collection draft:", error);
+      } catch {
+        // Xoá các dòng console.log debug
       }
     }
   }, [form]);
@@ -212,6 +241,15 @@ const SampleCollection = ({ caseType }) => {
 
       // Cập nhật đơn hàng tương ứng nếu có
       const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+      // Chuẩn hóa dữ liệu bảng mẫu
+      const resultTableData = donors.map((donor, idx) => ({
+        key: idx + 1,
+        name: donor.name,
+        birthYear: donor.birth,
+        gender: donor.gender,
+        relationship: donor.relation || donor.relationship || "",
+        sampleType: donor.sampleType,
+      }));
       const updatedOrders = orders.map((order) => {
         if (
           order.id.toString() === values.orderId &&
@@ -228,127 +266,36 @@ const SampleCollection = ({ caseType }) => {
               collectionDate: values.collectionDate.format("DD/MM/YYYY"),
               donors: donors,
             },
+            resultTableData: resultTableData,
           };
         }
         return order;
       });
       localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
 
-      form.resetFields();
-      setDonors([
-        {
-          id: 1,
-          name: "",
-          idType: "CCCD",
-          idNumber: "",
-          idIssueDate: null,
-          idIssuePlace: "",
-          nationality: "Việt Nam",
-          address: "",
-          sampleType: "Máu",
-          sampleQuantity: "01",
-          relationship: "",
-          healthIssues: "không",
-          fingerprint: null,
-        },
-      ]);
-      localStorage.removeItem("sample_collection_draft");
-
-      message.success("Lưu biên bản lấy mẫu thành công!");
+      setShowSuccessOverlay(true);
+      setTimeout(() => {
+        setShowSuccessOverlay(false);
+        form.resetFields();
+        setDonors([
+          {
+            id: 1,
+            name: "",
+            idType: "CCCD",
+            idNumber: "",
+            idIssueDate: null,
+            idIssuePlace: "",
+            nationality: "Việt Nam",
+            sampleType: "Máu",
+            relationship: "",
+          },
+        ]);
+        localStorage.removeItem("sample_collection_draft");
+      }, 3000);
     } catch {
       message.error("Có lỗi xảy ra khi lưu biên bản!");
     }
   };
-
-  const handleViewForm = (formData) => {
-    setSelectedForm(formData);
-    setPreviewModalVisible(true);
-  };
-
-  const getAdministrativeOrders = () => {
-    const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    return orders.filter(
-      (order) => {
-        const typeStr = (order.type || "").toLowerCase();
-        return typeStr.includes("hành chính") && !order.sampleCollected;
-      }
-    );
-  };
-
-  const columns = [
-    {
-      title: "Mã biên bản",
-      dataIndex: "id",
-      key: "id",
-      render: (id) => `BB-${id}`,
-    },
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-      render: (id) => `#${id}`,
-    },
-    {
-      title: "Người yêu cầu",
-      dataIndex: "requesterName",
-      key: "requesterName",
-    },
-    {
-      title: "Ngày lấy mẫu",
-      dataIndex: "collectionDate",
-      key: "collectionDate",
-    },
-    {
-      title: "Số người cho mẫu",
-      dataIndex: "donors",
-      key: "donors",
-      render: (donors) => donors.length,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => <Tag color="green">{status}</Tag>,
-    },
-    {
-      title: "Thao tác",
-      key: "action",
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewForm(record)}
-            style={{
-              backgroundColor: "#00a67e",
-              borderColor: "#00a67e",
-              fontWeight: "500",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#008f6b";
-              e.target.style.borderColor = "#008f6b";
-              e.target.style.fontWeight = "600";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#00a67e";
-              e.target.style.borderColor = "#00a67e";
-              e.target.style.fontWeight = "500";
-            }}
-          >
-            Xem
-          </Button>
-          <Button
-            size="small"
-            icon={<PrinterOutlined />}
-            onClick={() => handleViewForm(record)}
-          >
-            In
-          </Button>
-        </Space>
-      ),
-    },
-  ];
 
   // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
   const disabledDate = (current) => {
@@ -366,7 +313,8 @@ const SampleCollection = ({ caseType }) => {
           {title}
         </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
-          Tạo biên bản lấy mẫu cho xét nghiệm ADN {caseType === 'Dân sự' ? 'dân sự' : 'hành chính'}
+          Tạo biên bản lấy mẫu cho xét nghiệm ADN{" "}
+          {caseType === "Dân sự" ? "dân sự" : "hành chính"}
         </p>
       </div>
 
@@ -402,6 +350,9 @@ const SampleCollection = ({ caseType }) => {
                       format="DD/MM/YYYY"
                       style={{ width: "100%" }}
                       disabledDate={disabledDate}
+                      disabled={
+                        !!selectedOrder && !!selectedOrder.appointmentDate
+                      }
                     />
                   </Form.Item>
                 </Col>
@@ -437,21 +388,49 @@ const SampleCollection = ({ caseType }) => {
                 <Col span={12}>
                   <Form.Item
                     name="orderId"
-                    label="Mã đơn hàng (nếu có)"
+                    label="Mã đơn hàng"
                     rules={[
                       { required: true, message: "Vui lòng chọn đơn hàng!" },
                     ]}
                   >
-                    <Select placeholder="Chọn đơn hàng xét nghiệm hành chính">
-                      {getAdministrativeOrders().map((order) => (
-                        <Option key={order.id} value={order.id.toString()}>
-                          #{order.id} - {order.name} - {order.type}
-                        </Option>
-                      ))}
-                    </Select>
+                    <Input
+                      value={selectedOrder ? `#${selectedOrder.id}` : ""}
+                      disabled
+                      style={{ fontWeight: 700, color: "#0984e3" }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
+
+              {selectedOrder && (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="testType"
+                      label="Loại xét nghiệm"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn loại xét nghiệm!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        value={form.getFieldValue("testType")}
+                        onChange={(value) =>
+                          form.setFieldsValue({ testType: value })
+                        }
+                      >
+                        {adminTestTypes.map((type) => (
+                          <Option key={type} value={type}>
+                            {type}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
 
               <Row gutter={16}>
                 <Col span={12}>
@@ -523,33 +502,70 @@ const SampleCollection = ({ caseType }) => {
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Loại giấy tờ" required>
+                      <Form.Item label="Giới tính" required>
                         <Select
-                          value={donor.idType}
+                          value={donor.gender}
                           onChange={(value) =>
-                            updateDonor(donor.id, "idType", value)
+                            updateDonor(donor.id, "gender", value)
                           }
                         >
-                          <Option value="CCCD">CCCD</Option>
-                          <Option value="CMND">CMND</Option>
+                          <Option value="Nam">Nam</Option>
+                          <Option value="Nữ">Nữ</Option>
+                          <Option value="Khác">Khác</Option>
                         </Select>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Số CCCD" required>
+                      <Form.Item label="Năm sinh" required>
                         <Input
-                          value={donor.idNumber}
+                          value={donor.birth}
                           onChange={(e) =>
-                            updateDonor(donor.id, "idNumber", e.target.value)
+                            updateDonor(donor.id, "birth", e.target.value)
                           }
-                          placeholder="Số CCCD"
+                          placeholder="Năm sinh"
                         />
                       </Form.Item>
                     </Col>
                   </Row>
 
                   <Row gutter={16}>
-                    <Col span={8}>
+                    <Col span={12}>
+                      <Form.Item label="Loại giấy tờ" required>
+                        <Select
+                          value={
+                            ["CCCD", "Giấy Chứng Sinh", "Bằng Lái Xe"].includes(
+                              donor.idType
+                            )
+                              ? donor.idType
+                              : "CCCD"
+                          }
+                          onChange={(value) =>
+                            updateDonor(donor.id, "idType", value)
+                          }
+                        >
+                          <Option value="CCCD">CCCD</Option>
+                          <Option value="Giấy Chứng Sinh">
+                            Giấy Chứng Sinh
+                          </Option>
+                          <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Quốc tịch">
+                        <Input
+                          value={donor.nationality}
+                          onChange={(e) =>
+                            updateDonor(donor.id, "nationality", e.target.value)
+                          }
+                          placeholder="Quốc tịch"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={16}>
+                    <Col span={12}>
                       <Form.Item label="Ngày cấp">
                         <DatePicker
                           value={donor.idIssueDate}
@@ -561,7 +577,7 @@ const SampleCollection = ({ caseType }) => {
                         />
                       </Form.Item>
                     </Col>
-                    <Col span={8}>
+                    <Col span={12}>
                       <Form.Item label="Nơi cấp">
                         <Input
                           value={donor.idIssuePlace}
@@ -576,35 +592,10 @@ const SampleCollection = ({ caseType }) => {
                         />
                       </Form.Item>
                     </Col>
-                    <Col span={8}>
-                      <Form.Item label="Quốc tịch">
-                        <Input
-                          value={donor.nationality}
-                          onChange={(e) =>
-                            updateDonor(donor.id, "nationality", e.target.value)
-                          }
-                          placeholder="Quốc tịch"
-                        />
-                      </Form.Item>
-                    </Col>
                   </Row>
 
                   <Row gutter={16}>
-                    <Col span={24}>
-                      <Form.Item label="Địa chỉ">
-                        <Input
-                          value={donor.address}
-                          onChange={(e) =>
-                            updateDonor(donor.id, "address", e.target.value)
-                          }
-                          placeholder="Địa chỉ thường trú"
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Row gutter={16}>
-                    <Col span={6}>
+                    <Col span={12}>
                       <Form.Item label="Loại mẫu" required>
                         <Select
                           value={donor.sampleType}
@@ -612,24 +603,11 @@ const SampleCollection = ({ caseType }) => {
                             updateDonor(donor.id, "sampleType", value)
                           }
                         >
+                          <Option value="Nước bọt">Nước bọt</Option>
                           <Option value="Máu">Máu</Option>
-                          <Option value="Niêm mạc miệng">Niêm mạc miệng</Option>
                           <Option value="Tóc">Tóc</Option>
-                          <Option value="Móng tay">Móng tay</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="Số lượng mẫu" required>
-                        <Select
-                          value={donor.sampleQuantity}
-                          onChange={(value) =>
-                            updateDonor(donor.id, "sampleQuantity", value)
-                          }
-                        >
-                          <Option value="01">01</Option>
-                          <Option value="02">02</Option>
-                          <Option value="03">03</Option>
+                          <Option value="Móng">Móng</Option>
+                          <Option value="Niêm mạc">Niêm mạc</Option>
                         </Select>
                       </Form.Item>
                     </Col>
@@ -644,54 +622,8 @@ const SampleCollection = ({ caseType }) => {
                               e.target.value
                             )
                           }
-                          placeholder="Ví dụ: Bố, Con, Mẹ..."
+                          placeholder="Ví dụ: Bố, Mẹ, Con..."
                         />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Row gutter={16}>
-                    <Col span={18}>
-                      <Form.Item label="Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng">
-                        <Input
-                          value={donor.healthIssues}
-                          onChange={(e) =>
-                            updateDonor(
-                              donor.id,
-                              "healthIssues",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Nhập 'không' nếu không có"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="Vân tay ngón trỏ phải">
-                        <Upload
-                          listType="picture-card"
-                          showUploadList={false}
-                          beforeUpload={() => false}
-                          onChange={(info) =>
-                            updateDonor(donor.id, "fingerprint", info.file)
-                          }
-                        >
-                          {donor.fingerprint ? (
-                            <img
-                              src={
-                                URL.createObjectURL(donor.fingerprint) ||
-                                "/placeholder.svg"
-                              }
-                              alt="fingerprint"
-                              style={{ width: "100%" }}
-                            />
-                          ) : (
-                            <div>
-                              <CameraOutlined />
-                              <div style={{ marginTop: 8 }}>Chụp vân tay</div>
-                            </div>
-                          )}
-                        </Upload>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -723,40 +655,12 @@ const SampleCollection = ({ caseType }) => {
                 Thêm người cho mẫu
               </Button>
 
-              <Form.Item name="notes" label="Ghi chú bổ sung">
-                <TextArea
-                  rows={3}
-                  placeholder="Ghi chú thêm về quá trình lấy mẫu..."
-                />
-              </Form.Item>
-
               <div style={{ textAlign: "center" }}>
                 <Space size="large">
                   <Button
-                    onClick={() => form.resetFields()}
-                    style={{
-                      backgroundColor: "#00a67e",
-                      borderColor: "#00a67e",
-                      color: "white",
-                      fontWeight: "500",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = "#008f6b";
-                      e.target.style.borderColor = "#008f6b";
-                      e.target.style.fontWeight = "600";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = "#00a67e";
-                      e.target.style.borderColor = "#00a67e";
-                      e.target.style.fontWeight = "500";
-                    }}
-                  >
-                    Làm mới
-                  </Button>
-                  <Button
                     type="primary"
                     htmlType="submit"
-                    icon={<SaveOutlined />}
+                    icon={<CheckCircleOutlined />}
                     size="large"
                     style={{
                       backgroundColor: "#00a67e",
@@ -774,28 +678,11 @@ const SampleCollection = ({ caseType }) => {
                       e.target.style.fontWeight = "500";
                     }}
                   >
-                    Lưu biên bản
+                    Xác nhận lấy mẫu
                   </Button>
                 </Space>
               </div>
             </Form>
-          </Card>
-        </TabPane>
-
-        <TabPane tab="Danh sách biên bản" key="list">
-          <Card>
-            <Table
-              columns={columns}
-              dataSource={sampleForms}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) =>
-                  `${range[0]}-${range[1]} của ${total} biên bản`,
-              }}
-            />
           </Card>
         </TabPane>
       </Tabs>
@@ -803,12 +690,12 @@ const SampleCollection = ({ caseType }) => {
       {/* Modal xem biên bản */}
       <Modal
         title="Xem biên bản lấy mẫu"
-        open={previewModalVisible}
-        onCancel={() => setPreviewModalVisible(false)}
+        open={false}
+        onCancel={() => {}}
         footer={[
           <Button
             key="close"
-            onClick={() => setPreviewModalVisible(false)}
+            onClick={() => {}}
             style={{
               backgroundColor: "#00a67e",
               borderColor: "#00a67e",
@@ -853,166 +740,78 @@ const SampleCollection = ({ caseType }) => {
         ]}
         width={800}
       >
-        {selectedForm && (
-          <div style={{ background: "#fff", padding: 24 }}>
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <Title level={4}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Title>
-              <Text>Độc lập - Tự do - Hạnh phúc</Text>
-              <Divider style={{ margin: "12px 0" }} />
-              <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
-            </div>
-
-            <Paragraph>
-              Hôm nay, ngày {selectedForm.collectionDate}, tại{" "}
-              {selectedForm.location}
-            </Paragraph>
-            <Paragraph>Chúng tôi gồm có:</Paragraph>
-            <Paragraph>
-              1. Nhân viên thu mẫu: <strong>{selectedForm.collector}</strong>
-            </Paragraph>
-            <Paragraph>
-              2. Người yêu cầu xét nghiệm:{" "}
-              <strong>{selectedForm.requesterName}</strong>, Địa chỉ hiện tại:{" "}
-              {selectedForm.requesterAddress}
-            </Paragraph>
-
-            <Paragraph>
-              Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm
-              ADN. Các mẫu của từng người được lấy riêng rẽ như sau:
-            </Paragraph>
-
-            {Array.isArray(selectedForm.donors) &&
-              selectedForm.donors.length > 0 ? (
-              selectedForm.donors.map((donor, index) => (
-                <div
-                  key={index}
-                  style={{
-                    border: "1px solid #000",
-                    padding: 16,
-                    marginBottom: 16,
-                  }}
-                >
-                  <Row gutter={16}>
-                    <Col span={18}>
-                      <Text strong>Họ và tên: {donor.name}</Text>
-                    </Col>
-                    <Col span={6} style={{ textAlign: "right" }}>
-                      <Text>Người cho mẫu thứ {index + 1}</Text>
-                    </Col>
-                  </Row>
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>Loại giấy tờ: {donor.idType}</Text>
-                    </Col>
-                    <Col span={16}>
-                      <Text>Số/quyển số: {donor.idNumber}</Text>
-                    </Col>
-                  </Row>
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>
-                        Ngày cấp:{" "}
-                        {donor.idIssueDate
-                          ? donor.idIssueDate.format("DD/MM/YYYY")
-                          : "Chưa có thông tin"}
-                      </Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Nơi cấp: {donor.idIssuePlace}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Quốc tịch: {donor.nationality}</Text>
-                    </Col>
-                  </Row>
-                  {donor.address && (
-                    <Row style={{ marginTop: 8 }}>
-                      <Col span={24}>
-                        <Text>Địa chỉ: {donor.address}</Text>
-                      </Col>
-                    </Row>
-                  )}
-                  <Row gutter={16} style={{ marginTop: 8 }}>
-                    <Col span={8}>
-                      <Text>Loại mẫu: {donor.sampleType}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Số lượng mẫu: {donor.sampleQuantity}</Text>
-                    </Col>
-                    <Col span={8}>
-                      <Text>Mối quan hệ: {donor.relationship}</Text>
-                    </Col>
-                  </Row>
-                  <Row style={{ marginTop: 8 }}>
-                    <Col span={24}>
-                      <Text>
-                        Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6
-                        tháng: {donor.healthIssues}
-                      </Text>
-                    </Col>
-                  </Row>
-                  <div style={{ textAlign: "right", marginTop: 16 }}>
-                    <Text>Vân tay ngón trỏ phải</Text>
-                    <div
-                      style={{
-                        width: 80,
-                        height: 80,
-                        border: "1px dashed #999",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        marginLeft: 8,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <Paragraph>Không có thông tin người cho mẫu.</Paragraph>
-            )}
-
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể
-              tách rời.
-            </Paragraph>
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày
-              trả kết quả. Sau thời gian đó người yêu cầu xét nghiệm cung cấp và
-              chịu trách nhiệm.
-            </Paragraph>
-
-            <Row gutter={24} style={{ marginTop: 24, textAlign: "center" }}>
-              <Col span={8}>
-                <Text strong>NGƯỜI THU MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký, ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.collector}</Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI ĐƯỢC LẤY MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>
-                    {selectedForm.donors && selectedForm.donors[0]?.name}
-                  </Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI YÊU CẦU XÉT NGHIỆM</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.requesterName}</Text>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        )}
+        {/* Content of the modal */}
       </Modal>
+
+      {showSuccessOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255,255,255,0.97)",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 18,
+            boxShadow: "0 8px 32px #0002",
+            animation: "fadeIn 0.3s",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(135deg, #e0f7fa 0%, #e6ffe6 100%)",
+              border: "2.5px solid #00b894",
+              borderRadius: 20,
+              padding: "48px 40px",
+              boxShadow: "0 4px 32px #00b89422",
+              textAlign: "center",
+              maxWidth: 480,
+              minWidth: 320,
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 18, lineHeight: 1 }}>
+              🧬
+            </div>
+            <div
+              style={{
+                fontSize: 30,
+                fontWeight: 900,
+                color: "#009e74",
+                marginBottom: 14,
+                letterSpacing: 0.5,
+              }}
+            >
+              Lấy mẫu thành công!
+            </div>
+            <div
+              style={{
+                fontSize: 20,
+                color: "#222",
+                marginBottom: 10,
+                fontWeight: 500,
+              }}
+            >
+              Biên bản đã được lưu và đơn hàng chuyển sang trạng thái Đang xử
+              lý.
+            </div>
+            <div
+              style={{
+                fontSize: 16,
+                color: "#555",
+                marginTop: 18,
+                lineHeight: 1.6,
+              }}
+            >
+              Bạn có thể tiếp tục nhập đơn mới hoặc quay lại danh sách.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

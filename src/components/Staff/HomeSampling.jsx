@@ -49,6 +49,16 @@ const HomeSampling = () => {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [form] = Form.useForm();
 
+  const normalizeStatus = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "")
+      .trim();
+  };
+
   // Lấy dữ liệu đơn hàng từ context
   const loadSamplingRequests = () => {
     const allOrders = getAllOrders();
@@ -57,16 +67,16 @@ const HomeSampling = () => {
       .map((order) => {
         let mappedStatus = order.status || order.kitStatus;
         let mappedKitStatus = order.kitStatus || order.status;
-        switch (mappedStatus) {
-          case "chua_gui":
+        switch (normalizeStatus(mappedStatus)) {
+          case "chuagui":
             mappedStatus = "PENDING_CONFIRM";
             mappedKitStatus = "PENDING_CONFIRM";
             break;
-          case "da_gui":
+          case "dagui":
             mappedStatus = "KIT_SENT";
             mappedKitStatus = "KIT_SENT";
             break;
-          case "da_nhan":
+          case "danhan":
             mappedStatus = "SAMPLE_RECEIVED";
             mappedKitStatus = "SAMPLE_RECEIVED";
             break;
@@ -74,17 +84,17 @@ const HomeSampling = () => {
             mappedStatus = "CANCELLED";
             mappedKitStatus = "CANCELLED";
             break;
-          // Nếu là các status hợp lệ thì giữ nguyên
-          case "PENDING_CONFIRM":
-          case "KIT_NOT_SENT":
-          case "KIT_SENT":
-          case "SAMPLE_RECEIVED":
-          case "PROCESSING":
+          case "pending_confirm":
+          case "kit_not_sent":
+          case "kit_sent":
+          case "sample_received":
+          case "processing":
+          case "cancelled":
+            // Giữ nguyên
             break;
-          // Nếu là các status khác thì map về PENDING_CONFIRM
           default:
-            mappedStatus = "PENDING_CONFIRM";
-            mappedKitStatus = "PENDING_CONFIRM";
+            mappedStatus = "PROCESSING";
+            mappedKitStatus = "PROCESSING";
             break;
         }
         return {
@@ -148,10 +158,11 @@ const HomeSampling = () => {
     try {
       await updateOrder(String(selectedRequest.id), {
         status: "KIT_SENT",
+        samplingStatus: "KIT_SENT",
         kitStatus: "KIT_SENT",
         kitId: values.kitId,
         notes: values.notes,
-        updatedAt: new Date().toLocaleString("vi-VN"),
+        updatedAt: new Date().toISOString(),
       });
       loadSamplingRequests();
       setUpdateModalVisible(false);
@@ -182,6 +193,7 @@ const HomeSampling = () => {
     }
   };
 
+  // Hàm mapping trạng thái code sang tiếng Việt
   const getStatusText = (status) => {
     switch (status) {
       case "PENDING_CONFIRM":
@@ -192,12 +204,27 @@ const HomeSampling = () => {
         return "Đã gửi kit";
       case "SAMPLE_RECEIVED":
         return "Đã nhận mẫu";
-      case "CANCELLED":
-        return "Đã hủy";
       case "PROCESSING":
         return "Đang xử lý";
+      case "COMPLETED":
+        return "Hoàn thành";
       default:
         return status;
+    }
+  };
+
+  // Hàm cập nhật an toàn, không đổi trạng thái nếu đã là 'Đang xử lý'
+  const safeUpdateOrder = (orderId, updates, currentStatus) => {
+    if (
+      getStatusText(currentStatus) === "Đang xử lý" &&
+      updates.status &&
+      getStatusText(updates.status) !== "Hoàn thành"
+    ) {
+      // eslint-disable-next-line no-unused-vars
+      const { status, ...rest } = updates;
+      updateOrder(orderId, rest);
+    } else {
+      updateOrder(orderId, updates);
     }
   };
 
@@ -332,10 +359,16 @@ const HomeSampling = () => {
                   size="small"
                   icon={<CheckOutlined />}
                   onClick={async () => {
-                    await updateOrder(String(record.id), {
-                      status: "KIT_NOT_SENT",
-                      updatedAt: new Date().toLocaleString("vi-VN"),
-                    });
+                    await safeUpdateOrder(
+                      String(record.id),
+                      {
+                        status: "KIT_NOT_SENT",
+                        samplingStatus: "KIT_NOT_SENT",
+                        kitStatus: "KIT_NOT_SENT",
+                        updatedAt: new Date().toISOString(),
+                      },
+                      record.status
+                    );
                     loadSamplingRequests();
                     message.success(
                       "Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'."
@@ -421,6 +454,22 @@ const HomeSampling = () => {
                   type="primary"
                   size="small"
                   icon={<ExperimentOutlined />}
+                  onClick={async () => {
+                    await safeUpdateOrder(
+                      String(record.id),
+                      {
+                        status: "PROCESSING",
+                        samplingStatus: "PROCESSING",
+                        kitStatus: "PROCESSING",
+                        updatedAt: new Date().toISOString(),
+                      },
+                      record.status
+                    );
+                    loadSamplingRequests();
+                    message.success(
+                      "Đơn đã chuyển sang trạng thái 'Đang xử lý'."
+                    );
+                  }}
                   style={{
                     background: "#7c3aed",
                     color: "#fff",
@@ -437,16 +486,6 @@ const HomeSampling = () => {
                   onMouseOut={(e) =>
                     (e.currentTarget.style.background = "#7c3aed")
                   }
-                  onClick={async () => {
-                    await updateOrder(String(record.id), {
-                      status: "PROCESSING",
-                      updatedAt: new Date().toLocaleString("vi-VN"),
-                    });
-                    loadSamplingRequests();
-                    message.success(
-                      "Đơn đã chuyển sang trạng thái 'Đang xử lý'."
-                    );
-                  }}
                 >
                   Xét Nghiệm
                 </Button>

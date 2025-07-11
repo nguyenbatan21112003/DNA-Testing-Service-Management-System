@@ -27,7 +27,8 @@ import { useOrderContext } from "../../context/OrderContext";
 const { Title, Text } = Typography;
 
 const TestResultVerification = () => {
-  const { getOrdersNeedingApproval, updateOrder, getAllOrders } = useOrderContext();
+  const { getOrdersNeedingApproval, updateOrder, getAllOrders } =
+    useOrderContext();
   const [ordersNeedingApproval, setOrdersNeedingApproval] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -56,7 +57,11 @@ const TestResultVerification = () => {
 
   useEffect(() => {
     const allOrders = getAllOrders();
-    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));
+    setFilteredOrders(
+      allOrders.filter(
+        (order) => getStatusText(order.status) === "Chờ xác thực"
+      )
+    );
   }, [ordersNeedingApproval, getAllOrders]);
 
   const loadOrdersNeedingApproval = () => {
@@ -85,40 +90,41 @@ const TestResultVerification = () => {
       managerConfirm: true,
       status: "Hoàn thành",
       approvedAt: new Date().toISOString(),
-      managerNote: ""
+      managerNote: "",
     });
     setApproveConfirmVisible(false);
     setPendingApproveOrder(null);
     message.success("Đã phê duyệt kết quả xét nghiệm thành công!");
-    setFilteredOrders(prev => prev.filter(order => order.id !== pendingApproveOrder.id));
+    setFilteredOrders((prev) =>
+      prev.filter((order) => order.id !== pendingApproveOrder.id)
+    );
   };
 
   const confirmReject = async () => {
-    console.log('DEBUG: pendingRejectOrder', pendingRejectOrder);
-    console.log('DEBUG: rejectNote', rejectNote);
     if (!pendingRejectOrder) return;
     await updateOrder(pendingRejectOrder.id, {
       managerConfirm: false,
       status: "Từ chối",
       approvedAt: new Date().toISOString(),
-      managerNote: rejectNote
+      managerNote: rejectNote,
     });
-    console.log('DEBUG: updateOrder called, should reload list');
     setRejectModalVisible(false);
     setRejectNote("");
     setPendingRejectOrder(null);
     message.success("Đã từ chối kết quả xét nghiệm!");
-    setFilteredOrders(prev => prev.filter(order => order.id !== pendingRejectOrder.id));
+    setFilteredOrders((prev) =>
+      prev.filter((order) => order.id !== pendingRejectOrder.id)
+    );
   };
 
   // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa
   function normalizeStatus(str) {
-    if (!str) return '';
+    if (!str) return "";
     return str
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .replace(/\s+/g, '')
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "")
       .trim();
   }
   const getStatusText = (status) => {
@@ -185,22 +191,24 @@ const TestResultVerification = () => {
             icon={<EyeOutlined />}
             onClick={() => handleViewResult(record)}
             style={{
-              background: '#1677ff',
-              borderColor: '#1677ff',
+              background: "#1677ff",
+              borderColor: "#1677ff",
               fontWeight: 600,
               borderRadius: 20,
-              boxShadow: '0 2px 8px rgba(22,119,255,0.12)',
-              transition: 'all 0.2s',
+              boxShadow: "0 2px 8px rgba(22,119,255,0.12)",
+              transition: "all 0.2s",
             }}
-            onMouseOver={e => {
-              e.currentTarget.style.background = '#0958d9';
-              e.currentTarget.style.borderColor = '#0958d9';
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(9,88,217,0.18)';
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "#0958d9";
+              e.currentTarget.style.borderColor = "#0958d9";
+              e.currentTarget.style.boxShadow =
+                "0 4px 16px rgba(9,88,217,0.18)";
             }}
-            onMouseOut={e => {
-              e.currentTarget.style.background = '#1677ff';
-              e.currentTarget.style.borderColor = '#1677ff';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(22,119,255,0.12)';
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "#1677ff";
+              e.currentTarget.style.borderColor = "#1677ff";
+              e.currentTarget.style.boxShadow =
+                "0 2px 8px rgba(22,119,255,0.12)";
             }}
           >
             Xem
@@ -229,17 +237,32 @@ const TestResultVerification = () => {
   ];
 
   const stats = {
-    total: ordersNeedingApproval.length,
-    approved: getAllOrders().filter(o => o.status === "Hoàn thành").length,
-    rejected: getAllOrders().filter(o => o.status === "Từ chối").length,
-    waiting: getAllOrders().filter(o => o.status === "Chờ xác thực").length,
+    total: getAllOrders().filter(
+      (o) => getStatusText(o.status) === "Chờ xác thực"
+    ).length,
+    approved: getAllOrders().filter(
+      (o) => getStatusText(o.status) === "Hoàn thành"
+    ).length,
+    rejected: getAllOrders().filter(
+      (o) => getStatusText(o.status) === "Từ chối"
+    ).length,
+    waiting: getAllOrders().filter(
+      (o) => getStatusText(o.status) === "Đang xử lý"
+    ).length,
   };
 
   return (
     <div style={{ padding: "0" }}>
       {/* Header */}
       <div style={{ marginBottom: "24px", textAlign: "center" }}>
-        <h1 style={{ fontSize: "28px", fontWeight: "700", color: "#722ed1", margin: 0 }}>
+        <h1
+          style={{
+            fontSize: "28px",
+            fontWeight: "700",
+            color: "#722ed1",
+            margin: 0,
+          }}
+        >
           Xác thực kết quả xét nghiệm
         </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0" }}>
@@ -248,21 +271,25 @@ const TestResultVerification = () => {
       </div>
 
       {/* Thống kê */}
-      <div style={{
-        background: "#fff",
-        padding: "24px",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        border: "1px solid #f0f0f0",
-        marginBottom: "24px",
-      }}>
+      <div
+        style={{
+          background: "#fff",
+          padding: "24px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          border: "1px solid #f0f0f0",
+          marginBottom: "24px",
+        }}
+      >
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={6}>
             <Card>
               <Statistic
                 title="Tổng đơn chờ xác thực"
                 value={stats.total}
-                prefix={<SafetyCertificateOutlined style={{ color: "#722ed1" }} />}
+                prefix={
+                  <SafetyCertificateOutlined style={{ color: "#722ed1" }} />
+                }
                 valueStyle={{ color: "#722ed1", fontWeight: 600 }}
               />
             </Card>
@@ -310,23 +337,34 @@ const TestResultVerification = () => {
           border: "1px solid #f0f0f0",
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginBottom: 16,
+          }}
+        >
           <Input.Search
             placeholder="Tìm kiếm theo tên khách hàng, mã đơn, loại xét nghiệm..."
             value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onSearch={v => setSearchText(v)}
+            onChange={(e) => setSearchText(e.target.value)}
+            onSearch={(v) => setSearchText(v)}
             allowClear
             style={{ width: 320 }}
           />
         </div>
         {filteredOrders.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
-            <SafetyCertificateOutlined style={{ fontSize: 48, marginBottom: 16 }} />
+            <SafetyCertificateOutlined
+              style={{ fontSize: 48, marginBottom: 16 }}
+            />
             <Title level={4} style={{ color: "#999" }}>
               Không có đơn hàng nào cần xác thực
             </Title>
-            <Text>Tất cả kết quả xét nghiệm đã được xác thực hoặc chưa có kết quả cần xác thực.</Text>
+            <Text>
+              Tất cả kết quả xét nghiệm đã được xác thực hoặc chưa có kết quả
+              cần xác thực.
+            </Text>
           </div>
         ) : (
           <Table
@@ -337,7 +375,8 @@ const TestResultVerification = () => {
               pageSize: 10,
               showSizeChanger: true,
               showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} của ${total} đơn hàng`,
             }}
             scroll={{ x: 1000 }}
           />
@@ -346,7 +385,7 @@ const TestResultVerification = () => {
 
       {/* Modal xem kết quả */}
       <Modal
-        title="Xem kết quả xét nghiệm"
+        title={null}
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
         footer={[
@@ -377,39 +416,53 @@ const TestResultVerification = () => {
             Từ chối
           </Button>,
         ]}
-        width={800}
+        width={700}
+        style={{ top: 32 }}
       >
         {selectedOrder && (
           <div>
-            <Descriptions title="Thông tin đơn hàng" bordered column={2}>
-              <Descriptions.Item label="Mã đơn" span={1}>
-                #{selectedOrder.id}
-              </Descriptions.Item>
-              <Descriptions.Item label="Khách hàng" span={1}>
-                {selectedOrder.name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Loại xét nghiệm" span={1}>
-                {selectedOrder.type}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày tạo" span={1}>
-                {selectedOrder.date}
-              </Descriptions.Item>
-              <Descriptions.Item label="Độ ưu tiên" span={1}>
-                <Tag color={selectedOrder.priority === "Cao" ? "red" : "orange"}>
-                  {selectedOrder.priority}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Phương pháp" span={1}>
-                {selectedOrder.testingMethod || "STR"}
-              </Descriptions.Item>
-            </Descriptions>
+            {/* Tiêu đề mới */}
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: 800,
+                color: "#722ed1",
+                marginBottom: 24,
+                textAlign: "center",
+              }}
+            >
+              Đơn cần xác thực
+            </div>
+            {/* Thêm dòng tiêu đề thông tin khách hàng */}
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>
+              Thông tin khách hàng
+            </div>
+            {/* Thông tin khách hàng trong khung đơn giản */}
+            <div
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: 8,
+                padding: 20,
+                marginBottom: 24,
+              }}
+            >
+              <div style={{ fontSize: 18, marginBottom: 6 }}>
+                <b>Mã đơn:</b> #{selectedOrder.id}
+              </div>
+              <div style={{ fontSize: 18, marginBottom: 6 }}>
+                <b>Khách hàng:</b> {selectedOrder.name}
+              </div>
+              <div style={{ fontSize: 18, marginBottom: 6 }}>
+                <b>Loại xét nghiệm:</b> {selectedOrder.type}
+              </div>
+              <div style={{ fontSize: 18 }}>
+                <b>Ngày tạo:</b> {selectedOrder.date}
+              </div>
+            </div>
 
-            <Divider />
-
-            <div style={{ marginBottom: 16 }}>
-              <Title level={4}>Kết quả xét nghiệm</Title>
-              {selectedOrder.result ? (
-                (() => {
+            {/* Dữ liệu đơn hàng (bảng mẫu khách hàng) */}
+            {selectedOrder.result
+              ? (() => {
                   let parsed = null;
                   try {
                     parsed = JSON.parse(selectedOrder.result);
@@ -418,49 +471,76 @@ const TestResultVerification = () => {
                   }
                   if (Array.isArray(parsed) && parsed.length > 0) {
                     return (
-                      <Table
-                        dataSource={parsed}
-                        columns={[
-                          { title: "Họ và tên", dataIndex: "name", key: "name" },
-                          { title: "Năm sinh", dataIndex: "birthYear", key: "birthYear" },
-                          { title: "Giới tính", dataIndex: "gender", key: "gender" },
-                          { title: "Mối quan hệ", dataIndex: "relationship", key: "relationship" },
-                          { title: "Loại mẫu", dataIndex: "sampleType", key: "sampleType" },
-                        ]}
-                        pagination={false}
-                        size="small"
-                        rowKey={(row, idx) => row.key || idx}
-                        style={{ background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 4 }}
-                      />
+                      <div style={{ marginBottom: 24 }}>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: 18,
+                            marginBottom: 8,
+                          }}
+                        >
+                          Dữ liệu đơn hàng
+                        </div>
+                        <Table
+                          dataSource={parsed}
+                          columns={[
+                            {
+                              title: "Họ và tên",
+                              dataIndex: "name",
+                              key: "name",
+                            },
+                            {
+                              title: "Năm sinh",
+                              dataIndex: "birthYear",
+                              key: "birthYear",
+                            },
+                            {
+                              title: "Giới tính",
+                              dataIndex: "gender",
+                              key: "gender",
+                            },
+                            {
+                              title: "Mối quan hệ",
+                              dataIndex: "relationship",
+                              key: "relationship",
+                            },
+                            {
+                              title: "Loại mẫu",
+                              dataIndex: "sampleType",
+                              key: "sampleType",
+                            },
+                          ]}
+                          pagination={false}
+                          size="small"
+                          rowKey={(row, idx) => row.key || idx}
+                          style={{
+                            background: "#f6ffed",
+                            border: "1px solid #b7eb8f",
+                            borderRadius: 4,
+                          }}
+                        />
+                      </div>
                     );
                   }
-                  return (
-                    <div style={{ padding: 12, background: "#f6ffed", border: "1px solid #b7eb8f", borderRadius: 4 }}>
-                      <Text>{selectedOrder.result}</Text>
-                    </div>
-                  );
+                  return null;
                 })()
-              ) : (
-                <div style={{ padding: 12, background: "#fff7e6", border: "1px solid #ffd591", borderRadius: 4 }}>
-                  <Text>Chưa có kết quả chi tiết</Text>
-                </div>
-              )}
-            </div>
+              : null}
 
+            {/* Kết luận */}
             {selectedOrder.conclusion && (
               <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Kết luận</Title>
-                <div style={{ padding: 12, background: "#f0f5ff", border: "1px solid #d6e4ff", borderRadius: 4 }}>
-                  <Text>{selectedOrder.conclusion}</Text>
+                <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>
+                  Kết luận
                 </div>
-              </div>
-            )}
-
-            {selectedOrder.testingNotes && (
-              <div style={{ marginBottom: 16 }}>
-                <Title level={4}>Ghi chú kỹ thuật</Title>
-                <div style={{ padding: 12, background: "#f6f6f6", borderRadius: 4 }}>
-                  <Text>{selectedOrder.testingNotes}</Text>
+                <div
+                  style={{
+                    padding: 12,
+                    background: "#f0f5ff",
+                    border: "1px solid #d6e4ff",
+                    borderRadius: 4,
+                  }}
+                >
+                  <Text>{selectedOrder.conclusion}</Text>
                 </div>
               </div>
             )}
@@ -517,9 +597,16 @@ const TestResultVerification = () => {
           <Text strong>Lý do từ chối:</Text>
           <textarea
             value={rejectNote}
-            onChange={e => setRejectNote(e.target.value)}
+            onChange={(e) => setRejectNote(e.target.value)}
             placeholder="Nhập lý do từ chối..."
-            style={{ width: "100%", minHeight: 80, padding: 8, border: '1px solid #d9d9d9', borderRadius: 4, marginTop: 8 }}
+            style={{
+              width: "100%",
+              minHeight: 80,
+              padding: 8,
+              border: "1px solid #d9d9d9",
+              borderRadius: 4,
+              marginTop: 8,
+            }}
           />
         </div>
       </Modal>
@@ -527,4 +614,4 @@ const TestResultVerification = () => {
   );
 };
 
-export default TestResultVerification; 
+export default TestResultVerification;

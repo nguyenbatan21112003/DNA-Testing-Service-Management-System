@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
   Card,
   Table,
@@ -43,7 +43,7 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 const CenterSampling = () => {
-  const { getAllOrders, updateOrder } = useOrderContext();
+  const { getAllOrders, updateOrder, updateSamplingStatus } = useOrderContext();
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -60,18 +60,13 @@ const CenterSampling = () => {
   const { user } = useContext(AuthContext);
 
   // Lấy dữ liệu đơn hàng từ context
-  const loadAppointments = () => {
+  const loadAppointments = useCallback(() => {
     const allOrders = getAllOrders();
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center" && !order.isHidden)
       .map((order) => {
-        // Map trạng thái cũ sang flow mới
-        let status = order.status || order.appointmentStatus;
-        if (["Chờ xử lý", "PENDING", "PENDING_CONFIRM"].includes(status)) status = "Chờ xác nhận";
-        if (status === "PROCESSING") status = "Đang lấy mẫu";
-        if (status === "da_hen") status = "Đã hẹn";
-        if (status === "da_den") status = "Đã đến";
-        if (status === "vang_mat" || status === "huy") status = "Đã hủy";
+        // Ưu tiên lấy status thực tế từ order.status
+        let status = order.status || order.samplingStatus || "Chờ xác nhận";
         return {
           ...order,
           status: status,
@@ -99,12 +94,12 @@ const CenterSampling = () => {
         .length,
     };
     setStats(newStats);
-  };
+  }, [getAllOrders]);
 
   useEffect(() => {
     // Load orders khi component mount
     loadAppointments();
-  }, []);
+  }, [loadAppointments]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
   useEffect(() => {
@@ -116,7 +111,7 @@ const CenterSampling = () => {
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  }, [loadAppointments]);
 
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
@@ -139,6 +134,8 @@ const CenterSampling = () => {
         return "#0984e3"; // xanh dương tươi
       case "Đã hủy":
         return "#d63031"; // đỏ tươi
+      case "Hoàn thành":
+        return "#00b894"; // xanh ngọc nổi bật
       default:
         return "#b2bec3"; // xám nhạt
     }
@@ -156,10 +153,10 @@ const CenterSampling = () => {
         return "Đang lấy mẫu";
       case "Đang xử lý":
         return "Đang xử lý";
-      case "Đã hủy":
-        return "Đã hủy";
+      case "Hoàn thành":
+        return "Hoàn thành";
       default:
-        return status;
+        return "Đang xử lý";
     }
   };
 
@@ -309,10 +306,7 @@ const CenterSampling = () => {
                 onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
                 onClick={() => {
-                  updateOrder(record.id, {
-                    status: "Đã hẹn",
-                    updatedAt: new Date().toLocaleString("vi-VN"),
-                  });
+                  updateSamplingStatus(record.id, "Đã hẹn");
                   loadAppointments();
                   message.success("Đã chuyển trạng thái sang Đã hẹn!");
                 }}
@@ -338,10 +332,7 @@ const CenterSampling = () => {
                 onMouseOver={(e) => (e.currentTarget.style.background = "#389e0d")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#52c41a")}
                 onClick={() => {
-                  updateOrder(record.id, {
-                    status: "Đã đến",
-                    updatedAt: new Date().toLocaleString("vi-VN"),
-                  });
+                  updateSamplingStatus(record.id, "Đã đến");
                   loadAppointments();
                   message.success("Đã chuyển trạng thái sang Đã đến!");
                 }}
@@ -427,10 +418,10 @@ const CenterSampling = () => {
       );
       // Nếu là lần đầu bấm Lấy mẫu thì chuyển trạng thái sang Đang lấy mẫu
       if (isFirst) {
-        updateOrder(record.id, {
+        safeUpdateOrder(record.id, {
           status: "Đang lấy mẫu",
           updatedAt: new Date().toLocaleString("vi-VN"),
-        });
+        }, record.status);
         loadAppointments();
       }
       // Chuyển tab sang lấy mẫu dân sự
@@ -438,7 +429,7 @@ const CenterSampling = () => {
         dashboardCtx.setActiveTab("civil-sample-collection");
       }
     } else {
-      // Hành chính: giữ logic cũ
+      // Hành chính: cũng cập nhật trạng thái sang Đang lấy mẫu
       localStorage.setItem(
         "dna_sample_collection_prefill",
         JSON.stringify({
@@ -448,9 +439,28 @@ const CenterSampling = () => {
           serviceType: record.type || "",
         })
       );
+      if (isFirst) {
+        safeUpdateOrder(record.id, {
+          status: "Đang lấy mẫu",
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        }, record.status);
+        loadAppointments();
+      }
       if (dashboardCtx?.setActiveTab) {
         dashboardCtx.setActiveTab("sample-collection");
       }
+    }
+  };
+
+  // ĐẢM BẢO KHÔNG ĐỔI TRẠNG THÁI KHI ĐÃ LÀ 'ĐANG XỬ LÝ', TRỪ KHI CHUYỂN SANG 'HOÀN THÀNH'
+  const safeUpdateOrder = (orderId, updates, currentStatus) => {
+    // Nếu trạng thái hiện tại là 'Đang xử lý' và cập nhật không phải sang 'Hoàn thành', giữ nguyên trạng thái
+    if (getStatusText(currentStatus) === 'Đang xử lý' && updates.status && getStatusText(updates.status) !== 'Hoàn thành') {
+      // eslint-disable-next-line no-unused-vars
+      const { status, ...rest } = updates;
+      updateOrder(orderId, rest); // chỉ update các trường khác, không đổi trạng thái
+    } else {
+      updateOrder(orderId, updates);
     }
   };
 
@@ -780,34 +790,43 @@ const CenterSampling = () => {
               </div>
             )}
 
-            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Thành viên cung cấp mẫu:</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
-                  <thead>
-                    <tr style={{ background: '#e6f7ff' }}>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedAppointment.members.map((mem, idx) => (
-                      <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                        <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
-                        <td style={{ padding: 6 }}>{mem.name}</td>
-                        <td style={{ padding: 6 }}>{mem.birth}</td>
-                        <td style={{ padding: 6 }}>{mem.gender}</td>
-                        <td style={{ padding: 6 }}>{mem.relation}</td>
-                        <td style={{ padding: 6 }}>{mem.sampleType}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {/* Thành viên cung cấp mẫu */}
+            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && (
+              (() => {
+                const tableData = Array.isArray(selectedAppointment.resultTableData) && selectedAppointment.resultTableData.length > 0
+                  ? selectedAppointment.resultTableData
+                  : (Array.isArray(selectedAppointment.members) ? selectedAppointment.members : []);
+                if (tableData.length === 0) return null;
+                return (
+                  <div style={{ marginBottom: 16 }}>
+                    <h3>Thành viên cung cấp mẫu:</h3>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+                      <thead>
+                        <tr style={{ background: '#e6f7ff' }}>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableData.map((mem, idx) => (
+                          <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
+                            <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
+                            <td style={{ padding: 6 }}>{mem.name}</td>
+                            <td style={{ padding: 6 }}>{mem.birthYear || mem.birth}</td>
+                            <td style={{ padding: 6 }}>{mem.gender}</td>
+                            <td style={{ padding: 6 }}>{mem.relationship || mem.relation}</td>
+                            <td style={{ padding: 6 }}>{mem.sampleType}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()
             )}
           </div>
         )}

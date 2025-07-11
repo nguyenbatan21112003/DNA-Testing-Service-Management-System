@@ -112,8 +112,10 @@ export function OrderProvider({ children }) {
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
+      id: order.id || Date.now().toString(), // Đảm bảo luôn có id duy nhất
       email: user.email,
-      status: order.sampleMethod === "home" ? "PENDING_CONFIRM" : "Chờ xử lý",
+      samplingStatus: order.sampleMethod === "home" ? "Chờ xác nhận" : "Chờ xác nhận",
+      status: "", // Không set trạng thái xét nghiệm & kết quả khi mới tạo đơn
       result: "",
       staffName: "",
       managerConfirm: false,
@@ -155,35 +157,28 @@ export function OrderProvider({ children }) {
     let currentUser = user;
     if (!currentUser) {
       currentUser = JSON.parse(localStorage.getItem('dna_user') || 'null');
-      console.log('[DEBUG][updateOrder] fallback user from localStorage:', currentUser);
     }
-    console.log('[DEBUG][updateOrder] user:', currentUser);
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
       const oldOrder = allOrders[idx];
+      // Nếu cập nhật trạng thái, đồng bộ cả 3 trường
+      let newUpdates = { ...updates };
+      if (updates.status) {
+        newUpdates.samplingStatus = updates.status;
+        newUpdates.kitStatus = updates.status;
+      }
       const updatedOrder = {
         ...oldOrder,
-        ...updates,
+        ...newUpdates,
         updatedAt: new Date().toISOString()
       };
       allOrders[idx] = updatedOrder;
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
-      console.log('[DEBUG][updateOrder] notify condition:', {
-        updatesStatus: updates.status,
-        oldStatus: oldOrder.status,
-        userRole: currentUser?.role_id
-      });
-      if (
-        updates.status &&
-        (updates.status === "Chờ xác thực" || updates.status === "WAITING_APPROVAL") &&
-        currentUser?.role_id !== 2 // Không phải manager
-      ) {
+      // Gọi notifyOrderStatusUpdate ở mọi lần updateOrder để debug
         const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
-        console.log('[DEBUG][updateOrder] CALL notifyOrderStatusUpdate');
         notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
-      }
 
       // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
       // (Nếu cần gửi cho staff hoặc khách hàng thì giữ lại logic ở đây)
@@ -221,6 +216,35 @@ export function OrderProvider({ children }) {
       }
     }
     return Promise.resolve();
+  };
+
+  // Khi cập nhật trạng thái thu mẫu, chỉ update samplingStatus. Nếu chuyển sang 'Đang xử lý', thì cập nhật status sang 'Đang xử lý' cho xét nghiệm.
+  const updateSamplingStatus = (orderId, newSamplingStatus) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      allOrders[idx].samplingStatus = newSamplingStatus;
+      allOrders[idx].status = newSamplingStatus;
+      allOrders[idx].kitStatus = newSamplingStatus;
+      allOrders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+      // Chỉ khi samplingStatus chuyển sang 'Đang xử lý' thì mới cập nhật status sang 'Đang xử lý'
+      if (newSamplingStatus === "PROCESSING") {
+        updateTestingStatus(orderId, "PROCESSING");
+      }
+    }
+  };
+  // Khi cập nhật trạng thái xét nghiệm, chỉ update status
+  const updateTestingStatus = (orderId, newStatus) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      allOrders[idx].status = newStatus;
+      allOrders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+    }
   };
 
   // Thêm/Chỉnh sửa feedback và rating
@@ -313,7 +337,7 @@ export function OrderProvider({ children }) {
   // Lấy đơn hàng cần xác thực (cho Manager)
   const getOrdersNeedingApproval = () => {
     const allOrders = getAllOrders();
-    return allOrders.filter(order => order.status === "Chờ xác thực");
+    return allOrders.filter(order => order.status === "Chờ xác nhận");
   };
 
   // Lấy đơn hàng có feedback (cho Staff)
@@ -353,6 +377,8 @@ export function OrderProvider({ children }) {
         getOrdersNeedingApproval,
         getOrdersWithFeedback,
         deleteOrder,
+        updateSamplingStatus,
+        updateTestingStatus,
       }}
     >
       {children}

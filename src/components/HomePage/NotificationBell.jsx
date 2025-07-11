@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Badge, Popover, List, Button, Typography, Space, Tag } from "antd";
 import { BellOutlined, CheckOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNotification, ROLES } from "../../context/NotificationContext";
@@ -10,6 +10,7 @@ const { Text } = Typography;
 
 const NotificationBell = () => {
   const [visible, setVisible] = useState(false);
+  const bellRef = useRef(null);
   const { user } = useContext(AuthContext);
   const {
     unreadCount,
@@ -20,22 +21,26 @@ const NotificationBell = () => {
   } = useNotification();
   const navigate = useNavigate();
 
-  // Lọc thông báo theo role hiện tại và loại mong muốn
-  let roleId = null;
-  if (user?.role_id === ROLES.MANAGER) roleId = ROLES.MANAGER;
-  else if (user?.role_id === ROLES.STAFF) roleId = ROLES.STAFF;
-  else roleId = ROLES.MANAGER; // fallback, ưu tiên manager
+  // Ẩn chuông nếu là staff
+  if (user?.role_id === ROLES.STAFF) return null;
+
+  // Lọc thông báo theo vai trò
+  let userNotifications = [];
+  if (user?.role_id === ROLES.MANAGER) {
+    // Manager chỉ nhận thông báo xác thực
+    userNotifications = getNotificationsByRole(ROLES.MANAGER).filter(n => n.type === "order_needs_approval");
+  } else if (user?.role_id === ROLES.CUSTOMER) {
+    // Khách hàng chỉ nhận các thông báo liên quan đến đơn của mình, không nhận order_needs_approval
   const allowedTypes = [
     "order_new",
-    "order_needs_approval",
-    "order_approved",
+      "order_status_update",
+      "order_completed",
     "order_rejected",
-    "feedback_new",
-    "feedback_response"
+      "feedback_response",
+      "pricing_update"
   ];
-  const userNotifications = getNotificationsByRole(roleId).filter(n => allowedTypes.includes(n.type));
-  console.log('[DEBUG][NotificationBell] user:', user);
-  console.log('[DEBUG][NotificationBell] userNotifications:', userNotifications);
+    userNotifications = getNotificationsByRole(ROLES.CUSTOMER).filter(n => allowedTypes.includes(n.type));
+  }
   // Nếu không có thông báo, hiển thị rõ lý do
   let notificationContent;
   if (!user) {
@@ -56,19 +61,19 @@ const NotificationBell = () => {
     );
   } else {
     notificationContent = (
-      <div style={{ width: 440, maxHeight: 500, overflow: "auto", background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.12)', padding: 12 }}>
+      <div style={{ width: '100%', maxWidth: '100%', padding: 0, fontSize: 14 }}>
         <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "8px 0 12px 0",
-          borderBottom: "1px solid #f0f0f0",
+          width: '100%',
+          padding: '4px 0 8px 0',
+          borderBottom: '1px solid #f0f0f0',
           marginBottom: 8,
           background: '#fff',
           borderRadius: 0
         }}>
-          <Text strong>Thông báo ({userNotifications.length})</Text>
-          <Space>
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>
+            Thông báo ({userNotifications.length})
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
             {unreadCount > 0 && (
               <Button
                 size="small"
@@ -88,24 +93,25 @@ const NotificationBell = () => {
             >
               Xóa tất cả
             </Button>
-          </Space>
+          </div>
         </div>
         <List
           dataSource={userNotifications}
           renderItem={(notification) => (
             <List.Item
               style={{
-                marginBottom: 14,
-                padding: "16px 16px 12px 16px",
-                borderRadius: 12,
+                marginBottom: 10,
+                padding: "8px 8px 6px 8px",
+                borderRadius: 10,
                 boxShadow: notification.read ? 'none' : '0 2px 8px rgba(82,196,26,0.08)',
                 background: notification.read ? '#fff' : '#f6ffed',
                 border: notification.read ? '1px solid #f0f0f0' : '1.5px solid #b7eb8f',
                 cursor: "pointer",
                 transition: 'box-shadow 0.2s',
-                minHeight: 70,
+                minHeight: 44,
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
+                gap: 10,
               }}
               onClick={() => {
                 markAsRead(notification.id);
@@ -114,38 +120,28 @@ const NotificationBell = () => {
                 }
               }}
             >
-              <List.Item.Meta
-                avatar={
-                  <span style={{ fontSize: 22, marginRight: 8 }}>
+              <span style={{ fontSize: 20, marginRight: 4, flexShrink: 0, marginTop: 2 }}>
                     {getNotificationIcon(notification.type)}
                   </span>
-                }
-                title={
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text strong style={{ fontSize: 15 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                  <Text strong style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120 }}>
                       {notification.title}
                     </Text>
-                    <Tag color={getNotificationColor(notification.type)} size="small">
+                  <Tag color={getNotificationColor(notification.type)} size="small" style={{ fontSize: 11, height: 20, marginLeft: 4 }}>
                       {formatTime(notification.timestamp)}
                     </Tag>
                   </div>
-                }
-                description={
-                  <div style={{ fontSize: 14, color: "#444", padding: '4px 0', wordBreak: 'break-word', whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, color: "#444", padding: '2px 0 0 0', wordBreak: 'break-word', whiteSpace: 'pre-line', lineHeight: 1.5 }}>
                     {notification.message}
                   </div>
-                }
-              />
+              </div>
             </List.Item>
           )}
         />
       </div>
     );
   }
-
-  const handleVisibleChange = (visible) => {
-    setVisible(visible);
-  };
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -213,16 +209,7 @@ const NotificationBell = () => {
   };
 
   return (
-    <Popover
-      content={notificationContent}
-      title={null}
-      trigger="click"
-      visible={visible}
-      onVisibleChange={handleVisibleChange}
-      placement="bottomRight"
-      overlayStyle={{ width: 350 }}
-    >
-      <Badge count={unreadCount} size="small">
+    <div style={{ position: 'relative', display: 'inline-block' }} ref={bellRef}>
         <Button
           type="text"
           icon={<BellOutlined style={{ fontSize: 18 }} />}
@@ -233,10 +220,47 @@ const NotificationBell = () => {
             justifyContent: "center",
             width: 40,
             height: 40,
+          position: 'relative',
+        }}
+        onClick={() => setVisible(v => !v)}
+      />
+      {unreadCount > 0 && (
+        <span style={{
+          position: 'absolute',
+          top: 6,
+          right: 8,
+          width: 10,
+          height: 10,
+          borderRadius: '50%',
+          background: '#ff4d4f',
+          border: '2px solid #fff',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }} />
+      )}
+      {visible && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '110%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 2000,
+            minWidth: 200,
+            maxWidth: 260,
+            borderRadius: 12,
+            boxShadow: '0 2px 8px #0002',
+            background: '#fff',
+            padding: 0,
           }}
-        />
-      </Badge>
-    </Popover>
+          onClick={e => e.stopPropagation()}
+        >
+          <div style={{padding: 6, fontSize: 13}}>
+            {notificationContent}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
