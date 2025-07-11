@@ -3,7 +3,6 @@ import { Layout, Menu, Modal } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
-  AppstoreOutlined,
   FileProtectOutlined,
   LogoutOutlined,
   MenuUnfoldOutlined,
@@ -14,17 +13,11 @@ import { AuthContext } from "../../context/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import UserManagement from "./UserManagement";
 import StaffManagement from "./StaffManagement";
-import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
 import PricingManagement from "./PricingManagement";
 
 const { Sider, Content } = Layout;
 
 const menuItems = [
-  {
-    key: "test-types",
-    icon: <AppstoreOutlined />,
-    label: "DashBoard",
-  },
   {
     key: "processing",
     icon: <FileProtectOutlined />,
@@ -51,7 +44,7 @@ const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [logoutModal, setLogoutModal] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState("processing");
   const [collapsed, setCollapsed] = React.useState(false);
 
   if (!user || user.role_id !== 4) {
@@ -246,9 +239,6 @@ const AdminDashboard = () => {
             {activeTab === "user-management" && <UserManagement />}
             {activeTab === "staff-management" && <StaffManagement />}
             {activeTab === "processing" && <PricingManagement />}
-            {(activeTab === "test-types" || !activeTab) && (
-              <AdminDNAStatsDashboard />
-            )}
           </div>
         </Content>
       </Layout>

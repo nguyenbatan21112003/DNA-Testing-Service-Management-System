@@ -2,6 +2,19 @@
 import { Card, Row, Col, Statistic, Progress, Table, Tag, Timeline, Button } from "antd"
 import { ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, AlertOutlined } from "@ant-design/icons"
 import { useEffect } from "react"
+import { Line, Pie } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    ArcElement,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 const ManagerOverview = () => {
     // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
@@ -88,6 +101,32 @@ const ManagerOverview = () => {
         },
     ]
 
+    // Dữ liệu biểu đồ (tương tự giao diện Admin)
+    const lineData = {
+        labels: ["T1", "T2", "T3", "T4", "T5", "T6"],
+        datasets: [
+            {
+                label: "Số lượng xét nghiệm",
+                data: [180, 210, 190, 250, 230, 226],
+                fill: false,
+                borderColor: "#009e74",
+                backgroundColor: "#009e74",
+                tension: 0.3,
+            },
+        ],
+    }
+
+    const pieData = {
+        labels: ["Huyết thống", "Nguồn gốc", "Sức khỏe", "Hành chính", "Khác"],
+        datasets: [
+            {
+                data: [45, 25, 15, 10, 5],
+                backgroundColor: ["#00b894", "#0984e3", "#fdcb6e", "#e17055", "#636e72"],
+                borderWidth: 1,
+            },
+        ],
+    }
+
     // Thay đổi phần return để thêm màu nền và đường viền
     return (
         <div style={{ padding: "0" }}>
@@ -157,6 +196,28 @@ const ManagerOverview = () => {
                     <Col xs={24} lg={12}>
                         <Card title="Hoạt động gần đây" style={{ height: "300px" }}>
                             <Timeline items={activities} />
+                        </Card>
+                    </Col>
+                </Row>
+
+                {/* Biểu đồ */}
+                <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+                    <Col xs={24} lg={12}>
+                        <Card title="Xu hướng số lượng xét nghiệm (6 tháng)" style={{ height: "500px" }}>
+                            <Line
+                                data={lineData}
+                                options={{ responsive: true, plugins: { legend: { display: false } } }}
+                                height={180}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={12}>
+                        <Card title="Tỉ lệ các loại xét nghiệm" style={{ height: "500px" }}>
+                            <Pie
+                                data={pieData}
+                                options={{ responsive: true, plugins: { legend: { position: "right" } } }}
+                                height={180}
+                            />
                         </Card>
                     </Col>
                 </Row>
