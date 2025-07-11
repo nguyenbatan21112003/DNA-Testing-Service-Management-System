@@ -431,7 +431,8 @@ namespace DNATestSystem.Services.Service
                     ScheduleDate = dto.TestRequest.ScheduleDate,
                     Address = dto.TestRequest.Address,
                     Status = "unpaid", // luôn đặt là unpaid khi mới đăng ký
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    CollectID = collectTypeId
                 };
 
                 _context.TestRequests.Add(testRequest);

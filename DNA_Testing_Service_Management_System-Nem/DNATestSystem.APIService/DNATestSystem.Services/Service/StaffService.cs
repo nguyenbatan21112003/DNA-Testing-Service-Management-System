@@ -81,12 +81,10 @@ namespace DNATestSystem.Services.Service
                 .Include(x => x.Service)
                 .Include(x => x.RequestDeclarants)
                 .Include(x => x.TestSamples)
-                .Include(x => x.CollectType)
                 .Select(x => new TestRequestViewDto
                 {
                     RequestId = x.RequestId,
                     ServiceName = x.Service.ServiceName,
-                    CollectionType = x.CollectType.CollectName,
                     Category = x.Category,
                     Status = x.Status,
                     ScheduleDate = x.ScheduleDate,
@@ -168,7 +166,6 @@ namespace DNATestSystem.Services.Service
                 .Include(x => x.Service)
                 .Include(x => x.RequestDeclarants)
                 .Include(x => x.TestSamples)
-                .Include(x => x.CollectType)
                 .Where(x => x.CollectType.CollectName.ToLower() == "at home")
                 .Select(x => new TestRequestViewDto
                 {

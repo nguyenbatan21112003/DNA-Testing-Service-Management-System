@@ -4,6 +4,7 @@ using DNATestSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DNATestSystem.Repositories.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250711130553_updatedb")]
+    partial class updatedb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -624,6 +627,9 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Property<int?>("CollectID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CollectTypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime");
 
@@ -650,6 +656,8 @@ namespace DNATestSystem.Repositories.Migrations
                         .HasName("PK__TestRequ__33A8519A9426A80B");
 
                     b.HasIndex("CollectID");
+
+                    b.HasIndex("CollectTypeId");
 
                     b.HasIndex("ServiceId");
 
@@ -1024,8 +1032,12 @@ namespace DNATestSystem.Repositories.Migrations
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestRequest", b =>
                 {
                     b.HasOne("DNATestSystem.BusinessObjects.Models.CollectType", "CollectType")
-                        .WithMany("TestRequests")
+                        .WithMany()
                         .HasForeignKey("CollectID");
+
+                    b.HasOne("DNATestSystem.BusinessObjects.Models.CollectType", null)
+                        .WithMany("TestRequests")
+                        .HasForeignKey("CollectTypeId");
 
                     b.HasOne("DNATestSystem.BusinessObjects.Models.Service", "Service")
                         .WithMany("TestRequests")

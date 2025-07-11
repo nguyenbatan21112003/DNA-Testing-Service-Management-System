@@ -505,7 +505,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "CreateUserProfile",
-    "RelativePath": "user/create",
+    "RelativePath": "user/create-userProfile",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

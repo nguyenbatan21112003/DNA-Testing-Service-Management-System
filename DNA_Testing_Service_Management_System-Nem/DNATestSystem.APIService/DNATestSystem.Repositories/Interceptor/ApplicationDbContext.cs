@@ -348,10 +348,7 @@ namespace DNATestSystem.Repositories
                 //entity.HasOne(d => d.Type).WithMany(p => p.TestRequests)
                 //    .HasForeignKey(d => d.TypeId)
                 //    .HasConstraintName("FK__TestReque__TypeI__49C3F6B7");
-                entity.HasOne(d => d.CollectType)
-                        .WithMany(p => p.TestRequests)
-                        .HasForeignKey(d => d.TypeId)
-                        .HasConstraintName("FK_TestRequest_CollectType");
+             
 
                 entity.HasOne(d => d.User).WithMany(p => p.TestRequests)
                     .HasForeignKey(d => d.UserId)

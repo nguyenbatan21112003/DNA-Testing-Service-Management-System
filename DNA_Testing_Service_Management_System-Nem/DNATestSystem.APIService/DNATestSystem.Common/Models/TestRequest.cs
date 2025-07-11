@@ -39,9 +39,11 @@ public partial class TestRequest
 
     public virtual ICollection<TestSample> TestSamples { get; set; } = new List<TestSample>();
 
+    // TestRequest.cs
     public int? CollectID { get; set; }
 
     [ForeignKey("CollectID")]
     public CollectType? CollectType { get; set; }
+
     public virtual User? User { get; set; }
 }

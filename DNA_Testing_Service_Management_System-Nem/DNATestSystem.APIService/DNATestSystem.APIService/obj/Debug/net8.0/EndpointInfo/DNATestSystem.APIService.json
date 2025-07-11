@@ -1144,7 +1144,7 @@
         }
       }
     },
-    "/user/create": {
+    "/user/create-userProfile": {
       "post": {
         "tags": [
           "User"

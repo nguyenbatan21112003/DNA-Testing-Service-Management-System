@@ -12,8 +12,8 @@ namespace DNATestSystem.BusinessObjects.Models
     public class CollectType
     {
         [Key]
-        [Column("CollectTypeId")] 
-        public int CollectTypeId { get; set; } 
+        [Column("CollectID")] 
+        public int CollectTypeId { get; set; }
 
         [Column("CollectName")]
         public string CollectName { get; set; }
