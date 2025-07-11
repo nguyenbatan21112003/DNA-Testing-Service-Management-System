@@ -28,12 +28,25 @@ namespace DNATestSystem.APIService.Controllers
 
                 if (!response.Success)
                 {
-                    return BadRequest(new
-                    {
-                        success = false,
-                        message = "Thanh toán thất bại",
-                        vnPayResponseCode = response.VnPayResponseCode
-                    });
+                    // Redirect về FE báo lỗi
+                    var failRedirect = $"http://localhost:5173/payment-success?status=fail&message=Thanh%20toan%20that%20bai";
+                    var failHtml = $@"
+                <html>
+                    <head>
+                        <meta http-equiv='refresh' content='2;url={failRedirect}' />
+                        <script>
+                            setTimeout(function() {{
+                                window.location.href = '{failRedirect}';
+                            }}, 2000);
+                        </script>
+                    </head>
+                    <body>
+                        <h3 style='text-align:center;margin-top:40px;color:red;'>
+                            ❌ Thanh toán thất bại. Đang chuyển hướng...
+                        </h3>
+                    </body>
+                </html>";
+                    return Content(failHtml, "text/html");
                 }
 
                 var invoice = new Invoice
@@ -53,23 +66,54 @@ namespace DNATestSystem.APIService.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new
-                {
-                    success = true,
-                    message = "Thanh toán thành công",
-                    transactionId = response.TransactionId,
-                    requestId = invoice.RequestId,
-                    paidAt = invoice.PaidAt
-                });
+                // Redirect về FE báo thành công
+                var redirectUrl = $"http://localhost:5173/payment-success?" +
+                   $"status=success" +
+                   $"&message={Uri.EscapeDataString("Thanh toán thành công")}" +
+                   $"&transactionId={response.TransactionId}" +
+                   $"&requestId={invoice.RequestId}" +
+                   $"&paidAt={Uri.EscapeDataString(invoice.PaidAt?.ToString("s") ?? "")}";
+
+
+                var html = $@"
+            <html>
+                <head>
+                    <meta http-equiv='refresh' content='1;url={redirectUrl}' />
+                    <script>
+                        setTimeout(function() {{
+                            window.location.href = '{redirectUrl}';
+                        }}, 1000);
+                    </script>
+                </head>
+                <body>
+                    <h3 style='text-align:center;margin-top:40px;color:green;'>
+                        ✅ Thanh toán thành công. Đang chuyển hướng...
+                    </h3>
+                </body>
+            </html>";
+
+                return Content(html, "text/html");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Lỗi hệ thống",
-                    error = ex.Message
-                });
+                var errorUrl = $"http://localhost:5173/payment-success?status=fail&message=Loi%20he%20thong";
+                var errorHtml = $@"
+            <html>
+                <head>
+                    <meta http-equiv='refresh' content='2;url={errorUrl}' />
+                    <script>
+                        setTimeout(function() {{
+                            window.location.href = '{errorUrl}';
+                        }}, 2000);
+                    </script>
+                </head>
+                <body>
+                    <h3 style='text-align:center;margin-top:40px;color:red;'>
+                        ❌ Lỗi hệ thống. Đang chuyển hướng...
+                    </h3>
+                </body>
+            </html>";
+                return Content(errorHtml, "text/html");
             }
         }
 
