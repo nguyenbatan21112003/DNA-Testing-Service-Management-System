@@ -227,8 +227,23 @@ namespace DNATestSystem.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
-
-
+        [HttpPost("get-userProfile-ByEmail/{email}")]
+        public async Task<IActionResult> GetUserProfileByEmail(string email)
+        {
+            try
+            {
+                var result = await _userService.GetUserProfileByEmail(email);
+                if (result == null)
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy hồ sơ người dùng." });
+                }
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
 

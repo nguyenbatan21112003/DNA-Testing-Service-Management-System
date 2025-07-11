@@ -30,7 +30,7 @@ namespace DNATestSystem.Services.Interface
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task DeleteOldRefreshTokenAsync(string refreshToken);
         Task DeleteOldRefreshTokenAsync(int userId);
-
+       
         //flow doi mat khau
         Task<bool> VerifyCurrentPasswordAsync(UserVerifyCurrentPassword model);
         Task ChangePasswordAsync(UserChangePasswordModel model);
@@ -38,7 +38,7 @@ namespace DNATestSystem.Services.Interface
         // Dịch vụ
         Task<List<ServiceSummaryDto>> GetServiceForUserAsync();
         Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id);
-
+        Task<ProfileDto> GetUserProfileByEmail(string email);
         // Blog
         Task<List<BlogPostModel>> GetAllBlogForUserAsync();
         Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug);
@@ -46,7 +46,6 @@ namespace DNATestSystem.Services.Interface
         // Hồ sơ cá nhân
         Task<ProfileDetailModel?> GetProfileUserAsync(int profileId);
         Task<UpdateProfileModel> UpdateProfileAsync(UpdateProfileModel updateProfileModel);
-
         //đăng ký tư vấn
         Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model);
         Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto);
