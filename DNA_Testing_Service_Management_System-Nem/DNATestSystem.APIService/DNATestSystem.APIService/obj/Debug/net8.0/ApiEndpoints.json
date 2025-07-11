@@ -504,6 +504,22 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "CreateUserProfile",
+    "RelativePath": "user/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "GetProfile",
     "RelativePath": "user/GetProfile/{profile_id}",
     "HttpMethod": "GET",

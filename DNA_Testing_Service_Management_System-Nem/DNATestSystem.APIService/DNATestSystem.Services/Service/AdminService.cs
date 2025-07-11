@@ -226,7 +226,8 @@ namespace DNATestSystem.Services.Service
                                     IncludeVAT = true,
                                     Price2Samples = price?.Price2Samples,
                                     Price3Samples = price?.Price3Samples,
-                                    TimeToResult = price?.TimeToResult
+                                    TimeToResult = price?.TimeToResult,
+                                    IsPublished = s.IsPublished ?? false // Nếu IsPublished là null, mặc định là false
                                 };
                             }).ToList();
             return service;
