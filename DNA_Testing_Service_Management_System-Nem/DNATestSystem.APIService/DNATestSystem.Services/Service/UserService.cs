@@ -636,18 +636,21 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<ProfileDto> GetUserProfileByEmail(string email)
+        public async Task<ProfileViewDto> GetUserProfileByEmail(string email)
         {
             var data = await _context.UserProfiles
                        .Include(x => x.User)
                           .Where(x => x.User.Email == email)
-                       .Select(x => new ProfileDto
-                       {
+                       .Select(
+                       
+                       x => new ProfileViewDto
+                       {                       
                            Gender = x.Gender,
+                           PhoneNumber = x.User.Phone,
                            Address = x.Address,
                            DateOfBirth = x.DateOfBirth,
                            Fingerfile = x.Fingerfile,
-                           IdentityID = x.IdentityId,
+                           IdentityId = x.IdentityId,
                            UpdatedAt = x.UpdatedAt
                        }).FirstOrDefaultAsync();
 

@@ -213,7 +213,7 @@ namespace DNATestSystem.Controllers
             });
         }
 
-        [HttpPost("create")]
+        [HttpPost("create-userProfile")]
         [Authorize]
         public async Task<IActionResult> CreateUserProfile([FromBody] UserProfileDto dto)
         {

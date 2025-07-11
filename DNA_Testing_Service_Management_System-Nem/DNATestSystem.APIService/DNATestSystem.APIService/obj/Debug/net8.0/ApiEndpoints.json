@@ -520,6 +520,22 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "GetUserProfileByEmail",
+    "RelativePath": "user/get-userProfile-ByEmail/{email}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "GetProfile",
     "RelativePath": "user/GetProfile/{profile_id}",
     "HttpMethod": "GET",

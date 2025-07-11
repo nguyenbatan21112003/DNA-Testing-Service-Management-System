@@ -38,7 +38,7 @@ namespace DNATestSystem.Services.Interface
         // Dịch vụ
         Task<List<ServiceSummaryDto>> GetServiceForUserAsync();
         Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id);
-        Task<ProfileDto> GetUserProfileByEmail(string email);
+        Task<ProfileViewDto> GetUserProfileByEmail(string email);
         // Blog
         Task<List<BlogPostModel>> GetAllBlogForUserAsync();
         Task<BlogPostDetailsModel?> GetBlogPostDetailsModelAsync(string slug);
