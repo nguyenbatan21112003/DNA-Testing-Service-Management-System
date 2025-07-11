@@ -65,8 +65,8 @@ const CenterSampling = () => {
     const centerSamplingOrders = allOrders
       .filter((order) => order.sampleMethod === "center" && !order.isHidden)
       .map((order) => {
-        let status = order.samplingStatus || "Chờ xác nhận";
-        // Map các trạng thái samplingStatus như cũ
+        // Ưu tiên lấy status thực tế từ order.status
+        let status = order.status || order.samplingStatus || "Chờ xác nhận";
         return {
           ...order,
           status: status,
@@ -429,7 +429,7 @@ const CenterSampling = () => {
         dashboardCtx.setActiveTab("civil-sample-collection");
       }
     } else {
-      // Hành chính: giữ logic cũ
+      // Hành chính: cũng cập nhật trạng thái sang Đang lấy mẫu
       localStorage.setItem(
         "dna_sample_collection_prefill",
         JSON.stringify({
@@ -439,6 +439,13 @@ const CenterSampling = () => {
           serviceType: record.type || "",
         })
       );
+      if (isFirst) {
+        safeUpdateOrder(record.id, {
+          status: "Đang lấy mẫu",
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        }, record.status);
+        loadAppointments();
+      }
       if (dashboardCtx?.setActiveTab) {
         dashboardCtx.setActiveTab("sample-collection");
       }
@@ -773,34 +780,43 @@ const CenterSampling = () => {
               </div>
             )}
 
-            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <h3>Thành viên cung cấp mẫu:</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
-                  <thead>
-                    <tr style={{ background: '#e6f7ff' }}>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
-                      <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedAppointment.members.map((mem, idx) => (
-                      <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                        <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
-                        <td style={{ padding: 6 }}>{mem.name}</td>
-                        <td style={{ padding: 6 }}>{mem.birth}</td>
-                        <td style={{ padding: 6 }}>{mem.gender}</td>
-                        <td style={{ padding: 6 }}>{mem.relation}</td>
-                        <td style={{ padding: 6 }}>{mem.sampleType}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {/* Thành viên cung cấp mẫu */}
+            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && (
+              (() => {
+                const tableData = Array.isArray(selectedAppointment.resultTableData) && selectedAppointment.resultTableData.length > 0
+                  ? selectedAppointment.resultTableData
+                  : (Array.isArray(selectedAppointment.members) ? selectedAppointment.members : []);
+                if (tableData.length === 0) return null;
+                return (
+                  <div style={{ marginBottom: 16 }}>
+                    <h3>Thành viên cung cấp mẫu:</h3>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+                      <thead>
+                        <tr style={{ background: '#e6f7ff' }}>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
+                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableData.map((mem, idx) => (
+                          <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
+                            <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
+                            <td style={{ padding: 6 }}>{mem.name}</td>
+                            <td style={{ padding: 6 }}>{mem.birthYear || mem.birth}</td>
+                            <td style={{ padding: 6 }}>{mem.gender}</td>
+                            <td style={{ padding: 6 }}>{mem.relationship || mem.relation}</td>
+                            <td style={{ padding: 6 }}>{mem.sampleType}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()
             )}
           </div>
         )}

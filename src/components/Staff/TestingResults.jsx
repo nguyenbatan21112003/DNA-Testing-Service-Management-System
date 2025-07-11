@@ -635,20 +635,20 @@ const TestingResults = () => {
               <h2 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: 1 }}>Kết quả xét nghiệm</h2>
             </div>
             <div style={{ marginBottom: 24, textAlign: 'right' }}>
-              <Tag style={{
-                background: getStatusColor(getStatusText(selectedOrder?.status)),
-                color: '#fff',
-                fontWeight: 700,
-                border: 'none',
-                fontSize: 15,
-                padding: '4px 0',
-                boxShadow: '0 2px 8px #0001',
-                minWidth: 90,
-                textAlign: 'center',
-                display: 'inline-block',
-              }}>
-                {getStatusText(selectedOrder?.status)}
-              </Tag>
+                <Tag style={{
+                  background: getStatusColor(getStatusText(selectedOrder?.status)),
+                  color: '#fff',
+                  fontWeight: 700,
+                  border: 'none',
+                  fontSize: 15,
+                  padding: '4px 0',
+                  boxShadow: '0 2px 8px #0001',
+                  minWidth: 90,
+                  textAlign: 'center',
+                  display: 'inline-block',
+                }}>
+                  {getStatusText(selectedOrder?.status)}
+                </Tag>
             </div>
 
             {/* Thông tin khách hàng */}
