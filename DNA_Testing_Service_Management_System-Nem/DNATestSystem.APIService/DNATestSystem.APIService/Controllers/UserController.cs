@@ -58,12 +58,13 @@ namespace DNATestSystem.Controllers
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true
+                Secure = true,
+                SameSite = SameSiteMode.None,
             };
             var accessToken = await _userService.GenerateJwtAsync(user);
             var refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
-            return Ok(new { accessToken , user.RoleId});
+            return Ok(new { accessToken , user.RoleId , user.FullName , user.Email});
         }
 
         [HttpPost("refresh-token")]
@@ -85,7 +86,8 @@ namespace DNATestSystem.Controllers
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true
+                Secure = true,
+                SameSite = SameSiteMode.None,
             };
             var accessToken = await _userService.GenerateJwtAsync(user);
             var mew_refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
@@ -96,9 +98,18 @@ namespace DNATestSystem.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
+            // Phải truyền lại options giống khi tạo cookie
+            var options = new CookieOptions
+            {
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(-1) // ép hết hạn
+            };
             HttpContext.Session.Clear();
-            HttpContext.Response.Cookies.Delete("refreshToken");
+            HttpContext.Response.Cookies.Delete("refreshToken", options);
             return Ok();
+           
         }
 
         [HttpGet("services")]

@@ -266,7 +266,8 @@
               "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\PaymentController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-11T11:01:57.373Z"
+              "WhenOpened": "2025-07-11T11:01:57.373Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -446,7 +447,7 @@
               "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
               "ToolTip": "D:\\FPT\\SWP\\DNA_Testing_Service_Management_System-Phi\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
               "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAYwEsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAYwBAAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-10T15:53:39.545Z",
               "EditorCaption": ""
