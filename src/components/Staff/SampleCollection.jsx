@@ -279,14 +279,11 @@ const SampleCollection = ({ caseType }) => {
             idIssueDate: null,
             idIssuePlace: "",
             nationality: "Việt Nam",
-            address: "",
             sampleType: "Máu",
             relationship: "",
           },
         ]);
         localStorage.removeItem("sample_collection_draft");
-        // Reload lại trang hoặc gọi hàm reload lịch hẹn nếu có
-        window.location.reload();
       }, 3000);
     } catch {
       message.error("Có lỗi xảy ra khi lưu biên bản!");

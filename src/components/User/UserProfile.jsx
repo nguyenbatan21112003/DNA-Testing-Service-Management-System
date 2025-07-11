@@ -220,7 +220,7 @@ const UserProfile = () => {
       case "KIT_SENT": return "Đã gửi kit";
       case "SAMPLE_RECEIVED": return "Đã gửi mẫu";
       case "PROCESSING": return "Đang xử lý";
-      case "COMPLETED": return "Hoàn thành";
+      case "COMPLETED": return "Đã có kết quả";
       case "WAITING_APPROVAL":
       case "CHO_XAC_THUC":
       case "Chờ xác thực":
@@ -768,6 +768,7 @@ const UserProfile = () => {
                                       case "Đã hẹn":       return "#40a9ff";     // light blue
                                       case "Đã đến":       return "#006d75";     // dark green
                                       case "Đã có kết quả":return "#52c41a";     // green
+                                      case "Hoàn thành":   return "#52c41a";     // green (same as Đã có kết quả)
                                       case "Từ chối":      return "#ff4d4f";     // red
                                       default:              return "#bfbfbf";     // gray (fallback)
                                     }
@@ -910,8 +911,8 @@ const UserProfile = () => {
                             >
                               <Eye size={20} style={{ marginRight: 6 }} /> Xem chi tiết
                             </button>
-                            {/* Nút Xem kết quả */}
-                            {getStatusText(getDisplayStatus(order)) === "Đã có kết quả" && (
+                            {/* Nút Xem kết quả cho trạng thái Hoàn thành */}
+                            {(getStatusText(getDisplayStatus(order)) === "Đã có kết quả" || getStatusText(getDisplayStatus(order)) === "Hoàn thành") && (
                               <button
                                 style={{
                                   border: "1.5px solid #1677ff",
@@ -947,8 +948,8 @@ const UserProfile = () => {
                                 <FileText size={20} style={{ marginRight: 6 }} /> Xem kết quả
                               </button>
                             )}
-                            {/* Nút Đánh giá */}
-                            {getStatusText(getDisplayStatus(order)) === "Đã có kết quả" && (
+                            {/* Nút Đánh giá cho trạng thái Hoàn thành */}
+                            {(getStatusText(getDisplayStatus(order)) === "Đã có kết quả" || getStatusText(getDisplayStatus(order)) === "Hoàn thành") && (
                               <button
                                 className="order-btn"
                                 style={{
@@ -979,7 +980,7 @@ const UserProfile = () => {
                                 }}
                                 onClick={() => {
                                   setSelectedOrder(order);
-                                  setShowResultModal(true);
+                                  setShowFeedbackModal(true);
                                 }}
                               >
                                 <Star size={20} style={{ marginRight: 6 }} /> Đánh giá
@@ -1294,8 +1295,8 @@ const UserProfile = () => {
       {
         showFeedbackModal &&
         selectedOrder &&
-        (getStatusText(getDisplayStatus(selectedOrder.status)) === "Hoàn thành" ||
-          getStatusText(getDisplayStatus(selectedOrder.status)) === "Có kết quả") && (
+        (getStatusText(getDisplayStatus(selectedOrder.status)) === "Đã có kết quả" ||
+          getStatusText(getDisplayStatus(selectedOrder.status)) === "Hoàn thành") && (
           <div
             style={{
               position: "fixed",
@@ -1638,6 +1639,7 @@ const UserProfile = () => {
                           case "Đã hẹn":       return "#40a9ff";     // light blue
                           case "Đã đến":       return "#006d75";     // dark green
                           case "Đã có kết quả":return "#52c41a";     // green
+                          case "Hoàn thành":   return "#52c41a";     // green (same as Đã có kết quả)
                           case "Từ chối":      return "#ff4d4f";     // red
                           default:              return "#bfbfbf";     // gray (fallback)
                         }
