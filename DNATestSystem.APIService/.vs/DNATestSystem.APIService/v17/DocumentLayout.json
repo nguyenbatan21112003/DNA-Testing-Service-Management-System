@@ -1,182 +1,122 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\",
+  "WorkspaceRootPath": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\servicecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\interface\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\interface\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\checkoutcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\checkoutcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\userregistermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\userregistermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\vnpayservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\vnpayservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\userloginmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\userloginmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\vnpay\\paymentinformationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\vnpay\\paymentinformationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\actionfilter\\authorizationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\actionfilter\\authorizationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\mailcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\mailcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\managercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\managercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testrequest\\testrequestsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testrequest\\testrequestsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\apiresponse\\apiresponsedtowithreqid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\apiresponse\\apiresponsedtowithreqid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\migrations\\20250611111136_add-refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\migrations\\20250611111136_add-refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\staffservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\staffservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\iapplicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testresult\\testresulthistory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testresult\\testresulthistory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\requestdeclarant\\declarantdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\requestdeclarant\\declarantdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\managerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\managerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\interface\\imanagerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\interface\\imanagerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\applicationdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testsample\\testsampledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testsample\\testsampledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\interceptor\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testrequest\\testrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testrequest\\testrequestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\staffcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\staffcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entities\\refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entities\\refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testprocess\\testprocesshistorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testprocess\\testprocesshistorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entities\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entities\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testprocess\\testprocessdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testprocess\\testprocessdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entities\\enum\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entities\\enum\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testrequest\\requestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testrequest\\requestdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\entities\\enum\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\entities\\enum\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testresult\\pendingtestresultdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testresult\\pendingtestresultdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\modelvalidation\\uservalidatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\modelvalidation\\uservalidatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testresult\\vertifytestresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testresult\\vertifytestresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\helper\\hashhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\helper\\hashhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\service\\mailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\service\\mailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\dnatestsystem.businessobjects.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\dnatestsystem.businessobjects.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\pricedetailconoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\pricedetailconoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\actionfilter\\loginrequiredattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\actionfilter\\loginrequiredattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\models\\blogpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\models\\blogpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\blogpost\\blogpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\blogpost\\blogpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\pendingpasswordchange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\pendingpasswordchange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.services\\interface\\istaffservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\interface\\istaffservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\libraries\\vnpaylibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\libraries\\vnpaylibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\migrations\\20250608171423_add-db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\migrations\\20250608171423_add-db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\vnpay\\paymentresponsemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\vnpay\\paymentresponsemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.repositories\\dnatestsystem.repositories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{5564B5D5-8B74-4168-BC93-4FB7D4821473}|DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj|solutionrelative:dnatestsystem.repositories\\dnatestsystem.repositories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testsample\\updatetestsampledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testsample\\updatetestsampledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.services\\dnatestsystem.services.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{605C2A04-C126-490B-BDCF-6E957A4A1C53}|DNATestSystem.Services\\DNATestSystem.Services.csproj|solutionrelative:dnatestsystem.services\\dnatestsystem.services.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\testprocess\\updatetestprocessmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\testprocess\\updatetestprocessmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\models\\testsample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\models\\testsample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\models\\testprocess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\models\\testprocess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\application\\dtos\\samplecollectionforms\\samplecollectionformssummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\application\\dtos\\samplecollectionforms\\samplecollectionformssummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\models\\samplecollectionform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\models\\samplecollectionform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|d:\\filecode\\swp391\\be\\dna_testing_service_management_system\\dna_testing_service_management_system-nem\\dnatestsystem.apiservice\\dnatestsystem.common\\models\\testresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{711DBEA6-4B8C-411B-BD87-871FD1E487E0}|DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj|solutionrelative:dnatestsystem.common\\models\\testresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|d:\\fpt\\swp\\dnatestsystem\\dnatestsystem\\src\\dnatestsystem.apiservice\\dnatestsystem.apiservice\\dnatestsystem.apiservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{282B0825-1B93-462C-A22C-7A61C6FDC113}|DNATestSystem.APIService\\DNATestSystem.APIService.csproj|solutionrelative:dnatestsystem.apiservice\\dnatestsystem.apiservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -186,548 +126,367 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\UserController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\UserController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\UserController.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAwwEcAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T08:18:03.168Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Program.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Program.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Program.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Program.cs",
-              "ViewState": "AgIAAJwAAAAAAAAAAAAAACwAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T08:20:45.42Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ServiceController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\ServiceController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\ServiceController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\ServiceController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\ServiceController.cs",
-              "ViewState": "AgIAACIAAAAAAAAAAAAswDAAAABMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T01:27:57.654Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "CheckoutController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABkAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:16:13.217Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "IUserService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IUserService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Interface\\IUserService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IUserService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Interface\\IUserService.cs",
-              "ViewState": "AgIAABkAAAAAAAAAAAAgwDUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T12:12:29.383Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "IApplicationDbContext.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
-              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\UserController.cs",
+              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\UserController.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAmwEMAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T13:25:17.646Z",
+              "WhenOpened": "2025-06-08T15:09:06.643Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\UserService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Service\\UserService.cs",
-              "ViewState": "AgIAANoAAAAAAAAAAAAgwPAAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T08:17:46.088Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "ApplicationDbContextFactory.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
-              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABUAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T10:22:52.16Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.json",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\appsettings.json",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.json",
-              "RelativeToolTip": "DNATestSystem.APIService\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-07-03T16:29:43.094Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "TestResultHistory.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\TestResultHistory.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\TestResultHistory.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\TestResultHistory.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\TestResultHistory.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAawBMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T09:08:12.693Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "RequestDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\RequestDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\RequestDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\RequestDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\RequestDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T09:08:48.883Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "TestProcessHistoryDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessHistoryDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessHistoryDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessHistoryDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessHistoryDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T09:34:18.601Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "MailController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\MailController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\MailController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\MailController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\MailController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T10:02:29.414Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "DeclarantDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\RequestDeclarant\\DeclarantDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\RequestDeclarant\\DeclarantDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\RequestDeclarant\\DeclarantDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\RequestDeclarant\\DeclarantDto.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAgAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T11:32:32.113Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "TestRequestSubmissionDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestSubmissionDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestSubmissionDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestSubmissionDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestSubmissionDto.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T12:28:37.927Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "PendingTestResultDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\PendingTestResultDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\PendingTestResultDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\PendingTestResultDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\PendingTestResultDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T09:07:51.309Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "VertifyTestResult.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\VertifyTestResult.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\VertifyTestResult.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestResult\\VertifyTestResult.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestResult\\VertifyTestResult.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-09T09:07:50.584Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "MailService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\MailService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\MailService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\MailService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Service\\MailService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T15:38:20.964Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ManagerController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\ManagerController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\ManagerController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\ManagerController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\ManagerController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T15:19:35.379Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "PriceDetailConoller.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\PriceDetailConoller.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\PriceDetailConoller.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\PriceDetailConoller.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\PriceDetailConoller.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T15:19:30.63Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "BlogPost.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\BlogPost.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Models\\BlogPost.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\BlogPost.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Models\\BlogPost.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T13:12:13.665Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "BlogPostDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\BlogPost\\BlogPostDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\BlogPost\\BlogPostDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\BlogPost\\BlogPostDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\BlogPost\\BlogPostDto.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAIwBIAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T13:11:16.917Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "ManagerService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\ManagerService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\ManagerService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\ManagerService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Service\\ManagerService.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAawHAAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T12:53:51.843Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "IManagerService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IManagerService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Interface\\IManagerService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IManagerService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Interface\\IManagerService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAIAwwAwAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T12:53:46.819Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 35,
-              "Title": "VnPayLibrary.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Libraries\\VnPayLibrary.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Libraries\\VnPayLibrary.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Libraries\\VnPayLibrary.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Libraries\\VnPayLibrary.cs",
-              "ViewState": "AgIAAM8AAAAAAAAAAAAAwOsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T09:25:34.638Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "PaymentInformationModel.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Vnpay\\PaymentInformationModel.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Vnpay\\PaymentInformationModel.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Vnpay\\PaymentInformationModel.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Vnpay\\PaymentInformationModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T09:25:15.28Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 37,
-              "Title": "UpdateTestSampleDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestSample\\UpdateTestSampleDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestSample\\UpdateTestSampleDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestSample\\UpdateTestSampleDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestSample\\UpdateTestSampleDto.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAyAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-08T08:02:53.04Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 38,
-              "Title": "UpdateTestProcessModel.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\UpdateTestProcessModel.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\UpdateTestProcessModel.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\UpdateTestProcessModel.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\UpdateTestProcessModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-07T14:05:38.314Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 42,
-              "Title": "SampleCollectionForm.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\SampleCollectionForm.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Models\\SampleCollectionForm.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\SampleCollectionForm.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Models\\SampleCollectionForm.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T12:56:32.78Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "TestSampleDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestSample\\TestSampleDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestSample\\TestSampleDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestSample\\TestSampleDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestSample\\TestSampleDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T12:55:14.898Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 41,
-              "Title": "SampleCollectionFormsSummaryDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\SampleCollectionForms\\SampleCollectionFormsSummaryDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\SampleCollectionForms\\SampleCollectionFormsSummaryDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\SampleCollectionForms\\SampleCollectionFormsSummaryDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\SampleCollectionForms\\SampleCollectionFormsSummaryDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T12:54:31.249Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "TestProcessDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestProcess\\TestProcessDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T02:35:10.548Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "TestRequestDto.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestDto.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestDto.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestDto.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\TestRequest\\TestRequestDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T01:50:14.011Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 14,
-              "Title": "ApiResponseDtoWithReqId.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ApiResponse\\ApiResponseDtoWithReqId.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\ApiResponse\\ApiResponseDtoWithReqId.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ApiResponse\\ApiResponseDtoWithReqId.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\ApiResponse\\ApiResponseDtoWithReqId.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Title": "RefreshToken.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\RefreshToken.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entities\\RefreshToken.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\RefreshToken.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entities\\RefreshToken.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAnwAgAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T01:18:58.945Z"
+              "WhenOpened": "2025-06-11T10:28:12.145Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
-              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
-              "ViewState": "AgIAADEAAAAAAAAAAAAAAD0AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 13,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entities\\User.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\User.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entities\\User.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAnwAcAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T00:57:15.03Z"
+              "WhenOpened": "2025-06-08T14:51:47.68Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
-              "Title": "TestSample.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestSample.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Models\\TestSample.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestSample.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Models\\TestSample.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\IUserService.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\IUserService.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\IUserService.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Service\\IUserService.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAtwAYAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T00:54:44.622Z"
+              "WhenOpened": "2025-06-08T14:35:56.22Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
-              "Title": "TestProcess.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestProcess.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Models\\TestProcess.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestProcess.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Models\\TestProcess.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAwBoAAAAeAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "UserRegisterModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\UserRegisterModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T00:54:01.787Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 43,
-              "Title": "TestResult.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestResult.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Models\\TestResult.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Models\\TestResult.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Models\\TestResult.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABgAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-04T00:53:19.554Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "VnPayService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\VnPayService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\VnPayService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\VnPayService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Service\\VnPayService.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAuwDEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:30:23.929Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 36,
-              "Title": "PaymentResponseModel.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Vnpay\\PaymentResponseModel.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Common\\Vnpay\\PaymentResponseModel.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Common\\Vnpay\\PaymentResponseModel.cs",
-              "RelativeToolTip": "DNATestSystem.Common\\Vnpay\\PaymentResponseModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:29:13.113Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "PaymentController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\PaymentController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\PaymentController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\PaymentController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\PaymentController.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAABMAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:16:13.233Z",
+              "WhenOpened": "2025-06-08T14:40:57.366Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "IStaffService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IStaffService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Interface\\IStaffService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Interface\\IStaffService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Interface\\IStaffService.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAADwvxkAAAA/AAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\UserService.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\UserService.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Service\\UserService.cs",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAtwGoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:15:49.297Z"
+              "WhenOpened": "2025-06-08T14:35:57.408Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UserLoginModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\UserLoginModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:53.626Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\appsettings.Development.json",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.Development.json",
+              "RelativeToolTip": "DNATestSystem.APIService\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-06-11T12:00:01.287Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Program.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Program.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Program.cs",
+              "RelativeToolTip": "DNATestSystem.APIService\\Program.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAAI8AAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T15:17:25.603Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAMAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:48:13.506Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AuthorizationFilter.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\ActionFilter\\AuthorizationFilter.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\ActionFilter\\AuthorizationFilter.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\ActionFilter\\AuthorizationFilter.cs",
+              "RelativeToolTip": "DNATestSystem.APIService\\ActionFilter\\AuthorizationFilter.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAB4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:45:23.853Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.json",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\appsettings.json",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\appsettings.json",
+              "RelativeToolTip": "DNATestSystem.APIService\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-06-08T15:28:44.692Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 15,
-              "Title": "StaffService.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\StaffService.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.Services\\Service\\StaffService.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.Services\\Service\\StaffService.cs",
-              "RelativeToolTip": "DNATestSystem.Services\\Service\\StaffService.cs",
-              "ViewState": "AgIAANkBAAAAAAAAAAAAAJIBAAAAAAAAAAAAAA==",
+              "Title": "JwtSettings.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\JwtSettings.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entities\\JwtSettings.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\JwtSettings.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entities\\JwtSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAnwAYAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:15:43.604Z"
+              "WhenOpened": "2025-06-08T15:18:15.917Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ApplicationDbContextFactory.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\ApplicationDbContextFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:49:27.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "20250611111136_add-refreshToken.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\20250611111136_add-refreshToken.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Migrations\\20250611111136_add-refreshToken.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\20250611111136_add-refreshToken.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Migrations\\20250611111136_add-refreshToken.cs",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAiwGEAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T11:11:36.308Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Interceptor\\IApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:48:50.178Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Role.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\Enum\\Role.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entities\\Enum\\Role.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\Enum\\Role.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entities\\Enum\\Role.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAnwAYAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:50:57.014Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Status.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\Enum\\Status.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Entities\\Enum\\Status.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Entities\\Enum\\Status.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Entities\\Enum\\Status.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAnwAYAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T09:12:13.615Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "UserValidateModel.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\ModelValidation\\UserValidateModel.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAADgvx0AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:25:39.101Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "HashHelper.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Helper\\HashHelper.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\Helper\\HashHelper.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\Helper\\HashHelper.cs",
+              "RelativeToolTip": "DNATestSystem.Services\\Helper\\HashHelper.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAUAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T15:38:08.461Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "LoginRequiredAttribute.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\ActionFilter\\LoginRequiredAttribute.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\ActionFilter\\LoginRequiredAttribute.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\ActionFilter\\LoginRequiredAttribute.cs",
+              "RelativeToolTip": "DNATestSystem.APIService\\ActionFilter\\LoginRequiredAttribute.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T10:20:48.247Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "PendingPasswordChange.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\PendingPasswordChange.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T14:40:49.786Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "DNATestSystem.BusinessObjects.csproj",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "RelativeToolTip": "DNATestSystem.Common\\DNATestSystem.BusinessObjects.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-06-08T14:38:59.365Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 24,
-              "Title": "StaffController.cs",
-              "DocumentMoniker": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\StaffController.cs",
-              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\StaffController.cs",
-              "ToolTip": "D:\\fileCode\\SWP391\\BE\\DNA_Testing_Service_Management_System\\DNA_Testing_Service_Management_System-Nem\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\StaffController.cs",
-              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\StaffController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAYAAAAAAAAAA==",
+              "Title": "ChangePasswordRequest.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "RelativeToolTip": "DNATestSystem.Common\\Application\\Dtos\\ChangePasswordRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T16:15:33.306Z"
+              "WhenOpened": "2025-06-08T14:40:24.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\Controllers\\AdminController.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:45:50.883Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "DNATestSystem.APIService.csproj",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+              "RelativeDocumentMoniker": "DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+              "RelativeToolTip": "DNATestSystem.APIService\\DNATestSystem.APIService.csproj",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-06-08T15:34:01.44Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "20250608171423_add-db.cs",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\20250608171423_add-db.cs",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\Migrations\\20250608171423_add-db.cs",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\Migrations\\20250608171423_add-db.cs",
+              "RelativeToolTip": "DNATestSystem.Repositories\\Migrations\\20250608171423_add-db.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T17:14:24.805Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "DNATestSystem.Repositories.csproj",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+              "RelativeDocumentMoniker": "DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+              "RelativeToolTip": "DNATestSystem.Repositories\\DNATestSystem.Repositories.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-06-08T15:58:23.053Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "DNATestSystem.Services.csproj",
+              "DocumentMoniker": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
+              "RelativeDocumentMoniker": "DNATestSystem.Services\\DNATestSystem.Services.csproj",
+              "ToolTip": "D:\\FPT\\SWP\\DNATestSystem\\DNATestSystem\\src\\DNATestSystem.APIService\\DNATestSystem.Services\\DNATestSystem.Services.csproj",
+              "RelativeToolTip": "DNATestSystem.Services\\DNATestSystem.Services.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-06-08T15:58:31.499Z"
             }
           ]
         }

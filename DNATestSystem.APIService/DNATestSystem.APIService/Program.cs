@@ -4,15 +4,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using DNATestSystem.BusinessObjects.Entites;
 using DNATestSystem.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using DNATestSystem.ModelValidation;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Service;
-using DNATestSystem.BusinessObjects.Entities;
-using DNATestSystem.Services.Interface;
-using DNATestSystem.BusinessObjects.Application.Dtos.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,26 +61,8 @@ builder.Services.AddControllers()
         fv.RegisterValidatorsFromAssemblyContaining<UserValidateModel>(); // hoặc bất kỳ validator nào bạn viết
     });
 
-builder.Services.Configure<MailSettings>(
-    builder.Configuration.GetSection("MailSettings"));
-// ✅ Đăng ký cấu hình Mailgun từ appsettings
-builder.Services.Configure<MailGunSetting>(
-    builder.Configuration.GetSection("MailgunSettings"));
-
-
-// Đăng ký service gửi mail (nếu có)
 // Service + Session + Cache
 builder.Services.AddScoped<IUserService, UserService>(); // Đảm bảo IUserService đã được đăng ký đúng
-builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IManagerService, ManagerService>();
-builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
-builder.Services.AddScoped<IVnPayService, VnPayService>();
-builder.Services.AddScoped<IStaffService, StaffService>();
-builder.Services.AddScoped<IMailService, MailService>();
-// ✅ Đăng ký HttpClient và MailgunService
-builder.Services.AddHttpClient<MailgunService>();
-builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -150,7 +130,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // khi các bạn luu cookie xuống browser, nó sẽ ko cho phép javastric đọc
     options.Cookie.IsEssential = true; // tự động add vào request xong r save vào browser
 });
-builder.Services.AddHttpContextAccessor();
 
 // Sau khi cấu hình xong, gọi builder.Build() một lần duy nhất
 var app = builder.Build();

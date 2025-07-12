@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNATestSystem.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63dc20553f1606c0804113b3386e8c2f74377760")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e77aeb9f1532022960104573f47fe3e539a91f33")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNATestSystem.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNATestSystem.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

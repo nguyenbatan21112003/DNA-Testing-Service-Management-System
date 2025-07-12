@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using DNATestSystem.BusinessObjects;
+using DNATestSystem.Application.Dtos;
 using DNATestSystem.Repositories;
-using DNATestSystem.BusinessObjects.Application.Dtos.User;
 namespace DNATestSystem.ModelValidation
 {
     public class UserValidateModel : AbstractValidator<UserRegisterModel>

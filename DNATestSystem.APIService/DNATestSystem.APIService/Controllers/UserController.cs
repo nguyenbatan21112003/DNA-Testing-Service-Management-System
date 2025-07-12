@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
+using DNATestSystem.BusinessObjects.Entites;
+using DNATestSystem.Services;
 using Microsoft.AspNetCore.Authorization;
-using DNATestSystem.Services.Interface;
-using DNATestSystem.BusinessObjects.Application.Dtos.User;
-using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
-using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
-using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.Application.Dtos;
+using DNATestSystem.Services.Service;
 
 namespace DNATestSystem.Controllers
 {
@@ -17,19 +17,16 @@ namespace DNATestSystem.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public UserController(IUserService userService, IHttpContextAccessor httpContextAccessor)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _httpContextAccessor = httpContextAccessor;
-
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterModel users)
+        public IActionResult Register([FromBody] UserRegisterModel users)
         {
             if (!ModelState.IsValid)
             {
+                // Trả tất cả lỗi dưới dạng JSON
                 var errors = ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
@@ -38,177 +35,89 @@ namespace DNATestSystem.Controllers
                 return BadRequest(new { message = "Đăng ký thất bại", errors });
             }
 
-            var id = await _userService.RegisterAsync(users);
+            var id = _userService.Register(users);
             return Ok(new { message = "Đăng ký thành công", id });
         }
 
-        [HttpPost("login")]
+        [HttpPost("/login")]
         public async Task<IActionResult> Login(UserLoginModel users)
         {
-            var user = await _userService.LoginAsync(users);
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+            //return Ok(_userService.Login(users));
+            var user = _userService.Login(users);
             if (user == null)
             {
                 return BadRequest("Username or password is wrong");
-            }else if(user.Status == -1)
-            {
-                return BadRequest("This account have been banned pls contact to admin !");
             }
 
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None, // ⚠️ Bắt buộc để gửi cookie cross-site
+                Secure = true
             };
-            var accessToken = await _userService.GenerateJwtAsync(user);
-            var refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
+            var accessToken = _userService.GenerateJwt(user);
+            var refreshToken = _userService.GenerateRefreshToken(user.UserId);
+            //mình nên return accessToken còn refreshToken thì nên lưu vào trong cookie
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
-            return Ok(new { accessToken , user.RoleId, user.UserId, user.FullName, refreshToken});
-        }
+            return Ok(accessToken);
+            //nếu hết hạn tk refreshToken thì cookie nó sẽ tự xóa
 
+        }
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        public IActionResult RefreshToken()
         {
             var isExist = HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
             if (!isExist)
             {
                 return Unauthorized("RefreshToken is not found");
             }
-            var user = await _userService.GetUserByRefreshTokenAsync(refreshToken!);
+            var user = _userService.GetUserByRefreshToken(refreshToken!);
             if (user == null)
             {
                 return Unauthorized("RefreshToken is not found");
             }
+            //nếu như có tk refreshToken thì mình phải xóa nó đi
+            _userService.DeleteOldRefreshToken(user.UserId);
 
-            await _userService.DeleteOldRefreshTokenAsync(user.UserId);
-
+            //sao đó là tạo mới
             var newOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None, // ⚠️ Bắt buộc để gửi cookie cross-site
+                Secure = true
             };
-            var accessToken = await _userService.GenerateJwtAsync(user);
-            var mew_refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
+            var accessToken = _userService.GenerateJwt(user);
+            var mew_refreshToken = _userService.GenerateRefreshToken(user.UserId);
+            //mình nên return accessToken còn refreshToken thì nên lưu vào trong cookie
             HttpContext.Response.Cookies.Append("refreshToken", mew_refreshToken, newOptions);
             return Ok(accessToken);
         }
 
-        [HttpPost("logout")]
+        [HttpPost("/logout")]
         public IActionResult Logout()
         {
-            // Phải truyền lại options giống khi tạo cookie
-            var options = new CookieOptions
-            {
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(-1) // ép hết hạn
-            };
             HttpContext.Session.Clear();
-            HttpContext.Response.Cookies.Delete("refreshToken", options);
             return Ok();
         }
 
-        [HttpGet("services")]
-        public async Task<IActionResult> getAllService()
-        {
-            var data = await _userService.GetServiceForUserAsync();
-            return Ok(data);
-        }
+      
+        //[Authorize]
+        //[HttpPost("verify-current-password")]
+        //public IActionResult VerifyCurrentPassword([FromBody] string currentPassword)
+        //{
+        //    var email = User.FindFirstValue(ClaimTypes.Email);
+        //    var user = _context.Users.FirstOrDefault(u => u.EmailAddress == email);
+        //    if (user == null) return Unauthorized();
 
-        [HttpGet("services/{id}")]
-        public async Task<IActionResult> getServiceById(int id)
-        {
-            var service = await _userService.GetServiceByIdAsync(id);
-            if (service == null)
-                return NotFound(new { message = "Service không tồn tại" });
+        //    bool isValid = BCrypt.Net.BCrypt.Verify(currentPassword, user.Password);
+        //    if (!isValid) return BadRequest("Current password is incorrect.");
 
-            return Ok(service);
-        }
+        //    return Ok("Password verified. Continue.");
+        //}
 
-        [HttpGet("blogPost")]
-        public async Task<IActionResult> getAllBlogPsot()
-        {
-            var data = await _userService.GetAllBlogForUserAsync();
-            return Ok(data);
-        }
-
-        [HttpGet("blogPost/{Slug}")]
-        public async Task<IActionResult> getBlogPostBySlug(string Slug)
-        {
-            var Blog = await _userService.GetBlogPostDetailsModelAsync(Slug);
-            if (Blog == null)
-                return NotFound(new { message = "Blog không tồn tại" });
-            return Ok(Blog);
-        }
-
-        [HttpGet("GetProfile/{profile_id}")]
-        public async Task<IActionResult> GetProfile(int profile_id)
-        {
-            var result = await _userService.GetProfileUserAsync(profile_id);
-
-            if (result == null)
-                return NotFound("User not found.");
-
-            return Ok(result);
-        }
-
-        [HttpPut("UpdateUserProfile/{profile_id}")]
-        public async Task<IActionResult> UpdateProfileUser([FromBody] UpdateProfileModel model)
-        {
-            var data = await _userService.UpdateProfileAsync(model);
-            return Ok(data);
-        }
-        [HttpPost("verify-password")]
-        public async Task<IActionResult> VerifyPassword([FromBody] UserVerifyCurrentPassword model)
-        {
-            var result = await _userService.VerifyCurrentPasswordAsync(model);
-            return result ? Ok("Password verified.") : BadRequest("Incorrect password.");
-        }
-
-        [Authorize]
-        [HttpPut("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordModel model)
-        {
-            try
-            {
-                var data = new UserChangePasswordModel
-                {
-                    Email = User.FindFirstValue(ClaimTypes.Email),
-                    CurrentPassword = model.CurrentPassword,
-                    NewPassword = model.NewPassword
-                };
-                await _userService.ChangePasswordAsync(data);
-                return Ok("Password changed successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        [HttpPut("send-consult-request")]
-        public async Task<IActionResult> SendConsultRequest([FromBody] SendConsultRequestModel model)
-        {
-            var data = _userService.SendConsultRequestAsync(model);
-            return Ok(data);
-        }
-
-        [HttpPost("submit")]
-        public async Task<IActionResult> SubmitTestRequest([FromBody] TestRequestSubmissionDto dto)
-        {
-            var result = await _userService.SubmitTestRequestAsync(dto);
-            return result.Success ? Ok(result) : StatusCode(500, result);
-        }
-        //[HttpGet("test-results/history")]
 
     }
 }
-
-
-
-
-
-
 

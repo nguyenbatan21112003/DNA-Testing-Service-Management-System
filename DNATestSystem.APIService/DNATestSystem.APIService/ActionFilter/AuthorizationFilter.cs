@@ -14,7 +14,7 @@ namespace DNATestSystem.APIService.ActionFilter
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var userId = context.HttpContext.Session.GetInt32("UserID");
+            var userId = context.HttpContext.Session.GetInt32("UserId");
 
 
             if (userId == null)
