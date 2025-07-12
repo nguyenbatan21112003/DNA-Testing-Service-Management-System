@@ -85,6 +85,7 @@ builder.Services.AddScoped<IPriceDetails, PriceDetailService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<RefreshTokenCleanupService>();
 // ✅ Đăng ký HttpClient và MailgunService
 builder.Services.AddHttpClient<MailgunService>();
 builder.Services.AddHttpContextAccessor();
@@ -167,17 +168,18 @@ var app = builder.Build();
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //}
-// Job chạy mỗi 2 giờ
-RecurringJob.AddOrUpdate<RefreshTokenCleanupService>(
-    "clean-expired-refresh-tokens",
-    job => job.CleanupExpiredTokensAsync(),
-    "0 */2 * * *" // Cron: mỗi 2 giờ
-);
+
 
 app.UseHangfireDashboard();
+// Job chạy mỗi 2 giờ
+
+RecurringJob.AddOrUpdate<RefreshTokenCleanupService>(
+    "cleanup-expired-tokens",
+    x => x.CleanupExpiredTokensAsync(),
+    Cron.Hourly // mỗi tiếng chạy 1 lần
+);
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
