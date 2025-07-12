@@ -96,8 +96,14 @@ namespace DNATestSystem.Controllers
         }
 
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                await _userService.DeleteOldRefreshTokenAsync(refreshToken);
+            }
             // Phải truyền lại options giống khi tạo cookie
             var options = new CookieOptions
             {

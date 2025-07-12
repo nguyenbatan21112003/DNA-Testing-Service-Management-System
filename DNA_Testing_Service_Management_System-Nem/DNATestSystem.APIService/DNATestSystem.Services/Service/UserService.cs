@@ -167,11 +167,11 @@ namespace DNATestSystem.Services.Service
         {
             var entity = await _context.RefreshTokens
                         .FirstOrDefaultAsync(x => x.Token == refreshToken);
-            if (entity != null)
+            if (entity == null)
             {
                 return;
             }
-            _context.RefreshTokens.Remove(entity);
+             _context.RefreshTokens.Remove(entity);
             await _context.SaveChangesAsync();
         }
 

@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using DNATestSystem.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Hangfire;
+using Hangfire.SqlServer;
 using DNATestSystem.ModelValidation;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Service;
@@ -26,6 +28,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("DNATestSystem.Repositories")));
 
+builder.Services.AddHangfire(config =>
+{
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
@@ -82,7 +88,7 @@ builder.Services.AddScoped<IMailService, MailService>();
 // ✅ Đăng ký HttpClient và MailgunService
 builder.Services.AddHttpClient<MailgunService>();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddHangfireServer();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -156,11 +162,21 @@ builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // Cấu hình middleware cho app
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+// Job chạy mỗi 2 giờ
+RecurringJob.AddOrUpdate<RefreshTokenCleanupService>(
+    "clean-expired-refresh-tokens",
+    job => job.CleanupExpiredTokensAsync(),
+    "0 */2 * * *" // Cron: mỗi 2 giờ
+);
+
+app.UseHangfireDashboard();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

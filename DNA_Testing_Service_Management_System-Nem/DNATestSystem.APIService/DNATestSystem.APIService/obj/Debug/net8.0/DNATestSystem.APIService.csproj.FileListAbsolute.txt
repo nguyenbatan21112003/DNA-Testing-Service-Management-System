@@ -1012,9 +1012,9 @@ D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Managem
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestSystem.APIService.pdb
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\DNATestSystem.APIService.genruntimeconfig.cache
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\ref\DNATestSystem.APIService.dll
-D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\bin\Debug\net8.0\MailKit.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\bin\Debug\net8.0\MimeKit.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\FPT\SWP\DNA_Testing_Service_Management_System-Phi\DNA_Testing_Service_Management_System-Nem\DNATestSystem.APIService\DNATestSystem.APIService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
