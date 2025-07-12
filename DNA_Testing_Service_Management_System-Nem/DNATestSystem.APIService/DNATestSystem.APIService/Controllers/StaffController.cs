@@ -3,6 +3,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
@@ -184,5 +185,33 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.GetFeedbacksByStaffIdAsync(staffId);
             return Ok(new { success = true, data = result });
         }
+        [HttpPut("update-status/{requestId}")]
+        public async Task<IActionResult> UpdateStatus([FromBody]UpdateTestRequestModel model)
+        {
+            try
+            {
+                var result = await _staffService.UpdateTestRequestStatusAsync(model);
+                return Ok(new { success = result, message = "Cập nhật trạng thái thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpPost("test-results/create")]
+        public async Task<IActionResult> CreateTestResult([FromBody] CreateTestResultDto dto)
+        {
+            try
+            {
+                var success = await _staffService.CreateTestResultByStaffAsync(dto);
+                return Ok(new { success, message = "Tạo kết quả xét nghiệm thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+
     }
 }

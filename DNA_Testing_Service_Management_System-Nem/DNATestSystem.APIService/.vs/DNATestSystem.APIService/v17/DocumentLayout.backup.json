@@ -194,8 +194,7 @@
               "RelativeToolTip": "DNATestSystem.Services\\Service\\RefreshTokenCleanupService.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAqwCQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-12T12:35:28.018Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-12T12:35:28.018Z"
             },
             {
               "$type": "Document",
@@ -315,8 +314,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\PaymentController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-11T11:01:57.373Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-11T11:01:57.373Z"
             },
             {
               "$type": "Document",
@@ -496,8 +494,7 @@
               "RelativeToolTip": "DNATestSystem.APIService\\Controllers\\CheckoutController.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAAYwBAAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-10T15:53:39.545Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-10T15:53:39.545Z"
             },
             {
               "$type": "Document",
@@ -678,8 +675,7 @@
               "RelativeToolTip": "DNATestSystem.Services\\Service\\UserService.cs",
               "ViewState": "AgIAALEAAAAAAAAAAAAAAKwAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-10T06:14:20.598Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-10T06:14:20.598Z"
             }
           ]
         }

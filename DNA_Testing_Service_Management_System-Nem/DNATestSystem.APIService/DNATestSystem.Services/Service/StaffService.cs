@@ -12,6 +12,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.Repositories;
@@ -681,5 +682,41 @@ namespace DNATestSystem.Services.Service
 
             return feedbacks;
         }
+        public async Task<bool> UpdateTestRequestStatusAsync(UpdateTestRequestModel model)
+        {
+            var request = await _context.TestRequests.FindAsync(model.RequestId);
+            if (request == null)
+                throw new Exception("Không tìm thấy đơn xét nghiệm.");
+
+            request.Status = model.NewStatus;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> CreateTestResultByStaffAsync(CreateTestResultDto dto)
+        {
+            int staffId = GetCurrentUserId();
+            if (staffId == 0)
+                throw new Exception("Không xác định được staff từ token.");
+
+            var requestExists = await _context.TestRequests.AnyAsync(r => r.RequestId == dto.RequestId);
+            if (!requestExists)
+                throw new Exception("Request không tồn tại.");
+
+            var result = new TestResult
+            {
+                RequestId = dto.RequestId,
+                EnteredBy = staffId,
+                ResultData = dto.Data,
+                Status = "Pending",
+                EnteredAt = DateTime.UtcNow
+            };
+
+            _context.TestResults.Add(result);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+
     }
 }
