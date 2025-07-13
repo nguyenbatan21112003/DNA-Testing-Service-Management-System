@@ -531,6 +531,28 @@ namespace DNATestSystem.Services.Service
         {
             var collectionType = dto.CollectionType?.Trim().ToLower();
 
+            var request = await _context.TestRequests
+                .FirstOrDefaultAsync(r => r.RequestId == dto.RequestId);
+
+            if (request == null)
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Không tìm thấy đơn xét nghiệm."
+                };
+            }
+
+            // ✅ Bước 2: Nếu status là 'Confirmed' thì không được tiếp tục
+            if (request.Status != null && request.Status.Trim().ToLower() == "confirmed")
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Không thể gán xử lý vì đơn đã được xác nhận (Confirmed)."
+                };
+            }
+
             var process = new TestProcess
             {
                 RequestId = dto.RequestId,
