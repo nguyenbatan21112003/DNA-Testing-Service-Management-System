@@ -211,6 +211,16 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        //48
+        [HttpPost("sample-collections")]
+        public async Task<IActionResult> GetSampleCollectionForms([FromBody] GetSampleCollectionFormsModel model)
+        {
+            var data = await _staffService.GetSampleCollectionsByStaffIdAsync(model);
+            if (data == null)
+                return NotFound(new { message = "Không tìm thấy thông tin thu mẫu cho processId này." });
+
+            return Ok(data);
+        }
 
 
     }

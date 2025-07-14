@@ -592,7 +592,6 @@ namespace DNATestSystem.Services.Service
             };
         }
 
-
         public async Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request)
         {
             var process = await _context.TestProcesses
@@ -704,6 +703,7 @@ namespace DNATestSystem.Services.Service
 
             return feedbacks;
         }
+        
         public async Task<bool> UpdateTestRequestStatusAsync(UpdateTestRequestModel model)
         {
             var request = await _context.TestRequests.FindAsync(model.RequestId);
@@ -714,6 +714,7 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
         }
+        
         public async Task<bool> CreateTestResultByStaffAsync(CreateTestResultDto dto)
         {
             int staffId = GetCurrentUserId();
@@ -738,7 +739,47 @@ namespace DNATestSystem.Services.Service
             return true;
         }
 
+        public async Task<SampleCollectionFormsSummaryDto> GetSampleCollectionsByStaffIdAsync(GetSampleCollectionFormsModel request)
+        {
+            int staffId = GetCurrentUserId(); // Lấy từ JWT
+            if (staffId == 0) return null;
 
+            var process = await _context.TestProcesses
+                .Include(p => p.SampleCollectionForms)
+                .FirstOrDefaultAsync(p => p.ProcessId == request.ProcessId && p.StaffId == staffId);
 
+            if (process == null) return null;
+
+            var anyForm = process.SampleCollectionForms.FirstOrDefault();
+            if (anyForm == null) return null;
+
+            var result = new SampleCollectionFormsSummaryDto
+            {
+                CollectionId = anyForm.CollectionId,
+                ProcessId = process.ProcessId,
+                location = anyForm.Location,
+                sampleProviders = process.SampleCollectionForms.Select(f => new SampleProviders
+                {
+                    FullName = f.FullName,
+                    Gender = f.Gender,
+                    Yob = f.Yob,
+                    IdType = f.Idtype,
+                    Idnumber = f.Idnumber,
+                    IdissuedDate = f.IdissuedDate,
+                    IdissuedPlace = f.IdissuedPlace,
+                    Address = f.Address,
+                    SampleType = f.SampleType,
+                    Quantity = f.Quantity,
+                    Relationship = f.Relationship,
+                    HasGeneticDiseaseHistory = f.HasGeneticDiseaseHistory ?? false,
+                    FingerprintImage = f.FingerprintImage,
+                    ConfirmedBy = f.ConfirmedBy,
+                    Note = f.Note
+                }).ToList()
+            };
+            return result;
+        }
+
+       
     }
 }

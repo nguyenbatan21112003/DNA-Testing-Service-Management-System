@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
+using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 
 
 namespace DNATestSystem.Services.Interface
@@ -55,6 +56,13 @@ namespace DNATestSystem.Services.Interface
         //
         Task<bool> CreateFeedBack(FeedBackDto feedBackDto);
         //
-        Task<bool> CreateUserProfile(UserProfileDto userProfileDto);    
+        Task<bool> CreateUserProfile(UserProfileDto userProfileDto);
+
+        //Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
+
+        //customer
+        Task<SampleCollectionFormsSummaryDto?> GetSampleCollectionByCustomerAsync(int processId);
+        Task<RequestDto> GetTestRequestByCustomerId();
+
     }
 }

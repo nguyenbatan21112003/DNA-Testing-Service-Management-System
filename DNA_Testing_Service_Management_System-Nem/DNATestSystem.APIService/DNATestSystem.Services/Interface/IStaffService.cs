@@ -46,5 +46,10 @@ namespace DNATestSystem.Services.Interface
         Task<bool> UpdateTestRequestStatusAsync(UpdateTestRequestModel model);
         //Tao test Result
         Task<bool> CreateTestResultByStaffAsync(CreateTestResultDto dto);
+
+        Task<SampleCollectionFormsSummaryDto> GetSampleCollectionsByStaffIdAsync(GetSampleCollectionFormsModel request);
+
+        //Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
+
     }
 }

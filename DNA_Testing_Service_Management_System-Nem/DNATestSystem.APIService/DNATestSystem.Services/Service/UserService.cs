@@ -21,6 +21,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
+using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 
 namespace DNATestSystem.Services.Service
 {
@@ -637,6 +638,7 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
         }
+      
         public async Task<ProfileViewDto> GetUserProfileByEmail(string email)
         {
             var data = await _context.UserProfiles
@@ -659,5 +661,73 @@ namespace DNATestSystem.Services.Service
                 throw new Exception("User profile not found");
             return data;
         }
+
+        // Truy xuất thông tin thu mẫu dựa trên processId và userId (Customer hiện tại)
+        public async Task<SampleCollectionFormsSummaryDto?> GetSampleCollectionByCustomerAsync(int processId)
+        {
+            int customerId = GetCurrentUserId(); // từ JWT
+
+            // Xác nhận rằng processId đó thuộc về customer hiện tại
+            var process = await _context.TestProcesses
+                .Include(p => p.Request)
+                .Include(p => p.SampleCollectionForms)
+                .FirstOrDefaultAsync(p =>
+                    p.ProcessId == processId &&
+                    p.Request.UserId == customerId);
+
+            if (process == null) return null;
+
+            var anyForm = process.SampleCollectionForms.FirstOrDefault();
+            if (anyForm == null) return null;
+
+            return new SampleCollectionFormsSummaryDto
+            {
+                CollectionId = anyForm.CollectionId,
+                ProcessId = process.ProcessId,
+                location = anyForm.Location,
+                sampleProviders = process.SampleCollectionForms.Select(f => new SampleProviders
+                {
+                    FullName = f.FullName,
+                    Gender = f.Gender,
+                    Yob = f.Yob,
+                    IdType = f.Idtype,
+                    Idnumber = f.Idnumber,
+                    IdissuedDate = f.IdissuedDate,
+                    IdissuedPlace = f.IdissuedPlace,
+                    Address = f.Address,
+                    SampleType = f.SampleType,
+                    Quantity = f.Quantity,
+                    Relationship = f.Relationship,
+                    HasGeneticDiseaseHistory = f.HasGeneticDiseaseHistory ?? false,
+                    FingerprintImage = f.FingerprintImage,
+                    ConfirmedBy = f.ConfirmedBy,
+                    Note = f.Note
+                }).ToList()
+            };
+        }
+
+        public async Task<List<RequestDto>> GetTestRequestsByCustomerIdAsync()
+        {
+            int customerId = GetCurrentUserId(); // lấy từ JWT
+            var requests = await _context.TestRequests
+                .Include(r => r.Service)
+                .Include(r => r.CollectType)
+                .Where(r => r.UserId == customerId)
+                .ToListAsync();
+
+            return requests.Select(request => new RequestDto
+            {
+                RequestId = request.RequestId,
+                ServiceId = request.ServiceId ?? 0,
+                ServiceName = request.Service?.ServiceName ?? "Unknown",
+                CollectType = request.CollectType?.CollectName ?? "Unknown",
+                Category = request.Category,
+                ScheduleDate = request.ScheduleDate ?? DateTime.MinValue,
+                Address = request.Address,
+                Status = request.Status,
+                CreatedAt = request.CreatedAt ?? DateTime.MinValue
+            }).ToList();
+        }
+
     }
 }
