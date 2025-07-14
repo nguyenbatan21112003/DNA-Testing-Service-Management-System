@@ -276,21 +276,21 @@ const SampleCollection = ({ caseType }) => {
       setShowSuccessOverlay(true);
       setTimeout(() => {
         setShowSuccessOverlay(false);
-        form.resetFields();
-        setDonors([
-          {
-            id: 1,
-            name: "",
+      form.resetFields();
+      setDonors([
+        {
+          id: 1,
+          name: "",
             idType: "CCCD",
-            idNumber: "",
-            idIssueDate: null,
-            idIssuePlace: "",
-            nationality: "Việt Nam",
-            sampleType: "Máu",
-            relationship: "",
-          },
-        ]);
-        localStorage.removeItem("sample_collection_draft");
+          idNumber: "",
+          idIssueDate: null,
+          idIssuePlace: "",
+          nationality: "Việt Nam",
+          sampleType: "Máu",
+          relationship: "",
+        },
+      ]);
+      localStorage.removeItem("sample_collection_draft");
       }, 3000);
     } catch {
       message.error("Có lỗi xảy ra khi lưu biên bản!");
@@ -421,15 +421,13 @@ const SampleCollection = ({ caseType }) => {
                           form.setFieldsValue({ testType: value })
                         }
                       >
-                        {adminTestTypes.map((type) => (
-                          <Option key={type} value={type}>
-                            {type}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                        {adminTestTypes.map(type => (
+                          <Option key={type} value={type}>{type}</Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
               )}
 
               <Row gutter={16}>
@@ -787,31 +785,16 @@ const SampleCollection = ({ caseType }) => {
               }}
             >
               Lấy mẫu thành công!
-            </div>
-            <div
-              style={{
-                fontSize: 20,
-                color: "#222",
-                marginBottom: 10,
-                fontWeight: 500,
-              }}
-            >
-              Biên bản đã được lưu và đơn hàng chuyển sang trạng thái Đang xử
-              lý.
-            </div>
-            <div
-              style={{
-                fontSize: 16,
-                color: "#555",
-                marginTop: 18,
-                lineHeight: 1.6,
-              }}
-            >
+                  </div>
+            <div style={{ fontSize: 20, color: '#222', marginBottom: 10, fontWeight: 500 }}>
+              Biên bản đã được lưu và đơn hàng chuyển sang trạng thái Đang xử lý.
+                </div>
+            <div style={{ fontSize: 16, color: '#555', marginTop: 18, lineHeight: 1.6 }}>
               Bạn có thể tiếp tục nhập đơn mới hoặc quay lại danh sách.
-            </div>
+                </div>
+                </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

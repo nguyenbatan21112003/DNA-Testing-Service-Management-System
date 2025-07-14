@@ -6,7 +6,10 @@ import { ArrowLeft, Calendar, User, Tag, Share2 } from "lucide-react";
 const BlogDetailPage = ({ blogData }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const blog = blogData.find((b) => String(b.id) === String(id));
+  // Lấy thêm các bài viết được Manager đăng
+  const storedPosts = JSON.parse(localStorage.getItem('dna_blog_posts') || '[]');
+  const allPosts = [...blogData, ...storedPosts.filter((p) => p.status === 'published')];
+  const blog = allPosts.find((b) => String(b.id) === String(id));
 
   if (!blog) {
     return (
@@ -23,7 +26,7 @@ const BlogDetailPage = ({ blogData }) => {
   }
 
   // Tìm các bài viết liên quan (cùng danh mục hoặc có cùng tag)
-  const relatedPosts = blogData
+  const relatedPosts = allPosts
     .filter(
       (post) =>
         post.id !== blog.id &&

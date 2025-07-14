@@ -33,6 +33,8 @@ import { createEditor, Node } from 'slate';
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
+// Khóa lưu trữ bài viết đã đăng
+const BLOG_STORAGE_KEY = 'dna_blog_posts';
 
 const BlogManagement = () => {
   const [form] = Form.useForm();
@@ -83,6 +85,7 @@ const BlogManagement = () => {
         title: blog.title,
         summary: blog.summary || '',
         status: blog.status,
+        category: blog.category || 'kiến thức',
       });
       try {
         setContent(blog.content ? JSON.parse(blog.content) : [{ type: 'paragraph', children: [{ text: '' }] }]);
@@ -91,6 +94,12 @@ const BlogManagement = () => {
       }
     } else {
       form.resetFields();
+      form.setFieldsValue({
+        title: '',
+        summary: '',
+        status: 'draft',
+        category: 'kiến thức',
+      });
       setContent([{ type: 'paragraph', children: [{ text: '' }] }]);
     }
     setIsModalVisible(true);
@@ -102,14 +111,37 @@ const BlogManagement = () => {
   };
 
   const handleSubmit = (values) => {
+    // Chuyển Slate JSON sang HTML đơn giản (mỗi đoạn là 1 thẻ <p>)
+    const htmlContent = Array.isArray(content)
+      ? content.map((n) => `<p>${Node.string(n)}</p>`).join('')
+      : content;
+
     const newBlog = {
-      ...values,
-      content: JSON.stringify(content),
       id: editingBlog ? editingBlog.id : Date.now(),
+      title: values.title,
+      summary: values.summary,
+      excerpt: values.summary,
+      content: htmlContent,
+      category: values.category || 'kiến thức',
+      date: editingBlog ? editingBlog.date : new Date().toLocaleDateString('vi-VN'),
       author: 'Nguyễn Văn Quản',
+      tags: [],
+      image: '',
+      status: values.status,
       createdAt: editingBlog ? editingBlog.createdAt : new Date().toISOString().split('T')[0],
-      views: editingBlog ? editingBlog.views : 0
+      views: editingBlog ? editingBlog.views : 0,
     };
+
+    // Đồng bộ localStorage (chỉ lưu bài đã đăng)
+    let stored = JSON.parse(localStorage.getItem(BLOG_STORAGE_KEY) || '[]');
+    if (newBlog.status === 'published') {
+      const idx = stored.findIndex((p) => p.id === newBlog.id);
+      if (idx === -1) stored.push(newBlog);
+      else stored[idx] = newBlog;
+    } else {
+      stored = stored.filter((p) => p.id !== newBlog.id);
+    }
+    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(stored));
 
     if (editingBlog) {
       setBlogPosts(blogPosts.map(blog => blog.id === editingBlog.id ? newBlog : blog));
@@ -125,11 +157,17 @@ const BlogManagement = () => {
 
   const handleDelete = (id) => {
     setBlogPosts(blogPosts.filter(blog => blog.id !== id));
+    // Đồng bộ localStorage
+    const stored = JSON.parse(localStorage.getItem(BLOG_STORAGE_KEY) || '[]').filter((p) => p.id !== id);
+    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(stored));
     message.success('Xóa bài viết thành công!');
   };
 
   const handlePreview = (blog) => {
-    setPreviewBlog({...blog, content: content || '<p>Nội dung bài viết chưa được cập nhật</p>'});
+    const htmlPreview = Array.isArray(content)
+      ? content.map((n) => `<p>${Node.string(n)}</p>`).join('')
+      : (content || '<p>Nội dung bài viết chưa được cập nhật</p>');
+    setPreviewBlog({ ...blog, content: htmlPreview });
     setPreviewVisible(true);
   };
 
@@ -285,6 +323,7 @@ const BlogManagement = () => {
           onFinish={handleSubmit}
           initialValues={{
             status: 'draft',
+            category: 'kiến thức',
           }}
         >
           <Form.Item
@@ -308,7 +347,7 @@ const BlogManagement = () => {
           
           <Form.Item label="Nội dung" required>
             <div className="border border-gray-200 rounded min-h-[300px] p-3">
-              <Slate editor={editor} value={content} onChange={setContent}>
+              <Slate editor={editor} initialValue={content} onChange={setContent}>
                 <Editable placeholder="Nhập nội dung..." className="min-h-[260px]" />
               </Slate>
             </div>
@@ -339,6 +378,18 @@ const BlogManagement = () => {
               <Option value="draft">Lưu nháp</Option>
             </Select>
           </Form.Item>
+
+          <Form.Item
+            name="category"
+            label="Danh mục"
+            rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
+          >
+            <Select>
+              <Option value="kiến thức">Kiến thức</Option>
+              <Option value="công nghệ">Công nghệ</Option>
+              <Option value="dịch vụ">Dịch vụ</Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -363,7 +414,7 @@ const BlogManagement = () => {
             </div>
             <div 
               className="blog-content p-4 border border-gray-200 rounded min-h-[300px]"
-              dangerouslySetInnerHTML={{ __html: (Array.isArray(JSON.parse(previewBlog.content || '[]')) ? JSON.parse(previewBlog.content).map((n)=>`<p>${Node.string(n)}</p>`).join('') : previewBlog.content) }}
+              dangerouslySetInnerHTML={{ __html: (() => { try { const parsed = JSON.parse(previewBlog.content || '[]'); if (Array.isArray(parsed)) { return parsed.map((n) => `<p>${Node.string(n)}</p>`).join(''); } return previewBlog.content; } catch { return previewBlog.content; } })() }}
             />
           </div>
         )}

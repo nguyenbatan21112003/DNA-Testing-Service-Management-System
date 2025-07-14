@@ -3,6 +3,7 @@ import { useOrderContext } from "../../context/OrderContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { UserPlus } from "lucide-react";
+import dayjs from "dayjs";
 
 const CivilSampleCollectionForm = ({ appointmentDate }) => {
     const [form, setForm] = useState({
@@ -27,12 +28,20 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
     const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
     useEffect(() => {
-        const data = localStorage.getItem("dna_sample_collection_prefill");
-        if (data) setPrefill(JSON.parse(data));
+        let safePrefill = {};
+        try {
+            const data = localStorage.getItem("dna_sample_collection_prefill");
+            if (data) safePrefill = JSON.parse(data);
+        } catch {
+            // Nếu lỗi parse, xóa prefill lỗi
+            localStorage.removeItem("dna_sample_collection_prefill");
+            safePrefill = {};
+        }
+        setPrefill(safePrefill || {});
     }, []);
 
     useEffect(() => {
-        if (prefill) {
+        if (prefill && typeof prefill === 'object' && Object.keys(prefill).length > 0) {
             setForm((prev) => ({
                 ...prev,
                 fullName: prefill.fullName || "",
@@ -40,7 +49,8 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                 email: prefill.email || "",
                 address: prefill.address || "",
                 cccd: prefill.cccd || "",
-                serviceType: prefill.serviceType || prefill.type || prev.serviceType,
+                serviceType: prefill.serviceType || prefill.type || "",
+                testDate: prefill.testDate ? dayjs(prefill.testDate) : null,
             }));
         }
     }, [prefill]);
@@ -282,7 +292,17 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                         <div className="form-group">
                             <label style={{ fontWeight: 600, marginBottom: 4, display: 'block' }}>Ngày xét nghiệm</label>
                             <DatePicker
-                                selected={form.testDate || (prefill.appointmentDate ? new Date(prefill.appointmentDate) : appointmentDate ? new Date(appointmentDate) : null)}
+                                selected={
+                                    form.testDate instanceof Date && !isNaN(form.testDate)
+                                        ? form.testDate
+                                        : (form.testDate && dayjs.isDayjs(form.testDate) && form.testDate.isValid())
+                                            ? form.testDate.toDate()
+                                            : (prefill.appointmentDate && !isNaN(new Date(prefill.appointmentDate)))
+                                                ? new Date(prefill.appointmentDate)
+                                                : (appointmentDate && !isNaN(new Date(appointmentDate)))
+                                                    ? new Date(appointmentDate)
+                                                    : null
+                                }
                                 onChange={date => setForm(prev => ({ ...prev, testDate: date }))}
                                 dateFormat="dd/MM/yyyy"
                                 placeholderText="Chọn ngày xét nghiệm"

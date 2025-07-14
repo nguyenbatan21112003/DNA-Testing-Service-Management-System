@@ -352,8 +352,7 @@ const ServiceRegisterForm = () => {
               <DatePicker
                 selected={appointmentDate}
                 onChange={(date) => setAppointmentDate(date)}
-                minDate={new Date()}
-                filterDate={(date) => date.getDay() !== 0}
+                // minDate={new Date()}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Chọn ngày"
                 id="appointmentDate"

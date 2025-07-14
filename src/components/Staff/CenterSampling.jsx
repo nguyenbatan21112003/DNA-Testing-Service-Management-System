@@ -31,6 +31,7 @@ import {
   ExclamationCircleOutlined,
   EyeOutlined,
   ExperimentOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
@@ -41,6 +42,27 @@ import SampleCollection from "./SampleCollection";
 const { Option } = Select;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
+
+const statusKeys = [
+  { key: "Chờ xác nhận", color: "#fbc02d" },
+  { key: "Đã hẹn", color: "#42a5f5" },
+  { key: "Đã đến", color: "#1976d2" },
+  { key: "Đang lấy mẫu", color: "#ff7043" },
+  { key: "Đang xử lý", color: "#7e57c2" },
+  { key: "Hoàn thành", color: "#52c41a" },
+];
+
+const getStatusText = (status) => {
+  switch (status) {
+    case "WAITING_FOR_APPOINTMENT": return "Chờ xác nhận";
+    case "SCHEDULED": return "Đã hẹn";
+    case "ARRIVED": return "Đã đến";
+    case "SAMPLE_COLLECTING": return "Đang lấy mẫu";
+    case "PROCESSING": return "Đang xử lý";
+    case "COMPLETED": return "Hoàn thành";
+    default: return status;
+  }
+};
 
 const CenterSampling = () => {
   const { getAllOrders, updateOrder, updateSamplingStatus } = useOrderContext();
@@ -55,6 +77,10 @@ const CenterSampling = () => {
     arrived: 0,
     missed: 0,
     canceled: 0,
+    waitingConfirm: 0,
+    sampling: 0,
+    processing: 0,
+    completed: 0,
   });
   const dashboardCtx = useContext(StaffDashboardContext);
   const { user } = useContext(AuthContext);
@@ -80,20 +106,12 @@ const CenterSampling = () => {
     setAppointments(centerSamplingOrders);
 
     // Tính toán thống kê
-    const newStats = {
-      total: centerSamplingOrders.length,
-      scheduled: centerSamplingOrders.filter(
-        (apt) => apt.status === "WAITING_FOR_APPOINTMENT"
-      ).length,
-      arrived: centerSamplingOrders.filter(
-        (apt) => apt.status === "SAMPLE_COLLECTING"
-      ).length,
-      missed: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED")
-        .length,
-      canceled: centerSamplingOrders.filter((apt) => apt.status === "CANCELLED")
-        .length,
-    };
-    setStats(newStats);
+    const statusCounts = statusKeys.reduce((acc, s) => {
+      acc[s.key] = centerSamplingOrders.filter(apt => getStatusText(apt.status) === s.key).length;
+      return acc;
+    }, {});
+
+    setStats(statusCounts);
   }, [getAllOrders]);
 
   useEffect(() => {
@@ -122,41 +140,14 @@ const CenterSampling = () => {
   // Dùng chung cho cả lịch hẹn và thống kê
   const getStatusColor = (status) => {
     switch (status) {
-      case "Chờ xác nhận":
-        return "#fdcb6e"; // vàng cam
-      case "Đã hẹn":
-        return "#40a9ff"; // xanh dương nhạt
-      case "Đã đến":
-        return "#52c41a"; // xanh lá
-      case "Đang lấy mẫu":
-        return "#fa8c16"; // cam
-      case "Đang xử lý":
-        return "#0984e3"; // xanh dương tươi
-      case "Đã hủy":
-        return "#d63031"; // đỏ tươi
-      case "Hoàn thành":
-        return "#00b894"; // xanh ngọc nổi bật
-      default:
-        return "#b2bec3"; // xám nhạt
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case "Chờ xác nhận":
-        return "Chờ xác nhận";
-      case "Đã hẹn":
-        return "Đã hẹn";
-      case "Đã đến":
-        return "Đã đến";
-      case "Đang lấy mẫu":
-        return "Đang lấy mẫu";
-      case "Đang xử lý":
-        return "Đang xử lý";
-      case "Hoàn thành":
-        return "Hoàn thành";
-      default:
-        return "Đang xử lý";
+      case "Chờ xác nhận":   return "#fbc02d"; // vàng đậm
+      case "Đã hẹn":         return "#42a5f5"; // xanh dương sáng
+      case "Đã đến":         return "#1976d2"; // xanh dương đậm
+      case "Đang lấy mẫu":   return "#ff7043"; // cam đỏ
+      case "Đang xử lý":     return "#7e57c2"; // tím nhạt
+      case "Đã hủy":         return "#e53935"; // đỏ đậm
+      case "Hoàn thành":     return "#52c41a"; // xanh lá đồng bộ với Kết quả
+      default:                return "#bdbdbd"; // xám trung tính
     }
   };
 
@@ -231,7 +222,7 @@ const CenterSampling = () => {
         const caseType = getCaseType(type);
         if (!caseType) return null;
         return (
-          <Tag color={caseType === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14 }}>
+          <Tag color={caseType === 'Dân sự' ? '#722ed1' : '#36cfc9'} style={{ fontWeight: 600, fontSize: 14 }}>
             {caseType}
           </Tag>
         );
@@ -478,77 +469,15 @@ const CenterSampling = () => {
       </div>
 
       {/* Thống kê */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Tổng lịch hẹn"
-              value={stats.total}
-              valueStyle={{ color: "#00a67e" }}
-              prefix={<CalendarOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Đã hẹn"
-              value={stats.scheduled}
-              valueStyle={{ color: "#1890ff" }}
-              prefix={<ClockCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Đã đến"
-              value={stats.arrived}
-              valueStyle={{ color: "#52c41a" }}
-              prefix={<CheckCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Vắng mặt"
-              value={stats.missed}
-              valueStyle={{ color: "#fa8c16" }}
-              prefix={<ExclamationCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Đã hủy"
-              value={stats.canceled}
-              valueStyle={{ color: "#f5222d" }}
-              prefix={<CloseCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Tỷ lệ đến"
-              value={
-                stats.scheduled > 0
-                  ? Math.round(
-                    (stats.arrived /
-                      (stats.scheduled + stats.arrived + stats.missed)) *
-                    100
-                  )
-                  : 0
-              }
-              suffix="%"
-              valueStyle={{ color: "#13c2c2" }}
-              prefix={<CheckCircleOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+        {statusKeys.map(s => (
+          <div style={{ flex: 1 }} key={s.key}>
+            <Card>
+              <Statistic title={s.key} value={stats[s.key]} valueStyle={{ color: s.color }} />
+            </Card>
+          </div>
+        ))}
+      </div>
 
       {/* Thống kê hôm nay */}
       <Card style={{ marginBottom: 24 }}>
@@ -611,7 +540,7 @@ const CenterSampling = () => {
                     </Tag>
                     {/* Hiển thị phân loại */}
                     {getCaseType(apt.type) && (
-                      <Tag color={getCaseType(apt.type) === 'Dân sự' ? '#722ed1' : '#fa8c16'} style={{ fontWeight: 600, fontSize: 14, marginLeft: 8 }}>
+                      <Tag color={getCaseType(apt.type) === 'Dân sự' ? '#722ed1' : '#36cfc9'} style={{ fontWeight: 600, fontSize: 14, marginLeft: 8 }}>
                         {getCaseType(apt.type)}
                       </Tag>
                     )}
@@ -723,7 +652,7 @@ const CenterSampling = () => {
 
       {/* Modal xem chi tiết */}
       <Modal
-        title={`Chi tiết lịch hẹn #${selectedAppointment?.id}`}
+        title={null}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
@@ -731,103 +660,80 @@ const CenterSampling = () => {
             Đóng
           </Button>,
         ]}
-        width={800}
+        width={600}
       >
         {selectedAppointment && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin khách hàng:</h3>
-              <p>
-                <strong>Họ tên:</strong> {selectedAppointment.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedAppointment.email}
-              </p>
-              <p>
-                <strong>Số điện thoại:</strong> {selectedAppointment.phone}
-              </p>
-              <p>
-                <strong>Loại xét nghiệm:</strong> {selectedAppointment.type}
-              </p>
-              {selectedAppointment.category && (
-                <p>
-                  <strong>Thể loại:</strong>{" "}
-                  {selectedAppointment.category === "civil"
-                    ? "Dân sự"
-                    : selectedAppointment.category === "admin"
-                    ? "Hành chính"
-                    : selectedAppointment.category}
-                </p>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin lịch hẹn:</h3>
-              <p>
-                <strong>Ngày hẹn:</strong>{" "}
-                {selectedAppointment.appointmentDate || "Chưa hẹn"}
-              </p>
-              <p>
-                <strong>Trạng thái:</strong>{" "}
-                <Tag color={getStatusColor(selectedAppointment.status)}>
+          <div style={{ padding: 8 }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <h2 style={{ fontSize: 28, fontWeight: 800, color: '#00a67e', margin: 0, letterSpacing: 1 }}>
+                Chi tiết lịch hẹn #{selectedAppointment.id}
+              </h2>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 8 }}>
+                <Tag color={getStatusColor(selectedAppointment.status)} style={{ fontWeight: 700, fontSize: 16, padding: '4px 18px' }}>
                   {getStatusText(selectedAppointment.status)}
                 </Tag>
-              </p>
-            </div>
-
-            {selectedAppointment.notes && (
-              <div>
-                <h3>Ghi chú:</h3>
-                <div
-                  style={{
-                    background: "#f6f6f6",
-                    padding: 12,
-                    borderRadius: 4,
-                  }}
-                >
-                  {selectedAppointment.notes}
-                </div>
+                {(() => {
+                  const caseType = getCaseType(selectedAppointment.type);
+                  if (!caseType) return null;
+                  return (
+                    <Tag color={caseType === 'Dân sự' ? '#722ed1' : '#36cfc9'} style={{ fontWeight: 700, fontSize: 16, padding: '4px 18px' }}>
+                      {caseType}
+                    </Tag>
+                  );
+                })()}
               </div>
-            )}
-
-            {/* Thành viên cung cấp mẫu */}
-            {getStatusText(selectedAppointment.status) === 'Đang xử lý' && (
-              (() => {
-                const tableData = Array.isArray(selectedAppointment.resultTableData) && selectedAppointment.resultTableData.length > 0
-                  ? selectedAppointment.resultTableData
-                  : (Array.isArray(selectedAppointment.members) ? selectedAppointment.members : []);
-                if (tableData.length === 0) return null;
-                return (
-                  <div style={{ marginBottom: 16 }}>
-                    <h3>Thành viên cung cấp mẫu:</h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
-                      <thead>
-                        <tr style={{ background: '#e6f7ff' }}>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
-                          <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {/* Thông tin khách hàng */}
+              <div style={{ background: '#f8fafc', borderRadius: 10, padding: 18, boxShadow: '0 2px 8px #e6e6e633' }}>
+                <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: '#009e74' }}>Thông tin khách hàng</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600, fontSize: 17 }}>Họ tên:</span> <span style={{ fontSize: 17 }}>{selectedAppointment.name}</span></div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600, fontSize: 17 }}>Email:</span> <span style={{ fontSize: 17 }}>{selectedAppointment.email}</span></div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600, fontSize: 17 }}>Số điện thoại:</span> <span style={{ fontSize: 17 }}>{selectedAppointment.phone}</span></div>
+              </div>
+              {/* Thông tin lịch hẹn */}
+              <div style={{ background: '#f6fafd', borderRadius: 10, padding: 18, boxShadow: '0 2px 8px #e6e6e633' }}>
+                <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: '#009e74' }}>Thông tin lịch hẹn</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600, fontSize: 17 }}>Loại xét nghiệm:</span> <span style={{ fontSize: 17 }}>{selectedAppointment.type}</span></div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600, fontSize: 17 }}>Ngày hẹn:</span> <span style={{ fontWeight: 600, fontSize: 17 }}>{selectedAppointment.appointmentDate || 'Chưa hẹn'}</span></div>
+              </div>
+              {/* Ghi chú nếu có */}
+              {selectedAppointment.notes && (
+                <div style={{ background: '#fffbe6', border: '1.5px solid #ffe58f', borderRadius: 10, padding: 16, color: '#ad6800', fontWeight: 600, fontSize: 16 }}>
+                  Ghi chú: {selectedAppointment.notes}
+                </div>
+              )}
+              {/* Bảng thông tin mẫu khi Đang xử lý */}
+              {getStatusText(selectedAppointment.status) === 'Đang xử lý' && Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0 && (
+                <div style={{ marginTop: 24 }}>
+                  <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: '#009e74' }}>Bảng thông tin mẫu của khách hàng</div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+                    <thead>
+                      <tr style={{ background: '#e6f7ff' }}>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
+                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedAppointment.members.map((mem, idx) => (
+                        <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
+                          <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
+                          <td style={{ padding: 6 }}>{mem.name}</td>
+                          <td style={{ padding: 6 }}>{mem.birth}</td>
+                          <td style={{ padding: 6 }}>{mem.gender}</td>
+                          <td style={{ padding: 6 }}>{mem.relation}</td>
+                          <td style={{ padding: 6 }}>{mem.sampleType}</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {tableData.map((mem, idx) => (
-                          <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                            <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
-                            <td style={{ padding: 6 }}>{mem.name}</td>
-                            <td style={{ padding: 6 }}>{mem.birthYear || mem.birth}</td>
-                            <td style={{ padding: 6 }}>{mem.gender}</td>
-                            <td style={{ padding: 6 }}>{mem.relationship || mem.relation}</td>
-                            <td style={{ padding: 6 }}>{mem.sampleType}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })()
-            )}
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </Modal>
