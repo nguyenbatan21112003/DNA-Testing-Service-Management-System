@@ -1756,108 +1756,160 @@ const UserProfile = () => {
           <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.18)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowResultModal(false)}>
             <div style={{ background: "#fff", borderRadius: 18, minWidth: 340, maxWidth: 800, maxHeight: "90vh", padding: 32, boxShadow: "0 8px 32px #0002", position: "relative", fontSize: 17, overflowY: "auto" }} onClick={e => e.stopPropagation()}>
               <button onClick={() => setShowResultModal(false)} style={{ position: "absolute", top: 14, right: 18, background: "none", border: "none", fontSize: 26, color: "#888", cursor: "pointer" }}>&times;</button>
-              {selectedOrder.category === 'admin' ? (
-                <div style={{ background: '#fafafa', borderRadius: 12, padding: 24, fontFamily: 'Arial, sans-serif', color: '#222', maxWidth: 700, margin: '0 auto' }}>
+              {/* Nếu là đơn Dân sự: chỉ hiển thị bảng mẫu và kết luận */}
+              {selectedOrder.type && selectedOrder.type.toLowerCase().includes('dân sự') ? (
+                <>
                   <h2 style={{ textAlign: 'center', color: '#00c853', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Kết Quả Xét Nghiệm</h2>
-                  <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
-                    <div style={{ flex: 1 }}>
-                      <div>Ngày xét nghiệm: <b>{selectedOrder.appointmentDate || ''}</b></div>
-                      <div>Nhân viên lấy mẫu: <b>{selectedOrder.staffAssigned || ''}</b></div>
-                      <div>Người yêu cầu xét nghiệm: <b>{selectedOrder.name || ''}</b></div>
-                      <div>Địa chỉ hiện tại: <b>{selectedOrder.address || ''}</b></div>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div>Địa điểm lấy mẫu: <b>{getSampleMethodLabel(selectedOrder.sampleMethod)}</b></div>
-                      <div>Mã đơn hàng: <b>#{selectedOrder.id}</b></div>
-                      <div>Loại xét nghiệm: <b>{selectedOrder.type || ''}</b></div>
-                    </div>
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: 22, textAlign: 'center', margin: '18px 0 8px 0' }}>Thông tin người cho mẫu</div>
-                  <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 80, marginBottom: 12 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 16 }}>
-                            <thead>
-                        <tr style={{ background: '#f0f9f6' }}>
-                          <th style={{ padding: 8 }}>STT</th>
-                          <th style={{ padding: 8 }}>Họ và tên</th>
-                          <th style={{ padding: 8 }}>Năm sinh</th>
-                          <th style={{ padding: 8 }}>Giới tính</th>
-                          <th style={{ padding: 8 }}>Mối quan hệ</th>
-                          <th style={{ padding: 8 }}>Loại mẫu</th>
+                  <div style={{ marginBottom: 24 }}>
+                    <h3 style={{ fontWeight: 800, fontSize: 20, margin: '0 0 12px 0' }}>Thông tin người cho mẫu</h3>
+                    <div style={{ background: '#f8fff3', border: '2px solid #b6e4b6', borderRadius: 14, padding: 20, overflowX: 'auto' }}>
+                      {Array.isArray(selectedOrder.resultTableData) && selectedOrder.resultTableData.length > 0 ? (
+                        <table className="result-table" style={{ minWidth: 600, tableLayout: 'auto', borderCollapse: 'collapse', width: '100%' }}>
+                          <thead>
+                            <tr style={{ background: '#e6f7ff' }}>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>STT</th>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Họ và tên</th>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Năm sinh</th>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Giới tính</th>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Mối quan hệ</th>
+                              <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Loại mẫu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedOrder.resultTableData.map((data, index) => (
+                              <tr key={data.key} style={{ background: index % 2 === 0 ? '#fff' : '#f4f8ff' }}>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{index + 1}</td>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.name}</td>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.birthYear}</td>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.gender}</td>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.relationship}</td>
+                                <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.sampleType}</td>
                               </tr>
-                            </thead>
-                            <tbody>
-                        {(Array.isArray(selectedOrder.resultTableData) ? selectedOrder.resultTableData : []).map((row, idx) => (
-                          <tr key={row.key || idx}>
-                            <td style={{ padding: 8, textAlign: 'center' }}>{idx + 1}</td>
-                            <td style={{ padding: 8 }}>{row.name}</td>
-                            <td style={{ padding: 8 }}>{row.birthYear}</td>
-                            <td style={{ padding: 8 }}>{row.gender}</td>
-                            <td style={{ padding: 8 }}>{row.relationship}</td>
-                            <td style={{ padding: 8 }}>{row.sampleType}</td>
-                                  </tr>
-                        ))}
-                            </tbody>
-                          </table>
-                        </div>
-                  <div style={{ fontWeight: 600, fontSize: 18, margin: '12px 0 4px 0' }}>Kết luận</div>
-                  <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 40, padding: 8, marginBottom: 18 }}>{selectedOrder.conclusion || ''}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32 }}>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>HỘI ĐỒNG KHOA HỌC</div>
-                      <img src="/Stamp/da_xac_nhan.png" alt="Đã xác nhận" style={{ height: 48, margin: '0 auto' }} />
-                            </div>
-                    <div style={{ textAlign: 'center', flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>TRUNG TÂM XÉT NGHIỆM</div>
-                      <img src="/Stamp/dau_moc.png" alt="Dấu mộc" style={{ height: 90, margin: '0 auto' }} />
-                          </div>
-                      </div>
-                      </div>
-              ) : (
-                <div style={{ background: "#fff", borderRadius: 12, padding: 24, fontFamily: 'Arial, sans-serif', color: '#222', maxWidth: 700, margin: '0 auto' }}>
-                  <h2 style={{ textAlign: 'center', color: '#00c853', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Kết Quả Xét Nghiệm</h2>
-                  <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
-                    <div style={{ flex: 1 }}>
-                      <div>Ngày xét nghiệm: <b>{selectedOrder.appointmentDate || ''}</b></div>
-                      <div>Nhân viên lấy mẫu: <b>{selectedOrder.staffAssigned || ''}</b></div>
-                      <div>Người yêu cầu xét nghiệm: <b>{selectedOrder.name || ''}</b></div>
-                      <div>Địa chỉ hiện tại: <b>{selectedOrder.address || ''}</b></div>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div style={{ color: '#faad14', fontWeight: 600 }}>Chưa có thông tin mẫu</div>
+                      )}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div>Địa điểm lấy mẫu: <b>{getSampleMethodLabel(selectedOrder.sampleMethod)}</b></div>
-                      <div>Mã đơn hàng: <b>#{selectedOrder.id}</b></div>
-                      <div>Loại xét nghiệm: <b>{selectedOrder.type || ''}</b></div>
-              </div>
-              </div>
-                  <div style={{ fontWeight: 700, fontSize: 22, textAlign: 'center', margin: '18px 0 8px 0' }}>Thông tin người cho mẫu</div>
-                  <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 80, marginBottom: 12 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 16 }}>
-                      <thead>
-                        <tr style={{ background: '#f0f9f6' }}>
-                          <th style={{ padding: 8 }}>STT</th>
-                          <th style={{ padding: 8 }}>Họ và tên</th>
-                          <th style={{ padding: 8 }}>Năm sinh</th>
-                          <th style={{ padding: 8 }}>Giới tính</th>
-                          <th style={{ padding: 8 }}>Mối quan hệ</th>
-                          <th style={{ padding: 8 }}>Loại mẫu</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(Array.isArray(selectedOrder.resultTableData) ? selectedOrder.resultTableData : []).map((row, idx) => (
-                          <tr key={row.key || idx}>
-                            <td style={{ padding: 8, textAlign: 'center' }}>{idx + 1}</td>
-                            <td style={{ padding: 8 }}>{row.name}</td>
-                            <td style={{ padding: 8 }}>{row.birthYear}</td>
-                            <td style={{ padding: 8 }}>{row.gender}</td>
-                            <td style={{ padding: 8 }}>{row.relationship}</td>
-                            <td style={{ padding: 8 }}>{row.sampleType}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: 18, margin: '12px 0 4px 0' }}>Kết luận</div>
-                  <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 40, padding: 8, marginBottom: 18 }}>{selectedOrder.conclusion || ''}</div>
-                </div>
+                  {/* Kết luận */}
+                  {selectedOrder.conclusion && (
+                    <div style={{ margin: '0 0 12px 0', padding: 20, background: '#e6f7ff', border: '1.5px solid #91d5ff', borderRadius: 14, fontWeight: 700, fontSize: 18, color: '#005c3c' }}>
+                      <div style={{ marginBottom: 6, fontWeight: 800, fontSize: 20 }}>Kết luận</div>
+                      <div style={{ fontSize: 18 }}>{selectedOrder.conclusion}</div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Đơn khác giữ nguyên logic cũ
+                <>
+                  {/* ... giữ nguyên phần render cũ ... */}
+                  {selectedOrder.category === 'admin' ? (
+                    // ... logic cũ cho admin ...
+                    <>
+                      <h2 style={{ textAlign: 'center', color: '#00c853', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Kết Quả Xét Nghiệm</h2>
+                      <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
+                        <div style={{ flex: 1 }}>
+                          <div>Ngày xét nghiệm: <b>{selectedOrder.appointmentDate || ''}</b></div>
+                          <div>Nhân viên lấy mẫu: <b>{selectedOrder.staffAssigned || ''}</b></div>
+                          <div>Người yêu cầu xét nghiệm: <b>{selectedOrder.name || ''}</b></div>
+                          <div>Địa chỉ hiện tại: <b>{selectedOrder.address || ''}</b></div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div>Địa điểm lấy mẫu: <b>{getSampleMethodLabel(selectedOrder.sampleMethod)}</b></div>
+                          <div>Mã đơn hàng: <b>#{selectedOrder.id}</b></div>
+                          <div>Loại xét nghiệm: <b>{selectedOrder.type || ''}</b></div>
+                        </div>
+                      </div>
+                      <div style={{ fontWeight: 700, fontSize: 22, textAlign: 'center', margin: '18px 0 8px 0' }}>Thông tin người cho mẫu</div>
+                      <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 80, marginBottom: 12 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 16 }}>
+                          <thead>
+                            <tr style={{ background: '#f0f9f6' }}>
+                              <th style={{ padding: 8 }}>STT</th>
+                              <th style={{ padding: 8 }}>Họ và tên</th>
+                              <th style={{ padding: 8 }}>Năm sinh</th>
+                              <th style={{ padding: 8 }}>Giới tính</th>
+                              <th style={{ padding: 8 }}>Mối quan hệ</th>
+                              <th style={{ padding: 8 }}>Loại mẫu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(Array.isArray(selectedOrder.resultTableData) ? selectedOrder.resultTableData : []).map((row, idx) => (
+                              <tr key={row.key || idx}>
+                                <td style={{ padding: 8, textAlign: 'center' }}>{idx + 1}</td>
+                                <td style={{ padding: 8 }}>{row.name}</td>
+                                <td style={{ padding: 8 }}>{row.birthYear}</td>
+                                <td style={{ padding: 8 }}>{row.gender}</td>
+                                <td style={{ padding: 8 }}>{row.relationship}</td>
+                                <td style={{ padding: 8 }}>{row.sampleType}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div style={{ fontWeight: 600, fontSize: 18, margin: '12px 0 4px 0' }}>Kết luận</div>
+                      <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 40, padding: 8, marginBottom: 18 }}>{selectedOrder.conclusion || ''}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 32 }}>
+                        <div style={{ textAlign: 'center', flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>HỘI ĐỒNG KHOA HỌC</div>
+                          <img src="/Stamp/da_xac_nhan.png" alt="Đã xác nhận" style={{ height: 48, margin: '0 auto' }} />
+                        </div>
+                        <div style={{ textAlign: 'center', flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>TRUNG TÂM XÉT NGHIỆM</div>
+                          <img src="/Stamp/dau_moc.png" alt="Dấu mộc" style={{ height: 90, margin: '0 auto' }} />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ background: "#fff", borderRadius: 12, padding: 24, fontFamily: 'Arial, sans-serif', color: '#222', maxWidth: 700, margin: '0 auto' }}>
+                      <h2 style={{ textAlign: 'center', color: '#00c853', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Kết Quả Xét Nghiệm</h2>
+                      <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
+                        <div style={{ flex: 1 }}>
+                          <div>Ngày xét nghiệm: <b>{selectedOrder.appointmentDate || ''}</b></div>
+                          <div>Nhân viên lấy mẫu: <b>{selectedOrder.staffAssigned || ''}</b></div>
+                          <div>Người yêu cầu xét nghiệm: <b>{selectedOrder.name || ''}</b></div>
+                          <div>Địa chỉ hiện tại: <b>{selectedOrder.address || ''}</b></div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div>Địa điểm lấy mẫu: <b>{getSampleMethodLabel(selectedOrder.sampleMethod)}</b></div>
+                          <div>Mã đơn hàng: <b>#{selectedOrder.id}</b></div>
+                          <div>Loại xét nghiệm: <b>{selectedOrder.type || ''}</b></div>
+                        </div>
+                      </div>
+                      <div style={{ fontWeight: 700, fontSize: 22, textAlign: 'center', margin: '18px 0 8px 0' }}>Thông tin người cho mẫu</div>
+                      <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 80, marginBottom: 12 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 16 }}>
+                          <thead>
+                            <tr style={{ background: '#f0f9f6' }}>
+                              <th style={{ padding: 8 }}>STT</th>
+                              <th style={{ padding: 8 }}>Họ và tên</th>
+                              <th style={{ padding: 8 }}>Năm sinh</th>
+                              <th style={{ padding: 8 }}>Giới tính</th>
+                              <th style={{ padding: 8 }}>Mối quan hệ</th>
+                              <th style={{ padding: 8 }}>Loại mẫu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(Array.isArray(selectedOrder.resultTableData) ? selectedOrder.resultTableData : []).map((row, idx) => (
+                              <tr key={row.key || idx}>
+                                <td style={{ padding: 8, textAlign: 'center' }}>{idx + 1}</td>
+                                <td style={{ padding: 8 }}>{row.name}</td>
+                                <td style={{ padding: 8 }}>{row.birthYear}</td>
+                                <td style={{ padding: 8 }}>{row.gender}</td>
+                                <td style={{ padding: 8 }}>{row.relationship}</td>
+                                <td style={{ padding: 8 }}>{row.sampleType}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div style={{ fontWeight: 600, fontSize: 18, margin: '12px 0 4px 0' }}>Kết luận</div>
+                      <div style={{ border: '1px solid #eee', borderRadius: 8, minHeight: 40, padding: 8, marginBottom: 18 }}>{selectedOrder.conclusion || ''}</div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
