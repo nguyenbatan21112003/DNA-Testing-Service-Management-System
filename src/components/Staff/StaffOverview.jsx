@@ -25,6 +25,22 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
+// Đưa hàm getStatusText ra ngoài để dùng chung
+const getStatusText = (status) => {
+  if (!status) return '';
+  const s = status.toString().trim().toLowerCase();
+  if (
+    s === 'waiting_approval' ||
+    s === 'chờ xác nhận' ||
+    s === 'pending_confirm' ||
+    s === 'pending' ||
+    s === 'choxacnhan'
+  ) return 'Chờ xác nhận';
+  if (s === 'completed' || s === 'hoàn thành') return 'Hoàn thành';
+  if (s === 'đang xử lý' || s === 'processing' || s === 'dangxuly') return 'Đang xử lý';
+  return status;
+};
+
 const StaffOverview = () => {
   const [, setOrders] = useState([]);
   const [stats, setStats] = useState({
@@ -42,20 +58,19 @@ const StaffOverview = () => {
     const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     setOrders(savedOrders);
 
+    // Đếm đơn chờ xác nhận
+    const waitingCount = savedOrders.filter(o => getStatusText(o.status) === 'Chờ xác nhận').length;
+    // Đếm đơn đang xử lý
+    const processingCount = savedOrders.filter(o => getStatusText(o.status) === 'Đang xử lý').length;
+
     // Tính toán thống kê
     const newStats = {
       total: savedOrders.length,
-      pending: savedOrders.filter((order) => order.status === "Chờ xử lý")
-        .length,
-      processing: savedOrders.filter((order) => order.status === "Đang xử lý")
-        .length,
-      completed: savedOrders.filter((order) => order.status === "Hoàn thành")
-        .length,
-      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home")
-        .length,
-      centerSampling: savedOrders.filter(
-        (order) => order.sampleMethod === "center"
-      ).length,
+      waiting: waitingCount,
+      processing: processingCount,
+      completed: savedOrders.filter((order) => getStatusText(order.status) === 'Hoàn thành').length,
+      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home").length,
+      centerSampling: savedOrders.filter((order) => order.sampleMethod === "center").length,
     };
     setStats(newStats);
 
@@ -89,7 +104,7 @@ const StaffOverview = () => {
       });
     });
     // Đơn hàng hoàn thành
-    orders.filter((o) => o.status === "Hoàn thành").slice(-2).forEach((order) => {
+    orders.filter((o) => getStatusText(o.status) === "Hoàn thành").slice(-2).forEach((order) => {
       activities.push({
         time: order.updatedAt ? dayjs(order.updatedAt).format('DD/MM/YYYY HH:mm') : 'Gần đây',
         content: `Hoàn thành đơn hàng #${order.id} - ${order.name || order.fullName || order.email}`,
@@ -99,10 +114,10 @@ const StaffOverview = () => {
     });
     // Đơn hàng cập nhật trạng thái gần đây
     orders.slice(-5).forEach((order) => {
-      if (order.status && order.status !== "Hoàn thành") {
+      if (getStatusText(order.status) && getStatusText(order.status) !== "Hoàn thành") {
       activities.push({
           time: order.updatedAt ? dayjs(order.updatedAt).format('DD/MM/YYYY HH:mm') : 'Gần đây',
-          content: `Cập nhật trạng thái đơn #${order.id} - ${order.status}`,
+          content: `Cập nhật trạng thái đơn #${order.id} - ${getStatusText(order.status)}`,
           type: "update",
           icon: <LoadingOutlined style={{ color: "#1890ff" }} />,
       });
@@ -141,8 +156,8 @@ const StaffOverview = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Chờ xử lý"
-              value={stats.pending}
+              title="Chờ xác nhận"
+              value={stats.waiting}
               prefix={<ClockCircleOutlined style={{ color: "#fa8c16" }} />}
               valueStyle={{ color: "#fa8c16", fontWeight: 600 }}
             />

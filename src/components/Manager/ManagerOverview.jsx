@@ -1,7 +1,7 @@
 "use client"
-import { Card, Row, Col, Statistic, Progress, Table, Tag, Timeline, Button } from "antd"
-import { ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, AlertOutlined } from "@ant-design/icons"
-import { useEffect } from "react"
+import { Card, Row, Col, Statistic, Progress, Tag, Alert } from "antd"
+import { ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, AlertOutlined, SmileOutlined, MessageOutlined } from "@ant-design/icons"
+import { useEffect, useState } from "react"
 
 const ManagerOverview = () => {
     // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
@@ -48,47 +48,35 @@ const ManagerOverview = () => {
         },
     ]
 
-    // Timeline hoạt động
-    const activities = [
-        {
-            color: "#52c41a",
-            children: (
-                <div>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Hoàn thành xét nghiệm DNA-2024-001</p>
-                    <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>2 phút trước</p>
-                </div>
-            ),
-        },
-        {
-            color: "#722ed1",
-            children: (
-                <div>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Xác thực kết quả DNA-2024-002</p>
-                    <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>15 phút trước</p>
-                </div>
-            ),
-        },
-        {
-            color: "#fa8c16",
-            children: (
-                <div>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Nhận mẫu mới từ khách hàng</p>
-                    <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>1 giờ trước</p>
-                </div>
-            ),
-        },
-        {
-            color: "#1890ff",
-            children: (
-                <div>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Gửi báo cáo tuần cho Ban Giám Đốc</p>
-                    <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>3 giờ trước</p>
-                </div>
-            ),
-        },
-    ]
+    // Dữ liệu hoạt động gần đây (fetch từ API hoặc backend sau này)
+    const [activities, setActivities] = useState([]);
 
-    // Thay đổi phần return để thêm màu nền và đường viền
+    // Hàm fetch hoạt động gần đây (sau này thay bằng API thực)
+    const fetchActivities = async () => {
+        // TODO: Thay thế bằng API thực khi backend sẵn sàng
+        setActivities([]); // Hiện tại chưa có dữ liệu động
+    };
+
+    useEffect(() => {
+        fetchActivities();
+    }, []);
+
+    // Hàm hiển thị thời gian tương đối
+    const timeAgo = (date) => {
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return `${diff} giây trước`;
+        if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+        return date.toLocaleString("vi-VN");
+    };
+
+    // Dữ liệu mẫu cho phản hồi khách hàng
+    const customerSatisfaction = 4.7;
+    const newFeedbackCount = 3;
+    // Dữ liệu cảnh báo
+    const overdueCount = stats.find(s => s.title === "Quá hạn")?.value || 0;
+
     return (
         <div style={{ padding: "0" }}>
             {/* Header */}
@@ -99,18 +87,8 @@ const ManagerOverview = () => {
                 <p style={{ color: "#666", margin: "8px 0 0 0" }}>Giám sát và quản lý toàn bộ quy trình xét nghiệm DNA</p>
             </div>
 
-            {/* Thống kê tổng quan */}
-            <div
-                style={{
-                    background: "#fff",
-                    padding: "24px",
-                    borderRadius: "12px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                    border: "1px solid #f0f0f0",
-                    marginBottom: "24px",
-                }}
-            >
-                <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
+            {/* KPI Cards */}
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                     {stats.map((stat, index) => (
                         <Col xs={24} sm={12} lg={6} key={index}>
                             <Card>
@@ -125,42 +103,43 @@ const ManagerOverview = () => {
                         </Col>
                     ))}
                 </Row>
-
-                <Row gutter={[16, 16]}>
-                    {/* Hiệu suất 7 ngày */}
-                    <Col xs={24} lg={12}>
-                        <Card title="Hiệu suất 7 ngày qua" style={{ height: "300px" }}>
-                            <div style={{ marginBottom: "16px" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+            {/* Hiệu suất 7 ngày qua */}
+            <Card title={<span style={{ color: "#52c41a" }}>Hiệu suất 7 ngày qua</span>} style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <span>Tỷ lệ đúng hạn</span>
                                     <span style={{ fontWeight: 600, color: "#52c41a" }}>94%</span>
                                 </div>
                                 <Progress percent={94} strokeColor="#52c41a" />
                             </div>
-                            <div style={{ marginBottom: "16px" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <span>Thời gian xử lý TB</span>
                                     <span style={{ fontWeight: 600, color: "#722ed1" }}>2.3 ngày</span>
                                 </div>
                                 <Progress percent={77} strokeColor="#722ed1" />
                             </div>
                             <div>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <span>Độ hài lòng KH</span>
                                     <span style={{ fontWeight: 600, color: "#fa8c16" }}>4.8/5</span>
                                 </div>
                                 <Progress percent={96} strokeColor="#fa8c16" />
                             </div>
                         </Card>
-                    </Col>
-                    {/* Timeline hoạt động */}
-                    <Col xs={24} lg={12}>
-                        <Card title="Hoạt động gần đây" style={{ height: "300px" }}>
-                            <Timeline items={activities} />
+            {/* Hoạt động gần đây */}
+            <Card title={<span style={{ color: "#1890ff" }}>Hoạt động gần đây</span>}>
+                <div style={{ padding: 8 }}>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                        {activities.map((item) => (
+                            <li key={item.id} style={{ marginBottom: 16 }}>
+                                <div style={{ fontWeight: 600 }}>{item.message}</div>
+                                <div style={{ color: "#888", fontSize: 12 }}>{timeAgo(new Date(item.createdAt))}</div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
                         </Card>
-                    </Col>
-                </Row>
-            </div>
         </div>
     )
 }

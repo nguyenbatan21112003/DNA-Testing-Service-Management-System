@@ -46,7 +46,7 @@ const SampleCollection = ({ caseType }) => {
     {
       id: 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -169,7 +169,7 @@ const SampleCollection = ({ caseType }) => {
     const newDonor = {
       id: donors.length + 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -237,11 +237,11 @@ const SampleCollection = ({ caseType }) => {
       // Chuẩn hóa dữ liệu bảng mẫu
       const resultTableData = donors.map((donor, idx) => ({
         key: idx + 1,
-        name: donor.name,
-        birthYear: donor.birth,
-        gender: donor.gender,
-        relationship: donor.relation || donor.relationship || "",
-        sampleType: donor.sampleType,
+        name: donor.name || "",
+        birth: donor.birth || "",
+        gender: donor.gender || "",
+        relationship: donor.relationship || donor.relation || "",
+        sampleType: donor.sampleType || "",
       }));
       const updatedOrders = orders.map((order) => {
         if (
@@ -257,9 +257,10 @@ const SampleCollection = ({ caseType }) => {
               location: values.location,
               collector: values.collector,
               collectionDate: values.collectionDate.format("DD/MM/YYYY"),
-              donors: donors,
+              donors: donors, // đồng bộ
             },
-            resultTableData: resultTableData,
+            resultTableData: resultTableData, // đồng bộ
+            members: donors, // đồng bộ
           };
         }
         return order;
@@ -482,11 +483,14 @@ const SampleCollection = ({ caseType }) => {
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Năm sinh" required>
-                        <Input
-                          value={donor.birth}
-                          onChange={(e) => updateDonor(donor.id, "birth", e.target.value)}
-                          placeholder="Năm sinh"
+                      <Form.Item label="Ngày sinh" required>
+                        <DatePicker
+                          value={donor.birth ? dayjs(donor.birth, 'DD/MM/YYYY') : null}
+                          onChange={date => updateDonor(donor.id, "birth", date ? date.format("DD/MM/YYYY") : "")}
+                          format="DD/MM/YYYY"
+                          style={{ width: '100%' }}
+                          disabledDate={current => current && current > dayjs().endOf('day')}
+                          placeholder="Chọn ngày sinh"
                         />
                       </Form.Item>
                     </Col>
@@ -496,11 +500,10 @@ const SampleCollection = ({ caseType }) => {
                     <Col span={12}>
                       <Form.Item label="Loại giấy tờ" required>
                         <Select
-                          value={["CCCD", "Giấy Chứng Sinh", "Bằng Lái Xe"].includes(donor.idType) ? donor.idType : "CCCD"}
+                          value={["CCCD", "Bằng Lái Xe"].includes(donor.idType) ? donor.idType : "CCCD"}
                           onChange={(value) => updateDonor(donor.id, "idType", value)}
                         >
                           <Option value="CCCD">CCCD</Option>
-                          <Option value="Giấy Chứng Sinh">Giấy Chứng Sinh</Option>
                           <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
                         </Select>
                       </Form.Item>
@@ -515,6 +518,17 @@ const SampleCollection = ({ caseType }) => {
                       </Form.Item>
                     </Col>
                   </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item label={donor.idType === "CCCD" ? "Số CCCD" : "Số giấy tờ"} required>
+                        <Input
+                          value={donor.idNumber}
+                          onChange={e => updateDonor(donor.id, "idNumber", e.target.value)}
+                          placeholder={donor.idType === "CCCD" ? "Nhập số CCCD" : "Nhập số giấy tờ"}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
                   <Row gutter={16}>
                     <Col span={12}>
@@ -524,6 +538,7 @@ const SampleCollection = ({ caseType }) => {
                           onChange={(date) => updateDonor(donor.id, "idIssueDate", date)}
                           format="DD/MM/YYYY"
                           style={{ width: "100%" }}
+                          disabledDate={current => current && current > dayjs().endOf('day')}
                         />
                       </Form.Item>
                     </Col>

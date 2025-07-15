@@ -410,7 +410,7 @@ const TestResultVerification = () => {
                         dataSource={parsed}
                         columns={[
                           { title: "Họ và tên", dataIndex: "name", key: "name" },
-                          { title: "Năm sinh", dataIndex: "birthYear", key: "birthYear" },
+                          { title: "Ngày sinh", dataIndex: "birth", key: "birth", render: (text, record) => text || record.birthYear || record.namSinh || record.namsinh || "" },
                           { title: "Giới tính", dataIndex: "gender", key: "gender" },
                           { title: "Mối quan hệ", dataIndex: "relationship", key: "relationship" },
                           { title: "Loại mẫu", dataIndex: "sampleType", key: "sampleType" },
