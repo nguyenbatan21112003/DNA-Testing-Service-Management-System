@@ -375,6 +375,32 @@ const CenterSampling = () => {
                 Tiếp tục lấy mẫu
               </Button>
             )}
+            {/* Đang lấy mẫu: Chuyển sang Đang xử lý */}
+            {statusText === "Đang lấy mẫu" && (
+              <Button
+                size="small"
+                icon={<ExperimentOutlined />}
+                style={{
+                  background: "#fa8c16",
+                  color: "#fff",
+                  fontWeight: 700,
+                  borderRadius: 6,
+                  border: "none",
+                  boxShadow: "0 2px 8px #fa8c1622",
+                  transition: "background 0.2s",
+                  marginLeft: 8
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#d46b08")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+                onClick={() => {
+                  updateOrder(record.id, { status: "Đang xử lý" });
+                  loadAppointments();
+                  message.success("Đã chuyển trạng thái sang Đang xử lý!");
+                }}
+              >
+                Chuyển sang Đang xử lý
+              </Button>
+            )}
           </Space>
         );
       },
@@ -704,34 +730,44 @@ const CenterSampling = () => {
                 </div>
               )}
               {/* Bảng thông tin mẫu khi Đang xử lý */}
-              {getStatusText(selectedAppointment.status) === 'Đang xử lý' && Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0 && (
-                <div style={{ marginTop: 24 }}>
-                  <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: '#009e74' }}>Bảng thông tin mẫu của khách hàng</div>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
-                    <thead>
-                      <tr style={{ background: '#e6f7ff' }}>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
-                        <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedAppointment.members.map((mem, idx) => (
-                        <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                          <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
-                          <td style={{ padding: 6 }}>{mem.name}</td>
-                          <td style={{ padding: 6 }}>{mem.birth}</td>
-                          <td style={{ padding: 6 }}>{mem.gender}</td>
-                          <td style={{ padding: 6 }}>{mem.relation}</td>
-                          <td style={{ padding: 6 }}>{mem.sampleType}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              {getStatusText(selectedAppointment.status) === 'Đang xử lý' && (
+                (() => {
+                  let data = Array.isArray(selectedAppointment.members) && selectedAppointment.members.length > 0
+                    ? selectedAppointment.members
+                    : (Array.isArray(selectedAppointment.resultTableData) && selectedAppointment.resultTableData.length > 0
+                        ? selectedAppointment.resultTableData
+                        : []);
+                  if (data.length === 0) return null;
+                  return (
+                    <div style={{ marginTop: 24 }}>
+                      <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: '#009e74' }}>Bảng thông tin mẫu của khách hàng</div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#f8fafc', borderRadius: 8, overflow: 'hidden', marginTop: 8 }}>
+                        <thead>
+                          <tr style={{ background: '#e6f7ff' }}>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>STT</th>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Họ và tên</th>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Năm sinh</th>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Giới tính</th>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Mối quan hệ</th>
+                            <th style={{ padding: 8, fontWeight: 700, color: '#009e74' }}>Loại mẫu</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.map((mem, idx) => (
+                            <tr key={idx} style={{ background: idx % 2 === 0 ? '#f9f9f9' : '#fff' }}>
+                              <td style={{ textAlign: 'center', padding: 6 }}>{idx + 1}</td>
+                              <td style={{ padding: 6 }}>{mem.name || mem.hoTen || mem.hovaten || ''}</td>
+                              <td style={{ padding: 6 }}>{mem.birth || mem.birthYear || mem.namSinh || mem.namsinh || ''}</td>
+                              <td style={{ padding: 6 }}>{mem.gender || mem.gioiTinh || mem.gioitinh || ''}</td>
+                              <td style={{ padding: 6 }}>{mem.relation || mem.relationship || mem.moiQuanHe || mem.moiquanhe || ''}</td>
+                              <td style={{ padding: 6 }}>{mem.sampleType || mem.loaiMau || mem.loaimau || ''}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()
               )}
             </div>
           </div>

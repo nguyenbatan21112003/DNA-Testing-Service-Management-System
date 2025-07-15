@@ -342,7 +342,6 @@ const SampleCollection = ({ caseType }) => {
                       format="DD/MM/YYYY"
                       style={{ width: "100%" }}
                       disabledDate={disabledDate}
-                      disabled={!!selectedOrder && !!selectedOrder.appointmentDate}
                     />
                   </Form.Item>
                 </Col>
