@@ -84,6 +84,43 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetCustomerSampleCollection",
+    "RelativePath": "Customer/sample-collection/{processId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "processId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetTestProcessByTestRequestID",
+    "RelativePath": "Customer/test-process/{testrequest_id)}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "testrequest_id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "testrequest_id)",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.MailController",
     "Method": "SendMail",
     "RelativePath": "Mail/send",
@@ -511,6 +548,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetCustomerTestRequests",
+    "RelativePath": "test-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

@@ -720,6 +720,7 @@ namespace DNATestSystem.Services.Service
                 RequestId = request.RequestId,
                 ServiceId = request.ServiceId ?? 0,
                 ServiceName = request.Service?.ServiceName ?? "Unknown",
+                TypeId = request.TypeId,
                 CollectType = request.CollectType?.CollectName ?? "Unknown",
                 Category = request.Category,
                 ScheduleDate = request.ScheduleDate ?? DateTime.MinValue,
@@ -728,6 +729,27 @@ namespace DNATestSystem.Services.Service
                 CreatedAt = request.CreatedAt ?? DateTime.MinValue
             }).ToList();
         }
-
+        public async Task<GetTestProcessDto> GetTestProcessByTestRequestAsync(int test_requestId)
+        {
+            var data = await _context.TestProcesses
+                       .Where(x => x.RequestId == test_requestId)
+                       .Select(x => new GetTestProcessDto
+                       {
+                           ProcessId = x.ProcessId,
+                           KitCode = x.KitCode,
+                           ClaimedAt = x.ClaimedAt,
+                           CurrentStatus = x.CurrentStatus,
+                           Notes = x.Notes,
+                           UpdatedAt = x.UpdatedAt
+                       })
+                       .FirstOrDefaultAsync();
+                       
+            if(data == null)
+            {
+                throw new Exception("Không có test Process");
+              
+            }
+            return data;
+        }
     }
 }
