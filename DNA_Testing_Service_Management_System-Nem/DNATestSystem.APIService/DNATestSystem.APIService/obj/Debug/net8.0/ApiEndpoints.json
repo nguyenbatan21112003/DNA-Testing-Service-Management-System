@@ -175,6 +175,36 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GettAllTestRequests",
+    "RelativePath": "Manager/all-test-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllTestResults",
+    "RelativePath": "Manager/all-test-results",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllManagerTestSample",
+    "RelativePath": "Manager/all-test-samples",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "CreateBlogPost",
     "RelativePath": "Manager/create-BlogPost",
     "HttpMethod": "POST",
@@ -432,6 +462,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetFeedbackByTestRequestId",
+    "RelativePath": "Staff/feedback/{test_requestId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "test_requestId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetMyFeedbacks",
     "RelativePath": "Staff/get-staff-feedback",
     "HttpMethod": "GET",
@@ -552,6 +598,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetTestResultByTestRequestId",
+    "RelativePath": "Staff/test-results/{test_requestId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "test_requestId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "CreateTestResult",
     "RelativePath": "Staff/test-results/create",
     "HttpMethod": "POST",
@@ -582,6 +644,22 @@
       {
         "Name": "requestId",
         "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "UpdateKitCodeByTestProcessId",
+    "RelativePath": "Staff/update-test-process",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess",
         "IsRequired": true
       }
     ],

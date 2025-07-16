@@ -790,7 +790,7 @@ namespace DNATestSystem.Services.Service
             var data = _context.TestSamples
                         .Where(x => x.RequestId == test_requestId);
 
-            return data.Select(x => new GetTestSampleDto
+            return await data.Select(x => new GetTestSampleDto
             {
                 SampleId = x.SampleId,
                 OwnerName = x.OwnerName,
@@ -799,7 +799,7 @@ namespace DNATestSystem.Services.Service
                 Relationship = x.Relationship,
                 SampleType = x.SampleType,
                 Yob = x.Yob
-            }).ToList();
+            }).ToListAsync();
         }
 
         public async Task<List<CustomerFeedbackDto>> GetFeedbackByCustomerIdAsync()

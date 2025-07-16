@@ -50,6 +50,12 @@ namespace DNATestSystem.Services.Interface
         Task<SampleCollectionFormsSummaryDto> GetSampleCollectionsByStaffIdAsync(GetSampleCollectionFormsModel request);
 
         //Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
+        //68
+        Task<List<GetTestResultDto>> GetTestResultsByTestRequestIdAsync(int test_requestId);
+        //69
+        Task<StaffFeedbackDto> GetFeedbackByTestRequestIdAsync(int test_requestId);
 
+        //
+        Task<UpdateKitCodeByTestProcess> UpdateKitCodeByTestProcessIdAsync(UpdateKitCodeByTestProcess dto);
     }
 }

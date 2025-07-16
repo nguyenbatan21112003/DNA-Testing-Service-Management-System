@@ -8,12 +8,15 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.BlogPost;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using DNATestSystem.BusinessObjects.Models;
 using DNATestSystem.Repositories;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace DNATestSystem.Services.Service
 {
@@ -21,10 +24,10 @@ namespace DNATestSystem.Services.Service
     {
         private readonly IApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public ManagerService(IApplicationDbContext context , IHttpContextAccessor httpContextAccessor) 
+        public ManagerService(IApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor; 
+            _httpContextAccessor = httpContextAccessor;
         }
 
         //public List<PendingTestResultDto> GetPendingTestResults()
@@ -134,7 +137,7 @@ namespace DNATestSystem.Services.Service
                 UpdatedAt = DateTime.Now,
                 ThumbnailUrl = dto.ThumbnailUrl
             };
-            _context.BlogPosts.Add(data); 
+            _context.BlogPosts.Add(data);
             await _context.SaveChangesAsync();
             return new ApiResponseDto
             {
@@ -165,8 +168,59 @@ namespace DNATestSystem.Services.Service
             return feedbacks;
         }
 
-      
-
-
+        public async Task<List<ManagerGetTestRequestDto>> GetAllTestRequest()
+        {
+            var testRequests = await _context.TestRequests
+                .Include(tr => tr.User)
+                .Include(tr => tr.Service)
+                .Select(tr => new ManagerGetTestRequestDto
+                {
+                    RequestId = tr.RequestId,
+                    UserId = tr.UserId,
+                    ServiceId = tr.ServiceId,
+                    TypeId = tr.TypeId,
+                    Category = tr.Category,
+                    Status = tr.Status,
+                    CreatedAt = tr.CreatedAt
+                })
+                .ToListAsync();
+            return testRequests;
+        }
+        public async Task<List<ManagerGetTestResultDto>> GetAllTestResultsAsync()
+        {
+            var testResults = await _context.TestResults
+                .Select(tr => new ManagerGetTestResultDto
+                {
+                    ResultId = tr.ResultId,
+                    RequestId = tr.RequestId,
+                    EnteredBy = tr.EnteredBy,
+                    VerifiedBy = tr.VerifiedBy,
+                    VerifiedAt = tr.VerifiedAt,
+                    Status = tr.Status,
+                    EnteredAt = tr.EnteredAt,
+                    ResultData = tr.ResultData
+                })
+                .ToListAsync();
+            return testResults;
+        }
+        public async Task<List<ManagerGetTestSampleDto>> GetAllManagerTestSample()
+        {
+            var testSamples = await _context.TestSamples
+                .Include(ts => ts.Request)
+                    
+                .Select(ts => new ManagerGetTestSampleDto
+                {
+                    SampleId = ts.SampleId,
+                    RequestId = ts.RequestId,
+                    OwnerName = ts.OwnerName,
+                    Gender = ts.Gender,
+                    SampleType = ts.SampleType,
+                    CollectedAt = ts.CollectedAt,
+                    Relationship = ts.Relationship,
+                    Yob = ts.Yob
+                })
+                .ToListAsync();
+            return testSamples;
+        }
     }
 }

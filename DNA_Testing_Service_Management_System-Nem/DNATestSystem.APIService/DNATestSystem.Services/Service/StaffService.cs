@@ -566,7 +566,8 @@ namespace DNATestSystem.Services.Service
             {
                 case "at home":
                     process.KitCode = dto.KitCode;
-                    process.CurrentStatus = "KIT SENT";
+                    process.CurrentStatus = "KIT NOT SENT";
+
                     break;
 
                 case "at center":
@@ -703,7 +704,7 @@ namespace DNATestSystem.Services.Service
 
             return feedbacks;
         }
-        
+
         public async Task<bool> UpdateTestRequestStatusAsync(UpdateTestRequestModel model)
         {
             var request = await _context.TestRequests.FindAsync(model.RequestId);
@@ -714,7 +715,7 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
         }
-        
+
         public async Task<bool> CreateTestResultByStaffAsync(CreateTestResultDto dto)
         {
             int staffId = GetCurrentUserId();
@@ -780,6 +781,63 @@ namespace DNATestSystem.Services.Service
             return result;
         }
 
-       
+        public async Task<List<GetTestResultDto>> GetTestResultsByTestRequestIdAsync(int test_requestId)
+        {
+            var data = _context.TestResults
+                        .Where(x => x.RequestId == test_requestId);
+
+            if (data == null || !data.Any())
+            {
+                return new List<GetTestResultDto>();
+            }
+            return await data.Select(x => new GetTestResultDto
+            {
+                ResultId = x.ResultId,
+                RequestId = x.RequestId,
+                EnteredBy = x.EnteredBy,
+                VerifiedAt = x.VerifiedAt,
+                ResultData = x.ResultData,
+                Status = x.Status,
+                VerifiedBy = x.VerifiedBy,
+                EnteredAt = x.EnteredAt
+            }).ToListAsync();
+
+        }
+        public async Task<StaffFeedbackDto> GetFeedbackByTestRequestIdAsync(int test_requestId)
+        {
+            var data = _context.Feedbacks
+                       .Where(x => x.ResultId == test_requestId);
+            if (data == null || !data.Any())
+            {
+                return new StaffFeedbackDto();
+            }
+            return await data.Select(x => new StaffFeedbackDto
+            {
+                FeedbackId = x.FeedbackId,
+                Comment = x.Comment,
+                CreatedAt = x.CreatedAt,
+                Rating = x.Rating,
+                ResultId = x.ResultId,
+                UserId = x.UserId
+            }).FirstOrDefaultAsync();
+
+        }
+        public async Task<UpdateKitCodeByTestProcess> UpdateKitCodeByTestProcessIdAsync(UpdateKitCodeByTestProcess dto)
+        {
+            var process = await _context.TestProcesses
+                .FirstOrDefaultAsync(p => p.ProcessId == dto.ProcessId);
+            if (process == null)
+                return null;
+            process.KitCode = dto.KitCode;
+            process.UpdatedAt = DateTime.UtcNow;
+            process.CurrentStatus = "Kit Sent";
+            await _context.SaveChangesAsync();
+            return new UpdateKitCodeByTestProcess
+            {
+                ProcessId = process.ProcessId,
+                KitCode = process.KitCode
+            };
+
+        }
     }
 }

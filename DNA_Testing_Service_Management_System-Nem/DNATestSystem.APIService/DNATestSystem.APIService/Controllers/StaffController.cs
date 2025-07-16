@@ -48,7 +48,7 @@ namespace DNATestSystem.APIService.Controllers
 
             return Ok("Cập nhật thành công.");
         }
-      
+
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingTestRequests()
         {
@@ -62,11 +62,11 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(result);
         }
         [HttpGet("at-home")]
-         public async Task<IActionResult> GetAtHomeTestRequests()
-         {
-                var result = await _staffService.AtHomeTestRequestAsync();
-                return Ok(result);
-         }
+        public async Task<IActionResult> GetAtHomeTestRequests()
+        {
+            var result = await _staffService.AtHomeTestRequestAsync();
+            return Ok(result);
+        }
         //[HttpGet("at-center-administrative")]
         //public async Task<IActionResult> GetAtCenterAdministrativeRequests([FromQuery] int staffId)
         //{
@@ -186,7 +186,7 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(new { success = true, data = result });
         }
         [HttpPut("update-status/{requestId}")]
-        public async Task<IActionResult> UpdateStatus([FromBody]UpdateTestRequestModel model)
+        public async Task<IActionResult> UpdateStatus([FromBody] UpdateTestRequestModel model)
         {
             try
             {
@@ -221,7 +221,38 @@ namespace DNATestSystem.APIService.Controllers
 
             return Ok(data);
         }
-
-
+        [HttpGet("test-results/{test_requestId}")]
+        public async Task<IActionResult> GetTestResultByTestRequestId(int test_requestId)
+        {
+            var data = await _staffService.GetTestResultsByTestRequestIdAsync(test_requestId);
+            if (data == null || !data.Any())
+            {
+                return NotFound(new { message = "Không tìm thấy kết quả xét nghiệm cho yêu cầu này." });
+            }
+            return Ok(data);
+        }
+        [HttpGet("feedback/{test_requestId}")]
+        public async Task<IActionResult> GetFeedbackByTestRequestId(int test_requestId)
+        {
+            var data = await _staffService.GetFeedbackByTestRequestIdAsync(test_requestId);
+            if (data == null)
+            {
+                return NotFound(new { message = "Không tìm thấy phản hồi cho yêu cầu xét nghiệm này." });
+            }
+            return Ok(data);
+        }
+        [HttpPut("update-test-process")]
+        public async Task<IActionResult> UpdateKitCodeByTestProcessId([FromBody] UpdateKitCodeByTestProcess dto)
+        {
+            try
+            {
+                var result = await _staffService.UpdateKitCodeByTestProcessIdAsync(dto);
+                return Ok(new { success = result, message = "Cập nhật mã kit thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

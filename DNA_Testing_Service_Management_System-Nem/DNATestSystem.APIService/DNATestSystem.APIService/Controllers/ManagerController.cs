@@ -80,5 +80,44 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _managerService.GetAllFeedbacksAsync();
             return Ok(new { success = true, data = result });
         }
+        [HttpGet("all-test-requests")]
+        public async Task<IActionResult> GettAllTestRequests()
+        {
+            try
+            {
+                var result = await _managerService.GetAllTestRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpGet("all-test-results")]
+        public async Task<IActionResult> GetAllTestResults()
+        {
+            try
+            {
+                var result = await _managerService.GetAllTestResultsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpGet("all-test-samples")]
+        public async Task<IActionResult> GetAllManagerTestSample()
+        {
+            try
+            {
+                var result = await _managerService.GetAllManagerTestSample();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

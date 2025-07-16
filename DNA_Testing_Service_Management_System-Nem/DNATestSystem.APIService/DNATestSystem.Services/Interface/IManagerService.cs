@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.BlogPost;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.Services.Interface
@@ -18,9 +20,13 @@ namespace DNATestSystem.Services.Interface
         Task<List<PendingTestResultDto>> GetPendingTestResultsAsync();
 
         Task<ApiResponseDto> AssignBolgPostsAsync(BlogPostDto dto);
-
+        //69
         Task<List<FeedbackViewDto>> GetAllFeedbacksAsync();
-
-
+        //70
+        Task<List<ManagerGetTestRequestDto>> GetAllTestRequest();
+        //71
+        Task<List<ManagerGetTestResultDto>> GetAllTestResultsAsync();
+        //72
+        Task<List<ManagerGetTestSampleDto>> GetAllManagerTestSample();
     }
 }
