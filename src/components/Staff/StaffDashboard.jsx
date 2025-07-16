@@ -39,19 +39,9 @@ const menuItems = [
     label: "Tổng quan",
   },
   {
-    key: "testing-results",
-    icon: <ExperimentOutlined />,
-    label: "Xét nghiệm & Kết quả",
-  },
-  {
-    key: "consultation",
-    icon: <CustomerServiceOutlined />,
-    label: "Yêu cầu tư vấn",
-  },
-  {
-    key: "feedback",
-    icon: <MessageOutlined />,
-    label: "Phản hồi khách hàng",
+    key: "order-management",
+    icon: <FileTextOutlined />,
+    label: "Quản lý đơn hàng",
   },
   {
     key: "home-sampling",
@@ -74,10 +64,21 @@ const menuItems = [
     label: "Lấy mẫu dân sự",
   },
   {
-    key: "order-management",
-    icon: <FileTextOutlined />,
-    label: "Quản lý đơn hàng",
+    key: "testing-results",
+    icon: <ExperimentOutlined />,
+    label: "Xét nghiệm & Kết quả",
   },
+  {
+    key: "consultation",
+    icon: <CustomerServiceOutlined />,
+    label: "Yêu cầu tư vấn",
+  },
+  {
+    key: "feedback",
+    icon: <MessageOutlined />,
+    label: "Phản hồi khách hàng",
+  },
+  // Đăng xuất sẽ được render riêng ở dưới cùng
 ];
 
 export const StaffDashboardContext = createContext();

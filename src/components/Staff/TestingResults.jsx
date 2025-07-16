@@ -471,15 +471,13 @@ const TestingResults = () => {
     withResults: orders.filter((o) => o.result).length,
   };
 
-  // Ưu tiên lấy từ resultTableData, nếu không có thì lấy từ sampleInfo.donors, nếu không có thì lấy từ members
+  // Ưu tiên lấy từ resultTableData, nếu không có thì lấy từ sampleInfo.donors
   const sampleData =
     Array.isArray(selectedOrder?.resultTableData) && selectedOrder.resultTableData.length > 0
       ? selectedOrder.resultTableData
       : Array.isArray(selectedOrder?.sampleInfo?.donors) && selectedOrder.sampleInfo.donors.length > 0
         ? selectedOrder.sampleInfo.donors
-        : Array.isArray(selectedOrder?.members) && selectedOrder.members.length > 0
-          ? selectedOrder.members
-          : [];
+        : [];
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>

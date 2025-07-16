@@ -186,7 +186,9 @@ const HomeSampling = () => {
       case "CANCELLED":
         return "#d63031"; // đỏ tươi
       case "PROCESSING":
-        return "#fa8c16"; // xanh dương
+        return "#fa8c16"; // cam
+      case "COMPLETED":
+        return "#52c41a"; // xanh lá (đồng bộ với Xét nghiệm & Kết quả)
       default:
         return "#b2bec3"; // xám nhạt
     }
