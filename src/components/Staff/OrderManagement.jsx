@@ -227,6 +227,7 @@ const OrderManagement = () => {
               dataSource={waitingOrders}
               rowKey="id"
               pagination={{ pageSize: 10 }}
+              scroll={{ x: 1000 }}
             />
           </TabPane>
           <TabPane tab={`Đơn của tôi (${stats.my})`} key="my">
@@ -235,6 +236,7 @@ const OrderManagement = () => {
               dataSource={myOrders}
               rowKey="id"
               pagination={{ pageSize: 10 }}
+              scroll={{ x: 1000 }}
             />
           </TabPane>
         </Tabs>

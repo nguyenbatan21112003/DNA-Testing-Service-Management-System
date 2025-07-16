@@ -170,7 +170,15 @@ const SampleCollection = ({ caseType }) => {
       try {
         const data = JSON.parse(draft);
         if (data.form) {
-          form.setFieldsValue(data.form);
+          // Convert stored string dates back to dayjs object for DatePicker compatibility
+          const draftForm = { ...data.form };
+          if (draftForm.collectionDate) {
+            draftForm.collectionDate = dayjs(
+              draftForm.collectionDate,
+              "DD/MM/YYYY"
+            );
+          }
+          form.setFieldsValue(draftForm);
         }
         if (data.donors) {
           setDonors(data.donors);
@@ -308,11 +316,11 @@ const SampleCollection = ({ caseType }) => {
   };
 
   // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
-  // const disabledDate = (current) => {
-  //   const today = dayjs().startOf("day");
-  //   if (!current) return false;
-  //   return current < today || current.day() === 0;
-  // };
+  const disabledDate = (current) => {
+    const today = dayjs().startOf("day");
+    if (!current) return false;
+    return current < today || current.day() === 0;
+  };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
@@ -362,7 +370,7 @@ const SampleCollection = ({ caseType }) => {
                       // disabled={
                       //   !!selectedOrder && !!selectedOrder.appointmentDate
                       // }
-                      // disabledDate={disabledDate}
+                      disabledDate={disabledDate}
                     />
                   </Form.Item>
                 </Col>
