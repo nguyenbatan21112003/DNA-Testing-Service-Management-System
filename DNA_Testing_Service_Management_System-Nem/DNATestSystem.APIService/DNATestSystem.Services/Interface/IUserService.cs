@@ -13,6 +13,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
+using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 
 
 namespace DNATestSystem.Services.Interface
@@ -60,7 +62,11 @@ namespace DNATestSystem.Services.Interface
         //customer
         Task<SampleCollectionFormsSummaryDto?> GetSampleCollectionByCustomerAsync(int processId);
         Task<List<RequestDto>> GetTestRequestsByCustomerIdAsync();
-        //62
+        //63
         Task<GetTestProcessDto> GetTestProcessByTestRequestAsync(int test_requestId);
+        //64
+        Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId); 
+        //65
+        Task<List<GetTestSampleDto>> GetSampleProvidersByTestRequestIdAsync(int test_requestId);
     }
 }

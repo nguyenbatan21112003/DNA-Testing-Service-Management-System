@@ -22,6 +22,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
 
 namespace DNATestSystem.Services.Service
 {
@@ -315,36 +316,42 @@ namespace DNATestSystem.Services.Service
 
         public async Task<UpdateProfileModel?> UpdateProfileAsync(UpdateProfileModel updateProfileModel)
         {
-            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.ProfileId == updateProfileModel.ProfileId);
-
-            if (userProfile == null)
+            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
             {
-                return null;
+                throw new UnauthorizedAccessException("Không thể xác định người dùng.");
             }
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userProfile.UserId);
-            var data = new UpdateProfileModel
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+                throw new Exception("Không tìm thấy người dùng.");
+
+            var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (userProfile == null)
+                throw new Exception("Không tìm thấy hồ sơ người dùng.");
+
+            // Cập nhật profile
+            userProfile.Gender = updateProfileModel.Gender;
+            userProfile.Address = updateProfileModel.Address;
+            userProfile.DateOfBirth = updateProfileModel.DateOfBirth;
+            userProfile.IdentityId = updateProfileModel.IdentityID;
+            userProfile.Fingerfile = updateProfileModel.Fingerfile;
+
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new UpdateProfileModel
             {
                 Fullname = user.FullName,
                 Phone = user.Phone,
-
                 Gender = userProfile.Gender,
                 Address = userProfile.Address,
                 DateOfBirth = userProfile.DateOfBirth,
                 IdentityID = userProfile.IdentityId,
                 Fingerfile = userProfile.Fingerfile,
+                ProfileId = userProfile.ProfileId 
             };
-            user.UpdatedAt = DateTime.UtcNow;
-            return data;
-        }
 
-        public async Task DeleteOldRefreshTokenAsync(string refreshToken)
-        {
-            var entity = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken);
-            if (entity != null)
-            {
-                _context.RefreshTokens.Remove(entity);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id)
@@ -750,6 +757,45 @@ namespace DNATestSystem.Services.Service
               
             }
             return data;
+        }
+        public async Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId)
+        {
+            var data = await _context.RequestDeclarants
+                            .Where(x => x.RequestId == test_requestId)
+                            .Select(x => new GetDeclarantDto
+                            {
+                                DeclarantId = x.DeclarantId,
+                                FullName = x.FullName,
+                                Gender = x.Gender,
+                                Address = x.Address,
+                                IdentityIssuedDate = x.IdentityIssuedDate,
+                                IdentityIssuedPlace = x.IdentityIssuedPlace,
+                                IdentityNumber = x.IdentityNumber,
+                                Phone = x.Phone,
+                                Email = x.Email
+                            }).FirstOrDefaultAsync();
+            if (data == null)
+            {
+                throw new Exception("Không có RequestDeclarants");
+
+            }
+            return data;
+        }
+        public async Task<List<GetTestSampleDto>> GetSampleProvidersByTestRequestIdAsync(int test_requestId)
+        {
+            var data = _context.TestSamples
+                        .Where(x => x.RequestId == test_requestId);
+
+            return data.Select(x => new GetTestSampleDto
+            {
+                SampleId = x.SampleId,
+                OwnerName = x.OwnerName,
+                Gender = x.Gender,
+                CollectedAt = x.CollectedAt,
+                Relationship = x.Relationship,
+                SampleType = x.SampleType,
+                Yob = x.Yob
+            }).ToList();
         }
     }
 }

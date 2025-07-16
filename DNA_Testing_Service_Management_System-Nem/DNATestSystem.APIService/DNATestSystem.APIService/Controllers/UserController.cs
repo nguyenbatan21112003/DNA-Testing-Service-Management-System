@@ -162,11 +162,14 @@ namespace DNATestSystem.Controllers
             return Ok(result);
         }
 
-        [HttpPut("UpdateUserProfile/{profile_id}")]
+        [HttpPut("UpdateUserProfile/{user_id}")]
         public async Task<IActionResult> UpdateProfileUser([FromBody] UpdateProfileModel model)
         {
-            var data = await _userService.UpdateProfileAsync(model);
-            return Ok(data);
+            var result = await _userService.UpdateProfileAsync(model);
+            if (result == null)
+                return NotFound(new { success = false, message = "Không tìm thấy hồ sơ người dùng." });
+
+            return Ok(new { success = true, message = "Cập nhật hồ sơ thành công", data = result });
         }
         [HttpPost("verify-password")]
         public async Task<IActionResult> VerifyPassword([FromBody] UserVerifyCurrentPassword model)
