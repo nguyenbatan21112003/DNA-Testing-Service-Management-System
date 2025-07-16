@@ -62,20 +62,9 @@ const BlogPage = ({ blogData }) => {
         </div>
       </div>
 
-      {/* Thanh tìm kiếm căn giữa */}
-      <div className="blog-search-bar">
-        <input
-          type="text"
-          placeholder="Tìm kiếm bài viết"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPage(1);
-          }}
-          className="blog-search-input"
-        />
-        <Search size={22} className="blog-search-icon" />
-      </div>
+
+
+      
 
       {/* Tiêu đề lớn và phụ đề */}
       <div className="blog-header">

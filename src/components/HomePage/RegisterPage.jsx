@@ -19,6 +19,13 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate phone number: must start with 0 and have 10-11 digits total
+    const phoneRegex = /^0\d{9,10}$/;
+    if (!phoneRegex.test(phone)) {
+      setError("Số điện thoại phải bắt đầu bằng 0 và gồm 10-11 chữ số!");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Mật khẩu không khớp!");
       return;

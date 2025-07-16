@@ -86,6 +86,7 @@ const BlogManagement = () => {
         summary: blog.summary || '',
         status: blog.status,
         category: blog.category || 'kiến thức',
+        author: blog.author || '',
       });
       try {
         setContent(blog.content ? JSON.parse(blog.content) : [{ type: 'paragraph', children: [{ text: '' }] }]);
@@ -99,6 +100,7 @@ const BlogManagement = () => {
         summary: '',
         status: 'draft',
         category: 'kiến thức',
+        author: '',
       });
       setContent([{ type: 'paragraph', children: [{ text: '' }] }]);
     }
@@ -124,7 +126,7 @@ const BlogManagement = () => {
       content: htmlContent,
       category: values.category || 'kiến thức',
       date: editingBlog ? editingBlog.date : new Date().toLocaleDateString('vi-VN'),
-      author: 'Nguyễn Văn Quản',
+      author: values.author,
       tags: [],
       image: '',
       status: values.status,
@@ -191,6 +193,11 @@ const BlogManagement = () => {
           <Text type="secondary" className="text-xs">ID: {record.id}</Text>
         </div>
       ),
+    },
+    {
+      title: 'Tác giả',
+      dataIndex: 'author',
+      key: 'author',
     },
     {
       title: 'Trạng thái',
@@ -324,6 +331,7 @@ const BlogManagement = () => {
           initialValues={{
             status: 'draft',
             category: 'kiến thức',
+            author: '',
           }}
         >
           <Form.Item
@@ -377,6 +385,14 @@ const BlogManagement = () => {
               <Option value="published">Đăng ngay</Option>
               <Option value="draft">Lưu nháp</Option>
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="author"
+            label="Tác giả"
+            rules={[{ required: true, message: 'Vui lòng nhập tên tác giả!' }]}
+          >
+            <Input placeholder="Nhập tên tác giả" />
           </Form.Item>
 
           <Form.Item

@@ -500,17 +500,6 @@ const CustomerFeedback = () => {
                   </div>
                 </div>
               )}
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Đánh giá tổng thể:</h3>
-              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <Rate disabled defaultValue={selectedFeedback.rating} />
-                <span style={{ fontSize: 18, fontWeight: 600 }}>
-                  {selectedFeedback.rating}/5 sao
-                </span>
-              </div>
-            </div>
-
             <div style={{ marginBottom: 16 }}>
               <h3>Nội dung phản hồi:</h3>
               <div

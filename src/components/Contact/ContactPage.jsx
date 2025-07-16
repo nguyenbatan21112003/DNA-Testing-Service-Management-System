@@ -86,7 +86,7 @@ const ContactPage = () => {
                 từ đội ngũ của chúng tôi qua Zalo.
               </p>
               <img
-                src="https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=https://zalo.me/g/wdeibl702"
+                src="/contact.jpg"
                 alt="QR Zalo nhóm hỗ trợ DNA Lab"
                 style={{
                   borderRadius: "16px",

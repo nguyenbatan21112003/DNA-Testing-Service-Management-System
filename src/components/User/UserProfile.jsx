@@ -117,6 +117,15 @@ const UserProfile = () => {
     };
   }, [user, getAllOrders]);
 
+  // Khi mở modal feedback ở chế độ xem lại, nạp dữ liệu feedback gần nhất
+  useEffect(() => {
+    if (showFeedbackModal && selectedOrder && selectedOrder.feedbacks && selectedOrder.feedbacks.length > 0) {
+      const lastFb = selectedOrder.feedbacks[selectedOrder.feedbacks.length - 1];
+      setOverallRating(lastFb.rating || 0);
+      setFeedbackInput(lastFb.feedback || "");
+    }
+  }, [showFeedbackModal, selectedOrder]);
+
   if (!user)
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
@@ -878,6 +887,21 @@ const UserProfile = () => {
                               {getSampleMethodLabel(order.sampleMethod)}
                             </div>
                             <div
+                              style={{
+                                color: "#888",
+                                fontSize: 15,
+                                marginBottom: 8,
+                              }}
+                            >
+                              <b>Số người xét nghiệm:</b>{" "}
+                              {
+                                order.numPeople ||
+                                (Array.isArray(order.members)
+                                  ? order.members.length
+                                  : "-")
+                              }
+                            </div>
+                            <div
                               className="order-date"
                               style={{ color: "#888", fontSize: 15 }}
                             >
@@ -1452,9 +1476,9 @@ const UserProfile = () => {
       {/* Modal feedback */}
       {showFeedbackModal &&
         selectedOrder &&
-        (getStatusText(getDisplayStatus(selectedOrder.status)) ===
+        (getStatusText(getDisplayStatus(selectedOrder)) ===
           "Đã có kết quả" ||
-          getStatusText(getDisplayStatus(selectedOrder.status)) ===
+          getStatusText(getDisplayStatus(selectedOrder)) ===
             "Hoàn thành") && (
           <div
             style={{
@@ -1887,6 +1911,15 @@ const UserProfile = () => {
               <div>
                 <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
                 <span>{getSampleMethodLabel(selectedOrder.sampleMethod)}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 600 }}>Số người xét nghiệm:</span>{" "}
+                <span>{
+                  selectedOrder.numPeople ||
+                  (Array.isArray(selectedOrder.members)
+                    ? selectedOrder.members.length
+                    : "-")
+                }</span>
               </div>
               <div>
                 <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}

@@ -78,10 +78,19 @@ const SampleCollection = ({ caseType }) => {
   ];
 
   useEffect(() => {
-    const savedForms = JSON.parse(
-      localStorage.getItem("sample_collection_forms") || "[]"
-    );
-    setSampleForms(savedForms);
+    try {
+      const stored = localStorage.getItem("sample_collection_forms");
+      const savedForms = stored ? JSON.parse(stored) : [];
+      if (Array.isArray(savedForms)) {
+        setSampleForms(savedForms);
+      } else {
+        setSampleForms([]);
+      }
+    } catch {
+      // Nếu dữ liệu bị lỗi, reset về mảng rỗng để tránh crash
+      setSampleForms([]);
+      localStorage.removeItem("sample_collection_forms");
+    }
   }, []);
 
   useEffect(() => {
@@ -298,11 +307,11 @@ const SampleCollection = ({ caseType }) => {
   };
 
   // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
-  const disabledDate = (current) => {
-    const today = dayjs().startOf("day");
-    if (!current) return false;
-    return current < today || current.day() === 0;
-  };
+  // const disabledDate = (current) => {
+  //   const today = dayjs().startOf("day");
+  //   if (!current) return false;
+  //   return current < today || current.day() === 0;
+  // };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
@@ -349,10 +358,10 @@ const SampleCollection = ({ caseType }) => {
                     <DatePicker
                       format="DD/MM/YYYY"
                       style={{ width: "100%" }}
-                      disabledDate={disabledDate}
-                      disabled={
-                        !!selectedOrder && !!selectedOrder.appointmentDate
-                      }
+                      
+                      // disabled={
+                      //   !!selectedOrder && !!selectedOrder.appointmentDate
+                      // }
                     />
                   </Form.Item>
                 </Col>
