@@ -258,6 +258,41 @@
         }
       }
     },
+    "/Customer/test-sample/{test_requestId}": {
+      "put": {
+        "tags": [
+          "Customer"
+        ],
+        "parameters": [
+          {
+            "name": "test_requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Customer/feedback": {
+      "get": {
+        "tags": [
+          "Customer"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Mail/send": {
       "post": {
         "tags": [
@@ -1141,14 +1176,14 @@
         }
       }
     },
-    "/user/UpdateUserProfile/{profile_id}": {
+    "/user/UpdateUserProfile/{user_id}": {
       "put": {
         "tags": [
           "User"
         ],
         "parameters": [
           {
-            "name": "profile_id",
+            "name": "user_id",
             "in": "path",
             "required": true,
             "schema": {

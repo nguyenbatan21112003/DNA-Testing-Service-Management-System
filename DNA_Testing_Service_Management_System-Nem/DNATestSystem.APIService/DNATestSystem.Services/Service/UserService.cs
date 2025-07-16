@@ -61,6 +61,7 @@ namespace DNATestSystem.Services.Service
         //    return null;
         //}
 
+
         public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
             var user = await _context.Users
@@ -165,7 +166,7 @@ namespace DNATestSystem.Services.Service
             return user;
         }
 
-        public async Task DeleteOldRefreshToken(string refreshToken)
+        public async Task DeleteOldRefreshTokenAsync(string refreshToken)
         {
             var entity = await _context.RefreshTokens
                         .FirstOrDefaultAsync(x => x.Token == refreshToken);
@@ -173,7 +174,7 @@ namespace DNATestSystem.Services.Service
             {
                 return;
             }
-             _context.RefreshTokens.Remove(entity);
+            _context.RefreshTokens.Remove(entity);
             await _context.SaveChangesAsync();
         }
 
@@ -349,7 +350,7 @@ namespace DNATestSystem.Services.Service
                 DateOfBirth = userProfile.DateOfBirth,
                 IdentityID = userProfile.IdentityId,
                 Fingerfile = userProfile.Fingerfile,
-                ProfileId = userProfile.ProfileId 
+                ProfileId = userProfile.ProfileId
             };
 
         }
@@ -615,7 +616,7 @@ namespace DNATestSystem.Services.Service
             return true;
 
         }
-       
+
         public async Task<bool> CreateUserProfile(UserProfileDto userProfileDto)
         {
             var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -645,16 +646,16 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true;
         }
-      
+
         public async Task<ProfileViewDto> GetUserProfileByEmail(string email)
         {
             var data = await _context.UserProfiles
                        .Include(x => x.User)
                           .Where(x => x.User.Email == email)
                        .Select(
-                       
+
                        x => new ProfileViewDto
-                       {                       
+                       {
                            Gender = x.Gender,
                            PhoneNumber = x.User.Phone,
                            Address = x.Address,
@@ -736,6 +737,7 @@ namespace DNATestSystem.Services.Service
                 CreatedAt = request.CreatedAt ?? DateTime.MinValue
             }).ToList();
         }
+
         public async Task<GetTestProcessDto> GetTestProcessByTestRequestAsync(int test_requestId)
         {
             var data = await _context.TestProcesses
@@ -750,14 +752,15 @@ namespace DNATestSystem.Services.Service
                            UpdatedAt = x.UpdatedAt
                        })
                        .FirstOrDefaultAsync();
-                       
-            if(data == null)
+
+            if (data == null)
             {
                 throw new Exception("Không có test Process");
-              
+
             }
             return data;
         }
+
         public async Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId)
         {
             var data = await _context.RequestDeclarants
@@ -781,6 +784,7 @@ namespace DNATestSystem.Services.Service
             }
             return data;
         }
+
         public async Task<List<GetTestSampleDto>> GetSampleProvidersByTestRequestIdAsync(int test_requestId)
         {
             var data = _context.TestSamples
@@ -796,6 +800,23 @@ namespace DNATestSystem.Services.Service
                 SampleType = x.SampleType,
                 Yob = x.Yob
             }).ToList();
+        }
+
+        public async Task<List<CustomerFeedbackDto>> GetFeedbackByCustomerIdAsync()
+        {
+            int customerId = GetCurrentUserId(); // lấy từ JWT
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.UserId == customerId)
+                .Select(f => new CustomerFeedbackDto
+                {
+                    FeedbackId = f.FeedbackId,
+                    ResultId = f.ResultId,
+                    Rating = f.Rating,
+                    Comment = f.Comment,
+                    CreatedAt = f.CreatedAt
+                })
+                .ToListAsync();
+            return feedbacks;
         }
     }
 }

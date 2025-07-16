@@ -85,6 +85,16 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetFeedBackByCustomerId",
+    "RelativePath": "Customer/feedback",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
     "Method": "GetRequestDeclarantsByTestRequestID",
     "RelativePath": "Customer/request-declarants/{test_requestId}",
     "HttpMethod": "GET",
@@ -120,6 +130,22 @@
     "Method": "GetTestProcessByTestRequestID",
     "RelativePath": "Customer/test-process/{test_requestId}",
     "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "test_requestId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetTestSampleByTestRequestId",
+    "RelativePath": "Customer/test-sample/{test_requestId}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -790,7 +816,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "UpdateProfileUser",
-    "RelativePath": "user/UpdateUserProfile/{profile_id}",
+    "RelativePath": "user/UpdateUserProfile/{user_id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -801,7 +827,7 @@
         "IsRequired": true
       },
       {
-        "Name": "profile_id",
+        "Name": "user_id",
         "Type": "",
         "IsRequired": true
       }

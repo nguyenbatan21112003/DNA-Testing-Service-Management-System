@@ -26,6 +26,28 @@ namespace DNATestSystem.APIService.Controllers
             {
                 var response = _vnPayService.PaymentExecute(Request.Query);
 
+                if (response.VnPayResponseCode != "00")
+                {
+                    var failRedirect = $"http://localhost:5173/payment-success?status=fail&message=Thanh%20toan%20bi%20huy%20hoac%20that%20bai";
+                    var failHtml = $@"
+        <html>
+            <head>
+                <meta http-equiv='refresh' content='2;url={failRedirect}' />
+                <script>
+                    setTimeout(function() {{
+                        window.location.href = '{failRedirect}';
+                    }}, 2000);
+                </script>
+            </head>
+            <body>
+                <h3 style='text-align:center;margin-top:40px;color:red;'>
+                    ❌ Thanh toán thất bại hoặc bị hủy. Đang chuyển hướng...
+                </h3>
+            </body>
+        </html>";
+                    return Content(failHtml, "text/html");
+                }
+
                 if (!response.Success)
                 {
                     // Redirect về FE báo lỗi

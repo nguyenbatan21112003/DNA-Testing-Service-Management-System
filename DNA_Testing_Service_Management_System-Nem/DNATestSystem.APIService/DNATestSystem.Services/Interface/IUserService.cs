@@ -68,5 +68,7 @@ namespace DNATestSystem.Services.Interface
         Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId); 
         //65
         Task<List<GetTestSampleDto>> GetSampleProvidersByTestRequestIdAsync(int test_requestId);
+        //66
+        Task<List<CustomerFeedbackDto>> GetFeedbackByCustomerIdAsync();
     }
 }

@@ -85,5 +85,15 @@ namespace DNATestSystem.APIService.Controllers
             }
             return Ok(data);
         }
+        [HttpGet("feedback")]
+        public async Task<IActionResult> GetFeedBackByCustomerId()
+        {
+            var data = await _userService.GetFeedbackByCustomerIdAsync();
+            if (data == null)
+            {
+                return NotFound(new { message = "Không tìm thấy test-sample" });
+            }
+            return Ok(data);
+        }
     }
 }
