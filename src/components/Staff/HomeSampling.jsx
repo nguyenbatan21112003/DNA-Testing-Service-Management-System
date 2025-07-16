@@ -40,8 +40,28 @@ const { Step } = Steps;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
+function mapOrderStatus(status) {
+  const s = (status || "").toString().trim().toLowerCase();
+  if (s === "chưa gửi kit" || s === "kit_not_sent") return "KIT_NOT_SENT";
+  if (s === "đã gửi kit" || s === "kit_sent") return "KIT_SENT";
+  if (s === "đã nhận mẫu" || s === "sample_received") return "SAMPLE_RECEIVED";
+  if (s === "đang xử lý" || s === "processing") return "PROCESSING";
+  if (s === "hoàn thành" || s === "completed") return "COMPLETED";
+  if (
+    [
+      "kit_not_sent",
+      "kit_sent",
+      "sample_received",
+      "processing",
+      "completed",
+    ].includes(s.toUpperCase())
+  )
+    return s.toUpperCase();
+  return "KIT_NOT_SENT";
+}
+
 const HomeSampling = () => {
-  const { getAllOrders, updateOrder } = useOrderContext();
+  const { updateOrder } = useOrderContext();
   const [samplingRequests, setSamplingRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,64 +69,39 @@ const HomeSampling = () => {
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  const normalizeStatus = (str) => {
-    if (!str) return "";
-    return str
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .replace(/\s+/g, "")
-      .trim();
-  };
-
-  // Lấy dữ liệu đơn hàng từ context
+  // Lấy dữ liệu đơn hàng từ localStorage để luôn cập nhật mới nhất
   const loadSamplingRequests = () => {
-    const allOrders = getAllOrders();
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const homeSamplingOrders = allOrders
-      .filter((order) => order.sampleMethod === "home" && !order.isHidden)
+      .filter(
+        (order) =>
+          order.sampleMethod === "home" &&
+          !order.isHidden &&
+          order.staffAssigned
+      )
       .map((order) => {
-        let mappedStatus = order.status || order.kitStatus;
-        let mappedKitStatus = order.kitStatus || order.status;
-        switch (normalizeStatus(mappedStatus)) {
-          case "chuagui":
-            mappedStatus = "PENDING_CONFIRM";
-            mappedKitStatus = "PENDING_CONFIRM";
-            break;
-          case "dagui":
-            mappedStatus = "KIT_SENT";
-            mappedKitStatus = "KIT_SENT";
-            break;
-          case "danhan":
-            mappedStatus = "SAMPLE_RECEIVED";
-            mappedKitStatus = "SAMPLE_RECEIVED";
-            break;
-          case "huy":
-            mappedStatus = "CANCELLED";
-            mappedKitStatus = "CANCELLED";
-            break;
-          case "pending_confirm":
-          case "kit_not_sent":
-          case "kit_sent":
-          case "sample_received":
-          case "processing":
-          case "cancelled":
-            // Giữ nguyên
-            break;
-          default:
-            mappedStatus = "PROCESSING";
-            mappedKitStatus = "PROCESSING";
-            break;
-        }
+        // Ưu tiên lấy status mới nhất từ status, kitStatus, samplingStatus
+        const mappedStatus = mapOrderStatus(
+          order.status || order.kitStatus || order.samplingStatus
+        );
         return {
           ...order,
           status: mappedStatus,
-          kitStatus: mappedKitStatus,
+          kitStatus: mappedStatus,
           scheduledDate: order.scheduledDate || null,
           samplerName: order.samplerName || null,
           notes: order.notes || "",
         };
-      });
-
+      })
+      .filter((order) =>
+        [
+          "KIT_NOT_SENT",
+          "KIT_SENT",
+          "SAMPLE_RECEIVED",
+          "PROCESSING",
+          "COMPLETED",
+        ].includes(order.status)
+      );
     setSamplingRequests(homeSamplingOrders);
   };
 
@@ -154,30 +149,54 @@ const HomeSampling = () => {
     return `${prefix}${request.id}`;
   };
 
-  const handleSaveUpdate = async (values) => {
-    try {
-      await updateOrder(String(selectedRequest.id), {
-        status: "KIT_SENT",
-        samplingStatus: "KIT_SENT",
-        kitStatus: "KIT_SENT",
-        kitId: values.kitId,
-        notes: values.notes,
-        updatedAt: new Date().toISOString(),
-      });
+  // Hàm cập nhật trạng thái đơn hàng theo luồng chuẩn
+  const handleSendKit = async (record, values) => {
+    if (!record) {
+      message.error("Không tìm thấy đơn để gửi kit!");
+      return;
+    }
+    await updateOrder(String(record.id), {
+      status: "Đã gửi kit",
+      samplingStatus: "Đã gửi kit",
+      kitStatus: "Đã gửi kit",
+      kitId: values.kitId,
+      notes: values.notes,
+      updatedAt: new Date().toISOString(),
+    });
+    // Đợi 1 chút rồi reload lại dữ liệu từ localStorage để chắc chắn đã cập nhật
+    setTimeout(() => {
       loadSamplingRequests();
       setUpdateModalVisible(false);
-      message.success(
-        "Đã gửi kit thành công! Trạng thái chuyển sang 'Đã gửi kit'."
-      );
-    } catch {
-      message.error("Có lỗi xảy ra khi gửi kit!");
+    }, 100);
+    message.success(
+      "Đã gửi kit thành công! Trạng thái chuyển sang 'Đã gửi kit'."
+    );
+  };
+
+  // Sửa lại hàm handleProcessing: tự động insert dữ liệu mẫu từ members vào sampleInfo.donors nếu chưa có
+  const handleProcessing = async (record) => {
+    let sampleInfo = record.sampleInfo || {};
+    if (
+      (!sampleInfo.donors || sampleInfo.donors.length === 0) &&
+      record.members &&
+      Array.isArray(record.members) &&
+      record.members.length > 0
+    ) {
+      sampleInfo.donors = record.members;
     }
+    await updateOrder(String(record.id), {
+      status: "Đang xử lý",
+      samplingStatus: "Đang xử lý",
+      kitStatus: "Đang xử lý",
+      sampleInfo,
+      updatedAt: new Date().toISOString(),
+    });
+    loadSamplingRequests();
+    message.success("Đơn đã chuyển sang trạng thái 'Đang xử lý'.");
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "#00b894"; // xanh ngọc bích
       case "KIT_NOT_SENT":
         return "#7c3aed"; // tím
       case "KIT_SENT":
@@ -196,8 +215,6 @@ const HomeSampling = () => {
   // Hàm mapping trạng thái code sang tiếng Việt
   const getStatusText = (status) => {
     switch (status) {
-      case "PENDING_CONFIRM":
-        return "Chờ xác nhận";
       case "KIT_NOT_SENT":
         return "Chưa gửi kit";
       case "KIT_SENT":
@@ -210,21 +227,6 @@ const HomeSampling = () => {
         return "Hoàn thành";
       default:
         return status;
-    }
-  };
-
-  // Hàm cập nhật an toàn, không đổi trạng thái nếu đã là 'Đang xử lý'
-  const safeUpdateOrder = (orderId, updates, currentStatus) => {
-    if (
-      getStatusText(currentStatus) === "Đang xử lý" &&
-      updates.status &&
-      getStatusText(updates.status) !== "Hoàn thành"
-    ) {
-      // eslint-disable-next-line no-unused-vars
-      const { status, ...rest } = updates;
-      updateOrder(orderId, rest);
-    } else {
-      updateOrder(orderId, updates);
     }
   };
 
@@ -346,151 +348,53 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          {/* Ẩn các nút thao tác khác nếu đã sang trạng thái xét nghiệm trở đi */}
-          {!(
-            record.status === "PROCESSING" ||
-            record.status === "COMPLETED" ||
-            record.status === "Hoàn thành"
-          ) && (
-            <>
-              {/* Nếu là Chờ xác nhận thì hiện nút Xác nhận màu xanh lá */}
-              {record.status === "PENDING_CONFIRM" && (
-                <Button
-                  size="small"
-                  icon={<CheckOutlined />}
-                  onClick={async () => {
-                    await safeUpdateOrder(
-                      String(record.id),
-                      {
-                        status: "KIT_NOT_SENT",
-                        samplingStatus: "KIT_NOT_SENT",
-                        kitStatus: "KIT_NOT_SENT",
-                        updatedAt: new Date().toISOString(),
-                      },
-                      record.status
-                    );
-                    loadSamplingRequests();
-                    message.success(
-                      "Đã xác nhận! Trạng thái chuyển sang 'Chưa gửi kit'."
-                    );
-                  }}
-                  style={{
-                    background: "#16a34a",
-                    color: "#fff",
-                    fontWeight: 700,
-                    borderRadius: 6,
-                    border: "none",
-                    boxShadow: "0 2px 8px #16a34a55",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.background = "#15803d")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.background = "#16a34a")
-                  }
-                >
-                  Xác nhận
-                </Button>
-              )}
-              {/* Nút Gửi Kit chỉ hiện khi trạng thái là 'Chưa gửi kit' và không render thêm nút nào khác cho trạng thái này */}
-              {record.status === "KIT_NOT_SENT" && (
-                <Button
-                  size="small"
-                  icon={<GiftOutlined />}
-                  onClick={() => handleUpdateStatus(record)}
-                  style={{
-                    background: "#fa8c16",
-                    color: "#fff",
-                    fontWeight: 700,
-                    borderRadius: 6,
-                    border: "none",
-                    boxShadow: "0 2px 8px #fa8c1655",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.background = "#d46b08")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.background = "#fa8c16")
-                  }
-                >
-                  Gửi Kit
-                </Button>
-              )}
-              {/* Ẩn nút Cập nhật cho trạng thái KIT_NOT_SENT, PROCESSING, COMPLETED, Hoàn thành */}
-              {record.status !== "KIT_SENT" &&
-                record.status !== "SAMPLE_RECEIVED" &&
-                record.status !== "PENDING_CONFIRM" &&
-                record.status !== "KIT_NOT_SENT" &&
-                record.status !== "PROCESSING" &&
-                record.status !== "COMPLETED" &&
-                record.status !== "Hoàn thành" && (
-                  <Button
-                    size="small"
-                    icon={<GiftOutlined />}
-                    onClick={() => handleUpdateStatus(record)}
-                    style={{
-                      background: "#fa8c16",
-                      color: "#fff",
-                      fontWeight: 700,
-                      borderRadius: 6,
-                      border: "none",
-                      boxShadow: "0 2px 8px #fa8c1622",
-                      transition: "background 0.2s",
-                    }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.background = "#d46b08")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.background = "#fa8c16")
-                    }
-                  >
-                    Cập nhật
-                  </Button>
-                )}
-              {record.status === "SAMPLE_RECEIVED" && (
-                <Button
-                  type="primary"
-                  size="small"
-                  icon={<ExperimentOutlined />}
-                  onClick={async () => {
-                    await safeUpdateOrder(
-                      String(record.id),
-                      {
-                        status: "PROCESSING",
-                        samplingStatus: "PROCESSING",
-                        kitStatus: "PROCESSING",
-                        updatedAt: new Date().toISOString(),
-                      },
-                      record.status
-                    );
-                    loadSamplingRequests();
-                    message.success(
-                      "Đơn đã chuyển sang trạng thái 'Đang xử lý'."
-                    );
-                  }}
-                  style={{
-                    background: "#7c3aed",
-                    color: "#fff",
-                    fontWeight: 700,
-                    borderRadius: 6,
-                    border: "none",
-                    boxShadow: "0 2px 8px #7c3aed55",
-                    transition: "background 0.2s",
-                    marginLeft: 8,
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.background = "#5b21b6")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.background = "#7c3aed")
-                  }
-                >
-                  Xét Nghiệm
-                </Button>
-              )}
-            </>
+          {/* Gửi Kit */}
+          {record.status === "KIT_NOT_SENT" && (
+            <Button
+              size="small"
+              icon={<GiftOutlined />}
+              onClick={() => handleUpdateStatus(record)}
+              style={{
+                background: "#fa8c16",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #fa8c1655",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#d46b08")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#fa8c16")}
+            >
+              Gửi Kit
+            </Button>
+          )}
+          {/* Xét nghiệm */}
+          {record.status === "SAMPLE_RECEIVED" && (
+            <Button
+              type="primary"
+              size="small"
+              icon={<ExperimentOutlined />}
+              onClick={() => handleProcessing(record)}
+              style={{
+                background: "#7c3aed",
+                color: "#fff",
+                fontWeight: 700,
+                borderRadius: 6,
+                border: "none",
+                boxShadow: "0 2px 8px #7c3aed55",
+                transition: "background 0.2s",
+                marginLeft: 8,
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#5b21b6")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#7c3aed")}
+            >
+              Xét Nghiệm
+            </Button>
           )}
         </Space>
       ),
@@ -516,23 +420,6 @@ const HomeSampling = () => {
             <Table
               columns={columns}
               dataSource={samplingRequests}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) =>
-                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
-              }}
-              scroll={{ x: 1200 }}
-            />
-          </TabPane>
-          <TabPane tab="Chờ xác nhận" key="pending">
-            <Table
-              columns={columns}
-              dataSource={samplingRequests.filter(
-                (req) => req.status === "PENDING_CONFIRM"
-              )}
               rowKey="id"
               pagination={{
                 pageSize: 10,
@@ -695,18 +582,16 @@ const HomeSampling = () => {
               <Steps
                 current={(() => {
                   switch (selectedRequest.status) {
-                    case "PENDING_CONFIRM":
                     case "KIT_NOT_SENT":
-                      return 0;
                     case "KIT_SENT":
-                      return 1;
+                      return 0;
                     case "SAMPLE_RECEIVED":
-                      return 2;
+                      return 1;
                     case "PROCESSING":
-                      return 3;
+                      return 2;
                     case "COMPLETED":
                     case "Hoàn thành":
-                      return 4;
+                      return 3;
                     default:
                       return 0;
                   }
@@ -795,7 +680,11 @@ const HomeSampling = () => {
         footer={null}
         width={600}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveUpdate}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(values) => handleSendKit(selectedRequest, values)}
+        >
           <Form.Item label="Trạng thái kit">
             <Select value={selectedRequest?.status} disabled>
               <Option value="PENDING_CONFIRM">Chờ xác nhận</Option>

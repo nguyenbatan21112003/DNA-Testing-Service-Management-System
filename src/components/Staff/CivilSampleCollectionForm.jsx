@@ -100,8 +100,37 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    // Hàm chỉ lưu draft (submit form hoặc Enter)
+    const handleSaveDraft = (e) => {
         e.preventDefault();
+        const data = { ...form, testDate: form.testDate?.toLocaleDateString("vi-VN") };
+        const saved = JSON.parse(localStorage.getItem("civil_sample_collections") || "[]");
+        localStorage.setItem("civil_sample_collections", JSON.stringify([...saved, data]));
+        setShowSuccessOverlay(true);
+        setTimeout(() => {
+            setShowSuccessOverlay(false);
+            setForm({
+                fullName: "",
+                phone: "",
+                email: "",
+                address: "",
+                serviceType: "",
+                serviceCategory: "Dân sự",
+                sampleMethod: "center",
+                cccd: "",
+                testDate: null,
+                note: "",
+                members: [
+                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
+                ],
+            });
+            setErrors({});
+        }, 5000);
+    };
+
+    // Hàm xác nhận lấy mẫu (bấm nút)
+    const handleConfirmSample = () => {
         if (!validate()) {
             return;
         }
@@ -131,8 +160,19 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         }, 5000);
 
         if (prefill && prefill.orderId) {
+            // Chuẩn hóa dữ liệu bảng mẫu cho resultTableData
+            const resultTableData = form.members.map((mem, idx) => ({
+                key: idx + 1,
+                name: mem.name,
+                birthYear: mem.birth,
+                gender: mem.gender,
+                relationship: mem.relation,
+                sampleType: mem.sampleType
+            }));
             updateOrder(prefill.orderId, {
                 members: form.members,
+                resultTableData,
+                status: "Đang xử lý"
             });
             // Đảm bảo cập nhật samplingStatus sang 'Đang xử lý'
             if (typeof updateSamplingStatus === 'function') {
@@ -204,7 +244,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                 </div>
             )}
             <h2 style={{ textAlign: "center", color: "#009e74", fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Lấy mẫu dân sự</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSaveDraft}>
                 {/* Nhóm thông tin khách hàng */}
                 <div style={{ marginBottom: 36, background: '#f4fafe', borderRadius: 18, border: '2px solid #b6e4e0', boxShadow: '0 4px 16px #b6e4e033', padding: 32 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
@@ -390,7 +430,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                     </div>
                 </div>
                 <div style={{ width: '100%', margin: '32px 0 0 0', display: 'flex', justifyContent: 'center' }}>
-                    <button type="submit" style={{ background: "#00b894", color: "#fff", border: "none", borderRadius: 6, padding: "12px 32px", cursor: "pointer", fontWeight: 600, fontSize: 16 }}>Xác nhận lấy mẫu</button>
+                    <button type="button" onClick={handleConfirmSample} style={{ background: "#00b894", color: "#fff", border: "none", borderRadius: 6, padding: "12px 32px", cursor: "pointer", fontWeight: 600, fontSize: 16 }}>Xác nhận lấy mẫu</button>
                 </div>
             </form>
         </div>
