@@ -266,6 +266,7 @@ const SampleCollection = ({ caseType }) => {
         return order;
       });
       localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
+      window.dispatchEvent(new Event("dna_orders_updated"));
 
       setShowSuccessOverlay(true);
       setTimeout(() => {

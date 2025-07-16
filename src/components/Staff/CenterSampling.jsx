@@ -140,6 +140,14 @@ const CenterSampling = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [loadAppointments]);
 
+  useEffect(() => {
+    const handleOrdersUpdated = () => {
+      loadAppointments();
+    };
+    window.addEventListener("dna_orders_updated", handleOrdersUpdated);
+    return () => window.removeEventListener("dna_orders_updated", handleOrdersUpdated);
+  }, [loadAppointments]);
+
   const handleViewAppointment = (appointment) => {
     setSelectedAppointment(appointment);
     setModalVisible(true);
