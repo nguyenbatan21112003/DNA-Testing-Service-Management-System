@@ -75,7 +75,7 @@ const TestingResults = () => {
     setFilteredOrders(
       orders.filter(
         (order) =>
-          !order.isHidden &&
+          !order.isHiddenByStaff &&
           getStatusText(order.status) === "Đang xử lý" &&
           (
             (Array.isArray(order.resultTableData) && order.resultTableData.length > 0) ||
@@ -101,13 +101,13 @@ const TestingResults = () => {
   useEffect(() => {
     if (filterStatus === "all") {
       setFilteredOrders(
-        orders.filter((order) => !order.isHidden)
+        orders.filter((order) => !order.isHiddenByStaff)
       );
     } else {
       setFilteredOrders(
         orders.filter(
           (order) =>
-            !order.isHidden &&
+            !order.isHiddenByStaff &&
             getStatusText(order.status) === filterStatus
         )
       );
@@ -289,7 +289,7 @@ const TestingResults = () => {
 
   const handleConfirmHide = () => {
     if (confirmHideOrder) {
-      updateOrder(confirmHideOrder.id, { isHidden: true });
+      updateOrder(confirmHideOrder.id, { isHiddenByStaff: true });
       message.success("Đơn hàng đã được ẩn khỏi giao diện nhân viên!");
       setConfirmHideOrder(null);
     }
@@ -300,7 +300,7 @@ const TestingResults = () => {
   };
 
   const handleUnhideOrder = (order) => {
-    updateOrder(order.id, { isHidden: false });
+    updateOrder(order.id, { isHiddenByStaff: false });
     message.success("Đơn hàng đã được hiện lại cho nhân viên!");
   };
 
@@ -359,28 +359,19 @@ const TestingResults = () => {
       key: "type",
       width: 200,
     },
+    // Thêm cột Phân loại
     {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
+      title: "Phân loại",
+      dataIndex: "type",
+      key: "caseType",
       width: 120,
-      render: (status) => (
-        <Tag style={{
-          background: getStatusColor(status),
-          color: '#fff',
-          fontWeight: 700,
-          border: 'none',
-          fontSize: 16,
-          padding: '6px 18px',
-          boxShadow: '0 2px 8px #0001',
-          borderRadius: 8,
-          minWidth: 110,
-          textAlign: 'center',
-          display: 'inline-block',
-        }}>
-          {getStatusText(status)}
-        </Tag>
-      ),
+      render: (type) => {
+        if (!type) return <Tag color="#bfbfbf">Khác</Tag>;
+        const t = type.toLowerCase();
+        if (t.includes('hành chính')) return <Tag color="#36cfc9">Hành chính</Tag>;
+        if (t.includes('dân sự')) return <Tag color="#722ed1">Dân sự</Tag>;
+        return <Tag color="#bfbfbf">Khác</Tag>;
+      },
     },
     {
       title: "Địa điểm lấy mẫu",
@@ -426,6 +417,31 @@ const TestingResults = () => {
       key: "date",
       width: 120,
     },
+    // Di chuyển cột Trạng thái vào đây
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status) => (
+        <Tag style={{
+          background: getStatusColor(status),
+          color: '#fff',
+          fontWeight: 700,
+          border: 'none',
+          fontSize: 16,
+          padding: '6px 18px',
+          boxShadow: '0 2px 8px #0001',
+          borderRadius: 8,
+          minWidth: 110,
+          textAlign: 'center',
+          display: 'inline-block',
+        }}>
+          {getStatusText(status)}
+        </Tag>
+      ),
+    },
+    // Sau đó mới đến Thao tác
     {
       title: "Thao tác",
       key: "action",
@@ -442,31 +458,33 @@ const TestingResults = () => {
             Xem
           </Button>
           {getStatusText(record.status) !== "Hoàn thành" && (
-          <Button
-            type="default"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleEditResult(record)}
+            <Button
+              type="default"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleEditResult(record)}
             >
               Nhập kết quả
             </Button>
           )}
-          <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
-            <Button
-              icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
-              onClick={() => handleDeleteOrder(record)}
-              size="small"
-              style={{
-                marginLeft: 8,
-                borderColor: "#bfbfbf",
-                color: "#595959",
-                background: "#f5f5f5",
-                fontWeight: 600,
-              }}
-            >
-              Ẩn
-            </Button>
-          </Tooltip>
+          {getStatusText(record.status) !== "Đang xử lý" && (
+            <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+              <Button
+                icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
+                onClick={() => handleDeleteOrder(record)}
+                size="small"
+                style={{
+                  marginLeft: 8,
+                  borderColor: "#bfbfbf",
+                  color: "#595959",
+                  background: "#f5f5f5",
+                  fontWeight: 600,
+                }}
+              >
+                Ẩn
+              </Button>
+            </Tooltip>
+          )}
           {record.status === STATUS_REJECTED && record.managerNote && (
             <Button
               size="small"
@@ -720,7 +738,7 @@ const TestingResults = () => {
                       ),
                     },
                   ]}
-                  dataSource={orders.filter((order) => order.isHidden)}
+                  dataSource={orders.filter((order) => order.isHiddenByStaff)}
                   rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,

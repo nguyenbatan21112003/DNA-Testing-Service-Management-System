@@ -97,7 +97,7 @@ const CenterSampling = () => {
     const centerSamplingOrders = allOrders
       .filter((order) =>
         order.sampleMethod === "center" &&
-        !order.isHidden &&
+        !order.isHiddenByStaff &&
         allowedStatuses.includes(getStatusText(order.status))
       )
       .map((order) => {

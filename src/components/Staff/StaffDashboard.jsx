@@ -16,6 +16,8 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   FormOutlined,
+  CaretDownOutlined,
+  CaretRightOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -32,7 +34,8 @@ import CivilSampleCollectionForm from "./CivilSampleCollectionForm";
 
 const { Sider, Content } = Layout;
 
-const menuItems = [
+// Chia menuItems thành 2 phần để chèn custom menu đúng vị trí
+const menuItemsTop = [
   {
     key: "dashboard",
     icon: <DashboardOutlined />,
@@ -48,37 +51,23 @@ const menuItems = [
     icon: <HomeOutlined />,
     label: "Thu mẫu tại nhà",
   },
-  {
-    key: "center-sampling",
-    icon: <BankOutlined />,
-    label: "Thu mẫu tại cơ sở",
-  },
-  {
-    key: "sample-collection",
-    icon: <FormOutlined />,
-    label: "Lấy mẫu hành chính",
-  },
-  {
-    key: "civil-sample-collection",
-    icon: <FormOutlined />,
-    label: "Lấy mẫu dân sự",
-  },
+];
+const menuItemsBottom = [
   {
     key: "testing-results",
     icon: <ExperimentOutlined />,
     label: "Xét nghiệm & Kết quả",
   },
   {
-    key: "consultation",
-    icon: <CustomerServiceOutlined />,
-    label: "Yêu cầu tư vấn",
-  },
-  {
     key: "feedback",
     icon: <MessageOutlined />,
     label: "Phản hồi khách hàng",
   },
-  // Đăng xuất sẽ được render riêng ở dưới cùng
+  {
+    key: "consultation",
+    icon: <CustomerServiceOutlined />,
+    label: "Yêu cầu tư vấn",
+  },
 ];
 
 export const StaffDashboardContext = createContext();
@@ -89,6 +78,7 @@ const StaffDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
+  const [centerMenuOpen, setCenterMenuOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -118,11 +108,11 @@ const StaffDashboard = () => {
     return null;
   }
 
-  const handleMenuClick = (e) => {
-    if (e.key === "logout") {
+  const handleMenuSelect = ({ key }) => {
+    if (key === "logout") {
       setLogoutModal(true);
     } else {
-      setActiveTab(e.key);
+      setActiveTab(key);
     }
   };
 
@@ -240,8 +230,94 @@ const StaffDashboard = () => {
               mode="inline"
               selectedKeys={[activeTab]}
               style={{ borderRight: 0, background: "#fff", paddingTop: 0 }}
-              items={menuItems}
-              onClick={handleMenuClick}
+              items={menuItemsTop}
+              onSelect={handleMenuSelect}
+            />
+            {/* Custom menu cha Thu mẫu tại cơ sở */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "0 24px",
+                height: 48,
+                cursor: "pointer",
+                background: activeTab === "center-sampling" ? "#e6f7ff" : "#fff",
+                fontWeight: activeTab === "center-sampling" ? 600 : 400,
+                color: activeTab === "center-sampling" ? "#1677ff" : "#222",
+                userSelect: "none",
+              }}
+            >
+              <span
+                style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}
+                onClick={() => { setActiveTab("center-sampling"); setCenterMenuOpen(true); }}
+              >
+                <BankOutlined style={{ fontSize: 18 }} />
+                {!collapsed && "Thu mẫu tại cơ sở"}
+              </span>
+              <span
+                onClick={e => { e.stopPropagation(); setCenterMenuOpen(open => !open); }}
+                style={{ padding: 4, marginLeft: 8 }}
+              >
+                {centerMenuOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
+              </span>
+            </div>
+            {/* Submenu */}
+            {centerMenuOpen && (
+              <div style={{ marginLeft: collapsed ? 0 : 48 }}>
+                <div
+                  style={{
+                    height: 40,
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    color: activeTab === "sample-collection" ? "#1677ff" : "#222",
+                    fontWeight: activeTab === "sample-collection" ? 600 : 400,
+                    justifyContent: collapsed ? "center" : "flex-start",
+                  }}
+                  onClick={() => setActiveTab("sample-collection")}
+                >
+                  <span style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: collapsed ? 40 : undefined,
+                    marginRight: !collapsed ? 8 : 0,
+                  }}>
+                    <FormOutlined style={{ fontSize: 18 }} />
+                  </span>
+                  {!collapsed && "Lấy mẫu hành chính"}
+                </div>
+                <div
+                  style={{
+                    height: 40,
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    color: activeTab === "civil-sample-collection" ? "#1677ff" : "#222",
+                    fontWeight: activeTab === "civil-sample-collection" ? 600 : 400,
+                    justifyContent: collapsed ? "center" : "flex-start",
+                  }}
+                  onClick={() => setActiveTab("civil-sample-collection")}
+                >
+                  <span style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: collapsed ? 40 : undefined,
+                    marginRight: !collapsed ? 8 : 0,
+                  }}>
+                    <FormOutlined style={{ fontSize: 18 }} />
+                  </span>
+                  {!collapsed && "Lấy mẫu dân sự"}
+                </div>
+              </div>
+            )}
+            <Menu
+              mode="inline"
+              selectedKeys={[activeTab]}
+              style={{ borderRight: 0, background: "#fff", paddingTop: 0 }}
+              items={menuItemsBottom}
+              onSelect={handleMenuSelect}
             />
           </div>
 

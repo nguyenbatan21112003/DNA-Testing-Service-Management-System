@@ -14,6 +14,7 @@ import {
   Descriptions,
   Divider,
   Input,
+  Tabs,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -21,6 +22,7 @@ import {
   EyeOutlined,
   SafetyCertificateOutlined,
   ClockCircleOutlined,
+  EyeInvisibleOutlined, // Thêm icon này
 } from "@ant-design/icons";
 import { useOrderContext } from "../../context/OrderContext";
 
@@ -38,6 +40,9 @@ const TestResultVerification = () => {
   const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
+  const [hideModalVisible, setHideModalVisible] = useState(false);
+  const [orderToHide, setOrderToHide] = useState(null);
 
   useEffect(() => {
     loadOrdersNeedingApproval();
@@ -56,7 +61,11 @@ const TestResultVerification = () => {
 
   useEffect(() => {
     const allOrders = getAllOrders();
-    setFilteredOrders(allOrders.filter(order => getStatusText(order.status) === "Chờ xác thực"));
+    // Chỉ lấy các đơn có trạng thái 'Chờ xác thực', 'Hoàn thành', hoặc 'Từ chối'
+    setFilteredOrders(allOrders.filter(order => {
+      const status = getStatusText(order.status);
+      return status === "Chờ xác thực" || status === "Hoàn thành" || status === "Từ chối";
+    }));
   }, [ordersNeedingApproval, getAllOrders]);
 
   const loadOrdersNeedingApproval = () => {
@@ -77,6 +86,26 @@ const TestResultVerification = () => {
   const handleReject = (order) => {
     setPendingRejectOrder(order);
     setRejectModalVisible(true);
+  };
+
+  const handleHideOrder = (order) => {
+    setOrderToHide(order);
+    setHideModalVisible(true);
+  };
+  const confirmHideOrder = () => {
+    if (!orderToHide) return;
+    const orders = getAllOrders();
+    const updatedOrders = orders.map(o => o.id === orderToHide.id ? { ...o, isHiddenByManager: true } : o);
+    localStorage.setItem('dna_orders', JSON.stringify(updatedOrders));
+    window.dispatchEvent(new Event('dna_orders_updated'));
+    setFilteredOrders(prev => prev.filter(o => o.id !== orderToHide.id));
+    setHideModalVisible(false);
+    setOrderToHide(null);
+    message.success('Đã ẩn đơn hàng khỏi danh sách!');
+  };
+  const cancelHideOrder = () => {
+    setHideModalVisible(false);
+    setOrderToHide(null);
   };
 
   const confirmApprove = async () => {
@@ -127,6 +156,16 @@ const TestResultVerification = () => {
     return "Đang xử lý";
   };
 
+  // Hàm lọc theo trạng thái
+  const filterByStatus = (orders, status) => {
+    if (status === "all") return orders;
+    if (status === "waitingApproval") return orders.filter(order => getStatusText(order.status) === "Chờ xác thực");
+    if (status === "processing") return orders.filter(order => getStatusText(order.status) === "Đang xử lý");
+    if (status === "completed") return orders.filter(order => getStatusText(order.status) === "Hoàn thành");
+    if (status === "rejected") return orders.filter(order => getStatusText(order.status) === "Từ chối");
+    return orders;
+  };
+
   const columns = [
     {
       title: "Mã đơn",
@@ -148,80 +187,119 @@ const TestResultVerification = () => {
       width: 200,
     },
     {
+      title: "Phân loại",
+      key: "category",
+      width: 120,
+      render: (_, record) => {
+        if (record.type && record.type.toLowerCase().includes('hành chính'))
+          return <Tag style={{ background: '#36cfc9', color: '#fff', fontWeight: 600, fontSize: 14, border: 'none', borderRadius: 8, padding: '4px 16px' }}>Hành chính</Tag>;
+        if (record.type && record.type.toLowerCase().includes('dân sự'))
+          return <Tag style={{ background: '#722ed1', color: '#fff', fontWeight: 600, fontSize: 14, border: 'none', borderRadius: 8, padding: '4px 16px' }}>Dân sự</Tag>;
+        return <Tag color="#bfbfbf">Khác</Tag>;
+      },
+    },
+    {
+      title: "Nơi lấy mẫu",
+      key: "location",
+      width: 180,
+      render: (_, record) => {
+        if (record.sampleMethod === 'home')
+          return <Tag style={{ background: '#e6f7ff', color: '#1890ff', border: '1px solid #91d5ff', borderRadius: 8, fontWeight: 600, padding: '2px 14px', fontSize: 15 }}>Tại nhà</Tag>;
+        if (record.sampleMethod === 'center')
+          return <Tag style={{ background: '#f6ffed', color: '#52c41a', border: '1px solid #b7eb8f', borderRadius: 8, fontWeight: 600, padding: '2px 14px', fontSize: 15 }}>Tại cơ sở</Tag>;
+        return <Tag>-</Tag>;
+      },
+    },
+    {
       title: "Ngày tạo",
       dataIndex: "date",
       key: "date",
       width: 120,
     },
     {
-      title: "Thời gian chờ",
-      key: "waitingTime",
-      width: 150,
+      title: "Trạng thái",
+      key: "status",
+      width: 120,
       render: (_, record) => {
-        const createdDate = new Date(record.createdAt || record.date);
-        const now = new Date();
-        const diffInHours = Math.floor((now - createdDate) / (1000 * 60 * 60));
-
-        if (diffInHours < 24) {
-          return <Tag color="green">{diffInHours} giờ</Tag>;
-        } else {
-          const diffInDays = Math.floor(diffInHours / 24);
-          return <Tag color="orange">{diffInDays} ngày</Tag>;
-        }
+        const status = getStatusText(record.status);
+        let color = '#b2bec3';
+        if (status === 'Chờ xác thực') color = '#722ed1';
+        else if (status === 'Hoàn thành') color = '#52c41a';
+        else if (status === 'Từ chối') color = '#ff4d4f';
+        return <Tag style={{ background: color, color: '#fff', fontWeight: 700, border: 'none', fontSize: 16, padding: '6px 18px', boxShadow: '0 2px 8px #0001', borderRadius: 8, minWidth: 110, textAlign: 'center', display: 'inline-block' }}>{status}</Tag>;
       },
     },
     {
       title: "Thao tác",
       key: "action",
       width: 200,
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewResult(record)}
-            style={{
-              background: '#1677ff',
-              borderColor: '#1677ff',
-              fontWeight: 600,
-              borderRadius: 20,
-              boxShadow: '0 2px 8px rgba(22,119,255,0.12)',
-              transition: 'all 0.2s',
-            }}
-            onMouseOver={e => {
-              e.currentTarget.style.background = '#0958d9';
-              e.currentTarget.style.borderColor = '#0958d9';
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(9,88,217,0.18)';
-            }}
-            onMouseOut={e => {
-              e.currentTarget.style.background = '#1677ff';
-              e.currentTarget.style.borderColor = '#1677ff';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(22,119,255,0.12)';
-            }}
-          >
-            Xem
-          </Button>
-          <Button
-            type="default"
-            size="small"
-            icon={<CheckCircleOutlined />}
-            onClick={() => handleApprove(record)}
-            style={{ color: "#52c41a", borderColor: "#52c41a" }}
-          >
-            Phê duyệt
-          </Button>
-          <Button
-            type="default"
-            size="small"
-            icon={<CloseCircleOutlined />}
-            onClick={() => handleReject(record)}
-            danger
-          >
-            Từ chối
-          </Button>
-        </Space>
-      ),
+      render: (_, record) => {
+        const status = getStatusText(record.status);
+        return (
+          <Space size="small">
+            <Button
+              type="primary"
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() => handleViewResult(record)}
+              style={{
+                background: '#1677ff',
+                borderColor: '#1677ff',
+                fontWeight: 600,
+                borderRadius: 20,
+                boxShadow: '0 2px 8px rgba(22,119,255,0.12)',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.background = '#0958d9';
+                e.currentTarget.style.borderColor = '#0958d9';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(9,88,217,0.18)';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.background = '#1677ff';
+                e.currentTarget.style.borderColor = '#1677ff';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(22,119,255,0.12)';
+              }}
+            >
+              Xem
+            </Button>
+            {status === 'Chờ xác thực' && (
+              <>
+                <Button
+                  type="default"
+                  size="small"
+                  icon={<CheckCircleOutlined />}
+                  onClick={() => handleApprove(record)}
+                  style={{ color: "#52c41a", borderColor: "#52c41a" }}
+                >
+                  Phê duyệt
+                </Button>
+                <Button
+                  type="default"
+                  size="small"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => handleReject(record)}
+                  danger
+                >
+                  Từ chối
+                </Button>
+              </>
+            )}
+            {status === 'Hoàn thành' && (
+              <Button
+                size="small"
+                type="default"
+                danger
+                icon={<EyeInvisibleOutlined style={{ color: '#888' }} />} // Thêm icon
+                onClick={() => handleHideOrder(record)}
+                style={{ borderRadius: 20, fontWeight: 600, borderColor: '#bfbfbf', color: '#888' }}
+              >
+                Ẩn
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -229,7 +307,15 @@ const TestResultVerification = () => {
     total: getAllOrders().filter(o => getStatusText(o.status) === "Chờ xác thực").length,
     approved: getAllOrders().filter(o => getStatusText(o.status) === "Hoàn thành").length,
     rejected: getAllOrders().filter(o => getStatusText(o.status) === "Từ chối").length,
-    waiting: getAllOrders().filter(o => getStatusText(o.status) === "Đang xử lý").length,
+    hidden: getAllOrders().filter(o => o.isHiddenByManager).length, // Đếm đơn đã ẩn
+  };
+
+  const handleUnhideOrder = (order) => {
+    const orders = getAllOrders();
+    const updatedOrders = orders.map(o => o.id === order.id ? { ...o, isHiddenByManager: false } : o);
+    localStorage.setItem('dna_orders', JSON.stringify(updatedOrders));
+    window.dispatchEvent(new Event('dna_orders_updated'));
+    message.success('Đã hiện lại đơn hàng!');
   };
 
   return (
@@ -287,10 +373,10 @@ const TestResultVerification = () => {
           <Col xs={24} sm={6}>
             <Card>
               <Statistic
-                title="Đang chờ xử lý"
-                value={stats.waiting}
-                prefix={<ClockCircleOutlined style={{ color: "#fa8c16" }} />}
-                valueStyle={{ color: "#fa8c16", fontWeight: 600 }}
+                title="Đơn đã ẩn"
+                value={stats.hidden}
+                prefix={<EyeInvisibleOutlined style={{ color: "#888" }} />}
+                valueStyle={{ color: "#888", fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -307,6 +393,18 @@ const TestResultVerification = () => {
           border: "1px solid #f0f0f0",
         }}
       >
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          style={{ marginBottom: 16 }}
+          items={[
+            { key: "all", label: "Tất cả", },
+            { key: "waitingApproval", label: "Chờ xác thực" },
+            { key: "completed", label: "Hoàn thành" },
+            { key: "rejected", label: "Từ chối" },
+            { key: "hidden", label: "Đơn đã ẩn" },
+          ]}
+        />
         <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
           <Input.Search
             placeholder="Tìm kiếm theo tên khách hàng, mã đơn, loại xét nghiệm..."
@@ -317,18 +415,40 @@ const TestResultVerification = () => {
             style={{ width: 320 }}
           />
         </div>
-        {filteredOrders.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
-            <SafetyCertificateOutlined style={{ fontSize: 48, marginBottom: 16 }} />
-            <Title level={4} style={{ color: "#999" }}>
-              Không có đơn hàng nào cần xác thực
-            </Title>
-            <Text>Tất cả kết quả xét nghiệm đã được xác thực hoặc chưa có kết quả cần xác thực.</Text>
-          </div>
+        {activeTab === 'hidden' ? (
+          <Table
+            columns={[
+              ...columns.filter(col => col.key !== 'action'),
+              {
+                title: 'Thao tác',
+                key: 'action-unhide',
+                width: 120,
+                render: (_, record) => (
+                  <Button
+                    size="small"
+                    type="primary"
+                    onClick={() => handleUnhideOrder(record)}
+                    style={{ background: "#52c41a", color: "#fff" }}
+                  >
+                    Hiện lại
+                  </Button>
+                ),
+              },
+            ]}
+            dataSource={filteredOrders.filter(order => order.isHiddenByManager)}
+            rowKey={(record) => record.id}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn đã ẩn`,
+            }}
+            scroll={{ x: 1000 }}
+          />
         ) : (
           <Table
             columns={columns}
-            dataSource={filteredOrders}
+            dataSource={filterByStatus(filteredOrders, activeTab).filter(order => !order.isHiddenByManager)}
             rowKey={(record) => record.id}
             pagination={{
               pageSize: 10,
@@ -494,6 +614,19 @@ const TestResultVerification = () => {
             style={{ width: "100%", minHeight: 80, padding: 8, border: '1px solid #d9d9d9', borderRadius: 4, marginTop: 8 }}
           />
         </div>
+      </Modal>
+
+      {/* Modal xác nhận ẩn đơn hàng */}
+      <Modal
+        open={hideModalVisible}
+        onCancel={cancelHideOrder}
+        onOk={confirmHideOrder}
+        okText="Ẩn"
+        cancelText="Hủy"
+        okButtonProps={{ danger: true }}
+        title={orderToHide ? `Xác nhận ẩn đơn hàng #${orderToHide.id}` : "Xác nhận ẩn đơn hàng"}
+      >
+        <p>Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không?</p>
       </Modal>
     </div>
   );
