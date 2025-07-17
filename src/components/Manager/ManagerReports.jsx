@@ -12,15 +12,18 @@ const ManagerReports = () => {
         customerSatisfaction: 0,
     })
     const [chartData, setChartData] = useState([])
-    const [staffPerformance, setStaffPerformance] = useState([])
     const [serviceDistribution, setServiceDistribution] = useState([])
 
-    // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
     useEffect(() => {
         const handleStorageChange = (event) => {
             if (event.key === "dna_orders") {
-                // Force re-render để cập nhật báo cáo
-                window.location.reload();
+                const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
+                setReportData({
+                    totalOrders: orders.length || 156,
+                    totalRevenue: 2450000000,
+                    onTimeRate: 92.3,
+                    customerSatisfaction: 4.7,
+                });
             }
         };
         window.addEventListener("storage", handleStorageChange);
@@ -28,15 +31,13 @@ const ManagerReports = () => {
     }, []);
 
     useEffect(() => {
-        // Tạo dữ liệu báo cáo mẫu
         const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
         setReportData({
             totalOrders: orders.length || 156,
-            totalRevenue: 2450000000, // 2.45 tỷ VNĐ
+            totalRevenue: 2450000000,
             onTimeRate: 92.3,
             customerSatisfaction: 4.7,
         })
-        // Biểu đồ xu hướng 12 tháng
         const monthlyData = []
         for (let i = 11; i >= 0; i--) {
             const date = new Date()
@@ -49,15 +50,12 @@ const ManagerReports = () => {
             })
         }
         setChartData(monthlyData)
-        // Phân bố loại dịch vụ (mẫu)
         setServiceDistribution([
             { name: "Xét nghiệm ADN cha con", value: 45, color: "#722ed1" },
             { name: "Xét nghiệm huyết thống", value: 25, color: "#1890ff" },
             { name: "Xét nghiệm anh em", value: 20, color: "#52c41a" },
             { name: "Xét nghiệm khác", value: 10, color: "#faad14" },
         ])
-        // Hiệu suất nhân viên - để trống, chờ API
-        setStaffPerformance([])
     }, [])
 
     const formatCurrency = (amount) => {
@@ -67,7 +65,6 @@ const ManagerReports = () => {
         }).format(amount)
     }
 
-    // Cột cho bảng hiệu suất nhân viên
     const staffColumns = [
         { title: "Nhân viên", dataIndex: "name", key: "name", render: (text) => <span><UserOutlined /> {text}</span> },
         { title: "Hoàn thành", dataIndex: "completed", key: "completed" },
@@ -144,7 +141,7 @@ const ManagerReports = () => {
             <Card title={<span style={{ color: "#722ed1" }}>Hiệu suất nhân viên</span>} style={{ marginBottom: 32 }}>
                 <Table
                     columns={staffColumns}
-                    dataSource={staffPerformance}
+                    dataSource={[]}
                     locale={{ emptyText: <Empty description="Chưa có dữ liệu nhân viên" /> }}
                     pagination={false}
                     rowKey="name"

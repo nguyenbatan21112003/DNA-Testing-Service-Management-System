@@ -225,7 +225,11 @@ export function NotificationProvider({ children }) {
     );
 
     // Thông báo cho Manager nếu cần xác thực
-    if (newStatus === "Chờ xác nhận" || newStatus === "WAITING_APPROVAL") {
+    if (
+      newStatus === "Chờ xác thực" ||
+      newStatus === "Chờ xác nhận" ||
+      newStatus === "WAITING_APPROVAL"
+    ) {
       createNotification(
         NOTIFICATION_TYPES.ORDER_NEEDS_APPROVAL,
         "Cần xác thực kết quả",

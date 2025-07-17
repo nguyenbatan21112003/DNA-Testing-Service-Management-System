@@ -19,6 +19,7 @@ import {
   Col,
   Typography,
   Divider,
+  Statistic,
 } from "antd";
 import {
   HomeOutlined,
@@ -30,6 +31,7 @@ import {
   PrinterOutlined,
   CheckOutlined,
   ExperimentOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useOrderContext } from "../../context/OrderContext";
@@ -76,7 +78,7 @@ const HomeSampling = () => {
       .filter(
         (order) =>
           order.sampleMethod === "home" &&
-          !order.isHidden &&
+          !order.isHiddenByStaff &&
           order.staffAssigned
       )
       .map((order) => {
@@ -206,7 +208,9 @@ const HomeSampling = () => {
       case "CANCELLED":
         return "#d63031"; // đỏ tươi
       case "PROCESSING":
-        return "#fa8c16"; // xanh dương
+        return "#fa8c16"; // cam
+      case "COMPLETED":
+        return "#52c41a"; // xanh lá (đồng bộ với Xét nghiệm & Kết quả)
       default:
         return "#b2bec3"; // xám nhạt
     }
@@ -230,26 +234,43 @@ const HomeSampling = () => {
     }
   };
 
+  // Tính toán thống kê trạng thái
+  const stats = {
+    total: samplingRequests.length,
+    kitNotSent: samplingRequests.filter((r) => r.status === "KIT_NOT_SENT")
+      .length,
+    kitSent: samplingRequests.filter((r) => r.status === "KIT_SENT").length,
+    sampleReceived: samplingRequests.filter(
+      (r) => r.status === "SAMPLE_RECEIVED"
+    ).length,
+    processing: samplingRequests.filter((r) => r.status === "PROCESSING")
+      .length,
+    completed: samplingRequests.filter((r) => r.status === "COMPLETED").length,
+  };
+
   const columns = [
     {
       title: "Mã đơn",
       dataIndex: "id",
       key: "id",
-      width: 100,
-      render: (id) => `#${id}`,
+      width: 180,
+      render: (id) => <span>#{id}</span>,
+      align: "left",
     },
     {
       title: "Mã kit",
       dataIndex: "kitId",
       key: "kitId",
-      width: 120,
-      render: (kitId) => kitId || "-",
+      width: 220,
+      render: (kitId) => <span>{kitId || "-"}</span>,
+      align: "left",
     },
     {
       title: "Khách hàng",
       dataIndex: "name",
       key: "name",
       width: 150,
+      align: "left",
     },
     {
       title: "Địa chỉ",
@@ -257,12 +278,13 @@ const HomeSampling = () => {
       key: "address",
       width: 250,
       render: (address) => (
-        <span>
+        <span style={{ textAlign: "left", display: "block" }}>
           <EnvironmentOutlined style={{ marginRight: 4, color: "#00a67e" }} />
           {address}
         </span>
       ),
       ellipsis: true,
+      align: "left",
     },
     {
       title: "Số điện thoại",
@@ -270,24 +292,21 @@ const HomeSampling = () => {
       key: "phone",
       width: 120,
       render: (phone) => (
-        <span>
+        <span style={{ textAlign: "left", display: "block" }}>
           <PhoneOutlined style={{ marginRight: 4, color: "#1890ff" }} />
           {phone}
         </span>
       ),
+      align: "left",
     },
     {
-      title: "Trạng thái kit",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       width: 130,
       render: (_, record) => (
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          style={{ display: "flex", alignItems: "center", textAlign: "left" }}
         >
           <Tag
             style={{
@@ -299,7 +318,7 @@ const HomeSampling = () => {
               fontSize: 14,
               border: "none",
               letterSpacing: 0.5,
-              textAlign: "center",
+              textAlign: "left",
               minWidth: 110,
             }}
           >
@@ -307,28 +326,14 @@ const HomeSampling = () => {
           </Tag>
         </div>
       ),
-    },
-    {
-      title: "Ngày hẹn",
-      dataIndex: "scheduledDate",
-      key: "scheduledDate",
-      width: 140,
-      render: (date) =>
-        date ? (
-          <span>
-            <ClockCircleOutlined style={{ marginRight: 4 }} />
-            {date}
-          </span>
-        ) : (
-          <span style={{ color: "#999" }}>Chưa hẹn</span>
-        ),
+      align: "left",
     },
     {
       title: "Thao tác",
       key: "action",
       width: 280,
       render: (_, record) => (
-        <Space size="small">
+        <Space size="small" style={{ textAlign: "left" }}>
           <Button
             type="primary"
             size="small"
@@ -398,6 +403,7 @@ const HomeSampling = () => {
           )}
         </Space>
       ),
+      align: "left",
     },
   ];
 
@@ -413,6 +419,70 @@ const HomeSampling = () => {
           Quản lý các yêu cầu lấy mẫu tại nhà của khách hàng
         </p>
       </div>
+
+      {/* Thống kê tổng quan các trạng thái */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Tổng yêu cầu"
+              value={stats.total}
+              valueStyle={{ color: "#00a67e" }}
+              prefix={<FileTextOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Chưa gửi kit"
+              value={stats.kitNotSent}
+              valueStyle={{ color: "#7c3aed" }}
+              prefix={<GiftOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Đã gửi kit"
+              value={stats.kitSent}
+              valueStyle={{ color: "#0984e3" }}
+              prefix={<PrinterOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Đã nhận mẫu"
+              value={stats.sampleReceived}
+              valueStyle={{ color: "#16a34a" }}
+              prefix={<CheckOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Đang xử lý"
+              value={stats.processing}
+              valueStyle={{ color: "#fa8c16" }}
+              prefix={<ExperimentOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Hoàn thành"
+              value={stats.completed}
+              valueStyle={{ color: "#52c41a" }}
+              prefix={<CheckCircleOutlined />}
+            />
+          </Card>
+        </Col>
+      </Row>
 
       <Card>
         <Tabs defaultActiveKey="all">
@@ -487,6 +557,24 @@ const HomeSampling = () => {
               columns={columns}
               dataSource={samplingRequests.filter(
                 (req) => req.status === "PROCESSING"
+              )}
+              rowKey="id"
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} yêu cầu`,
+              }}
+              scroll={{ x: 1200 }}
+            />
+          </TabPane>
+          {/* Thêm tab Hoàn thành */}
+          <TabPane tab="Hoàn thành" key="completed">
+            <Table
+              columns={columns}
+              dataSource={samplingRequests.filter(
+                (req) => req.status === "COMPLETED"
               )}
               rowKey="id"
               pagination={{

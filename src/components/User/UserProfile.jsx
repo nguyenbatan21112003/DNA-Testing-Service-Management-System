@@ -259,6 +259,17 @@ const UserProfile = () => {
     );
   };
 
+  // Hàm tải kết quả cho đơn hành chính
+  const handleDownloadResult = (order) => {
+    // Nếu đã có file PDF kết quả, có thể lấy link và window.open(link)
+    // Ở đây tạm thời sẽ in modal kết quả dưới dạng PDF
+    setSelectedOrder(order);
+    setShowResultModal(true);
+    setTimeout(() => {
+      window.print();
+    }, 500); // Đợi modal mở xong mới in
+  };
+
   return (
     <div
       className="user-profile-page"
@@ -592,36 +603,31 @@ const UserProfile = () => {
                   </select>
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Tải file FingerID</label>
-                  <input
-                    type="file"
-                    name="fingerIdFile"
-                    accept=".jpg,.jpeg,.png,.pdf"
-                    onChange={handleChange}
-                  />
-                  {form.fingerIdFile &&
-                    (typeof form.fingerIdFile === "string" ? (
-                      <div style={{ marginTop: 6 }}>
-                        <a
-                          href={form.fingerIdFile}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Xem file đã tải lên
-                        </a>
-                      </div>
-                    ) : (
-                      <div style={{ marginTop: 6 }}>
-                        {form.fingerIdFile.name}
-                      </div>
-                    ))}
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+                <button type="submit" className="profile-save-btn" style={{
+                  background: '#009e74',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '14px 48px',
+                  fontWeight: 700,
+                  fontSize: 20,
+                  boxShadow: '0 2px 12px #009e7422',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, box-shadow 0.2s',
+                  margin: '0 auto',
+                  display: 'block',
+                }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.background = '#00c896';
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.background = '#009e74';
+                  }}
+                >
+                  Lưu thay đổi
+                </button>
               </div>
-              <button type="submit" className="profile-save-btn">
-                Lưu thay đổi
-              </button>
               {success && <span className="form-success">{success}</span>}
             </form>
           )}
@@ -1047,6 +1053,41 @@ const UserProfile = () => {
                                   style={{ marginRight: 6 }}
                                 />{" "}
                                 Xem kết quả
+                              </button>
+                            )}
+                            {/* Nút Tải kết quả cho đơn hành chính */}
+                            {(getStatusText(getDisplayStatus(order)) === "Đã có kết quả" || getStatusText(getDisplayStatus(order)) === "Hoàn thành") && order.type && order.type.toLowerCase().includes("hành chính") && (
+                              <button
+                                style={{
+                                  border: "1.5px solid #00bfae",
+                                  color: "#fff",
+                                  background: "#00bfae",
+                                  borderRadius: 12,
+                                  padding: "10px 22px",
+                                  fontWeight: 600,
+                                  fontSize: 16,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  transition: "background 0.2s, color 0.2s, border 0.2s",
+                                  outline: "none",
+                                  cursor: "pointer",
+                                  boxShadow: "0 2px 8px #00bfae22",
+                                }}
+                                onMouseOver={e => {
+                                  e.currentTarget.style.background = "#fff";
+                                  e.currentTarget.style.color = "#00bfae";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onMouseOut={e => {
+                                  e.currentTarget.style.background = "#00bfae";
+                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.border = "1.5px solid #00bfae";
+                                }}
+                                onClick={() => handleDownloadResult(order)}
+                              >
+                                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" style={{ marginRight: 6 }}><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                Tải kết quả
                               </button>
                             )}
                             {/* Nút Đánh giá cho trạng thái Hoàn thành */}

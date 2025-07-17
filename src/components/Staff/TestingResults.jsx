@@ -14,7 +14,6 @@ import {
   Row,
   Col,
   Statistic,
-  Typography,
   Tooltip,
 } from "antd";
 import {
@@ -31,8 +30,6 @@ import { useOrderContext } from "../../context/OrderContext";
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { TabPane } = Tabs;
-const { Title, Text, Paragraph } = Typography;
 
 const TestingResults = () => {
   const { orders, updateOrder } = useOrderContext();
@@ -68,7 +65,7 @@ const TestingResults = () => {
     setFilteredOrders(
       orders.filter(
         (order) =>
-          !order.isHidden &&
+          !order.isHiddenByStaff &&
           getStatusText(order.status) === "Đang xử lý" &&
           ((Array.isArray(order.resultTableData) &&
             order.resultTableData.length > 0) ||
@@ -92,12 +89,13 @@ const TestingResults = () => {
   // SỬA LOGIC FILTER ĐỂ HIỂN THỊ TOÀN BỘ ĐƠN HÀNG
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders.filter((order) => !order.isHidden));
+      setFilteredOrders(orders.filter((order) => !order.isHiddenByStaff));
     } else {
       setFilteredOrders(
         orders.filter(
           (order) =>
-            !order.isHidden && getStatusText(order.status) === filterStatus
+            !order.isHiddenByStaff &&
+            getStatusText(order.status) === filterStatus
         )
       );
     }
@@ -112,13 +110,43 @@ const TestingResults = () => {
     }
   }, [editModalVisible, form]);
 
+  useEffect(() => {
+    const handleOrdersUpdated = () => {
+      const updatedOrders = JSON.parse(
+        localStorage.getItem("dna_orders") || "[]"
+      );
+      setFilteredOrders(updatedOrders);
+      // Nếu đang mở modal, cập nhật lại selectedOrder từ localStorage
+      if (selectedOrder) {
+        const updatedOrder = updatedOrders.find(
+          (o) => o.id === selectedOrder.id
+        );
+        if (updatedOrder) setSelectedOrder(updatedOrder);
+      }
+    };
+    window.addEventListener("dna_orders_updated", handleOrdersUpdated);
+    return () =>
+      window.removeEventListener("dna_orders_updated", handleOrdersUpdated);
+  }, [selectedOrder]);
+
+  // Sửa hàm handleViewResult để luôn lấy order mới nhất từ localStorage khi mở modal
   const handleViewResult = (order) => {
-    setSelectedOrder(order);
+    // Lấy lại order mới nhất từ localStorage
+    const updatedOrders = JSON.parse(
+      localStorage.getItem("dna_orders") || "[]"
+    );
+    const updatedOrder = updatedOrders.find((o) => o.id === order.id) || order;
+    setSelectedOrder(updatedOrder);
     setModalVisible(true);
   };
 
   const handleEditResult = (order) => {
-    setSelectedOrder(order);
+    // Lấy lại order mới nhất từ localStorage
+    const updatedOrders = JSON.parse(
+      localStorage.getItem("dna_orders") || "[]"
+    );
+    const updatedOrder = updatedOrders.find((o) => o.id === order.id) || order;
+    setSelectedOrder(updatedOrder);
 
     if (
       currentEditOrderId === order.id &&
@@ -129,15 +157,18 @@ const TestingResults = () => {
     } else {
       let initialTableData = [];
 
-      if (order.resultTableData && Array.isArray(order.resultTableData)) {
-        initialTableData = [...order.resultTableData];
+      if (
+        updatedOrder.resultTableData &&
+        Array.isArray(updatedOrder.resultTableData)
+      ) {
+        initialTableData = [...updatedOrder.resultTableData];
       } else if (
-        !order.resultTableData &&
-        order.result &&
-        typeof order.result === "string"
+        !updatedOrder.resultTableData &&
+        updatedOrder.result &&
+        typeof updatedOrder.result === "string"
       ) {
         try {
-          const parsedData = JSON.parse(order.result);
+          const parsedData = JSON.parse(updatedOrder.result);
           if (Array.isArray(parsedData)) {
             initialTableData = parsedData;
           }
@@ -148,10 +179,10 @@ const TestingResults = () => {
 
       if (
         initialTableData.length === 0 &&
-        Array.isArray(order.members) &&
-        order.members.length > 0
+        Array.isArray(updatedOrder.members) &&
+        updatedOrder.members.length > 0
       ) {
-        initialTableData = order.members.map((mem, idx) => ({
+        initialTableData = updatedOrder.members.map((mem, idx) => ({
           key: `${Date.now()}-${idx}`,
           name: mem.name || mem.hoTen || mem.hovaten || "",
           birth: mem.birth || mem.birthYear || mem.namSinh || mem.namsinh || "",
@@ -166,11 +197,11 @@ const TestingResults = () => {
         }));
       } else if (
         initialTableData.length === 0 &&
-        order.sampleInfo &&
-        Array.isArray(order.sampleInfo.donors) &&
-        order.sampleInfo.donors.length > 0
+        updatedOrder.sampleInfo &&
+        Array.isArray(updatedOrder.sampleInfo.donors) &&
+        updatedOrder.sampleInfo.donors.length > 0
       ) {
-        initialTableData = order.sampleInfo.donors.map((donor, idx) => ({
+        initialTableData = updatedOrder.sampleInfo.donors.map((donor, idx) => ({
           key: `${Date.now()}-${idx}`,
           name: donor.name || "",
           birth:
@@ -190,12 +221,12 @@ const TestingResults = () => {
       }
 
       const formValues = {
-        status: order.status,
-        result: order.result || "",
-        testingMethod: order.testingMethod || "STR",
-        testingNotes: order.testingNotes || "",
+        status: updatedOrder.status,
+        result: updatedOrder.result || "",
+        testingMethod: updatedOrder.testingMethod || "STR",
+        testingNotes: updatedOrder.testingNotes || "",
         resultTableData: initialTableData,
-        conclusion: order.conclusion || "",
+        conclusion: updatedOrder.conclusion || "",
       };
 
       form.setFieldsValue(formValues);
@@ -235,6 +266,7 @@ const TestingResults = () => {
           resultTableData: resultTableDataCopy,
           updatedAt: new Date().toLocaleString("vi-VN"),
         });
+        window.dispatchEvent(new Event("dna_orders_updated"));
         setTempFormData({});
         setCurrentEditOrderId(null);
         setEditModalVisible(false);
@@ -255,6 +287,7 @@ const TestingResults = () => {
         resultTableData: resultTableDataCopy,
         updatedAt: new Date().toLocaleString("vi-VN"),
       });
+      window.dispatchEvent(new Event("dna_orders_updated"));
       setTempFormData({});
       setCurrentEditOrderId(null);
       setEditModalVisible(false);
@@ -275,7 +308,7 @@ const TestingResults = () => {
 
   const handleConfirmHide = () => {
     if (confirmHideOrder) {
-      updateOrder(confirmHideOrder.id, { isHidden: true });
+      updateOrder(confirmHideOrder.id, { isHiddenByStaff: true });
       message.success("Đơn hàng đã được ẩn khỏi giao diện nhân viên!");
       setConfirmHideOrder(null);
     }
@@ -286,7 +319,7 @@ const TestingResults = () => {
   };
 
   const handleUnhideOrder = (order) => {
-    updateOrder(order.id, { isHidden: false });
+    updateOrder(order.id, { isHiddenByStaff: false });
     message.success("Đơn hàng đã được hiện lại cho nhân viên!");
   };
 
@@ -350,30 +383,20 @@ const TestingResults = () => {
       key: "type",
       width: 200,
     },
+    // Thêm cột Phân loại
     {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
+      title: "Phân loại",
+      dataIndex: "type",
+      key: "caseType",
       width: 120,
-      render: (status) => (
-        <Tag
-          style={{
-            background: getStatusColor(status),
-            color: "#fff",
-            fontWeight: 700,
-            border: "none",
-            fontSize: 16,
-            padding: "6px 18px",
-            boxShadow: "0 2px 8px #0001",
-            borderRadius: 8,
-            minWidth: 110,
-            textAlign: "center",
-            display: "inline-block",
-          }}
-        >
-          {getStatusText(status)}
-        </Tag>
-      ),
+      render: (type) => {
+        if (!type) return <Tag color="#bfbfbf">Khác</Tag>;
+        const t = type.toLowerCase();
+        if (t.includes("hành chính"))
+          return <Tag color="#36cfc9">Hành chính</Tag>;
+        if (t.includes("dân sự")) return <Tag color="#722ed1">Dân sự</Tag>;
+        return <Tag color="#bfbfbf">Khác</Tag>;
+      },
     },
     {
       title: "Địa điểm lấy mẫu",
@@ -419,6 +442,33 @@ const TestingResults = () => {
       key: "date",
       width: 120,
     },
+    // Di chuyển cột Trạng thái vào đây
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status) => (
+        <Tag
+          style={{
+            background: getStatusColor(status),
+            color: "#fff",
+            fontWeight: 700,
+            border: "none",
+            fontSize: 16,
+            padding: "6px 18px",
+            boxShadow: "0 2px 8px #0001",
+            borderRadius: 8,
+            minWidth: 110,
+            textAlign: "center",
+            display: "inline-block",
+          }}
+        >
+          {getStatusText(status)}
+        </Tag>
+      ),
+    },
+    // Sau đó mới đến Thao tác
     {
       title: "Thao tác",
       key: "action",
@@ -444,22 +494,24 @@ const TestingResults = () => {
               Nhập kết quả
             </Button>
           )}
-          <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
-            <Button
-              icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
-              onClick={() => handleDeleteOrder(record)}
-              size="small"
-              style={{
-                marginLeft: 8,
-                borderColor: "#bfbfbf",
-                color: "#595959",
-                background: "#f5f5f5",
-                fontWeight: 600,
-              }}
-            >
-              Ẩn
-            </Button>
-          </Tooltip>
+          {getStatusText(record.status) !== "Đang xử lý" && (
+            <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+              <Button
+                icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
+                onClick={() => handleDeleteOrder(record)}
+                size="small"
+                style={{
+                  marginLeft: 8,
+                  borderColor: "#bfbfbf",
+                  color: "#595959",
+                  background: "#f5f5f5",
+                  fontWeight: 600,
+                }}
+              >
+                Ẩn
+              </Button>
+            </Tooltip>
+          )}
           {record.status === STATUS_REJECTED && record.managerNote && (
             <Button
               size="small"
@@ -499,7 +551,7 @@ const TestingResults = () => {
     withResults: orders.filter((o) => o.result).length,
   };
 
-  // Ưu tiên lấy từ resultTableData, nếu không có thì lấy từ sampleInfo.donors, nếu không có thì lấy từ members
+  // Ưu tiên lấy từ resultTableData, nếu không có thì lấy từ sampleInfo.donors
   const sampleData =
     Array.isArray(selectedOrder?.resultTableData) &&
     selectedOrder.resultTableData.length > 0
@@ -507,9 +559,6 @@ const TestingResults = () => {
       : Array.isArray(selectedOrder?.sampleInfo?.donors) &&
         selectedOrder.sampleInfo.donors.length > 0
       ? selectedOrder.sampleInfo.donors
-      : Array.isArray(selectedOrder?.members) &&
-        selectedOrder.members.length > 0
-      ? selectedOrder.members
       : [];
 
   return (
@@ -732,7 +781,7 @@ const TestingResults = () => {
                       ),
                     },
                   ]}
-                  dataSource={orders.filter((order) => order.isHidden)}
+                  dataSource={orders.filter((order) => order.isHiddenByStaff)}
                   rowKey={(record) => record.id || String(Math.random())}
                   pagination={{
                     pageSize: 10,

@@ -97,7 +97,7 @@ const CenterSampling = () => {
     const centerSamplingOrders = allOrders
       .filter((order) =>
         order.sampleMethod === "center" &&
-        !order.isHidden &&
+        !order.isHiddenByStaff &&
         allowedStatuses.includes(getStatusText(order.status))
       )
       .map((order) => {
@@ -138,6 +138,14 @@ const CenterSampling = () => {
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
+  }, [loadAppointments]);
+
+  useEffect(() => {
+    const handleOrdersUpdated = () => {
+      loadAppointments();
+    };
+    window.addEventListener("dna_orders_updated", handleOrdersUpdated);
+    return () => window.removeEventListener("dna_orders_updated", handleOrdersUpdated);
   }, [loadAppointments]);
 
   const handleViewAppointment = (appointment) => {

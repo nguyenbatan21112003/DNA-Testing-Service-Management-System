@@ -100,35 +100,6 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         }
     };
 
-    // Hàm chỉ lưu draft (submit form hoặc Enter)
-    const handleSaveDraft = (e) => {
-        e.preventDefault();
-        const data = { ...form, testDate: form.testDate?.toLocaleDateString("vi-VN") };
-        const saved = JSON.parse(localStorage.getItem("civil_sample_collections") || "[]");
-        localStorage.setItem("civil_sample_collections", JSON.stringify([...saved, data]));
-        setShowSuccessOverlay(true);
-        setTimeout(() => {
-            setShowSuccessOverlay(false);
-            setForm({
-                fullName: "",
-                phone: "",
-                email: "",
-                address: "",
-                serviceType: "",
-                serviceCategory: "Dân sự",
-                sampleMethod: "center",
-                cccd: "",
-                testDate: null,
-                note: "",
-                members: [
-                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
-                    { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
-                ],
-            });
-            setErrors({});
-        }, 5000);
-    };
-
     // Hàm xác nhận lấy mẫu (bấm nút)
     const handleConfirmSample = () => {
         if (!validate()) {
@@ -244,7 +215,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                 </div>
             )}
             <h2 style={{ textAlign: "center", color: "#009e74", fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Lấy mẫu dân sự</h2>
-            <form onSubmit={handleSaveDraft}>
+            <form onSubmit={handleConfirmSample}>
                 {/* Nhóm thông tin khách hàng */}
                 <div style={{ marginBottom: 36, background: '#f4fafe', borderRadius: 18, border: '2px solid #b6e4e0', boxShadow: '0 4px 16px #b6e4e033', padding: 32 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>

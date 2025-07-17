@@ -290,6 +290,7 @@ const SampleCollection = ({ caseType }) => {
         return order;
       });
       localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
+      window.dispatchEvent(new Event("dna_orders_updated"));
 
       setShowSuccessOverlay(true);
       setTimeout(() => {
@@ -371,6 +372,7 @@ const SampleCollection = ({ caseType }) => {
                       //   !!selectedOrder && !!selectedOrder.appointmentDate
                       // }
                       disabledDate={disabledDate}
+                      placeholder="Chọn ngày lấy mẫu"
                     />
                   </Form.Item>
                 </Col>
@@ -610,9 +612,6 @@ const SampleCollection = ({ caseType }) => {
                         />
                       </Form.Item>
                     </Col>
-                  </Row>
-
-                  <Row gutter={16}>
                     <Col span={12}>
                       <Form.Item label="Ngày cấp">
                         <DatePicker
@@ -625,9 +624,13 @@ const SampleCollection = ({ caseType }) => {
                           disabledDate={(current) =>
                             current && current > dayjs().endOf("day")
                           }
+                          placeholder="Chọn ngày cấp"
                         />
                       </Form.Item>
                     </Col>
+                  </Row>
+
+                  <Row gutter={16}>
                     <Col span={12}>
                       <Form.Item label="Nơi cấp">
                         <Input
@@ -641,6 +644,55 @@ const SampleCollection = ({ caseType }) => {
                           }
                           placeholder="Nơi cấp giấy tờ"
                         />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Vân tay">
+                        <Upload
+                          listType="picture-card"
+                          showUploadList={false}
+                          beforeUpload={(file) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                              updateDonor(
+                                donor.id,
+                                "fingerprint",
+                                e.target.result
+                              );
+                            };
+                            reader.readAsDataURL(file);
+                            return false; // Ngăn upload lên server
+                          }}
+                        >
+                          {donor.fingerprint ? (
+                            <img
+                              src={donor.fingerprint}
+                              alt="fingerprint"
+                              style={{
+                                width: "100%",
+                                maxHeight: 80,
+                                objectFit: "contain",
+                              }}
+                            />
+                          ) : (
+                            <div>
+                              <PlusOutlined />
+                              <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                            </div>
+                          )}
+                        </Upload>
+                        {donor.fingerprint && (
+                          <Button
+                            danger
+                            size="small"
+                            style={{ marginTop: 4 }}
+                            onClick={() =>
+                              updateDonor(donor.id, "fingerprint", null)
+                            }
+                          >
+                            Xóa ảnh
+                          </Button>
+                        )}
                       </Form.Item>
                     </Col>
                   </Row>

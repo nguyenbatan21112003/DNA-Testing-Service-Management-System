@@ -32,6 +32,9 @@ const getStatusText = (status) => {
   if (s === "completed" || s === "hoàn thành") return "Hoàn thành";
   if (s === "đang xử lý" || s === "processing" || s === "dangxuly")
     return "Đang xử lý";
+  if (s === "sample_received") return "Đã nhận mẫu";
+  if (s === "kit_sent") return "Đã gửi kit";
+  if (s === "kit_not_sent") return "Chưa gửi kit";
   return status;
 };
 
