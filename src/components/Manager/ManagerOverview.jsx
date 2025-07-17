@@ -8,8 +8,10 @@ const ManagerOverview = () => {
     useEffect(() => {
         const handleStorageChange = (event) => {
             if (event.key === "dna_orders") {
-                // Force re-render để cập nhật thống kê
-                window.location.reload();
+                // Chỉ cập nhật lại dữ liệu, không reload trang
+                // Gọi lại hàm fetchActivities hoặc setStats nếu cần
+                fetchActivities && fetchActivities();
+                // Nếu có hàm cập nhật thống kê, gọi ở đây
             }
         };
         window.addEventListener("storage", handleStorageChange);

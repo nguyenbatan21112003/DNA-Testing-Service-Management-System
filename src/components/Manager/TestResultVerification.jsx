@@ -119,7 +119,7 @@ const TestResultVerification = () => {
     setApproveConfirmVisible(false);
     setPendingApproveOrder(null);
     message.success("Đã phê duyệt kết quả xét nghiệm thành công!");
-    setFilteredOrders(prev => prev.filter(order => order.id !== pendingApproveOrder.id));
+    // Đơn KHÔNG bị ẩn khỏi danh sách, chỉ cập nhật trạng thái
   };
 
   const confirmReject = async () => {
@@ -134,7 +134,7 @@ const TestResultVerification = () => {
     setRejectNote("");
     setPendingRejectOrder(null);
     message.success("Đã từ chối kết quả xét nghiệm!");
-    setFilteredOrders(prev => prev.filter(order => order.id !== pendingRejectOrder.id));
+    // Đơn KHÔNG bị ẩn khỏi danh sách, chỉ cập nhật trạng thái
   };
 
   // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa

@@ -19,8 +19,17 @@ const ManagerReports = () => {
     useEffect(() => {
         const handleStorageChange = (event) => {
             if (event.key === "dna_orders") {
-                // Force re-render để cập nhật báo cáo
-                window.location.reload();
+                // Chỉ cập nhật lại dữ liệu, không reload trang
+                // Gọi lại hàm setReportData, setChartData, setStaffPerformance, ... nếu cần
+                // Ví dụ:
+                const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
+                setReportData({
+                    totalOrders: orders.length || 156,
+                    totalRevenue: 2450000000,
+                    onTimeRate: 92.3,
+                    customerSatisfaction: 4.7,
+                });
+                // ... cập nhật các state khác nếu cần
             }
         };
         window.addEventListener("storage", handleStorageChange);
