@@ -582,36 +582,31 @@ const UserProfile = () => {
                   </select>
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Tải file FingerID</label>
-                  <input
-                    type="file"
-                    name="fingerIdFile"
-                    accept=".jpg,.jpeg,.png,.pdf"
-                    onChange={handleChange}
-                  />
-                  {form.fingerIdFile &&
-                    (typeof form.fingerIdFile === "string" ? (
-                      <div style={{ marginTop: 6 }}>
-                        <a
-                          href={form.fingerIdFile}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Xem file đã tải lên
-                        </a>
-                      </div>
-                    ) : (
-                      <div style={{ marginTop: 6 }}>
-                        {form.fingerIdFile.name}
-                      </div>
-                    ))}
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+                <button type="submit" className="profile-save-btn" style={{
+                  background: '#009e74',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '14px 48px',
+                  fontWeight: 700,
+                  fontSize: 20,
+                  boxShadow: '0 2px 12px #009e7422',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, box-shadow 0.2s',
+                  margin: '0 auto',
+                  display: 'block',
+                }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.background = '#00c896';
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.background = '#009e74';
+                  }}
+                >
+                  Lưu thay đổi
+                </button>
               </div>
-              <button type="submit" className="profile-save-btn">
-                Lưu thay đổi
-              </button>
               {success && <span className="form-success">{success}</span>}
             </form>
           )}

@@ -4,20 +4,6 @@ import { ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, AlertOutl
 import { useEffect, useState } from "react"
 
 const ManagerOverview = () => {
-    // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
-    useEffect(() => {
-        const handleStorageChange = (event) => {
-            if (event.key === "dna_orders") {
-                // Chỉ cập nhật lại dữ liệu, không reload trang
-                // Gọi lại hàm fetchActivities hoặc setStats nếu cần
-                fetchActivities && fetchActivities();
-                // Nếu có hàm cập nhật thống kê, gọi ở đây
-            }
-        };
-        window.addEventListener("storage", handleStorageChange);
-        return () => window.removeEventListener("storage", handleStorageChange);
-    }, []);
-
     // Dữ liệu thống kê
     const stats = [
         {
@@ -55,8 +41,7 @@ const ManagerOverview = () => {
 
     // Hàm fetch hoạt động gần đây (sau này thay bằng API thực)
     const fetchActivities = async () => {
-        // TODO: Thay thế bằng API thực khi backend sẵn sàng
-        setActivities([]); // Hiện tại chưa có dữ liệu động
+        // Hiện tại chưa có dữ liệu động
     };
 
     useEffect(() => {
@@ -72,12 +57,6 @@ const ManagerOverview = () => {
         if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
         return date.toLocaleString("vi-VN");
     };
-
-    // Dữ liệu mẫu cho phản hồi khách hàng
-    const customerSatisfaction = 4.7;
-    const newFeedbackCount = 3;
-    // Dữ liệu cảnh báo
-    const overdueCount = stats.find(s => s.title === "Quá hạn")?.value || 0;
 
     return (
         <div style={{ padding: "0" }}>
