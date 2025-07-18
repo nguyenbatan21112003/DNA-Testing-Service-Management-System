@@ -254,5 +254,21 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpPut("update-multiple-test-sample")]
+        public async Task<IActionResult> UpdateMultipleSamples([FromBody] List<UpdatedTestSampleDto> dtos)
+        {
+            if (dtos == null || !dtos.Any())
+                return BadRequest(new { success = false, message = "Dữ liệu gửi lên không hợp lệ." });
+
+            try
+            {
+                var updated = await _staffService.UpdateTesSampleByTestRequestAndSampleId(dtos);
+                return Ok(new { success = true, message = "Cập nhật mẫu thành công.", data = updated });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
     }
 }

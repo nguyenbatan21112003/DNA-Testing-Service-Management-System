@@ -158,6 +158,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // tự động add vào request xong r save vào browser
 });
 builder.Services.AddHttpContextAccessor();
+//builder.WebHost.UseUrls("http://0.0.0.0:5000");
+//builder.WebHost.UseUrls("https://0.0.0.0:5001");
 
 // Sau khi cấu hình xong, gọi builder.Build() một lần duy nhất
 var app = builder.Build();
@@ -169,7 +171,8 @@ var app = builder.Build();
 //    app.UseSwaggerUI();
 //}
 
-
+GlobalConfiguration.Configuration.UseSqlServerStorage(
+    builder.Configuration.GetConnectionString("DefaultConnection"));
 app.UseHangfireDashboard();
 // Job chạy mỗi 2 giờ
 

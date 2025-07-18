@@ -33,7 +33,7 @@ namespace DNATestSystem.Services.Interface
         //
         //Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int requestId);
         //đổi lại tên method
-        Task<List<TestSampleDto>> GetSamplesByRequestAsync(int requestId);
+        Task<List<StaffGetTestSampleDto>> GetSamplesByRequestAsync(int requestId);
         //gửi đơn
         Task<bool> CreateSampleCollectionsAsync(SampleCollectionFormsSummaryDto request);
         //update TestProcess 49
@@ -57,5 +57,7 @@ namespace DNATestSystem.Services.Interface
 
         //
         Task<UpdateKitCodeByTestProcess> UpdateKitCodeByTestProcessIdAsync(UpdateKitCodeByTestProcess dto);
+
+        Task<List<UpdatedTestSampleDto>> UpdateTesSampleByTestRequestAndSampleId(List<UpdatedTestSampleDto> dtos);
     }
 }

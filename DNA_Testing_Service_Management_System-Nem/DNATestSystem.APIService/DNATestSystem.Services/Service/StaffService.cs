@@ -411,8 +411,7 @@ namespace DNATestSystem.Services.Service
                     .ThenInclude(r => r.TestSamples)
                 .Where(tp =>
                     tp.StaffId == staffId &&
-                    tp.Request.Status.ToLower() != "completed" &&
-                    tp.Request.Category.ToLower() == "voluntary"
+                    tp.Request.Status.ToLower() != "completed"
                 )
                 .ToListAsync();
 
@@ -458,21 +457,22 @@ namespace DNATestSystem.Services.Service
             return result;
         }
 
-        public async Task<List<TestSampleDto>> GetSamplesByRequestAsync(int requestId)
+        public async Task<List<StaffGetTestSampleDto>> GetSamplesByRequestAsync(int requestId)
         {
             int staffId = GetCurrentUserId();
-            if (staffId == 0) return new List<TestSampleDto>();
+            if (staffId == 0) return new List<StaffGetTestSampleDto>();
 
             var isAuthorized = await _context.TestProcesses
                 .AnyAsync(p => p.RequestId == requestId && p.StaffId == staffId);
 
             if (!isAuthorized)
-                return new List<TestSampleDto>();
+                return new List<StaffGetTestSampleDto>();
 
             var samples = await _context.TestSamples
                 .Where(s => s.RequestId == requestId)
-                .Select(s => new TestSampleDto
+                .Select(s => new StaffGetTestSampleDto
                 {
+                    SampleId = s.SampleId,
                     OwnerName = s.OwnerName,
                     Gender = s.Gender,
                     Relationship = s.Relationship,
@@ -839,5 +839,33 @@ namespace DNATestSystem.Services.Service
             };
 
         }
+
+        public async Task<List<UpdatedTestSampleDto>> UpdateTesSampleByTestRequestAndSampleId(List<UpdatedTestSampleDto> dtos)
+        {
+            var updatedList = new List<UpdatedTestSampleDto>();
+
+            foreach (var item in dtos)
+            {
+                var sample = await _context.TestSamples
+                    .FirstOrDefaultAsync(x => x.SampleId == item.SampleId && x.RequestId == item.RequestId);
+
+                if (sample == null) continue;
+
+                // Cập nhật dữ liệu
+                sample.OwnerName = item.OwnerName;
+                sample.Gender = item.Gender;
+                sample.Relationship = item.Relationship;
+                sample.SampleType = item.SampleType;
+                sample.Yob = item.Yob;
+                sample.CollectedAt = item.CollectedAt;
+
+                updatedList.Add(item);
+            }
+
+            await _context.SaveChangesAsync();
+            return updatedList;
+        }
+
+
     }
 }
