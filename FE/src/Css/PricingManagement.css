@@ -1,0 +1,30 @@
+/* Hiệu ứng hover cho nút Sửa */
+.edit-button {
+  transition: all 0.3s ease !important;
+}
+
+.edit-button:hover {
+  background-color: #73d13d !important;
+  border-color: #73d13d !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng hover cho nút Lưu thay đổi */
+.save-button {
+  transition: all 0.3s ease !important;
+}
+
+.save-button:hover {
+  background-color: #4096ff !important;
+  border-color: #4096ff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng hover cho nút Hủy */
+button.ant-btn:not(.edit-button):not(.save-button):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+} 
