@@ -139,5 +139,20 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpGet("all-BlogPost")]
+        public async Task<IActionResult> GetAllBlogPosts()
+        {
+            try
+            {
+                var result = await _managerService.GetAllBlogPostsAsync();
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

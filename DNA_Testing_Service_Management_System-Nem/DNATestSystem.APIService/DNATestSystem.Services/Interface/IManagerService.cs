@@ -9,6 +9,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
+using DNATestSystem.BusinessObjects.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNATestSystem.Services.Interface
@@ -30,5 +31,7 @@ namespace DNATestSystem.Services.Interface
         Task<List<ManagerGetTestSampleDto>> GetAllManagerTestSample();
         //
         Task<bool> UpdateTestResultByTestResultId(ManagerUpdateTestResultDto model);
+        //
+        Task<List<BlogPost>> GetAllBlogPostsAsync();
     }
 }

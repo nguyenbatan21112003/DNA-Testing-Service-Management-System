@@ -175,6 +175,16 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllBlogPosts",
+    "RelativePath": "Manager/all-BlogPost",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "GettAllTestRequests",
     "RelativePath": "Manager/all-test-requests",
     "HttpMethod": "GET",
@@ -237,6 +247,22 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "UpdateTestResult",
+    "RelativePath": "Manager/update-test-result",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.ManagerUpdateTestResultDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

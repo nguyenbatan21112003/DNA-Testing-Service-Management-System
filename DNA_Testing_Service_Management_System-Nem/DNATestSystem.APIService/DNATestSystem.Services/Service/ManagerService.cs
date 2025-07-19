@@ -235,5 +235,24 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true; // Cập nhật thành công
         }
+        public async Task<List<BlogPost>> GetAllBlogPostsAsync()
+        {
+            var blogPosts = await _context.BlogPosts
+                .Select(bp => new BlogPost
+                {
+                    PostId = bp.PostId,
+                    Title = bp.Title,
+                    Slug = bp.Slug,
+                    Summary = bp.Summary,
+                    Content = bp.Content,
+                    AuthorId = bp.AuthorId,
+                    IsPublished = bp.IsPublished,
+                    CreatedAt = bp.CreatedAt,
+                    UpdatedAt = bp.UpdatedAt,
+                    ThumbnailUrl = bp.ThumbnailUrl
+                })
+                .ToListAsync();
+            return blogPosts;
+        }
     }
 }
