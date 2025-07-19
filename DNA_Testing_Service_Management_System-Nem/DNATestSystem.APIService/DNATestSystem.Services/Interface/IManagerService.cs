@@ -28,5 +28,7 @@ namespace DNATestSystem.Services.Interface
         Task<List<ManagerGetTestResultDto>> GetAllTestResultsAsync();
         //72
         Task<List<ManagerGetTestSampleDto>> GetAllManagerTestSample();
+        //
+        Task<bool> UpdateTestResultByTestResultId(ManagerUpdateTestResultDto model);
     }
 }

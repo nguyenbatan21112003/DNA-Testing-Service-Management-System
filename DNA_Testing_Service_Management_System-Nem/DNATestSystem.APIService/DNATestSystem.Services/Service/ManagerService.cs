@@ -207,7 +207,7 @@ namespace DNATestSystem.Services.Service
         {
             var testSamples = await _context.TestSamples
                 .Include(ts => ts.Request)
-                    
+
                 .Select(ts => new ManagerGetTestSampleDto
                 {
                     SampleId = ts.SampleId,
@@ -221,6 +221,19 @@ namespace DNATestSystem.Services.Service
                 })
                 .ToListAsync();
             return testSamples;
+        }
+        public async Task<bool> UpdateTestResultByTestResultId(ManagerUpdateTestResultDto model)
+        {
+            var testResult = await _context.TestResults
+                .FirstOrDefaultAsync(tr => tr.ResultId == model.ResultId);
+            if (testResult == null)
+            {
+                return false;
+            }
+            // Cập nhật trạng thái và thông tin khác nếu cần
+            testResult.Status = model.Status; // Ví dụ: cập nhật trạng thái thành "Updated"
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
         }
     }
 }

@@ -119,5 +119,25 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpPut("update-test-result")]
+        public async Task<IActionResult> UpdateTestResult([FromBody] ManagerUpdateTestResultDto model)
+        {
+            try
+            {
+                var result = await _managerService.UpdateTestResultByTestResultId(model);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật kết quả kiểm tra thành công." });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy kết quả kiểm tra." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
