@@ -236,7 +236,8 @@ namespace DNATestSystem.Services.Service
                                 IncludeVAT = price?.IncludeVat ?? false,  // dùng trong PriceDetails
                                 Price2Samples = price?.Price2Samples ?? 0,
                                 Price3Samples = price?.Price3Samples ?? 0,
-                                TimeToResult = price?.TimeToResult ?? "N/A"
+                                TimeToResult = price?.TimeToResult ?? "N/A",
+                                IsPublished = s.IsPublished
                             };
                         })
                         .ToList();
@@ -331,6 +332,7 @@ namespace DNATestSystem.Services.Service
                 throw new Exception("Không tìm thấy hồ sơ người dùng.");
 
             // Cập nhật profile
+            
             userProfile.Gender = updateProfileModel.Gender;
             userProfile.Address = updateProfileModel.Address;
             userProfile.DateOfBirth = updateProfileModel.DateOfBirth;
@@ -338,7 +340,8 @@ namespace DNATestSystem.Services.Service
             userProfile.Fingerfile = updateProfileModel.Fingerfile;
 
             user.UpdatedAt = DateTime.UtcNow;
-
+            user.FullName = updateProfileModel.Fullname;
+            user.Phone = updateProfileModel.Phone;
             await _context.SaveChangesAsync();
 
             return new UpdateProfileModel
@@ -350,7 +353,6 @@ namespace DNATestSystem.Services.Service
                 DateOfBirth = userProfile.DateOfBirth,
                 IdentityID = userProfile.IdentityId,
                 Fingerfile = userProfile.Fingerfile,
-                ProfileId = userProfile.ProfileId
             };
 
         }

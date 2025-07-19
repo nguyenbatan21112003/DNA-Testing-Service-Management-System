@@ -162,8 +162,10 @@ namespace DNATestSystem.Controllers
             return Ok(result);
         }
 
-        [HttpPut("UpdateUserProfile/{user_id}")]
-        public async Task<IActionResult> UpdateProfileUser([FromBody] UpdateProfileModel model)
+
+        [Authorize]
+        [HttpPut("UpdateUserProfile")]
+        public async Task<IActionResult> UpdateProfileUser(UpdateProfileModel model)
         {
             var result = await _userService.UpdateProfileAsync(model);
             if (result == null)
@@ -171,6 +173,8 @@ namespace DNATestSystem.Controllers
 
             return Ok(new { success = true, message = "Cập nhật hồ sơ thành công", data = result });
         }
+
+
         [HttpPost("verify-password")]
         public async Task<IActionResult> VerifyPassword([FromBody] UserVerifyCurrentPassword model)
         {
@@ -199,7 +203,7 @@ namespace DNATestSystem.Controllers
             }
         }
         
-        [HttpPut("send-consult-request")]
+        [HttpPost("send-consult-request")]
         public async Task<IActionResult> SendConsultRequest([FromBody] SendConsultRequestModel model)
         {
             var data = _userService.SendConsultRequestAsync(model);

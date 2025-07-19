@@ -106,6 +106,7 @@ builder.Services.AddSwaggerGen(option =>
         Version = "v1",
         Description = "ToDoApp API"
     });
+    option.CustomSchemaIds(type => type.FullName);
 
     var securityScheme = new OpenApiSecurityScheme
     {

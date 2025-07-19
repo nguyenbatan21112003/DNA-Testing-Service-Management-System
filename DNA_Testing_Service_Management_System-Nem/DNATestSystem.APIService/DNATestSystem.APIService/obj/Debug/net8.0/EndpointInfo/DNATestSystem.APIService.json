@@ -15,17 +15,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ManagerCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.ManagerCreateModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ManagerCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.ManagerCreateModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ManagerCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.ManagerCreateModel"
               }
             }
           }
@@ -46,17 +46,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StaffCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.StaffCreateModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/StaffCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.StaffCreateModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/StaffCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.StaffCreateModel"
               }
             }
           }
@@ -77,17 +77,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateStatusAndRoleModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.UpdateStatusAndRoleModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateStatusAndRoleModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.UpdateStatusAndRoleModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateStatusAndRoleModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Admin.UpdateStatusAndRoleModel"
               }
             }
           }
@@ -155,17 +155,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FeedBackDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/FeedBackDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/FeedBackDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto"
               }
             }
           }
@@ -302,17 +302,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendMailDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Mail.SendMailDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendMailDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Mail.SendMailDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SendMailDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Mail.SendMailDto"
               }
             }
           }
@@ -345,17 +345,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VertifyTestResult"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.VertifyTestResult"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VertifyTestResult"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.VertifyTestResult"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VertifyTestResult"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.VertifyTestResult"
               }
             }
           }
@@ -376,17 +376,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BlogPostDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.BlogPostDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/BlogPostDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.BlogPostDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/BlogPostDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.BlogPostDto"
               }
             }
           }
@@ -455,17 +455,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentInformationModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Vnpay.PaymentInformationModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentInformationModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Vnpay.PaymentInformationModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PaymentInformationModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Vnpay.PaymentInformationModel"
               }
             }
           }
@@ -486,17 +486,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             }
           }
@@ -528,17 +528,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceDetailsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel"
               }
             }
           }
@@ -582,17 +582,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceCreateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel"
               }
             }
           }
@@ -648,17 +648,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceUpdateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceUpdateModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceUpdateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceUpdateModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ServiceUpdateModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceUpdateModel"
               }
             }
           }
@@ -691,17 +691,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateConsultRequestDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto"
               }
             }
           }
@@ -804,17 +804,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SampleCollectionFormsSummaryDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto"
               }
             }
           }
@@ -835,17 +835,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestProcessModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestProcessModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestProcessModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel"
               }
             }
           }
@@ -866,17 +866,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestSampleDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestSampleDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestSampleDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto"
               }
             }
           }
@@ -897,17 +897,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AssignTestProcessDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.AssignTestProcessDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/AssignTestProcessDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.AssignTestProcessDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/AssignTestProcessDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.AssignTestProcessDto"
               }
             }
           }
@@ -950,17 +950,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.UpdateTestRequestModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.UpdateTestRequestModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTestRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.UpdateTestRequestModel"
               }
             }
           }
@@ -981,17 +981,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTestResultDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.CreateTestResultDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTestResultDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.CreateTestResultDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTestResultDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.CreateTestResultDto"
               }
             }
           }
@@ -1012,17 +1012,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GetSampleCollectionFormsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.GetSampleCollectionFormsModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/GetSampleCollectionFormsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.GetSampleCollectionFormsModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/GetSampleCollectionFormsModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.GetSampleCollectionFormsModel"
               }
             }
           }
@@ -1089,17 +1089,57 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateKitCodeByTestProcess"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateKitCodeByTestProcess"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateKitCodeByTestProcess"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Staff/update-multiple-test-sample": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdatedTestSampleDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdatedTestSampleDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdatedTestSampleDto"
+                }
               }
             }
           }
@@ -1120,17 +1160,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserRegisterModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserRegisterModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UserRegisterModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel"
               }
             }
           }
@@ -1151,17 +1191,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserLoginModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserLoginModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserLoginModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserLoginModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UserLoginModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserLoginModel"
               }
             }
           }
@@ -1289,36 +1329,26 @@
         }
       }
     },
-    "/user/UpdateUserProfile/{user_id}": {
+    "/user/UpdateUserProfile": {
       "put": {
         "tags": [
           "User"
-        ],
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProfileModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UpdateProfileModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProfileModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UpdateProfileModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateProfileModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UpdateProfileModel"
               }
             }
           }
@@ -1339,17 +1369,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserVerifyCurrentPassword"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserVerifyCurrentPassword"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserVerifyCurrentPassword"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserVerifyCurrentPassword"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UserVerifyCurrentPassword"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserVerifyCurrentPassword"
               }
             }
           }
@@ -1370,17 +1400,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserChangePasswordModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserChangePasswordModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserChangePasswordModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserChangePasswordModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UserChangePasswordModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.User.UserChangePasswordModel"
               }
             }
           }
@@ -1393,7 +1423,7 @@
       }
     },
     "/user/send-consult-request": {
-      "put": {
+      "post": {
         "tags": [
           "User"
         ],
@@ -1401,17 +1431,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendConsultRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.SendConsultRequestModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendConsultRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.SendConsultRequestModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SendConsultRequestModel"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.SendConsultRequestModel"
               }
             }
           }
@@ -1432,17 +1462,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TestRequestSubmissionDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto"
               }
             }
           }
@@ -1485,17 +1515,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserProfileDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserProfileDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UserProfileDto"
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto"
               }
             }
           }
@@ -1532,37 +1562,73 @@
   },
   "components": {
     "schemas": {
-      "AssignTestProcessDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.Admin.ManagerCreateModel": {
         "type": "object",
         "properties": {
-          "processId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "requestId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "staffId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "kitCode": {
+          "emailAddress": {
             "type": "string",
             "nullable": true
           },
-          "collectionType": {
+          "password": {
             "type": "string",
             "nullable": true
           },
-          "notes": {
+          "fullName": {
             "type": "string",
             "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Entities.Enum.StatusNum"
           }
         },
         "additionalProperties": false
       },
-      "BlogPostDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.Admin.StaffCreateModel": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Entities.Enum.StatusNum"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.Admin.UpdateStatusAndRoleModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "role": {
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Entities.Enum.RoleNum"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Entities.Enum.StatusNum"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.BlogPostDto": {
         "type": "object",
         "properties": {
           "title": {
@@ -1607,21 +1673,99 @@
         },
         "additionalProperties": false
       },
-      "CreateTestResultDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.SendConsultRequestModel": {
         "type": "object",
         "properties": {
-          "requestId": {
-            "type": "integer",
-            "format": "int32"
+          "fullName": {
+            "type": "string",
+            "nullable": true
           },
-          "data": {
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "serviceId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "message": {
             "type": "string",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "DeclarantDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest.UpdateConsultRequestDto": {
+        "type": "object",
+        "properties": {
+          "consultId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "repliedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto": {
+        "type": "object",
+        "properties": {
+          "resultId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.Mail.SendMailDto": {
+        "type": "object",
+        "properties": {
+          "toAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant.DeclarantDto": {
         "type": "object",
         "properties": {
           "fullName": {
@@ -1660,30 +1804,7 @@
         },
         "additionalProperties": false
       },
-      "FeedBackDto": {
-        "type": "object",
-        "properties": {
-          "resultId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "rating": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "comment": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "GetSampleCollectionFormsModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.GetSampleCollectionFormsModel": {
         "type": "object",
         "properties": {
           "processId": {
@@ -1693,97 +1814,7 @@
         },
         "additionalProperties": false
       },
-      "ManagerCreateModel": {
-        "type": "object",
-        "properties": {
-          "emailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          },
-          "fullName": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusNum"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PaymentInformationModel": {
-        "type": "object",
-        "properties": {
-          "requestId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "orderType": {
-            "type": "string",
-            "nullable": true
-          },
-          "amount": {
-            "type": "number",
-            "format": "double"
-          },
-          "orderDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "PriceDetailsModel": {
-        "type": "object",
-        "properties": {
-          "serviceId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price2Samples": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "price3Samples": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "timeToResult": {
-            "type": "string",
-            "nullable": true
-          },
-          "includeVAT": {
-            "type": "boolean",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "RoleNum": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "SampleCollectionFormsSummaryDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleCollectionFormsSummaryDto": {
         "type": "object",
         "properties": {
           "collectionId": {
@@ -1802,14 +1833,14 @@
           "sampleProviders": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SampleProviders"
+              "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleProviders"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "SampleProviders": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms.SampleProviders": {
         "type": "object",
         "properties": {
           "fullName": {
@@ -1877,52 +1908,35 @@
         },
         "additionalProperties": false
       },
-      "SendConsultRequestModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.Service.PriceDetailsModel": {
         "type": "object",
         "properties": {
-          "fullName": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "category": {
-            "type": "string",
-            "nullable": true
-          },
           "serviceId": {
             "type": "integer",
-            "format": "int32",
+            "format": "int32"
+          },
+          "price2Samples": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
-          "message": {
+          "price3Samples": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "timeToResult": {
             "type": "string",
+            "nullable": true
+          },
+          "includeVAT": {
+            "type": "boolean",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "SendMailDto": {
-        "type": "object",
-        "properties": {
-          "toAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "subject": {
-            "type": "string",
-            "nullable": true
-          },
-          "body": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "ServiceCreateModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceCreateModel": {
         "type": "object",
         "properties": {
           "serviceName": {
@@ -1966,7 +1980,7 @@
         },
         "additionalProperties": false
       },
-      "ServiceUpdateModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.Service.ServiceUpdateModel": {
         "type": "object",
         "properties": {
           "serviceID": {
@@ -2017,41 +2031,62 @@
         },
         "additionalProperties": false
       },
-      "StaffCreateModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.AssignTestProcessDto": {
         "type": "object",
         "properties": {
-          "emailAddress": {
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kitCode": {
             "type": "string",
             "nullable": true
           },
-          "password": {
+          "collectionType": {
             "type": "string",
             "nullable": true
           },
-          "fullName": {
+          "notes": {
             "type": "string",
             "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusNum"
           }
         },
         "additionalProperties": false
       },
-      "StatusNum": {
-        "enum": [
-          0,
-          1,
-          -1
-        ],
-        "type": "integer",
-        "format": "int32"
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess": {
+        "type": "object",
+        "properties": {
+          "processId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kitCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
-      "TestRequestDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateTestProcessModel": {
+        "type": "object",
+        "properties": {
+          "processId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestDto": {
         "type": "object",
         "properties": {
           "userId": {
@@ -2085,26 +2120,68 @@
         },
         "additionalProperties": false
       },
-      "TestRequestSubmissionDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestSubmissionDto": {
         "type": "object",
         "properties": {
           "testRequest": {
-            "$ref": "#/components/schemas/TestRequestDto"
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.TestRequestDto"
           },
           "declarant": {
-            "$ref": "#/components/schemas/DeclarantDto"
+            "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant.DeclarantDto"
           },
           "samples": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/TestSampleDto"
+              "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestSample.TestSampleDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "TestSampleDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.UpdateTestRequestModel": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newStatus": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.CreateTestResultDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.VertifyTestResult": {
+        "type": "object",
+        "properties": {
+          "resultID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "managerID": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestSample.TestSampleDto": {
         "type": "object",
         "properties": {
           "ownerName": {
@@ -2131,125 +2208,7 @@
         },
         "additionalProperties": false
       },
-      "UpdateConsultRequestDto": {
-        "type": "object",
-        "properties": {
-          "consultId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "staffId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "repliedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateKitCodeByTestProcess": {
-        "type": "object",
-        "properties": {
-          "processId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "kitCode": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateProfileModel": {
-        "type": "object",
-        "properties": {
-          "profileId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fullname": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "gender": {
-            "type": "string",
-            "nullable": true
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "dateOfBirth": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "identityID": {
-            "type": "string",
-            "nullable": true
-          },
-          "fingerfile": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateStatusAndRoleModel": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "role": {
-            "$ref": "#/components/schemas/RoleNum"
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusNum"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateTestProcessModel": {
-        "type": "object",
-        "properties": {
-          "processId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateTestRequestModel": {
-        "type": "object",
-        "properties": {
-          "requestId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "newStatus": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateTestSampleDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdateTestSampleDto": {
         "type": "object",
         "properties": {
           "requestId": {
@@ -2283,7 +2242,83 @@
         },
         "additionalProperties": false
       },
-      "UserChangePasswordModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdatedTestSampleDto": {
+        "type": "object",
+        "properties": {
+          "sampleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requestId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ownerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "yob": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "collectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.User.UpdateProfileModel": {
+        "type": "object",
+        "properties": {
+          "fullname": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "identityID": {
+            "type": "string",
+            "nullable": true
+          },
+          "fingerfile": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.User.UserChangePasswordModel": {
         "type": "object",
         "properties": {
           "email": {
@@ -2301,7 +2336,7 @@
         },
         "additionalProperties": false
       },
-      "UserLoginModel": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.User.UserLoginModel": {
         "type": "object",
         "properties": {
           "email": {
@@ -2315,7 +2350,43 @@
         },
         "additionalProperties": false
       },
-      "UserProfileDto": {
+      "DNATestSystem.BusinessObjects.Application.Dtos.User.UserRegisterModel": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.User.UserVerifyCurrentPassword": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto": {
         "type": "object",
         "properties": {
           "userId": {
@@ -2352,52 +2423,48 @@
         },
         "additionalProperties": false
       },
-      "UserRegisterModel": {
-        "type": "object",
-        "properties": {
-          "emailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          },
-          "fullName": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
+      "DNATestSystem.BusinessObjects.Entities.Enum.RoleNum": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
       },
-      "UserVerifyCurrentPassword": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "currentPassword": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
+      "DNATestSystem.BusinessObjects.Entities.Enum.StatusNum": {
+        "enum": [
+          0,
+          1,
+          -1
+        ],
+        "type": "integer",
+        "format": "int32"
       },
-      "VertifyTestResult": {
+      "DNATestSystem.BusinessObjects.Vnpay.PaymentInformationModel": {
         "type": "object",
         "properties": {
-          "resultID": {
+          "requestId": {
             "type": "integer",
             "format": "int32"
           },
-          "managerID": {
-            "type": "integer",
-            "format": "int32"
+          "orderType": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "orderDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

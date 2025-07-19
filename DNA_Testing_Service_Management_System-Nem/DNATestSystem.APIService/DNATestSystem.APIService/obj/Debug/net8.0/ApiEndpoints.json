@@ -630,6 +630,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "UpdateMultipleSamples",
+    "RelativePath": "Staff/update-multiple-test-sample",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dtos",
+        "Type": "System.Collections.Generic.List\u00601[[DNATestSystem.BusinessObjects.Application.Dtos.TestSample.UpdatedTestSampleDto, DNATestSystem.BusinessObjects, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "UpdateStatus",
     "RelativePath": "Staff/update-status/{requestId}",
     "HttpMethod": "PUT",
@@ -821,7 +837,7 @@
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "SendConsultRequest",
     "RelativePath": "user/send-consult-request",
-    "HttpMethod": "PUT",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -894,7 +910,7 @@
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "UpdateProfileUser",
-    "RelativePath": "user/UpdateUserProfile/{user_id}",
+    "RelativePath": "user/UpdateUserProfile",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -902,11 +918,6 @@
       {
         "Name": "model",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.User.UpdateProfileModel",
-        "IsRequired": true
-      },
-      {
-        "Name": "user_id",
-        "Type": "",
         "IsRequired": true
       }
     ],
