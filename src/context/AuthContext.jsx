@@ -41,32 +41,35 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("dna_user");
   };
 
-  // Đăng ký
+  // Đăng ký (sử dụng mockAPI)
   const register = async ({ fullName, email, phone, password }) => {
     try {
-      const res = await axios.post("https://localhost:7037/user/register", {
+      // Kiểm tra email đã tồn tại chưa
+      const existingUsersRes = await axios.get(API_URL);
+      const existedUser = existingUsersRes.data.find((u) => u.email === email);
+      if (existedUser) {
+        return { success: false, message: "Email đã được sử dụng!" };
+      }
+
+      const res = await axios.post(API_URL, {
         fullName,
         email,
         phone,
         password,
+        role_id: 1, // mặc định role khách hàng
       });
 
-      if (res.data && res.data.success) {
+      if (res.data) {
         return {
           success: true,
-          message: res.data?.message || "Đăng ký thành công",
+          message: "Đăng ký thành công!",
         };
-      } else {
-        return {
-          success: false,
-          message: res.data?.message || "Đăng ký thất bại!",
-        };
-
       }
+      return { success: false, message: "Đăng ký thất bại!" };
     } catch (err) {
       return {
         success: false,
-        message: err.response?.data?.message || "Lỗi kết nối đến server!",
+        message: err.response?.data?.message || "Lỗi kết nối!",
       };
     }
   };

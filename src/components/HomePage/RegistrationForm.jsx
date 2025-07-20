@@ -288,7 +288,7 @@ const RegistrationForm = () => {
                     required
                   >
                     <option value="">Chọn loại dịch vụ</option>
-                    {(serviceOptions[formData.category] || []).map((opt) => (
+                    {(serviceOptions[formData.category] || [])?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
