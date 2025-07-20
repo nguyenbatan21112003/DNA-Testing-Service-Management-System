@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Modal } from "antd";
 import NotificationBell from "./NotificationBell";
-import "../../css/Header.css";
+import "../../Css/Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
