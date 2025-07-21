@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "BefMOUD9Jjpa4+5+nMs4/EHcFcH1mLKmHWAqsEvupKA=",
+  "Source": "DNATestSystem.APIService",
+  "BasePath": "_content/DNATestSystem.APIService",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
