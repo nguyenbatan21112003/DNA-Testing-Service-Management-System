@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 const NewOrderButton = () => {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("/dichvu");
+    navigate("/dangki");
     setTimeout(() => {
       const el = document.getElementById("registration");
       if (el) el.scrollIntoView({ behavior: "smooth" });

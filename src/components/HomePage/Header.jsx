@@ -1,11 +1,11 @@
-
 "use client";
 
 import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Modal } from "antd";
-import "../../css/Header.css";
+import NotificationBell from "./NotificationBell";
+import "../../Css/Header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,7 +65,6 @@ const Header = () => {
                 className={`nav-link ${
                   location.pathname === "/" ? "active" : ""
                 }`}
-
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trang chủ
@@ -80,6 +79,17 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dịch vụ
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/dangki"
+                className={`nav-link ${
+                  location.pathname === "/dangki" ? "active" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Đăng kí
               </Link>
             </li>
             <li className="nav-item">
@@ -119,80 +129,41 @@ const Header = () => {
         </nav>
         <div className="header-buttons">
           {user ? (
-            <div
-              style={{ position: "relative", display: "inline-block" }}
-              ref={dropdownRef}
-            >
-              <span
-                style={{ marginRight: 12, cursor: "pointer", fontWeight: 500 }}
-                onClick={() => setShowDropdown((v) => !v)}
+            <>
+              <NotificationBell />
+              <div
+                style={{ position: "relative", display: "inline-block" }}
+                ref={dropdownRef}
               >
-                {user.name || user.fullName || user.email}{" "}
-                <span style={{ fontSize: 18, verticalAlign: "middle" }}>
-                  &#x25BC;
-                </span>
-              </span>
-              {showDropdown && (
-                <div
+                <span
                   style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "calc(100% + 8px)",
-                    background: "#fff",
-                    boxShadow: "0 2px 12px #0002",
-                    borderRadius: 8,
-                    minWidth: 160,
-                    zIndex: 100,
+                    marginRight: 12,
+                    cursor: "pointer",
+                    fontWeight: 500,
                   }}
+                  onClick={() => setShowDropdown((v) => !v)}
                 >
-                  {user.role_id === 5 && (
-                    <Link
-                      to="/admin"
-                      style={{
-                        display: "block",
-                        padding: "12px 20px",
-                        color: "#222",
-                        textDecoration: "none",
-                        fontWeight: 500,
-                      }}
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      Trang quản trị
-                    </Link>
-                  )}
-                  {user.role_id === 4 && (
-                    <Link
-                      to="/quanly"
-                      style={{
-                        display: "block",
-                        padding: "12px 20px",
-                        color: "#222",
-                        textDecoration: "none",
-                        fontWeight: 500,
-                      }}
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      Quản lý
-                    </Link>
-                  )}
-                  {user.role_id === 2 ? (
-                    <Link
-                      to="/nhanvien"
-                      style={{
-                        display: "block",
-                        padding: "12px 20px",
-                        color: "#222",
-                        textDecoration: "none",
-                        fontWeight: 500,
-                      }}
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      Quản lý
-                    </Link>
-                  ) : (
-                    user.role_id !== 5 && (
+                  {user.name || user.fullName || user.email}{" "}
+                  <span style={{ fontSize: 18, verticalAlign: "middle" }}>
+                    &#x25BC;
+                  </span>
+                </span>
+                {showDropdown && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      top: "calc(100% + 8px)",
+                      background: "#fff",
+                      boxShadow: "0 2px 12px #0002",
+                      borderRadius: 8,
+                      minWidth: 160,
+                      zIndex: 100,
+                    }}
+                  >
+                    {user.role_id === 4 && (
                       <Link
-                        to="/taikhoan"
+                        to="/admin"
                         style={{
                           display: "block",
                           padding: "12px 20px",
@@ -202,34 +173,84 @@ const Header = () => {
                         }}
                         onClick={() => setShowDropdown(false)}
                       >
-                        Tài khoản
+                        Trang quản trị
                       </Link>
-                    )
-                  )}
-                  <div style={{ height: 1, background: "#eee" }}></div>
-                  <button
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      padding: "12px 20px",
-                      background: "none",
-                      border: "none",
-                      color: "#e74c3c",
-                      textAlign: "left",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                    }}
-                    onClick={handleLogout}
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
+                    )}
+                    {user.role_id === 3 && (
+                      <Link
+                        to="/manager"
+                        style={{
+                          display: "block",
+                          padding: "12px 20px",
+                          color: "#222",
+                          textDecoration: "none",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Quản lý
+                      </Link>
+                    )}
+                    {user.role_id === 2 ? (
+                      <Link
+                        to="/nhanvien"
+                        style={{
+                          display: "block",
+                          padding: "12px 20px",
+                          color: "#222",
+                          textDecoration: "none",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        Quản lý
+                      </Link>
+                    ) : (
+                      user.role_id === 1 && (
+                        <Link
+                          to="/taikhoan"
+                          style={{
+                            display: "block",
+                            padding: "12px 20px",
+                            color: "#222",
+                            textDecoration: "none",
+                            fontWeight: 500,
+                          }}
+                          onClick={() => setShowDropdown(false)}
+                        >
+                          Tài khoản
+                        </Link>
+                      )
+                    )}
+                    <div style={{ height: 1, background: "#eee" }}></div>
+                    <button
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        padding: "12px 20px",
+                        background: "none",
+                        border: "none",
+                        color: "#e74c3c",
+                        textAlign: "left",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                      onClick={handleLogout}
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <>
-              <Link to="/login" className="login-button">Đăng nhập</Link>
-              <Link to="/register" className="register-button">Đăng ký</Link>
+              <Link to="/login" className="login-button">
+                Đăng nhập
+              </Link>
+              <Link to="/register" className="register-button">
+                Đăng ký
+              </Link>
             </>
           )}
         </div>

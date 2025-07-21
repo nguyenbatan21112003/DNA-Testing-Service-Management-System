@@ -13,6 +13,10 @@ const BlogPage = ({ blogData }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Lấy thêm các bài viết được Manager đăng (được lưu trong localStorage)
+  const storedPosts = JSON.parse(localStorage.getItem('dna_blog_posts') || '[]');
+  const allPosts = [...blogData, ...storedPosts.filter((p) => p.status === 'published')];
+
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace("#", "");
@@ -25,7 +29,7 @@ const BlogPage = ({ blogData }) => {
   }, [location]);
 
   // Lọc bài viết theo tìm kiếm và danh mục
-  const filteredPosts = blogData.filter((post) => {
+  const filteredPosts = allPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
@@ -35,7 +39,7 @@ const BlogPage = ({ blogData }) => {
   });
 
   // Lấy danh sách các danh mục duy nhất
-  const categories = ["all", ...new Set(blogData.map((post) => post.category))];
+  const categories = ["all", ...new Set(allPosts.map((post) => post.category))];
 
 
   // Phân trang
@@ -58,20 +62,9 @@ const BlogPage = ({ blogData }) => {
         </div>
       </div>
 
-      {/* Thanh tìm kiếm căn giữa */}
-      <div className="blog-search-bar">
-        <input
-          type="text"
-          placeholder="Tìm kiếm bài viết"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPage(1);
-          }}
-          className="blog-search-input"
-        />
-        <Search size={22} className="blog-search-icon" />
-      </div>
+
+
+      
 
       {/* Tiêu đề lớn và phụ đề */}
       <div className="blog-header">

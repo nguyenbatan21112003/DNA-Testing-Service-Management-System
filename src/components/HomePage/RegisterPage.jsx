@@ -3,7 +3,7 @@
 import { useState, useContext } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [fullName, setFullName] = useState("");
@@ -16,9 +16,18 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate phone number: must start with 0 and have 10-11 digits total
+    const phoneRegex = /^0\d{9,10}$/;
+    if (!phoneRegex.test(phone)) {
+      setError("Số điện thoại phải bắt đầu bằng 0 và gồm 10-11 chữ số!");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Mật khẩu không khớp!");
       return;
@@ -26,6 +35,10 @@ const RegisterPage = () => {
     const result = await register({ fullName, email, phone, password });
     if (result.success) {
       setError("");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+      // Điều hướng sang trang đăng nhập sau 1 giây
+      setTimeout(() => navigate("/login"), 1000);
     } else {
       setError(result.message);
     }
@@ -38,9 +51,29 @@ const RegisterPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'url("/ImgRegister/Vice_City_08.jpg") center/cover no-repeat',
+        background: 'linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)',
       }}
     >
+      {showToast && (
+        <div
+          style={{
+            position: "fixed",
+            top: 24,
+            right: 24,
+            background: "#00a67e",
+            color: "#fff",
+            padding: "12px 28px",
+            borderRadius: 8,
+            boxShadow: "0 2px 12px #0002",
+            zIndex: 2000,
+            fontWeight: 500,
+            fontSize: 16,
+          }}
+        >
+          Đăng ký thành công!
+        </div>
+      )}
+
       <div style={{ background: '#fff', borderRadius: 18, maxWidth: 420, width: '100%', boxShadow: '0 8px 32px #0002', padding: 36 }}>
         <h2 style={{ textAlign: 'center', color: '#009e74', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Đăng ký tài khoản</h2>
         <form onSubmit={handleSubmit}>
@@ -77,51 +110,103 @@ const RegisterPage = () => {
               required
             />
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
+          <div className="form-group" style={{ position: 'relative' }}>
             <label htmlFor="register-password">Mật khẩu</label>
-            <input
-              className="input-register bg-white"
-              type={showPassword ? "text" : "password"}
-              id="register-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{ paddingRight: 36 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-              tabIndex={0}
-              aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <div style={{ position: 'relative', width: '100%' }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="register-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  height: 44,
+                  padding: '0 44px 0 12px',
+                  width: '100%',
+                  background: '#fff',
+                  borderRadius: 10,
+                  border: '1.5px solid #e0e7ef',
+                  fontSize: 16,
+                  fontWeight: 500,
+                  outline: 'none',
+                  boxShadow: 'none',
+                  transition: 'border 0.2s',
+                }}
+                className="input-register"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 12,
+                  height: '100%',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  margin: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#888'
+                }}
+                tabIndex={0}
+                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
-            <label htmlFor="register-confirm-password">
-              Xác nhận mật khẩu
-            </label>
-            <input
-              className="input-register bg-white"
-              type={showConfirmPassword ? "text" : "password"}
-              id="register-confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              style={{ paddingRight: 36 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
-              tabIndex={0}
-              aria-label={
-                showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-              }
-            >
-              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+          <div className="form-group" style={{ position: 'relative' }}>
+            <label htmlFor="register-confirm-password">Xác nhận mật khẩu</label>
+            <div style={{ position: 'relative', width: '100%' }}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="register-confirm-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                style={{
+                  height: 44,
+                  padding: '0 44px 0 12px',
+                  width: '100%',
+                  background: '#fff',
+                  borderRadius: 10,
+                  border: '1.5px solid #e0e7ef',
+                  fontSize: 16,
+                  fontWeight: 500,
+                  outline: 'none',
+                  boxShadow: 'none',
+                  transition: 'border 0.2s',
+                }}
+                className="input-register"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  right: 12,
+                  height: '100%',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  margin: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#888'
+                }}
+                tabIndex={0}
+                aria-label={showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           <div className="form-options">
             <label className="checkbox-label">

@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+// import axios from 'axios'; // Bỏ comment khi dùng backend
 
 const inputStyle = {
-  width: '100%',
-  border: '1px solid #bbb',
+  width: "100%",
+  border: "1px solid #bbb",
   borderRadius: 6,
   padding: 8,
   fontSize: 16,
   marginBottom: 4,
-  background: '#fff',
-  outline: 'none',
+  background: "#fff",
+  outline: "none",
 };
 const labelStyle = {
   fontWeight: 600,
   marginBottom: 4,
-  display: 'block',
+  display: "block",
 };
 
 const RequestFormModal = ({ open, onClose }) => {
@@ -22,6 +23,38 @@ const RequestFormModal = ({ open, onClose }) => {
   if (!open) return null;
   const handleSave = () => {
     if (!commitChecked) return;
+    // Lấy dữ liệu từ form (ví dụ đơn giản, bạn nên lấy đúng giá trị từng input nếu cần)
+    const form = document.querySelector("form");
+    const newOrder = {
+      id: "DNA" + Date.now(),
+      name: form[0].value,
+      gender: form[1].value,
+      address: form[2].value,
+      cccd: form[3].value,
+      cccd_date: form[4].value,
+      cccd_place: form[5].value,
+      phone: form[6].value,
+      email: form[7].value,
+      // Có thể lấy thêm dữ liệu bảng thành viên nếu muốn
+      status: "pending_staff",
+      createdAt: new Date().toISOString(),
+    };
+    // Lưu vào localStorage (hiện tại)
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    localStorage.setItem(
+      "dna_orders",
+      JSON.stringify([newOrder, ...allOrders])
+    );
+    // // Khi có backend, thay bằng đoạn này dùng axios:
+    /*
+    axios.post('https://your-backend-api.com/orders', newOrder)
+      .then(res => {
+        // Xử lý khi lưu thành công, ví dụ: thông báo thành công, đóng modal, v.v.
+      })
+      .catch(err => {
+        // Xử lý lỗi, ví dụ: thông báo lỗi cho người dùng
+      });
+    */
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);
@@ -57,7 +90,7 @@ const RequestFormModal = ({ open, onClose }) => {
           fontSize: 17,
           overflowY: "auto",
         }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
@@ -74,9 +107,19 @@ const RequestFormModal = ({ open, onClose }) => {
         >
           &times;
         </button>
-        <h2 style={{ textAlign: "center", color: "#009e74", fontWeight: 800, fontSize: 32, marginBottom: 18 }}>ĐƠN YÊU CẦU PHÂN TÍCH ADN</h2>
+        <h2
+          style={{
+            textAlign: "center",
+            color: "#009e74",
+            fontWeight: 800,
+            fontSize: 32,
+            marginBottom: 18,
+          }}
+        >
+          ĐƠN YÊU CẦU PHÂN TÍCH ADN
+        </h2>
         <form>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Họ và tên</label>
               <input style={inputStyle} />
@@ -94,7 +137,7 @@ const RequestFormModal = ({ open, onClose }) => {
             <label style={labelStyle}>Địa chỉ</label>
             <input style={inputStyle} />
           </div>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>CMND/CCCD</label>
               <input style={inputStyle} />
@@ -108,7 +151,7 @@ const RequestFormModal = ({ open, onClose }) => {
               <input style={inputStyle} />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Số điện thoại</label>
               <input style={inputStyle} />
@@ -118,63 +161,96 @@ const RequestFormModal = ({ open, onClose }) => {
               <input style={inputStyle} />
             </div>
           </div>
-          <div style={{ margin: '18px 0 10px 0', fontWeight: 600, color: '#009e74' }}>
+          <div
+            style={{
+              margin: "18px 0 10px 0",
+              fontWeight: 600,
+              color: "#009e74",
+            }}
+          >
             Bảng thông tin thành viên cung cấp mẫu:
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 18 }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              marginBottom: 18,
+            }}
+          >
             <thead>
-              <tr style={{ background: '#f6f8fa' }}>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>STT</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Họ và tên</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Năm sinh</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Giới tính</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Mối quan hệ</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Loại mẫu</th>
-                <th style={{ border: '1px solid #ccc', padding: 6 }}>Ngày thu mẫu</th>
+              <tr style={{ background: "#f6f8fa" }}>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>STT</th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Họ và tên
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Năm sinh
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Giới tính
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Mối quan hệ
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: 6 }}>
+                  Loại mẫu
+                </th>
               </tr>
             </thead>
             <tbody>
-              {[1,2,3,4,5].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <tr key={i}>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>{i}</td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>{i}</td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input style={inputStyle} />
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input style={inputStyle} />
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
                     <select style={inputStyle}>
                       <option>Nam</option>
                       <option>Nữ</option>
                     </select>
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input style={inputStyle} /></td>
-                  <td style={{ border: '1px solid #ccc', padding: 6 }}><input type="date" style={inputStyle} /></td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input style={inputStyle} />
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: 6 }}>
+                    <input style={inputStyle} />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          
+
           {/* Nút cam kết và Lưu chuyển xuống cuối cùng */}
           <div style={{ marginTop: 18, marginBottom: 8 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input type="checkbox" checked={commitChecked} onChange={e => setCommitChecked(e.target.checked)} />
+            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input
+                type="checkbox"
+                checked={commitChecked}
+                onChange={(e) => setCommitChecked(e.target.checked)}
+              />
               <span style={{ fontSize: 16 }}>
-                Tôi xin cam kết chịu trách nhiệm về thông tin đã cung cấp và đồng ý với các điều khoản của dịch vụ.
+                Tôi xin cam kết chịu trách nhiệm về thông tin đã cung cấp và
+                đồng ý với các điều khoản của dịch vụ.
               </span>
             </label>
           </div>
-          <div style={{ textAlign: 'center', marginTop: 18 }}>
+          <div style={{ textAlign: "center", marginTop: 18 }}>
             <button
               type="button"
               style={{
-                padding: '10px 32px',
+                padding: "10px 32px",
                 borderRadius: 8,
-                background: commitChecked ? '#009e74' : '#ccc',
-                color: '#fff',
+                background: commitChecked ? "#009e74" : "#ccc",
+                color: "#fff",
                 fontWeight: 700,
                 fontSize: 18,
-                border: 'none',
-                cursor: commitChecked ? 'pointer' : 'not-allowed',
-                transition: 'background 0.2s',
+                border: "none",
+                cursor: commitChecked ? "pointer" : "not-allowed",
+                transition: "background 0.2s",
               }}
               onClick={handleSave}
               disabled={!commitChecked}
@@ -183,7 +259,15 @@ const RequestFormModal = ({ open, onClose }) => {
             </button>
           </div>
           {showSuccess && (
-            <div style={{ textAlign: 'center', color: '#009e74', fontWeight: 600, fontSize: 18, marginTop: 8 }}>
+            <div
+              style={{
+                textAlign: "center",
+                color: "#009e74",
+                fontWeight: 600,
+                fontSize: 18,
+                marginTop: 8,
+              }}
+            >
               Gửi form thành công!
             </div>
           )}
@@ -193,4 +277,4 @@ const RequestFormModal = ({ open, onClose }) => {
   );
 };
 
-export default RequestFormModal; 
+export default RequestFormModal;

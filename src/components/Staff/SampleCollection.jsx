@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react";
 import {
   Card,
   Form,
@@ -19,7 +19,7 @@ import {
   message,
   Upload,
   Tabs,
-} from "antd"
+} from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -27,23 +27,26 @@ import {
   CameraOutlined,
   SaveOutlined,
   EyeOutlined,
-} from "@ant-design/icons"
+  CheckCircleOutlined,
+} from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
+import dayjs from "dayjs";
+import { AuthContext } from "../../context/AuthContext";
 
-const { Title, Text, Paragraph } = Typography
-const { Option } = Select
-const { TextArea } = Input
-const { TabPane } = Tabs
+const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
+const { TextArea } = Input;
+const { TabPane } = Tabs;
 
-const SampleCollection = () => {
-  const [form] = Form.useForm()
-  const [sampleForms, setSampleForms] = useState([])
-  const [selectedForm, setSelectedForm] = useState(null)
-  const [previewModalVisible, setPreviewModalVisible] = useState(false)
+const SampleCollection = ({ caseType }) => {
+  const location = useLocation();
+  const [form] = Form.useForm();
+  const [sampleForms, setSampleForms] = useState([]);
   const [donors, setDonors] = useState([
     {
       id: 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -55,18 +58,142 @@ const SampleCollection = () => {
       healthIssues: "không",
       fingerprint: null,
     },
-  ])
+  ]);
+  const { user } = useContext(AuthContext);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
+
+  const title =
+    caseType === "Dân sự"
+      ? "Lấy mẫu xét nghiệm dân sự"
+      : "Lấy mẫu xét nghiệm hành chính";
+
+  // Danh sách loại xét nghiệm hành chính
+  const adminTestTypes = [
+    "Xét nghiệm ADN hành chính - Khai sinh",
+    "Xét nghiệm ADN hành chính - Di trú",
+    "Xét nghiệm ADN hành chính - Thừa kế",
+    "Xét nghiệm ADN hành chính - Tranh chấp",
+    "Xét nghiệm ADN hành chính - Nhanh",
+  ];
 
   useEffect(() => {
-    const savedForms = JSON.parse(localStorage.getItem("sample_collection_forms") || "[]")
-    setSampleForms(savedForms)
-  }, [])
+    try {
+      const stored = localStorage.getItem("sample_collection_forms");
+      const savedForms = stored ? JSON.parse(stored) : [];
+      if (Array.isArray(savedForms)) {
+        setSampleForms(savedForms);
+      } else {
+        setSampleForms([]);
+      }
+    } catch {
+      // Nếu dữ liệu bị lỗi, reset về mảng rỗng để tránh crash
+      setSampleForms([]);
+      localStorage.removeItem("sample_collection_forms");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Chỉ tự động điền orderId và requesterName nếu có, KHÔNG tự động điền collectionDate
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get("orderId");
+    const requesterName = params.get("requesterName");
+    if (orderId) {
+      form.setFieldsValue({ orderId: orderId.toString() });
+    }
+    if (requesterName) {
+      form.setFieldsValue({ requesterName });
+    }
+  }, [location.search, form]);
+
+  useEffect(() => {
+    // Tự động điền thông tin nếu có prefill trong localStorage, chỉ điền orderId và requesterName
+    const prefill = localStorage.getItem("dna_sample_collection_prefill");
+    if (prefill) {
+      const data = JSON.parse(prefill);
+      if (data.orderId) {
+        form.setFieldsValue({ orderId: data.orderId.toString() });
+        // Tìm đơn hàng tương ứng và set các trường liên quan
+        const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+        const order = orders.find(
+          (o) => o.id.toString() === data.orderId.toString()
+        );
+        if (order) {
+          setSelectedOrder(order);
+          form.setFieldsValue({
+            collectionDate: order.appointmentDate
+              ? dayjs(order.appointmentDate)
+              : undefined,
+            requesterName: order.name || "",
+            requesterAddress: order.address || "",
+            testType: order.type || "",
+          });
+        }
+      }
+      if (data.requesterName) {
+        form.setFieldsValue({ requesterName: data.requesterName });
+      }
+      localStorage.removeItem("dna_sample_collection_prefill");
+    }
+    // Tự động điền tên nhân viên thu mẫu
+    if (user && user.name) {
+      form.setFieldsValue({ collector: user.name });
+    }
+  }, [form, user]);
+
+  // Auto-save form draft mỗi khi form thay đổi
+  const handleAutoSave = (changedValues, allValues) => {
+    localStorage.setItem(
+      "sample_collection_draft",
+      JSON.stringify({
+        form: allValues,
+        donors: donors,
+      })
+    );
+  };
+  // Auto-save khi donors thay đổi
+  useEffect(() => {
+    const values = form.getFieldsValue();
+    localStorage.setItem(
+      "sample_collection_draft",
+      JSON.stringify({
+        form: values,
+        donors: donors,
+      })
+    );
+  }, [donors]);
+
+  // Khi mở tab, nếu có draft thì tự động điền lại
+  useEffect(() => {
+    const draft = localStorage.getItem("sample_collection_draft");
+    if (draft) {
+      try {
+        const data = JSON.parse(draft);
+        if (data.form) {
+          // Convert stored string dates back to dayjs object for DatePicker compatibility
+          const draftForm = { ...data.form };
+          if (draftForm.collectionDate) {
+            draftForm.collectionDate = dayjs(
+              draftForm.collectionDate,
+              "DD/MM/YYYY"
+            );
+          }
+          form.setFieldsValue(draftForm);
+        }
+        if (data.donors) {
+          setDonors(data.donors);
+        }
+      } catch {
+        // Xoá các dòng console.log debug
+      }
+    }
+  }, [form]);
 
   const addDonor = () => {
     const newDonor = {
       id: donors.length + 1,
       name: "",
-      idType: "PASSPORT",
+      idType: "CCCD",
       idNumber: "",
       idIssueDate: null,
       idIssuePlace: "",
@@ -77,19 +204,39 @@ const SampleCollection = () => {
       relationship: "",
       healthIssues: "không",
       fingerprint: null,
-    }
-    setDonors([...donors, newDonor])
-  }
+    };
+    const newDonors = [...donors, newDonor];
+    setDonors(newDonors);
+    const values = form.getFieldsValue();
+    localStorage.setItem(
+      "sample_collection_draft",
+      JSON.stringify({ form: values, donors: newDonors })
+    );
+  };
 
   const removeDonor = (id) => {
     if (donors.length > 1) {
-      setDonors(donors.filter((donor) => donor.id !== id))
+      const newDonors = donors.filter((donor) => donor.id !== id);
+      setDonors(newDonors);
+      const values = form.getFieldsValue();
+      localStorage.setItem(
+        "sample_collection_draft",
+        JSON.stringify({ form: values, donors: newDonors })
+      );
     }
-  }
+  };
 
   const updateDonor = (id, field, value) => {
-    setDonors(donors.map((donor) => (donor.id === id ? { ...donor, [field]: value } : donor)))
-  }
+    const newDonors = donors.map((donor) =>
+      donor.id === id ? { ...donor, [field]: value } : donor
+    );
+    setDonors(newDonors);
+    const values = form.getFieldsValue();
+    localStorage.setItem(
+      "sample_collection_draft",
+      JSON.stringify({ form: values, donors: newDonors })
+    );
+  };
 
   const handleSave = async (values) => {
     try {
@@ -100,16 +247,31 @@ const SampleCollection = () => {
         donors: donors,
         createdAt: new Date().toLocaleString("vi-VN"),
         status: "Đã lấy mẫu",
-      }
+      };
 
-      const updatedForms = [...sampleForms, newForm]
-      setSampleForms(updatedForms)
-      localStorage.setItem("sample_collection_forms", JSON.stringify(updatedForms))
+      const updatedForms = [...sampleForms, newForm];
+      setSampleForms(updatedForms);
+      localStorage.setItem(
+        "sample_collection_forms",
+        JSON.stringify(updatedForms)
+      );
 
       // Cập nhật đơn hàng tương ứng nếu có
-      const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
+      const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+      // Chuẩn hóa dữ liệu bảng mẫu
+      const resultTableData = donors.map((donor, idx) => ({
+        key: idx + 1,
+        name: donor.name || "",
+        birth: donor.birth || "",
+        gender: donor.gender || "",
+        relationship: donor.relationship || donor.relation || "",
+        sampleType: donor.sampleType || "",
+      }));
       const updatedOrders = orders.map((order) => {
-        if (order.id.toString() === values.orderId && order.type.includes("hành chính")) {
+        if (
+          order.id.toString() === values.orderId &&
+          order.type.includes("hành chính")
+        ) {
           return {
             ...order,
             sampleCollected: true,
@@ -119,159 +281,75 @@ const SampleCollection = () => {
               location: values.location,
               collector: values.collector,
               collectionDate: values.collectionDate.format("DD/MM/YYYY"),
-              donors: donors,
+              donors: donors, // đồng bộ
             },
-          }
+            resultTableData: resultTableData, // đồng bộ
+            members: donors, // đồng bộ
+          };
         }
-        return order
-      })
-      localStorage.setItem("dna_orders", JSON.stringify(updatedOrders))
+        return order;
+      });
+      localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
+      window.dispatchEvent(new Event("dna_orders_updated"));
 
-      form.resetFields()
-      setDonors([
-        {
-          id: 1,
-          name: "",
-          idType: "PASSPORT",
-          idNumber: "",
-          idIssueDate: null,
-          idIssuePlace: "",
-          nationality: "Việt Nam",
-          address: "",
-          sampleType: "Máu",
-          sampleQuantity: "01",
-          relationship: "",
-          healthIssues: "không",
-          fingerprint: null,
-        },
-      ])
-
-      message.success("Lưu biên bản lấy mẫu thành công!")
+      setShowSuccessOverlay(true);
+      setTimeout(() => {
+        setShowSuccessOverlay(false);
+        form.resetFields();
+        setDonors([
+          {
+            id: 1,
+            name: "",
+            idType: "CCCD",
+            idNumber: "",
+            idIssueDate: null,
+            idIssuePlace: "",
+            nationality: "Việt Nam",
+            sampleType: "Máu",
+            relationship: "",
+          },
+        ]);
+        localStorage.removeItem("sample_collection_draft");
+      }, 3000);
     } catch {
-      message.error("Có lỗi xảy ra khi lưu biên bản!")
+      message.error("Có lỗi xảy ra khi lưu biên bản!");
     }
-  }
+  };
 
-  const handleViewForm = (formData) => {
-    setSelectedForm(formData)
-    setPreviewModalVisible(true)
-  }
-
-  const getAdministrativeOrders = () => {
-    const orders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    return orders.filter((order) => order.type.includes("hành chính") && !order.sampleCollected)
-  }
-
-  const columns = [
-    {
-      title: "Mã biên bản",
-      dataIndex: "id",
-      key: "id",
-      render: (id) => `BB-${id}`,
-    },
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-      render: (id) => `#${id}`,
-    },
-    {
-      title: "Người yêu cầu",
-      dataIndex: "requesterName",
-      key: "requesterName",
-    },
-    {
-      title: "Nhân viên thu mẫu",
-      dataIndex: "collector",
-      key: "collector",
-    },
-    {
-      title: "Ngày lấy mẫu",
-      dataIndex: "collectionDate",
-      key: "collectionDate",
-    },
-    {
-      title: "Số người cho mẫu",
-      dataIndex: "donors",
-      key: "donors",
-      render: (donors) => donors.length,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => <Tag color="green">{status}</Tag>,
-    },
-    {
-      title: "Thao tác",
-      key: "action",
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewForm(record)}
-            style={{
-              backgroundColor: "#00a67e",
-              borderColor: "#00a67e",
-              fontWeight: "500",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#008f6b"
-              e.target.style.borderColor = "#008f6b"
-              e.target.style.fontWeight = "600"
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#00a67e"
-              e.target.style.borderColor = "#00a67e"
-              e.target.style.fontWeight = "500"
-            }}
-          >
-            Xem
-          </Button>
-          <Button
-            size="small"
-            icon={<PrinterOutlined />}
-            onClick={() => handleViewForm(record)}
-            style={{
-              backgroundColor: "#00a67e",
-              borderColor: "#00a67e",
-              color: "white",
-              fontWeight: "500",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#008f6b"
-              e.target.style.borderColor = "#008f6b"
-              e.target.style.fontWeight = "600"
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#00a67e"
-              e.target.style.borderColor = "#00a67e"
-              e.target.style.fontWeight = "500"
-            }}
-          >
-            In
-          </Button>
-        </Space>
-      ),
-    },
-  ]
+  // Hàm kiểm tra ngày không hợp lệ (trước hôm nay hoặc là Chủ nhật)
+  const disabledDate = (current) => {
+    const today = dayjs().startOf("day");
+    if (!current) return false;
+    return current < today || current.day() === 0;
+  };
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Lấy mẫu xét nghiệm</h1>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          {title}
+        </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
-          Tạo biên bản lấy mẫu cho xét nghiệm ADN hành chính
+          Tạo biên bản lấy mẫu cho xét nghiệm ADN{" "}
+          {caseType === "Dân sự" ? "dân sự" : "hành chính"}
         </p>
       </div>
 
       <Tabs defaultActiveKey="create">
         <TabPane tab="Tạo biên bản mới" key="create">
           <Card>
-            <Form form={form} layout="vertical" onFinish={handleSave}>
-              <Title level={4} style={{ textAlign: "center", color: "#00a67e" }}>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleSave}
+              onValuesChange={handleAutoSave}
+            >
+              <Title
+                level={4}
+                style={{ textAlign: "center", color: "#00a67e" }}
+              >
                 BIÊN BẢN LẤY MẪU XÉT NGHIỆM
               </Title>
 
@@ -280,16 +358,31 @@ const SampleCollection = () => {
                   <Form.Item
                     name="collectionDate"
                     label="Ngày lấy mẫu"
-                    rules={[{ required: true, message: "Vui lòng chọn ngày lấy mẫu!" }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn ngày lấy mẫu!",
+                      },
+                    ]}
                   >
-                    <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+                    <DatePicker
+                      format="DD/MM/YYYY"
+                      style={{ width: "100%" }}
+                      // disabled={
+                      //   !!selectedOrder && !!selectedOrder.appointmentDate
+                      // }
+                      disabledDate={disabledDate}
+                      placeholder="Chọn ngày lấy mẫu"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={16}>
                   <Form.Item
                     name="location"
                     label="Địa điểm lấy mẫu"
-                    rules={[{ required: true, message: "Vui lòng nhập địa điểm!" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập địa điểm!" },
+                    ]}
                   >
                     <Input placeholder="Ví dụ: 132 Hoàng Văn Thụ, phường Phương Sài, Nha Trang" />
                   </Form.Item>
@@ -301,39 +394,75 @@ const SampleCollection = () => {
                   <Form.Item
                     name="collector"
                     label="Nhân viên thu mẫu"
-                    rules={[{ required: true, message: "Vui lòng chọn nhân viên!" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng chọn nhân viên!" },
+                    ]}
                   >
-                    <Select placeholder="Chọn nhân viên thu mẫu">
-                      <Option value="Trần Trung Tâm">Trần Trung Tâm</Option>
-                      <Option value="Nguyễn Văn A">Nguyễn Văn A</Option>
-                      <Option value="Trần Thị B">Trần Thị B</Option>
-                      <Option value="Lê Văn C">Lê Văn C</Option>
-                    </Select>
+                    <Input
+                      value={user?.name || ""}
+                      disabled
+                      style={{ fontWeight: 700, color: "#00a67e" }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item
                     name="orderId"
-                    label="Mã đơn hàng (nếu có)"
-                    rules={[{ required: true, message: "Vui lòng chọn đơn hàng!" }]}
+                    label="Mã đơn hàng"
+                    rules={[
+                      { required: true, message: "Vui lòng chọn đơn hàng!" },
+                    ]}
                   >
-                    <Select placeholder="Chọn đơn hàng xét nghiệm hành chính">
-                      {getAdministrativeOrders().map((order) => (
-                        <Option key={order.id} value={order.id.toString()}>
-                          #{order.id} - {order.name} - {order.type}
-                        </Option>
-                      ))}
-                    </Select>
+                    <Input
+                      value={selectedOrder ? `#${selectedOrder.id}` : ""}
+                      disabled
+                      style={{ fontWeight: 700, color: "#0984e3" }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
+
+              {selectedOrder && (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="testType"
+                      label="Loại xét nghiệm"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn loại xét nghiệm!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        value={form.getFieldValue("testType")}
+                        onChange={(value) =>
+                          form.setFieldsValue({ testType: value })
+                        }
+                      >
+                        {adminTestTypes.map((type) => (
+                          <Option key={type} value={type}>
+                            {type}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
 
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
                     name="requesterName"
                     label="Người yêu cầu xét nghiệm"
-                    rules={[{ required: true, message: "Vui lòng nhập tên người yêu cầu!" }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập tên người yêu cầu!",
+                      },
+                    ]}
                   >
                     <Input placeholder="Họ và tên người yêu cầu" />
                   </Form.Item>
@@ -342,7 +471,9 @@ const SampleCollection = () => {
                   <Form.Item
                     name="requesterAddress"
                     label="Địa chỉ hiện tại"
-                    rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập địa chỉ!" },
+                    ]}
                   >
                     <Input placeholder="Địa chỉ hiện tại của người yêu cầu" />
                   </Form.Item>
@@ -368,10 +499,10 @@ const SampleCollection = () => {
                           fontWeight: "500",
                         }}
                         onMouseEnter={(e) => {
-                          e.target.style.fontWeight = "600"
+                          e.target.style.fontWeight = "600";
                         }}
                         onMouseLeave={(e) => {
-                          e.target.style.fontWeight = "500"
+                          e.target.style.fontWeight = "500";
                         }}
                       />
                     )
@@ -383,99 +514,203 @@ const SampleCollection = () => {
                       <Form.Item label="Họ và tên" required>
                         <Input
                           value={donor.name}
-                          onChange={(e) => updateDonor(donor.id, "name", e.target.value)}
+                          onChange={(e) =>
+                            updateDonor(donor.id, "name", e.target.value)
+                          }
                           placeholder="Họ và tên đầy đủ"
                         />
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Loại giấy tờ" required>
-                        <Select value={donor.idType} onChange={(value) => updateDonor(donor.id, "idType", value)}>
-                          <Option value="PASSPORT">Passport</Option>
-                          <Option value="CCCD">CCCD</Option>
-                          <Option value="CMND">CMND</Option>
-                          <Option value="Giấy Chứng Sinh">Giấy Chứng Sinh</Option>
-                          <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
+                      <Form.Item label="Giới tính" required>
+                        <Select
+                          value={donor.gender}
+                          onChange={(value) =>
+                            updateDonor(donor.id, "gender", value)
+                          }
+                        >
+                          <Option value="Nam">Nam</Option>
+                          <Option value="Nữ">Nữ</Option>
+                          <Option value="Khác">Khác</Option>
                         </Select>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item label="Số/quyển số" required>
-                        <Input
-                          value={donor.idNumber}
-                          onChange={(e) => updateDonor(donor.id, "idNumber", e.target.value)}
-                          placeholder="Số giấy tờ"
+                      <Form.Item label="Ngày sinh" required>
+                        <DatePicker
+                          value={
+                            donor.birth
+                              ? dayjs(donor.birth, "DD/MM/YYYY")
+                              : null
+                          }
+                          onChange={(date) =>
+                            updateDonor(
+                              donor.id,
+                              "birth",
+                              date ? date.format("DD/MM/YYYY") : ""
+                            )
+                          }
+                          format="DD/MM/YYYY"
+                          style={{ width: "100%" }}
+                          disabledDate={(current) =>
+                            current && current > dayjs().endOf("day")
+                          }
+                          placeholder="Chọn ngày sinh"
                         />
                       </Form.Item>
                     </Col>
                   </Row>
 
                   <Row gutter={16}>
-                    <Col span={8}>
-                      <Form.Item label="Ngày cấp">
-                        <DatePicker
-                          value={donor.idIssueDate}
-                          onChange={(date) => updateDonor(donor.id, "idIssueDate", date)}
-                          format="DD/MM/YYYY"
-                          style={{ width: "100%" }}
-                        />
+                    <Col span={12}>
+                      <Form.Item label="Loại giấy tờ" required>
+                        <Select
+                          value={
+                            ["CCCD", "Bằng Lái Xe"].includes(donor.idType)
+                              ? donor.idType
+                              : "CCCD"
+                          }
+                          onChange={(value) =>
+                            updateDonor(donor.id, "idType", value)
+                          }
+                        >
+                          <Option value="CCCD">CCCD</Option>
+                          <Option value="Bằng Lái Xe">Bằng Lái Xe</Option>
+                        </Select>
                       </Form.Item>
                     </Col>
-                    <Col span={8}>
-                      <Form.Item label="Nơi cấp">
-                        <Input
-                          value={donor.idIssuePlace}
-                          onChange={(e) => updateDonor(donor.id, "idIssuePlace", e.target.value)}
-                          placeholder="Nơi cấp giấy tờ"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
+                    <Col span={12}>
                       <Form.Item label="Quốc tịch">
                         <Input
                           value={donor.nationality}
-                          onChange={(e) => updateDonor(donor.id, "nationality", e.target.value)}
+                          onChange={(e) =>
+                            updateDonor(donor.id, "nationality", e.target.value)
+                          }
                           placeholder="Quốc tịch"
                         />
                       </Form.Item>
                     </Col>
                   </Row>
-
                   <Row gutter={16}>
-                    <Col span={24}>
-                      <Form.Item label="Địa chỉ">
+                    <Col span={12}>
+                      <Form.Item
+                        label={
+                          donor.idType === "CCCD" ? "Số CCCD" : "Số giấy tờ"
+                        }
+                        required
+                      >
                         <Input
-                          value={donor.address}
-                          onChange={(e) => updateDonor(donor.id, "address", e.target.value)}
-                          placeholder="Địa chỉ thường trú"
+                          value={donor.idNumber}
+                          onChange={(e) =>
+                            updateDonor(donor.id, "idNumber", e.target.value)
+                          }
+                          placeholder={
+                            donor.idType === "CCCD"
+                              ? "Nhập số CCCD"
+                              : "Nhập số giấy tờ"
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Ngày cấp">
+                        <DatePicker
+                          value={donor.idIssueDate}
+                          onChange={(date) =>
+                            updateDonor(donor.id, "idIssueDate", date)
+                          }
+                          format="DD/MM/YYYY"
+                          style={{ width: "100%" }}
+                          disabledDate={(current) =>
+                            current && current > dayjs().endOf("day")
+                          }
+                          placeholder="Chọn ngày cấp"
                         />
                       </Form.Item>
                     </Col>
                   </Row>
 
                   <Row gutter={16}>
-                    <Col span={6}>
+                    <Col span={12}>
+                      <Form.Item label="Nơi cấp">
+                        <Input
+                          value={donor.idIssuePlace}
+                          onChange={(e) =>
+                            updateDonor(
+                              donor.id,
+                              "idIssuePlace",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Nơi cấp giấy tờ"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="Vân tay">
+                        <Upload
+                          listType="picture-card"
+                          showUploadList={false}
+                          beforeUpload={(file) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                              updateDonor(
+                                donor.id,
+                                "fingerprint",
+                                e.target.result
+                              );
+                            };
+                            reader.readAsDataURL(file);
+                            return false; // Ngăn upload lên server
+                          }}
+                        >
+                          {donor.fingerprint ? (
+                            <img
+                              src={donor.fingerprint}
+                              alt="fingerprint"
+                              style={{
+                                width: "100%",
+                                maxHeight: 80,
+                                objectFit: "contain",
+                              }}
+                            />
+                          ) : (
+                            <div>
+                              <PlusOutlined />
+                              <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                            </div>
+                          )}
+                        </Upload>
+                        {donor.fingerprint && (
+                          <Button
+                            danger
+                            size="small"
+                            style={{ marginTop: 4 }}
+                            onClick={() =>
+                              updateDonor(donor.id, "fingerprint", null)
+                            }
+                          >
+                            Xóa ảnh
+                          </Button>
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={16}>
+                    <Col span={12}>
                       <Form.Item label="Loại mẫu" required>
                         <Select
                           value={donor.sampleType}
-                          onChange={(value) => updateDonor(donor.id, "sampleType", value)}
+                          onChange={(value) =>
+                            updateDonor(donor.id, "sampleType", value)
+                          }
                         >
+                          <Option value="Nước bọt">Nước bọt</Option>
                           <Option value="Máu">Máu</Option>
-                          <Option value="Niêm mạc miệng">Niêm mạc miệng</Option>
                           <Option value="Tóc">Tóc</Option>
-                          <Option value="Móng tay">Móng tay</Option>
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="Số lượng mẫu" required>
-                        <Select
-                          value={donor.sampleQuantity}
-                          onChange={(value) => updateDonor(donor.id, "sampleQuantity", value)}
-                        >
-                          <Option value="01">01</Option>
-                          <Option value="02">02</Option>
-                          <Option value="03">03</Option>
+                          <Option value="Móng">Móng</Option>
+                          <Option value="Niêm mạc">Niêm mạc</Option>
                         </Select>
                       </Form.Item>
                     </Col>
@@ -483,44 +718,15 @@ const SampleCollection = () => {
                       <Form.Item label="Mối quan hệ" required>
                         <Input
                           value={donor.relationship}
-                          onChange={(e) => updateDonor(donor.id, "relationship", e.target.value)}
-                          placeholder="Ví dụ: Bố, Con, Mẹ..."
+                          onChange={(e) =>
+                            updateDonor(
+                              donor.id,
+                              "relationship",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Ví dụ: Bố, Mẹ, Con..."
                         />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-
-                  <Row gutter={16}>
-                    <Col span={18}>
-                      <Form.Item label="Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng">
-                        <Input
-                          value={donor.healthIssues}
-                          onChange={(e) => updateDonor(donor.id, "healthIssues", e.target.value)}
-                          placeholder="Nhập 'không' nếu không có"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="Vân tay ngón trỏ phải">
-                        <Upload
-                          listType="picture-card"
-                          showUploadList={false}
-                          beforeUpload={() => false}
-                          onChange={(info) => updateDonor(donor.id, "fingerprint", info.file)}
-                        >
-                          {donor.fingerprint ? (
-                            <img
-                              src={URL.createObjectURL(donor.fingerprint) || "/placeholder.svg"}
-                              alt="fingerprint"
-                              style={{ width: "100%" }}
-                            />
-                          ) : (
-                            <div>
-                              <CameraOutlined />
-                              <div style={{ marginTop: 8 }}>Chụp vân tay</div>
-                            </div>
-                          )}
-                        </Upload>
                       </Form.Item>
                     </Col>
                   </Row>
@@ -539,50 +745,25 @@ const SampleCollection = () => {
                   fontWeight: "500",
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.borderColor = "#008f6b"
-                  e.target.style.color = "#008f6b"
-                  e.target.style.fontWeight = "600"
+                  e.target.style.borderColor = "#008f6b";
+                  e.target.style.color = "#008f6b";
+                  e.target.style.fontWeight = "600";
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.borderColor = "#00a67e"
-                  e.target.style.color = "#00a67e"
-                  e.target.style.fontWeight = "500"
+                  e.target.style.borderColor = "#00a67e";
+                  e.target.style.color = "#00a67e";
+                  e.target.style.fontWeight = "500";
                 }}
               >
                 Thêm người cho mẫu
               </Button>
 
-              <Form.Item name="notes" label="Ghi chú bổ sung">
-                <TextArea rows={3} placeholder="Ghi chú thêm về quá trình lấy mẫu..." />
-              </Form.Item>
-
               <div style={{ textAlign: "center" }}>
                 <Space size="large">
                   <Button
-                    onClick={() => form.resetFields()}
-                    style={{
-                      backgroundColor: "#00a67e",
-                      borderColor: "#00a67e",
-                      color: "white",
-                      fontWeight: "500",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = "#008f6b"
-                      e.target.style.borderColor = "#008f6b"
-                      e.target.style.fontWeight = "600"
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = "#00a67e"
-                      e.target.style.borderColor = "#00a67e"
-                      e.target.style.fontWeight = "500"
-                    }}
-                  >
-                    Làm mới
-                  </Button>
-                  <Button
                     type="primary"
                     htmlType="submit"
-                    icon={<SaveOutlined />}
+                    icon={<CheckCircleOutlined />}
                     size="large"
                     style={{
                       backgroundColor: "#00a67e",
@@ -590,37 +771,21 @@ const SampleCollection = () => {
                       fontWeight: "500",
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = "#008f6b"
-                      e.target.style.borderColor = "#008f6b"
-                      e.target.style.fontWeight = "600"
+                      e.target.style.backgroundColor = "#008f6b";
+                      e.target.style.borderColor = "#008f6b";
+                      e.target.style.fontWeight = "600";
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = "#00a67e"
-                      e.target.style.borderColor = "#00a67e"
-                      e.target.style.fontWeight = "500"
+                      e.target.style.backgroundColor = "#00a67e";
+                      e.target.style.borderColor = "#00a67e";
+                      e.target.style.fontWeight = "500";
                     }}
                   >
-                    Lưu biên bản
+                    Xác nhận lấy mẫu
                   </Button>
                 </Space>
               </div>
             </Form>
-          </Card>
-        </TabPane>
-
-        <TabPane tab="Danh sách biên bản" key="list">
-          <Card>
-            <Table
-              columns={columns}
-              dataSource={sampleForms}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} biên bản`,
-              }}
-            />
           </Card>
         </TabPane>
       </Tabs>
@@ -628,12 +793,12 @@ const SampleCollection = () => {
       {/* Modal xem biên bản */}
       <Modal
         title="Xem biên bản lấy mẫu"
-        open={previewModalVisible}
-        onCancel={() => setPreviewModalVisible(false)}
+        open={false}
+        onCancel={() => {}}
         footer={[
           <Button
             key="close"
-            onClick={() => setPreviewModalVisible(false)}
+            onClick={() => {}}
             style={{
               backgroundColor: "#00a67e",
               borderColor: "#00a67e",
@@ -641,14 +806,14 @@ const SampleCollection = () => {
               fontWeight: "500",
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#008f6b"
-              e.target.style.borderColor = "#008f6b"
-              e.target.style.fontWeight = "600"
+              e.target.style.backgroundColor = "#008f6b";
+              e.target.style.borderColor = "#008f6b";
+              e.target.style.fontWeight = "600";
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#00a67e"
-              e.target.style.borderColor = "#00a67e"
-              e.target.style.fontWeight = "500"
+              e.target.style.backgroundColor = "#00a67e";
+              e.target.style.borderColor = "#00a67e";
+              e.target.style.fontWeight = "500";
             }}
           >
             Đóng
@@ -663,14 +828,14 @@ const SampleCollection = () => {
               fontWeight: "500",
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#008f6b"
-              e.target.style.borderColor = "#008f6b"
-              e.target.style.fontWeight = "600"
+              e.target.style.backgroundColor = "#008f6b";
+              e.target.style.borderColor = "#008f6b";
+              e.target.style.fontWeight = "600";
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#00a67e"
-              e.target.style.borderColor = "#00a67e"
-              e.target.style.fontWeight = "500"
+              e.target.style.backgroundColor = "#00a67e";
+              e.target.style.borderColor = "#00a67e";
+              e.target.style.fontWeight = "500";
             }}
           >
             In biên bản
@@ -678,144 +843,80 @@ const SampleCollection = () => {
         ]}
         width={800}
       >
-        {selectedForm && (
-          <div style={{ background: "#fff", padding: 24 }}>
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <Title level={4}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</Title>
-              <Text>Độc lập - Tự do - Hạnh phúc</Text>
-              <Divider style={{ margin: "12px 0" }} />
-              <Title level={3}>BIÊN BẢN LẤY MẪU XÉT NGHIỆM</Title>
-            </div>
-
-            <Paragraph>
-              Hôm nay, ngày {selectedForm.collectionDate}, tại {selectedForm.location}
-            </Paragraph>
-            <Paragraph>Chúng tôi gồm có:</Paragraph>
-            <Paragraph>
-              1. Nhân viên thu mẫu: <strong>{selectedForm.collector}</strong>
-            </Paragraph>
-            <Paragraph>
-              2. Người yêu cầu xét nghiệm: <strong>{selectedForm.requesterName}</strong>, Địa chỉ hiện tại:{" "}
-              {selectedForm.requesterAddress}
-            </Paragraph>
-
-            <Paragraph>
-              Chúng tôi tiến hành lấy mẫu của những người để nghị xét nghiệm ADN. Các mẫu của từng người được lấy riêng
-              rẽ như sau:
-            </Paragraph>
-
-            {selectedForm.donors.map((donor, index) => (
-              <div key={index} style={{ border: "1px solid #000", padding: 16, marginBottom: 16 }}>
-                <Row gutter={16}>
-                  <Col span={18}>
-                    <Text strong>Họ và tên: {donor.name}</Text>
-                  </Col>
-                  <Col span={6} style={{ textAlign: "right" }}>
-                    <Text>Người cho mẫu thứ {index + 1}</Text>
-                  </Col>
-                </Row>
-                <Row gutter={16} style={{ marginTop: 8 }}>
-                  <Col span={8}>
-                    <Text>Loại giấy tờ: {donor.idType}</Text>
-                  </Col>
-                  <Col span={16}>
-                    <Text>Số/quyển số: {donor.idNumber}</Text>
-                  </Col>
-                </Row>
-                <Row gutter={16} style={{ marginTop: 8 }}>
-                  <Col span={8}>
-                    <Text>
-                      Ngày cấp: {donor.idIssueDate ? donor.idIssueDate.format("DD/MM/YYYY") : "Chưa có thông tin"}
-                    </Text>
-                  </Col>
-                  <Col span={8}>
-                    <Text>Nơi cấp: {donor.idIssuePlace}</Text>
-                  </Col>
-                  <Col span={8}>
-                    <Text>Quốc tịch: {donor.nationality}</Text>
-                  </Col>
-                </Row>
-                {donor.address && (
-                  <Row style={{ marginTop: 8 }}>
-                    <Col span={24}>
-                      <Text>Địa chỉ: {donor.address}</Text>
-                    </Col>
-                  </Row>
-                )}
-                <Row gutter={16} style={{ marginTop: 8 }}>
-                  <Col span={8}>
-                    <Text>Loại mẫu: {donor.sampleType}</Text>
-                  </Col>
-                  <Col span={8}>
-                    <Text>Số lượng mẫu: {donor.sampleQuantity}</Text>
-                  </Col>
-                  <Col span={8}>
-                    <Text>Mối quan hệ: {donor.relationship}</Text>
-                  </Col>
-                </Row>
-                <Row style={{ marginTop: 8 }}>
-                  <Col span={24}>
-                    <Text>Tiểu sử bệnh về máu, truyền máu hoặc ghép tủy trong 6 tháng: {donor.healthIssues}</Text>
-                  </Col>
-                </Row>
-                <div style={{ textAlign: "right", marginTop: 16 }}>
-                  <Text>Vân tay ngón trỏ phải</Text>
-                  <div
-                    style={{
-                      width: 80,
-                      height: 80,
-                      border: "1px dashed #999",
-                      borderRadius: "50%",
-                      display: "inline-block",
-                      marginLeft: 8,
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Biên bản này và đơn yêu cầu xét nghiệm ADN là một phần không thể tách rời.
-            </Paragraph>
-            <Paragraph style={{ fontStyle: "italic", fontSize: 12 }}>
-              * Mẫu xét nghiệm thu nhận được sẽ lưu trữ trong 30 ngày kể từ ngày trả kết quả. Sau thời gian đó người yêu
-              cầu xét nghiệm cung cấp và chịu trách nhiệm.
-            </Paragraph>
-
-            <Row gutter={24} style={{ marginTop: 24, textAlign: "center" }}>
-              <Col span={8}>
-                <Text strong>NGƯỜI THU MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký, ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.collector}</Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI ĐƯỢC LẤY MẪU</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.donors[0]?.name}</Text>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Text strong>NGƯỜI YÊU CẦU XÉT NGHIỆM</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 60 }}>
-                  <Text>{selectedForm.requesterName}</Text>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        )}
+        {/* Content of the modal */}
       </Modal>
-    </div>
-  )
-}
 
-export default SampleCollection
+      {showSuccessOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255,255,255,0.97)",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 18,
+            boxShadow: "0 8px 32px #0002",
+            animation: "fadeIn 0.3s",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(135deg, #e0f7fa 0%, #e6ffe6 100%)",
+              border: "2.5px solid #00b894",
+              borderRadius: 20,
+              padding: "48px 40px",
+              boxShadow: "0 4px 32px #00b89422",
+              textAlign: "center",
+              maxWidth: 480,
+              minWidth: 320,
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 18, lineHeight: 1 }}>
+              🧬
+            </div>
+            <div
+              style={{
+                fontSize: 30,
+                fontWeight: 900,
+                color: "#009e74",
+                marginBottom: 14,
+                letterSpacing: 0.5,
+              }}
+            >
+              Lấy mẫu thành công!
+            </div>
+            <div
+              style={{
+                fontSize: 20,
+                color: "#222",
+                marginBottom: 10,
+                fontWeight: 500,
+              }}
+            >
+              Biên bản đã được lưu và đơn hàng chuyển sang trạng thái Đang xử
+              lý.
+            </div>
+            <div
+              style={{
+                fontSize: 16,
+                color: "#555",
+                marginTop: 18,
+                lineHeight: 1.6,
+              }}
+            >
+              Bạn có thể tiếp tục nhập đơn mới hoặc quay lại danh sách.
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SampleCollection;

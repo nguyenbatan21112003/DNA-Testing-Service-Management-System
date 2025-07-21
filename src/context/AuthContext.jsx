@@ -1,4 +1,3 @@
-
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -8,8 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Lấy user từ sessionStorage (nếu muốn giữ đăng nhập khi reload)
-    const storedUser = sessionStorage.getItem("user");
+    // Ưu tiên lấy user từ sessionStorage, nếu không có thì lấy từ localStorage
+    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("dna_user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
@@ -26,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       if (found) {
         setUser(found);
         sessionStorage.setItem("user", JSON.stringify(found));
+        localStorage.setItem("dna_user", JSON.stringify(found));
         return { success: true, role_id: found.role_id };
       }
       return { success: false, message: "Email hoặc mật khẩu không đúng!" };
@@ -38,34 +38,38 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem("user");
+    localStorage.removeItem("dna_user");
   };
 
-  // Đăng ký
+  // Đăng ký (sử dụng mockAPI)
   const register = async ({ fullName, email, phone, password }) => {
     try {
-      const res = await axios.post("https://localhost:7037/user/register", {
+      // Kiểm tra email đã tồn tại chưa
+      const existingUsersRes = await axios.get(API_URL);
+      const existedUser = existingUsersRes.data.find((u) => u.email === email);
+      if (existedUser) {
+        return { success: false, message: "Email đã được sử dụng!" };
+      }
+
+      const res = await axios.post(API_URL, {
         fullName,
         email,
         phone,
         password,
+        role_id: 1, // mặc định role khách hàng
       });
 
-      if (res.data && res.data.success) {
+      if (res.data) {
         return {
           success: true,
-          message: res.data?.message || "Đăng ký thành công",
+          message: "Đăng ký thành công!",
         };
-      } else {
-        return {
-          success: false,
-          message: res.data?.message || "Đăng ký thất bại!",
-        };
-
       }
+      return { success: false, message: "Đăng ký thất bại!" };
     } catch (err) {
       return {
         success: false,
-        message: err.response?.data?.message || "Lỗi kết nối đến server!",
+        message: err.response?.data?.message || "Lỗi kết nối!",
       };
     }
   };
@@ -81,6 +85,7 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(updateRes.data);
       sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+      localStorage.setItem("dna_user", JSON.stringify(updateRes.data));
     } catch {
       // Có thể xử lý lỗi ở đây
     }
@@ -128,6 +133,7 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(updateRes.data);
       sessionStorage.setItem("user", JSON.stringify(updateRes.data));
+      localStorage.setItem("dna_user", JSON.stringify(updateRes.data));
       sessionStorage.removeItem(`otp_${user.email}`);
       return { success: true };
     } catch {

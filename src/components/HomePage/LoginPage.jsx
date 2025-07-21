@@ -25,7 +25,8 @@ const LoginPage = () => {
       setTimeout(() => {
         if (result.role_id === 1) navigate("/taikhoan");
         else if (result.role_id === 2) navigate("/nhanvien");
-        else if (result.role_id === 5) navigate("/admin");
+        else if (result.role_id === 4) navigate("/admin");
+        else if (result.role_id === 3) navigate("/manager");
         else navigate("/");
       }, 1000);
     } else {
@@ -36,25 +37,59 @@ const LoginPage = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'url("/ImgLogin/Leonida_Keys_01.jpg") center/cover no-repeat',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background:
+          'linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)',
       }}
     >
       {showToast && (
-        <div style={{ position: 'fixed', top: 24, right: 24, background: '#00a67e', color: '#fff', padding: '12px 28px', borderRadius: 8, boxShadow: '0 2px 12px #0002', zIndex: 2000, fontWeight: 500, fontSize: 16 }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 24,
+            right: 24,
+            background: "#00a67e",
+            color: "#fff",
+            padding: "12px 28px",
+            borderRadius: 8,
+            boxShadow: "0 2px 12px #0002",
+            zIndex: 2000,
+            fontWeight: 500,
+            fontSize: 16,
+          }}
+        >
           Đăng nhập thành công!
         </div>
       )}
-      <div style={{ background: '#fff', borderRadius: 18, maxWidth: 420, width: '100%', boxShadow: '0 8px 32px #0002', padding: 36 }}>
-        <h2 style={{ textAlign: 'center', color: '#009e74', fontWeight: 800, fontSize: 32, marginBottom: 18 }}>Đăng nhập</h2>
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 18,
+          maxWidth: 420,
+          width: "100%",
+          boxShadow: "0 8px 32px #0002",
+          padding: 36,
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            color: "#009e74",
+            fontWeight: 800,
+            fontSize: 32,
+            marginBottom: 18,
+          }}
+        >
+          Đăng nhập
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="login-email">Email</label>
             <input
-            className="bg-white p-4"
+              className="bg-white p-4"
               type="email"
               id="login-email"
               value={email}
@@ -62,22 +97,46 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div className="form-group" style={{ position: "relative" }}>
-            <label htmlFor="login-password">Mật khẩu</label>
-
+          <div style={{ position: 'relative', width: '100%' }}>
             <input
               type={showPassword ? "text" : "password"}
               id="login-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ paddingRight: 36 }}
-              className="bg-white p-4 password-input w-full pl-10 pr-12 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 duration-200"
+              style={{
+                height: 44,
+                padding: '0 44px 0 12px',
+                width: '100%',
+                background: '#eaf3ff',
+                borderRadius: 10,
+                border: '1.5px solid #e0e7ef',
+                fontSize: 16,
+                fontWeight: 500,
+                outline: 'none',
+                boxShadow: 'none',
+                transition: 'border 0.2s',
+              }}
+              className="password-input"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute top-10 inset-y-0 right-0 pr-3 flex items-center  transition-colors"
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                right: 12,
+                height: '100%',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                color: '#888'
+              }}
               tabIndex={0}
               aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
             >
@@ -111,8 +170,11 @@ const LoginPage = () => {
             Đăng nhập
           </button>
         </form>
-        <div style={{ textAlign: 'center', marginTop: 18 }}>
-          Chưa có tài khoản? <Link to="/register" style={{ color: '#009e74', fontWeight: 600 }}>Đăng ký ngay</Link>
+        <div style={{ textAlign: "center", marginTop: 18 }}>
+          Chưa có tài khoản?{" "}
+          <Link to="/register" style={{ color: "#009e74", fontWeight: 600 }}>
+            Đăng ký ngay
+          </Link>
         </div>
       </div>
     </div>

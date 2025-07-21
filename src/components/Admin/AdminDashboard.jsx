@@ -3,11 +3,8 @@ import { Layout, Menu, Modal } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
-  AppstoreOutlined,
   FileProtectOutlined,
   LogoutOutlined,
-  StarOutlined,
-  ExclamationCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from "@ant-design/icons";
@@ -16,32 +13,15 @@ import { AuthContext } from "../../context/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import UserManagement from "./UserManagement";
 import StaffManagement from "./StaffManagement";
-import AdminDNAStatsDashboard from "./AdminDNAStatsDashboard";
 import PricingManagement from "./PricingManagement";
-
 
 const { Sider, Content } = Layout;
 
 const menuItems = [
   {
-    key: "test-types",
-    icon: <AppstoreOutlined />,
-    label: "DashBoard",
-  },
-  {
     key: "processing",
     icon: <FileProtectOutlined />,
     label: "Thời gian & Chi phí",
-  },
-  {
-    key: "rating-feedback",
-    icon: <StarOutlined />,
-    label: "Rating & Feedback",
-  },
-  {
-    key: "policy-violation",
-    icon: <ExclamationCircleOutlined />,
-    label: "Vi phạm chính sách",
   },
   {
     key: "user-management",
@@ -64,10 +44,10 @@ const AdminDashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [logoutModal, setLogoutModal] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState("processing");
   const [collapsed, setCollapsed] = React.useState(false);
 
-  if (!user || user.role_id !== 5) {
+  if (!user || user.role_id !== 4) {
     return <Navigate to="/" replace />;
   }
 
@@ -102,34 +82,6 @@ const AdminDashboard = () => {
         collapsed={collapsed}
         trigger={null}
       >
-        <span
-          style={{
-            position: "absolute",
-            top: 18,
-            right: -24,
-            background: "#e74c3c",
-            borderRadius: 12,
-            width: 48,
-            height: 48,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 100,
-            color: "#fff",
-            fontSize: 28,
-            boxShadow: "0 2px 8px #e74c3c55",
-            border: "2px solid #fff",
-            transition: "right 0.2s",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setCollapsed((c) => !c);
-          }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </span>
-
         <div
           style={{
             height: 64,
@@ -286,11 +238,7 @@ const AdminDashboard = () => {
           <div style={{ padding: 24, minHeight: 360 }}>
             {activeTab === "user-management" && <UserManagement />}
             {activeTab === "staff-management" && <StaffManagement />}
-            {activeTab === "processing" && <ProcessingManagement />}
             {activeTab === "processing" && <PricingManagement />}
-            {(activeTab === "test-types" || !activeTab) && (
-              <AdminDNAStatsDashboard />
-            )}
           </div>
         </Content>
       </Layout>
@@ -298,6 +246,7 @@ const AdminDashboard = () => {
         open={logoutModal}
         onOk={confirmLogout}
         onCancel={cancelLogout}
+        style={{ color: "red" }}
         okText="Đăng xuất"
         cancelText="Hủy"
         okButtonProps={{ className: "custom-logout-btn" }}

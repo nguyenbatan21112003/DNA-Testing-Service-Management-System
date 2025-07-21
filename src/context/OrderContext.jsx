@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNotification } from "./NotificationContext";
 
 const OrderContext = createContext();
 
@@ -58,20 +59,29 @@ function orderReducer(state, action) {
 export function OrderProvider({ children }) {
   const [state, dispatch] = useReducer(orderReducer, initialState);
   const { user } = useContext(AuthContext);
-
+  const {
+    notifyNewOrder,
+    notifyOrderStatusUpdate,
+    notifyNewFeedback,
+    notifyFeedbackResponse,
+    notifyPricingUpdate
+  } = useNotification();
   // Khi load lần đầu hoặc user đổi, đọc orders từ localStorage và lọc theo user
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    if (user && user.email && user.role !== "staff") {
-      dispatch({
-        type: "SET_ORDERS",
-        payload: saved.filter((o) => o.email === user.email),
-      });
-    } else if (user && user.role === "staff") {
-      dispatch({ type: "SET_ORDERS", payload: saved });
-    } else {
-      dispatch({ type: "SET_ORDERS", payload: [] });
-    }
+    const loadOrders = () => {
+      const saved = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+      if (user && user.email && user.role_id !== 2) {
+        dispatch({
+          type: "SET_ORDERS",
+          payload: saved.filter((o) => o.email === user.email),
+        });
+      } else if (user && user.role_id === 2) {
+        dispatch({ type: "SET_ORDERS", payload: saved });
+      } else {
+        dispatch({ type: "SET_ORDERS", payload: [] });
+      }
+    };
+
     // Load pricing data from localStorage or use default
     const savedPricingData = JSON.parse(localStorage.getItem("dna_pricing_data") || "null");
     if (savedPricingData) {
@@ -80,6 +90,21 @@ export function OrderProvider({ children }) {
       localStorage.setItem("dna_pricing_data", JSON.stringify(defaultPricingData));
     }
 
+    // Load orders khi component mount và khi user thay đổi
+    loadOrders();
+
+    // Thêm event listener để cập nhật orders khi localStorage thay đổi từ tab khác
+    const handleStorageChange = (event) => {
+      if (event.key === 'dna_orders') {
+        loadOrders();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user]);
 
   const addOrder = (order) => {
@@ -87,26 +112,37 @@ export function OrderProvider({ children }) {
     // Gắn email user vào đơn, thêm các trường mặc định
     const orderWithEmail = {
       ...order,
+      id: order.id || Date.now().toString(), // Đảm bảo luôn có id duy nhất
       email: user.email,
-      status: "Chờ xử lý",
+      samplingStatus: order.sampleMethod === "home" ? "Chờ xác nhận" : "Chờ xác nhận",
+      status: "Chờ xác nhận", // Luôn set trạng thái khi tạo đơn mới
       result: "",
       staffName: "",
       managerConfirm: false,
       feedback: "",
       rating: 0,
       resultFile: "",
-      kitStatus: order.sampleMethod === "home" ? "chua_gui" : undefined,
+      kitStatus: order.sampleMethod === "home" ? "PENDING_CONFIRM" : undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
+
     // Lưu vào localStorage (toàn bộ đơn)
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const newOrders = [orderWithEmail, ...allOrders];
     localStorage.setItem("dna_orders", JSON.stringify(newOrders));
+
     // Sau khi thêm, lọc lại toàn bộ đơn cho user hiện tại
     const filtered =
-      user.role === "staff"
+      user.role_id === 2
         ? newOrders
         : newOrders.filter((o) => o.email === user.email);
     dispatch({ type: "SET_ORDERS", payload: filtered });
+
+    // Tạo thông báo cho Staff và Manager
+    notifyNewOrder(orderWithEmail);
+    // Phát sự kiện storage để các tab staff tự động reload
+    window.dispatchEvent(new Event('storage'));
   };
 
   // Hàm cho staff lấy toàn bộ đơn
@@ -118,51 +154,214 @@ export function OrderProvider({ children }) {
     dispatch({ type: "SET_ORDERS", payload: orders });
   };
 
-  // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác nhận)
-  const updateOrder = (orderId, updates) => {
+  // Cập nhật đơn (staff/manager cập nhật trạng thái, kết quả, file, xác thực)
+  const updateOrder = async (orderId, updates) => {
+    let currentUser = user;
+    if (!currentUser) {
+      currentUser = JSON.parse(localStorage.getItem('dna_user') || 'null');
+    }
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
     if (idx !== -1) {
-      allOrders[idx] = { ...allOrders[idx], ...updates };
+      const oldOrder = allOrders[idx];
+      // Nếu cập nhật trạng thái, đồng bộ cả 3 trường
+      let newUpdates = { ...updates };
+      if (updates.status) {
+        newUpdates.samplingStatus = updates.status;
+        newUpdates.kitStatus = updates.status;
+      }
+      const updatedOrder = {
+        ...oldOrder,
+        ...newUpdates,
+        updatedAt: new Date().toISOString()
+      };
+      allOrders[idx] = updatedOrder;
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+      // Gọi notifyOrderStatusUpdate ở mọi lần updateOrder để debug
+      const updatedBy = currentUser?.name || currentUser?.email || "Hệ thống";
+      notifyOrderStatusUpdate(updatedOrder, oldOrder.status, updates.status, updatedBy);
+      // Phát sự kiện storage để đồng bộ real-time
+      window.dispatchEvent(new Event('storage'));
+
+      // Không gửi notifyOrderApproval cho manager khi manager tự thao tác
+      // (Nếu cần gửi cho staff hoặc khách hàng thì giữ lại logic ở đây)
+      if (
+        updates.managerConfirm !== undefined &&
+        updates.managerConfirm !== oldOrder.managerConfirm
+      ) {
+        if (updates.managerConfirm) {
+          // Nếu được phê duyệt, cập nhật trạng thái thành "Hoàn thành"
+          const finalOrder = { ...updatedOrder, status: "Hoàn thành" };
+          allOrders[idx] = finalOrder;
+          localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+          // Cập nhật state cho tất cả users
+          if (user && user.role_id === 2) {
+            // Nếu là staff, cập nhật toàn bộ orders
+            setOrders(allOrders);
+          } else {
+            // Nếu là customer, chỉ cập nhật orders của họ
+            setOrders(allOrders.filter((o) => o.email === user.email));
+          }
+        } else {
+          // Nếu bị từ chối, cập nhật trạng thái thành "Từ chối"
+          const rejectedOrder = { ...updatedOrder, status: "Từ chối" };
+          allOrders[idx] = rejectedOrder;
+          localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+          // Cập nhật state cho tất cả users
+          if (user && user.role_id === 2) {
+            // Nếu là staff, cập nhật toàn bộ orders
+            setOrders(allOrders);
+          } else {
+            // Nếu là customer, chỉ cập nhật orders của họ
+            setOrders(allOrders.filter((o) => o.email === user.email));
+          }
+        }
+      }
+    }
+    return Promise.resolve();
+  };
+
+  // Khi cập nhật trạng thái thu mẫu, chỉ update samplingStatus. Nếu chuyển sang 'Đang xử lý', thì cập nhật status sang 'Đang xử lý' cho xét nghiệm.
+  const updateSamplingStatus = (orderId, newSamplingStatus) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      allOrders[idx].samplingStatus = newSamplingStatus;
+      allOrders[idx].status = newSamplingStatus;
+      allOrders[idx].kitStatus = newSamplingStatus;
+      allOrders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+      // Chỉ khi samplingStatus chuyển sang 'Đang xử lý' thì mới cập nhật status sang 'Đang xử lý'
+      if (newSamplingStatus === "PROCESSING") {
+        updateTestingStatus(orderId, "PROCESSING");
+      }
+    }
+  };
+  // Khi cập nhật trạng thái xét nghiệm, chỉ update status
+  const updateTestingStatus = (orderId, newStatus) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      allOrders[idx].status = newStatus;
+      allOrders[idx].updatedAt = new Date().toISOString();
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
     }
   };
 
   // Thêm/Chỉnh sửa feedback và rating
-  const addFeedback = (orderId, feedback, rating) => {
+  const addFeedback = (orderId, feedback, rating, categoryRatings = {}) => {
     const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
     const idx = allOrders.findIndex((o) => o.id === orderId);
+
     if (idx !== -1) {
       const order = allOrders[idx];
       const now = new Date();
-      const date = `${now.getDate()}/${
-        now.getMonth() + 1
-      }/${now.getFullYear()}`;
+      const date = `${now.getDate()}/${now.getMonth() + 1
+        }/${now.getFullYear()}`;
+
       if (!order.feedbacks) order.feedbacks = [];
-      order.feedbacks.push({
+
+      // Chỉ cho phép đánh giá 1 lần cho mỗi đơn
+      if (order.feedbacks.length > 0) {
+        // Đã có feedback, không thêm mới
+        return;
+      }
+
+      const newFeedback = {
         rating,
         feedback,
         date,
+        categoryRatings,
         user: order.name || order.fullName || order.email || "Người dùng",
         email: order.email || "",
-      });
+      };
+
+      order.feedbacks.push(newFeedback);
+      order.updatedAt = new Date().toISOString();
+
       localStorage.setItem("dna_orders", JSON.stringify(allOrders));
       setOrders(allOrders);
+
+      // Tạo thông báo cho Staff và Manager
+      notifyNewFeedback(newFeedback, order);
+    }
+  };
+
+  // Phản hồi feedback (cho Staff)
+  const respondToFeedback = (orderId, response, respondedBy) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+
+    if (idx !== -1) {
+      const order = allOrders[idx];
+      if (!order.feedbackResponses) order.feedbackResponses = [];
+
+      const feedbackResponse = {
+        response,
+        respondedBy,
+        date: new Date().toISOString(),
+      };
+
+      order.feedbackResponses.push(feedbackResponse);
+      order.updatedAt = new Date().toISOString();
+
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+
+      // Tạo thông báo cho User
+      notifyFeedbackResponse(feedbackResponse, order, respondedBy);
     }
   };
 
   // Cập nhật dữ liệu giá và thời gian
   const updatePricingData = (category, updatedServices) => {
-    dispatch({ 
-      type: "UPDATE_PRICING_DATA", 
-      payload: { [category]: updatedServices } 
+    dispatch({
+      type: "UPDATE_PRICING_DATA",
+      payload: { [category]: updatedServices }
     });
+
+    // Tạo thông báo cho Staff và Manager
+    const updatedBy = user?.name || user?.email || "Admin";
+    notifyPricingUpdate({ [category]: updatedServices }, updatedBy);
   };
 
   // Lấy dữ liệu giá và thời gian
   const getPricingData = () => {
     return state.pricingData;
+  };
+
+  // Lấy đơn hàng theo trạng thái
+  const getOrdersByStatus = (status) => {
+    return state.orders.filter(order => order.status === status);
+  };
+
+  // Lấy đơn hàng cần xác thực (cho Manager)
+  const getOrdersNeedingApproval = () => {
+    const allOrders = getAllOrders();
+    return allOrders.filter(order => order.status === "Chờ xác nhận");
+  };
+
+  // Lấy đơn hàng có feedback (cho Staff)
+  const getOrdersWithFeedback = () => {
+    const allOrders = getAllOrders();
+    return allOrders.filter(order => order.feedbacks && order.feedbacks.length > 0);
+  };
+
+  // Xoá đơn hàng theo id, trả về order vừa xoá để hoàn tác
+  const deleteOrder = (orderId) => {
+    const allOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
+    const idx = allOrders.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      const deletedOrder = allOrders[idx];
+      allOrders.splice(idx, 1);
+      localStorage.setItem("dna_orders", JSON.stringify(allOrders));
+      setOrders(allOrders);
+      return deletedOrder;
+    }
+    return null;
   };
 
   return (
@@ -175,8 +374,15 @@ export function OrderProvider({ children }) {
         getAllOrders,
         updateOrder,
         addFeedback,
+        respondToFeedback,
         updatePricingData,
         getPricingData,
+        getOrdersByStatus,
+        getOrdersNeedingApproval,
+        getOrdersWithFeedback,
+        deleteOrder,
+        updateSamplingStatus,
+        updateTestingStatus,
       }}
     >
       {children}

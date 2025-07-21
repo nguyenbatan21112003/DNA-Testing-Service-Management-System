@@ -1,6 +1,4 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Card,
   Table,
@@ -12,100 +10,351 @@ import {
   Select,
   message,
   Space,
-  Upload,
   Tabs,
   Row,
   Col,
   Statistic,
-  Divider,
-  Typography,
-} from "antd"
+  Tooltip,
+} from "antd";
 import {
   EyeOutlined,
   EditOutlined,
-  UploadOutlined,
-  DownloadOutlined,
-  PrinterOutlined,
   FileTextOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExperimentOutlined,
-} from "@ant-design/icons"
+  EyeInvisibleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import { useOrderContext } from "../../context/OrderContext";
 
-const { TextArea } = Input
-const { Option } = Select
-const { TabPane } = Tabs
-const { Title, Text, Paragraph } = Typography
+const { TextArea } = Input;
+const { Option } = Select;
 
 const TestingResults = () => {
-  const [orders, setOrders] = useState([])
-  const [filteredOrders, setFilteredOrders] = useState([])
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  const [reportModalVisible, setReportModalVisible] = useState(false)
-  const [form] = Form.useForm()
-  const [filterStatus, setFilterStatus] = useState("all")
+  const { orders, updateOrder } = useOrderContext();
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [tempFormData, setTempFormData] = useState({});
+  const [currentEditOrderId, setCurrentEditOrderId] = useState(null);
+  const [confirmHideOrder, setConfirmHideOrder] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [reasonModalVisible, setReasonModalVisible] = useState(false);
+  const [reasonText, setReasonText] = useState("");
+
+  const STATUS_PROCESSING = "Đang xử lý";
+  const STATUS_WAITING_APPROVAL = "Chờ xác thực";
+  const STATUS_REJECTED = "Từ chối";
+  const STATUS_COMPLETED = "Hoàn thành";
+
+  // Đưa getStatusText ra ngoài component để không bị thay đổi reference mỗi lần render
+  const getStatusText = (status) => {
+    const s = normalizeStatus(status);
+    if (["choxacthuc", "waitingapproval"].includes(s)) return "Chờ xác thực";
+    if (["hoanthanh", "completed"].includes(s)) return "Hoàn thành";
+    if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
+    // Mặc định mọi trạng thái khác đều là Đang xử lý
+    return "Đang xử lý";
+  };
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]")
-    setOrders(savedOrders)
-    setFilteredOrders(savedOrders)
-  }, [])
+    setFilteredOrders(
+      orders.filter(
+        (order) =>
+          !order.isHiddenByStaff &&
+          getStatusText(order.status) === "Đang xử lý" &&
+          ((Array.isArray(order.resultTableData) &&
+            order.resultTableData.length > 0) ||
+            (Array.isArray(order.members) && order.members.length > 0))
+      )
+    );
+  }, [orders]);
 
+  // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "dna_orders") {
+        // Force re-render bằng cách trigger một state change
+        setFilteredOrders((prev) => [...prev]);
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // SỬA LOGIC FILTER ĐỂ HIỂN THỊ TOÀN BỘ ĐƠN HÀNG
   useEffect(() => {
     if (filterStatus === "all") {
-      setFilteredOrders(orders)
+      setFilteredOrders(orders.filter((order) => !order.isHiddenByStaff));
     } else {
-      setFilteredOrders(orders.filter((order) => order.status === filterStatus))
+      setFilteredOrders(
+        orders.filter(
+          (order) =>
+            !order.isHiddenByStaff &&
+            getStatusText(order.status) === filterStatus
+        )
+      );
     }
-  }, [filterStatus, orders])
+  }, [filterStatus, orders]);
 
+  useEffect(() => {
+    if (editModalVisible) {
+      const currentData = form.getFieldValue("resultTableData");
+      if (currentData) {
+        setTableData(currentData);
+      }
+    }
+  }, [editModalVisible, form]);
+
+  useEffect(() => {
+    const handleOrdersUpdated = () => {
+      const updatedOrders = JSON.parse(
+        localStorage.getItem("dna_orders") || "[]"
+      );
+      setFilteredOrders(updatedOrders);
+      // Nếu đang mở modal, cập nhật lại selectedOrder từ localStorage
+      if (selectedOrder) {
+        const updatedOrder = updatedOrders.find(
+          (o) => o.id === selectedOrder.id
+        );
+        if (updatedOrder) setSelectedOrder(updatedOrder);
+      }
+    };
+    window.addEventListener("dna_orders_updated", handleOrdersUpdated);
+    return () =>
+      window.removeEventListener("dna_orders_updated", handleOrdersUpdated);
+  }, [selectedOrder]);
+
+  // Sửa hàm handleViewResult để luôn lấy order mới nhất từ localStorage khi mở modal
   const handleViewResult = (order) => {
-    setSelectedOrder(order)
-    setModalVisible(true)
-  }
+    // Lấy lại order mới nhất từ localStorage
+    const updatedOrders = JSON.parse(
+      localStorage.getItem("dna_orders") || "[]"
+    );
+    const updatedOrder = updatedOrders.find((o) => o.id === order.id) || order;
+    setSelectedOrder(updatedOrder);
+    setModalVisible(true);
+  };
 
   const handleEditResult = (order) => {
-    setSelectedOrder(order)
-    form.setFieldsValue({
-      status: order.status,
-      result: order.result || "",
-      testingMethod: order.testingMethod || "STR",
-      testingNotes: order.testingNotes || "",
-    })
-    setEditModalVisible(true)
-  }
+    // Lấy lại order mới nhất từ localStorage
+    const updatedOrders = JSON.parse(
+      localStorage.getItem("dna_orders") || "[]"
+    );
+    const updatedOrder = updatedOrders.find((o) => o.id === order.id) || order;
+    setSelectedOrder(updatedOrder);
 
-  const handleViewReport = (order) => {
-    setSelectedOrder(order)
-    setReportModalVisible(true)
-  }
+    if (
+      currentEditOrderId === order.id &&
+      tempFormData &&
+      Object.keys(tempFormData).length > 0
+    ) {
+      form.setFieldsValue(tempFormData);
+    } else {
+      let initialTableData = [];
+
+      if (
+        updatedOrder.resultTableData &&
+        Array.isArray(updatedOrder.resultTableData)
+      ) {
+        initialTableData = [...updatedOrder.resultTableData];
+      } else if (
+        !updatedOrder.resultTableData &&
+        updatedOrder.result &&
+        typeof updatedOrder.result === "string"
+      ) {
+        try {
+          const parsedData = JSON.parse(updatedOrder.result);
+          if (Array.isArray(parsedData)) {
+            initialTableData = parsedData;
+          }
+        } catch (err) {
+          console.error("Failed to parse result data:", err);
+        }
+      }
+
+      if (
+        initialTableData.length === 0 &&
+        Array.isArray(updatedOrder.members) &&
+        updatedOrder.members.length > 0
+      ) {
+        initialTableData = updatedOrder.members.map((mem, idx) => ({
+          key: `${Date.now()}-${idx}`,
+          name: mem.name || mem.hoTen || mem.hovaten || "",
+          birth: mem.birth || mem.birthYear || mem.namSinh || mem.namsinh || "",
+          gender: mem.gender || mem.gioiTinh || mem.gioitinh || "",
+          relationship:
+            mem.relationship ||
+            mem.moiQuanHe ||
+            mem.moiquanhe ||
+            mem.relation ||
+            "",
+          sampleType: mem.sampleType || mem.loaiMau || mem.loaimau || "",
+        }));
+      } else if (
+        initialTableData.length === 0 &&
+        updatedOrder.sampleInfo &&
+        Array.isArray(updatedOrder.sampleInfo.donors) &&
+        updatedOrder.sampleInfo.donors.length > 0
+      ) {
+        initialTableData = updatedOrder.sampleInfo.donors.map((donor, idx) => ({
+          key: `${Date.now()}-${idx}`,
+          name: donor.name || "",
+          birth:
+            donor.birth ||
+            donor.birthYear ||
+            donor.namSinh ||
+            donor.namsinh ||
+            "",
+          gender: donor.gender || "",
+          relationship: donor.relationship || donor.relation || "",
+          sampleType: donor.sampleType || "",
+        }));
+      }
+
+      if (initialTableData.length === 0) {
+        initialTableData = [{ key: Date.now().toString() }];
+      }
+
+      const formValues = {
+        status: updatedOrder.status,
+        result: updatedOrder.result || "",
+        testingMethod: updatedOrder.testingMethod || "STR",
+        testingNotes: updatedOrder.testingNotes || "",
+        resultTableData: initialTableData,
+        conclusion: updatedOrder.conclusion || "",
+      };
+
+      form.setFieldsValue(formValues);
+      setTempFormData(formValues);
+    }
+
+    setCurrentEditOrderId(order.id);
+    setEditModalVisible(true);
+  };
 
   const handleSaveResult = async (values) => {
     try {
-      const updatedOrders = orders.map((order) =>
-        order.id === selectedOrder.id
-          ? {
-              ...order,
-              status: values.status,
-              result: values.result,
-              testingMethod: values.testingMethod,
-              testingNotes: values.testingNotes,
-              completedDate:
-                values.status === "Hoàn thành" ? new Date().toLocaleDateString("vi-VN") : order.completedDate,
-              updatedAt: new Date().toLocaleString("vi-VN"),
-            }
-          : order,
-      )
-      setOrders(updatedOrders)
-      localStorage.setItem("dna_orders", JSON.stringify(updatedOrders))
-      setEditModalVisible(false)
-      message.success("Cập nhật kết quả thành công!")
-    } catch {
-      message.error("Có lỗi xảy ra khi cập nhật kết quả!")
+      let dataToSave =
+        Array.isArray(values.resultTableData) &&
+        values.resultTableData.length > 0
+          ? values.resultTableData
+          : tableData;
+      const resultTableDataCopy = Array.isArray(dataToSave)
+        ? JSON.parse(JSON.stringify(dataToSave))
+        : null;
+      // Kiểm tra nếu là lỗi mẫu
+      const isErrorSample =
+        (values.conclusion || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/\p{Diacritic}/gu, "")
+          .trim() === "loi mau";
+      if (isErrorSample) {
+        updateOrder(selectedOrder.id, {
+          // Không đổi trạng thái, chỉ update kết quả và các trường khác
+          result: resultTableDataCopy
+            ? JSON.stringify(resultTableDataCopy)
+            : values.result,
+          testingMethod: values.testingMethod,
+          testingNotes: values.conclusion,
+          conclusion: values.conclusion,
+          resultTableData: resultTableDataCopy,
+          updatedAt: new Date().toLocaleString("vi-VN"),
+        });
+        window.dispatchEvent(new Event("dna_orders_updated"));
+        setTempFormData({});
+        setCurrentEditOrderId(null);
+        setEditModalVisible(false);
+        message.warning(
+          "Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!"
+        );
+        return;
+      }
+      // Khi staff lưu kết quả, chuyển trạng thái sang 'Chờ xác thực'
+      updateOrder(selectedOrder.id, {
+        status: "Chờ xác thực",
+        result: resultTableDataCopy
+          ? JSON.stringify(resultTableDataCopy)
+          : values.result,
+        testingMethod: values.testingMethod,
+        testingNotes: values.conclusion,
+        conclusion: values.conclusion,
+        resultTableData: resultTableDataCopy,
+        updatedAt: new Date().toLocaleString("vi-VN"),
+      });
+      window.dispatchEvent(new Event("dna_orders_updated"));
+      setTempFormData({});
+      setCurrentEditOrderId(null);
+      setEditModalVisible(false);
+      message.success("Đã lưu kết quả và chuyển trạng thái sang Chờ xác thực!");
+    } catch (error) {
+      console.error("Error updating result:", error);
+      message.error("Có lỗi xảy ra khi cập nhật kết quả!");
     }
+  };
+
+  const handleFormValuesChange = (changedValues, allValues) => {
+    setTempFormData(allValues);
+  };
+
+  const handleDeleteOrder = (order) => {
+    setConfirmHideOrder(order);
+  };
+
+  const handleConfirmHide = () => {
+    if (confirmHideOrder) {
+      updateOrder(confirmHideOrder.id, { isHiddenByStaff: true });
+      message.success("Đơn hàng đã được ẩn khỏi giao diện nhân viên!");
+      setConfirmHideOrder(null);
+    }
+  };
+
+  const handleCancelHide = () => {
+    setConfirmHideOrder(null);
+  };
+
+  const handleUnhideOrder = (order) => {
+    updateOrder(order.id, { isHiddenByStaff: false });
+    message.success("Đơn hàng đã được hiện lại cho nhân viên!");
+  };
+
+  // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa
+  function normalizeStatus(str) {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "")
+      .trim();
   }
+
+  const getStatusColor = (status) => {
+    switch (getStatusText(status)) {
+      case "Chờ xác thực":
+        return "#722ed1"; // tím
+      case "Đang xử lý":
+        return "#1890ff"; // xanh dương
+      case "Hoàn thành":
+        return "#52c41a"; // xanh lá
+      case "Từ chối":
+        return "#ff4d4f"; // đỏ
+      default:
+        return "#b2bec3"; // xám nhạt
+    }
+  };
+
+  const getCaseType = (type) => {
+    if (!type) return null;
+    if (type.toLowerCase().includes("hành chính")) return "Hành chính";
+    if (type.toLowerCase().includes("dân sự")) return "Dân sự";
+    return "Khác";
+  };
 
   const columns = [
     {
@@ -122,10 +371,70 @@ const TestingResults = () => {
       width: 150,
     },
     {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+      width: 220,
+      render: (address) => address || "-",
+    },
+    {
       title: "Loại xét nghiệm",
       dataIndex: "type",
       key: "type",
       width: 200,
+    },
+    // Thêm cột Phân loại
+    {
+      title: "Phân loại",
+      dataIndex: "type",
+      key: "caseType",
+      width: 120,
+      render: (type) => {
+        if (!type) return <Tag color="#bfbfbf">Khác</Tag>;
+        const t = type.toLowerCase();
+        if (t.includes("hành chính"))
+          return <Tag color="#36cfc9">Hành chính</Tag>;
+        if (t.includes("dân sự")) return <Tag color="#722ed1">Dân sự</Tag>;
+        return <Tag color="#bfbfbf">Khác</Tag>;
+      },
+    },
+    {
+      title: "Địa điểm lấy mẫu",
+      dataIndex: "sampleMethod",
+      key: "sampleMethod",
+      width: 140,
+      render: (method) =>
+        method === "home" ? (
+          <Tag
+            style={{
+              background: "#e6f7ff",
+              color: "#1890ff",
+              border: "1px solid #91d5ff",
+              borderRadius: 8,
+              fontWeight: 600,
+              padding: "2px 14px",
+              fontSize: 15,
+            }}
+          >
+            Tại nhà
+          </Tag>
+        ) : method === "center" ? (
+          <Tag
+            style={{
+              background: "#f6ffed",
+              color: "#52c41a",
+              border: "1px solid #b7eb8f",
+              borderRadius: 8,
+              fontWeight: 600,
+              padding: "2px 14px",
+              fontSize: 15,
+            }}
+          >
+            Tại cơ sở
+          </Tag>
+        ) : (
+          <Tag>-</Tag>
+        ),
     },
     {
       title: "Ngày tạo",
@@ -133,82 +442,140 @@ const TestingResults = () => {
       key: "date",
       width: 120,
     },
+    // Di chuyển cột Trạng thái vào đây
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       width: 120,
-      render: (status) => {
-        let color = "default"
-        if (status === "Chờ xử lý") color = "orange"
-        if (status === "Đang xử lý") color = "blue"
-        if (status === "Hoàn thành") color = "green"
-        return <Tag color={color}>{status}</Tag>
-      },
+      render: (status) => (
+        <Tag
+          style={{
+            background: getStatusColor(status),
+            color: "#fff",
+            fontWeight: 700,
+            border: "none",
+            fontSize: 16,
+            padding: "6px 18px",
+            boxShadow: "0 2px 8px #0001",
+            borderRadius: 8,
+            minWidth: 110,
+            textAlign: "center",
+            display: "inline-block",
+          }}
+        >
+          {getStatusText(status)}
+        </Tag>
+      ),
     },
-    {
-      title: "Độ ưu tiên",
-      dataIndex: "priority",
-      key: "priority",
-      width: 120,
-      render: (priority) => {
-        let color = "default"
-        if (priority === "Cao") color = "red"
-        if (priority === "Trung bình") color = "orange"
-        if (priority === "Thấp") color = "green"
-        return <Tag color={color}>{priority}</Tag>
-      },
-    },
-    {
-      title: "Kết quả",
-      dataIndex: "result",
-      key: "result",
-      width: 120,
-      render: (result) => (result ? <Tag color="green">Đã có</Tag> : <Tag color="orange">Chưa có</Tag>),
-    },
+    // Sau đó mới đến Thao tác
     {
       title: "Thao tác",
       key: "action",
-      width: 250,
+      width: 180,
       render: (_, record) => (
         <Space size="small">
-          <Button type="primary" size="small" icon={<EyeOutlined />} onClick={() => handleViewResult(record)}>
+          <Button
+            type="primary"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewResult(record)}
+            style={{ background: "#1890ff", color: "#fff" }}
+          >
             Xem
           </Button>
-          <Button type="default" size="small" icon={<EditOutlined />} onClick={() => handleEditResult(record)}>
-            Nhập kết quả
-          </Button>
-          {record.result && (
-            <Button type="default" size="small" icon={<FileTextOutlined />} onClick={() => handleViewReport(record)}>
-              Báo cáo
+          {getStatusText(record.status) !== "Hoàn thành" && (
+            <Button
+              type="default"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleEditResult(record)}
+            >
+              Nhập kết quả
+            </Button>
+          )}
+          {getStatusText(record.status) !== "Đang xử lý" && (
+            <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
+              <Button
+                icon={<EyeInvisibleOutlined style={{ color: "#595959" }} />}
+                onClick={() => handleDeleteOrder(record)}
+                size="small"
+                style={{
+                  marginLeft: 8,
+                  borderColor: "#bfbfbf",
+                  color: "#595959",
+                  background: "#f5f5f5",
+                  fontWeight: 600,
+                }}
+              >
+                Ẩn
+              </Button>
+            </Tooltip>
+          )}
+          {record.status === STATUS_REJECTED && record.managerNote && (
+            <Button
+              size="small"
+              icon={<ExclamationCircleOutlined style={{ color: "#faad14" }} />}
+              onClick={() => {
+                setReasonText(record.managerNote);
+                setReasonModalVisible(true);
+              }}
+              style={{
+                background: "#fffbe6",
+                borderColor: "#faad14",
+                color: "#faad14",
+                fontWeight: 600,
+              }}
+            >
+              Lý Do
             </Button>
           )}
         </Space>
       ),
     },
-  ]
+  ];
 
-  // Thống kê
   const stats = {
     total: orders.length,
-    pending: orders.filter((o) => o.status === "Chờ xử lý").length,
-    processing: orders.filter((o) => o.status === "Đang xử lý").length,
-    completed: orders.filter((o) => o.status === "Hoàn thành").length,
+    processing: orders.filter(
+      (o) => getStatusText(o.status) === STATUS_PROCESSING
+    ).length,
+    waitingApproval: orders.filter(
+      (o) => getStatusText(o.status) === STATUS_WAITING_APPROVAL
+    ).length,
+    completed: orders.filter(
+      (o) => getStatusText(o.status) === STATUS_COMPLETED
+    ).length,
+    rejected: orders.filter((o) => getStatusText(o.status) === STATUS_REJECTED)
+      .length,
     withResults: orders.filter((o) => o.result).length,
-  }
+  };
+
+  // Ưu tiên lấy từ resultTableData, nếu không có thì lấy từ sampleInfo.donors
+  const sampleData =
+    Array.isArray(selectedOrder?.resultTableData) &&
+    selectedOrder.resultTableData.length > 0
+      ? selectedOrder.resultTableData
+      : Array.isArray(selectedOrder?.sampleInfo?.donors) &&
+        selectedOrder.sampleInfo.donors.length > 0
+      ? selectedOrder.sampleInfo.donors
+      : [];
 
   return (
     <div style={{ padding: 24, background: "#f5f5f5", minHeight: "100%" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}>Xét nghiệm & Kết quả</h1>
+        <h1
+          style={{ fontSize: 28, fontWeight: 700, color: "#00a67e", margin: 0 }}
+        >
+          Xét nghiệm & Kết quả
+        </h1>
         <p style={{ color: "#666", margin: "8px 0 0 0", fontSize: 16 }}>
           Quản lý kết quả xét nghiệm và cập nhật trạng thái
         </p>
       </div>
 
-      {/* Thống kê */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={8} md={4}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
               title="Tổng đơn hàng"
@@ -218,17 +585,7 @@ const TestingResults = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Chờ xử lý"
-              value={stats.pending}
-              valueStyle={{ color: "#fa8c16" }}
-              prefix={<ClockCircleOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
               title="Đang xử lý"
@@ -238,7 +595,17 @@ const TestingResults = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={8} md={4}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Chờ xác thực"
+              value={stats.waitingApproval}
+              valueStyle={{ color: "#722ed1" }}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
               title="Hoàn thành"
@@ -248,31 +615,27 @@ const TestingResults = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={8} md={4}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="Có kết quả"
-              value={stats.withResults}
-              valueStyle={{ color: "#722ed1" }}
+              title="Từ chối"
+              value={stats.rejected}
+              valueStyle={{ color: "#ff4d4f" }}
               prefix={<FileTextOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8} md={4}>
-          <Card>
-            <Statistic
-              title="Tỷ lệ hoàn thành"
-              value={orders.length > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}
-              suffix="%"
-              valueStyle={{ color: "#13c2c2" }}
-              prefix={<CheckCircleOutlined />}
             />
           </Card>
         </Col>
       </Row>
 
       <Card>
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Select
             value={filterStatus}
             onChange={setFilterStatus}
@@ -280,377 +643,848 @@ const TestingResults = () => {
             placeholder="Lọc theo trạng thái"
           >
             <Option value="all">Tất cả trạng thái</Option>
-            <Option value="Chờ xử lý">Chờ xử lý</Option>
-            <Option value="Đang xử lý">Đang xử lý</Option>
-            <Option value="Hoàn thành">Hoàn thành</Option>
+            <Option value={STATUS_PROCESSING}>{STATUS_PROCESSING}</Option>
+            <Option value={STATUS_WAITING_APPROVAL}>
+              {STATUS_WAITING_APPROVAL}
+            </Option>
+            <Option value={STATUS_COMPLETED}>{STATUS_COMPLETED}</Option>
+            <Option value={STATUS_REJECTED}>{STATUS_REJECTED}</Option>
           </Select>
-          <Space>
-            <Button icon={<DownloadOutlined />}>Xuất Excel</Button>
-            <Button icon={<PrinterOutlined />}>In báo cáo</Button>
-          </Space>
         </div>
 
-        <Tabs defaultActiveKey="all">
-          <TabPane tab="Tất cả đơn hàng" key="all">
-            <Table
-              columns={columns}
-              dataSource={filteredOrders}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
-              }}
-              scroll={{ x: 1000 }}
-            />
-          </TabPane>
-          <TabPane tab="Cần xử lý gấp" key="urgent">
-            <Table
-              columns={columns}
-              dataSource={filteredOrders.filter((order) => order.priority === "Cao" && order.status !== "Hoàn thành")}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
-              }}
-              scroll={{ x: 1000 }}
-            />
-          </TabPane>
-          <TabPane tab="Đã có kết quả" key="withResults">
-            <Table
-              columns={columns}
-              dataSource={filteredOrders.filter((order) => order.result)}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
-              }}
-              scroll={{ x: 1000 }}
-            />
-          </TabPane>
-        </Tabs>
+        <Tabs
+          defaultActiveKey="all"
+          items={[
+            {
+              key: "all",
+              label: "Tất cả đơn hàng",
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={filteredOrders}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "processing",
+              label: "Đang xử lý",
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={filteredOrders.filter(
+                    (order) => getStatusText(order.status) === "Đang xử lý"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "waitingApproval",
+              label: "Chờ xác thực",
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={filteredOrders.filter(
+                    (order) => getStatusText(order.status) === "Chờ xác thực"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "completed",
+              label: "Hoàn thành",
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={filteredOrders.filter(
+                    (order) => getStatusText(order.status) === "Hoàn thành"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "rejected",
+              label: "Từ chối",
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={filteredOrders.filter(
+                    (order) => getStatusText(order.status) === "Từ chối"
+                  )}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn hàng`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+            {
+              key: "hidden",
+              label: "Đơn đã ẩn",
+              children: (
+                <Table
+                  columns={[
+                    ...columns,
+                    {
+                      title: "Thao tác",
+                      key: "action-unhide",
+                      width: 120,
+                      render: (_, record) => (
+                        <Button
+                          size="small"
+                          type="primary"
+                          onClick={() => handleUnhideOrder(record)}
+                          style={{ background: "#52c41a", color: "#fff" }}
+                        >
+                          Hiện lại
+                        </Button>
+                      ),
+                    },
+                  ]}
+                  dataSource={orders.filter((order) => order.isHiddenByStaff)}
+                  rowKey={(record) => record.id || String(Math.random())}
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} của ${total} đơn đã ẩn`,
+                  }}
+                  scroll={{ x: 1000 }}
+                />
+              ),
+            },
+          ]}
+        />
       </Card>
 
-      {/* Modal xem kết quả */}
       <Modal
-        title={`Kết quả xét nghiệm - Đơn hàng #${selectedOrder?.id}`}
+        title={null}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setModalVisible(false)}>
-            Đóng
-          </Button>,
-          <Button
-            key="edit"
-            type="default"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setModalVisible(false)
-              handleEditResult(selectedOrder)
-            }}
-          >
-            Chỉnh sửa
-          </Button>,
-          <Button key="print" type="primary" icon={<PrinterOutlined />}>
-            In kết quả
-          </Button>,
-        ]}
+        footer={null}
         width={800}
       >
         {selectedOrder && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin khách hàng:</h3>
-              <p>
-                <strong>Họ tên:</strong> {selectedOrder.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedOrder.email}
-              </p>
-              <p>
-                <strong>Số điện thoại:</strong> {selectedOrder.phone}
-              </p>
-              <p>
-                <strong>Loại xét nghiệm:</strong> {selectedOrder.type}
-              </p>
+          <div style={{ padding: 8 }}>
+            {/* Tiêu đề lớn */}
+            <div style={{ textAlign: "center", marginBottom: 12 }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: 32,
+                  fontWeight: 900,
+                  letterSpacing: 1,
+                }}
+              >
+                Kết quả xét nghiệm - #{selectedOrder.id}
+              </h2>
             </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Thông tin xét nghiệm:</h3>
-              <p>
-                <strong>Trạng thái:</strong>{" "}
+            {/* Tag trạng thái và phân loại */}
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 16,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Tag
+                style={{
+                  background: getStatusColor(
+                    getStatusText(selectedOrder?.status)
+                  ),
+                  color: "#fff",
+                  fontWeight: 700,
+                  border: "none",
+                  fontSize: 16,
+                  padding: "6px 18px",
+                  borderRadius: 8,
+                  minWidth: 110,
+                  textAlign: "center",
+                  display: "inline-block",
+                }}
+              >
+                {getStatusText(selectedOrder?.status)}
+              </Tag>
+              {selectedOrder.type && (
                 <Tag
-                  color={
-                    selectedOrder.status === "Hoàn thành"
-                      ? "green"
-                      : selectedOrder.status === "Đang xử lý"
-                        ? "blue"
-                        : "orange"
-                  }
+                  style={{
+                    background: selectedOrder.type
+                      .toLowerCase()
+                      .includes("hành chính")
+                      ? "#36cfc9"
+                      : "#722ed1",
+                    color: "#fff",
+                    fontWeight: 700,
+                    border: "none",
+                    fontSize: 15,
+                    padding: "6px 18px",
+                    borderRadius: 8,
+                    textAlign: "center",
+                    display: "inline-block",
+                    letterSpacing: 1,
+                  }}
                 >
-                  {selectedOrder.status}
+                  {selectedOrder.type.toLowerCase().includes("hành chính")
+                    ? "Hành chính"
+                    : selectedOrder.type.toLowerCase().includes("dân sự")
+                    ? "Dân sự"
+                    : "Khác"}
                 </Tag>
-              </p>
-              {selectedOrder.testingMethod && (
-                <p>
-                  <strong>Phương pháp xét nghiệm:</strong> {selectedOrder.testingMethod}
-                </p>
-              )}
-              {selectedOrder.completedDate && (
-                <p>
-                  <strong>Ngày hoàn thành:</strong> {selectedOrder.completedDate}
-                </p>
               )}
             </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <h3>Kết quả xét nghiệm:</h3>
-              {selectedOrder.result ? (
-                <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
-                  {selectedOrder.result}
+            {/* 1. Thông tin khách hàng */}
+            <div
+              style={{
+                marginBottom: 24,
+                background: "#f4f8ff",
+                border: "1.5px solid #b6c8e4",
+                borderRadius: 14,
+                padding: 20,
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontWeight: 800,
+                  fontSize: 20,
+                  marginBottom: 12,
+                }}
+              >
+                Thông tin khách hàng
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  fontSize: 16,
+                }}
+              >
+                <div>
+                  <strong>Họ tên:</strong> {selectedOrder.name}
+                </div>
+                <div>
+                  <strong>Số điện thoại:</strong> {selectedOrder.phone}
+                </div>
+                <div>
+                  <strong>Email:</strong> {selectedOrder.email}
+                </div>
+                {selectedOrder.address && (
+                  <div>
+                    <strong>Địa chỉ:</strong> {selectedOrder.address}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* 2. Thông tin đơn hàng & bảng mẫu */}
+            <div
+              style={{
+                marginBottom: 24,
+                background: "#e6f7ff",
+                border: "1.5px solid #91d5ff",
+                borderRadius: 14,
+                padding: 20,
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontWeight: 800,
+                  fontSize: 20,
+                  marginBottom: 12,
+                }}
+              >
+                Thông tin đơn hàng & mẫu xét nghiệm
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  fontSize: 16,
+                }}
+              >
+                <div>
+                  <strong>Loại xét nghiệm:</strong> {selectedOrder.type}
+                </div>
+              </div>
+              {/* Bảng mẫu xét nghiệm */}
+              <div
+                style={{
+                  marginTop: 16,
+                  background: "#f8fff3",
+                  border: "2px solid #b6e4b6",
+                  borderRadius: 14,
+                  padding: 20,
+                  overflowX: "auto",
+                }}
+              >
+                <h4 style={{ fontWeight: 700, fontSize: 17, marginBottom: 10 }}>
+                  Bảng thông tin thành viên cung cấp mẫu
+                </h4>
+                {Array.isArray(sampleData) && sampleData.length > 0 ? (
+                  <table
+                    className="result-table"
+                    style={{
+                      minWidth: 600,
+                      tableLayout: "auto",
+                      borderCollapse: "collapse",
+                      width: "100%",
+                    }}
+                  >
+                    <thead>
+                      <tr style={{ background: "#e6f7ff" }}>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          STT
+                        </th>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          Họ và tên
+                        </th>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          Năm sinh
+                        </th>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          Giới tính
+                        </th>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          Mối quan hệ
+                        </th>
+                        <th
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            borderBottom: "1.5px solid #b6e4b6",
+                          }}
+                        >
+                          Loại mẫu
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sampleData.map((data, index) => (
+                        <tr
+                          key={data.key || index}
+                          style={{
+                            background: index % 2 === 0 ? "#fff" : "#f4f8ff",
+                          }}
+                        >
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {index + 1}
+                          </td>
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.name || data.hoTen || data.hovaten || ""}
+                          </td>
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.birth ||
+                              data.birthYear ||
+                              data.namSinh ||
+                              data.namsinh ||
+                              ""}
+                          </td>
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.gender ||
+                              data.gioiTinh ||
+                              data.gioitinh ||
+                              ""}
+                          </td>
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.relationship ||
+                              data.moiQuanHe ||
+                              data.moiquanhe ||
+                              data.relation ||
+                              ""}
+                          </td>
+                          <td
+                            style={{
+                              padding: "10px 14px",
+                              fontSize: 16,
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.sampleType ||
+                              data.loaiMau ||
+                              data.loaimau ||
+                              ""}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div style={{ color: "#faad14", fontWeight: 600 }}>
+                    Chưa có thông tin mẫu
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* 3. Kết quả */}
+            <div
+              style={{
+                marginBottom: 24,
+                background: "#fffbe6",
+                border: "1.5px solid #ffe58f",
+                borderRadius: 14,
+                padding: 20,
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontWeight: 800,
+                  fontSize: 20,
+                  marginBottom: 12,
+                }}
+              >
+                Kết quả
+              </h3>
+              {selectedOrder.conclusion ? (
+                <div
+                  style={{ fontSize: 18, color: "#005c3c", fontWeight: 700 }}
+                >
+                  {selectedOrder.conclusion}
                 </div>
               ) : (
-                <div style={{ background: "#fff7e6", border: "1px solid #ffd591", padding: 16, borderRadius: 6 }}>
-                  Kết quả chưa có sẵn
+                <div style={{ color: "#faad14", fontWeight: 600 }}>
+                  Chưa có kết quả
                 </div>
               )}
             </div>
-
-            {selectedOrder.testingNotes && (
-              <div>
-                <h3>Ghi chú kỹ thuật:</h3>
-                <div style={{ background: "#f6f6f6", padding: 12, borderRadius: 4 }}>{selectedOrder.testingNotes}</div>
-              </div>
-            )}
-
-            {selectedOrder.sampleInfo && (
-              <div style={{ marginTop: 16 }}>
-                <h3>Thông tin mẫu xét nghiệm:</h3>
-                <div style={{ background: "#f0f5ff", border: "1px solid #d6e4ff", padding: 12, borderRadius: 4 }}>
-                  <p>
-                    <strong>Ngày lấy mẫu:</strong> {selectedOrder.sampleInfo.collectionDate}
-                  </p>
-                  <p>
-                    <strong>Nhân viên thu mẫu:</strong> {selectedOrder.sampleInfo.collector}
-                  </p>
-                  <p>
-                    <strong>Số lượng người cho mẫu:</strong> {selectedOrder.sampleInfo.donors.length}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </Modal>
 
-      {/* Modal chỉnh sửa kết quả */}
       <Modal
-        title={`Cập nhật kết quả - Đơn hàng #${selectedOrder?.id}`}
         open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
+        onCancel={() => {
+          const currentValues = form.getFieldsValue();
+          setTempFormData(currentValues);
+          setEditModalVisible(false);
+        }}
         onOk={() => form.submit()}
         okText="Lưu"
         cancelText="Hủy"
-        width={800}
+        width={1000}
+        destroyOnHidden={false}
+        okButtonProps={{
+          style: {
+            background: "#1890ff",
+            borderColor: "#1890ff",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 16,
+            padding: "7px 32px",
+            borderRadius: 6,
+            transition: "background 0.2s, color 0.2s",
+          },
+          onMouseOver: (e) => {
+            e.target.style.background = "#1765ad";
+            e.target.style.color = "#fff";
+            e.target.style.borderColor = "#1765ad";
+          },
+          onMouseOut: (e) => {
+            e.target.style.background = "#1890ff";
+            e.target.style.color = "#fff";
+            e.target.style.borderColor = "#1890ff";
+          },
+          disabled: getStatusText(selectedOrder?.status) === STATUS_COMPLETED,
+        }}
       >
-        <Form form={form} layout="vertical" onFinish={handleSaveResult}>
-          <Form.Item
-            name="status"
-            label="Trạng thái"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+        <div
+          style={{
+            textAlign: "center",
+            fontWeight: 800,
+            fontSize: 22,
+            marginBottom: 16,
+          }}
+        >
+          {`Cập nhật kết quả - Đơn hàng #${selectedOrder?.id}`}
+        </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSaveResult}
+          onValuesChange={handleFormValuesChange}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 16,
+            }}
           >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="Chờ xử lý">Chờ xử lý</Option>
-              <Option value="Đang xử lý">Đang xử lý</Option>
-              <Option value="Hoàn thành">Hoàn thành</Option>
-            </Select>
+            <Tag
+              color={getStatusColor(getStatusText(selectedOrder?.status))}
+              style={{ fontWeight: 700, fontSize: 16, padding: "4px 18px" }}
+            >
+              {getStatusText(selectedOrder?.status)}
+            </Tag>
+            {(() => {
+              const caseType = getCaseType(selectedOrder?.type);
+              if (!caseType) return null;
+              return (
+                <Tag
+                  color={caseType === "Dân sự" ? "#722ed1" : "#36cfc9"}
+                  style={{ fontWeight: 700, fontSize: 16, padding: "4px 18px" }}
+                >
+                  {caseType}
+                </Tag>
+              );
+            })()}
+          </div>
+
+          <Form.Item
+            name="resultTableData"
+            label={
+              <span style={{ fontWeight: 800, fontSize: 20, letterSpacing: 1 }}>
+                Mẫu xét nghiệm
+              </span>
+            }
+          >
+            <div>
+              <table
+                className="result-table"
+                style={{
+                  minWidth: "100%",
+                  tableLayout: "auto",
+                  borderCollapse: "collapse",
+                  width: "100%",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  boxShadow: "0 2px 8px #0001",
+                }}
+              >
+                <thead>
+                  <tr
+                    style={{
+                      background: "#e6f7ff",
+                      fontWeight: 700,
+                      color: "#1890ff",
+                      fontSize: 16,
+                      borderBottom: "2px solid #91d5ff",
+                      textAlign: "center",
+                      padding: "10px 12px",
+                    }}
+                  >
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      STT
+                    </th>
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Họ và tên
+                    </th>
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Ngày sinh
+                    </th>
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Giới tính
+                    </th>
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Mối quan hệ
+                    </th>
+                    <th
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: 16,
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Loại mẫu
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(tableData)
+                    ? tableData.map((data, index) => (
+                        <tr
+                          key={data.key || index}
+                          style={{
+                            background: index % 2 === 0 ? "#fff" : "#f4f8ff",
+                          }}
+                        >
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {index + 1}
+                          </td>
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.name}
+                          </td>
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.birth ||
+                              data.birthYear ||
+                              data.namSinh ||
+                              data.namsinh ||
+                              ""}
+                          </td>
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.gender}
+                          </td>
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.relationship}
+                          </td>
+                          <td
+                            style={{
+                              padding: "8px 12px",
+                              fontSize: 16,
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              textAlign: "center",
+                            }}
+                          >
+                            {data.sampleType}
+                          </td>
+                        </tr>
+                      ))
+                    : null}
+                </tbody>
+              </table>
+            </div>
           </Form.Item>
 
           <Form.Item
-            name="testingMethod"
-            label="Phương pháp xét nghiệm"
-            rules={[{ required: true, message: "Vui lòng chọn phương pháp xét nghiệm!" }]}
+            name="conclusion"
+            label={
+              <span style={{ fontWeight: 800, fontSize: 20, letterSpacing: 1 }}>
+                Kết luận
+              </span>
+            }
+            rules={[{ required: true, message: "Vui lòng nhập kết luận!" }]}
           >
-            <Select placeholder="Chọn phương pháp">
-              <Option value="STR">STR (Short Tandem Repeat)</Option>
-              <Option value="SNP">SNP (Single Nucleotide Polymorphism)</Option>
-              <Option value="CODIS">CODIS (Combined DNA Index System)</Option>
-              <Option value="Y-STR">Y-STR (Y-chromosome STR)</Option>
-              <Option value="mtDNA">mtDNA (Mitochondrial DNA)</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="result" label="Kết quả xét nghiệm">
-            <TextArea rows={6} placeholder="Nhập kết quả xét nghiệm chi tiết..." />
-          </Form.Item>
-
-          <Form.Item name="testingNotes" label="Ghi chú kỹ thuật">
-            <TextArea rows={3} placeholder="Nhập ghi chú về quá trình xét nghiệm, chất lượng mẫu..." />
-          </Form.Item>
-
-          <Form.Item label="Tải lên file kết quả">
-            <Upload>
-              <Button icon={<UploadOutlined />}>Chọn file</Button>
-            </Upload>
+            <TextArea
+              rows={3}
+              placeholder="Nhập kết luận và ghi chú kỹ thuật..."
+              style={{ background: "#fff7e6", borderRadius: 8, fontSize: 16 }}
+            />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* Modal báo cáo kết quả */}
       <Modal
-        title="Báo cáo kết quả xét nghiệm ADN"
-        open={reportModalVisible}
-        onCancel={() => setReportModalVisible(false)}
+        open={!!confirmHideOrder}
+        onCancel={handleCancelHide}
+        onOk={handleConfirmHide}
+        okText="Ẩn"
+        cancelText="Huỷ"
+        title={`Xác nhận ẩn đơn hàng #${confirmHideOrder?.id}`}
+        okButtonProps={{ danger: true, type: "primary" }}
+      >
+        <p>Bạn có chắc chắn muốn ẩn thông tin đơn hàng này không? </p>
+      </Modal>
+
+      <Modal
+        title="Lý do từ chối của quản lý"
+        open={reasonModalVisible}
+        onCancel={() => setReasonModalVisible(false)}
         footer={[
-          <Button key="close" onClick={() => setReportModalVisible(false)}>
+          <Button key="close" onClick={() => setReasonModalVisible(false)}>
             Đóng
           </Button>,
-          <Button key="print" type="primary" icon={<PrinterOutlined />}>
-            In báo cáo
-          </Button>,
         ]}
-        width={800}
       >
-        {selectedOrder && (
-          <div style={{ background: "#fff", padding: 24, border: "1px solid #ddd" }}>
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <Title level={4}>TRUNG TÂM XÉT NGHIỆM DNA LAB</Title>
-              <Text>123 Đường Nguyễn Văn Linh, Quận 7, Thành Phố Hồ Chí Minh</Text>
-              <Divider style={{ margin: "12px 0" }} />
-              <Title level={3}>KẾT QUẢ XÉT NGHIỆM ADN</Title>
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <Title level={5}>THÔNG TIN KHÁCH HÀNG</Title>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Text strong>Họ và tên: </Text>
-                  <Text>{selectedOrder.name}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>Mã đơn hàng: </Text>
-                  <Text>#{selectedOrder.id}</Text>
-                </Col>
-              </Row>
-              <Row gutter={16} style={{ marginTop: 8 }}>
-                <Col span={12}>
-                  <Text strong>Địa chỉ: </Text>
-                  <Text>{selectedOrder.address}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>Số điện thoại: </Text>
-                  <Text>{selectedOrder.phone}</Text>
-                </Col>
-              </Row>
-              <Row gutter={16} style={{ marginTop: 8 }}>
-                <Col span={12}>
-                  <Text strong>Loại xét nghiệm: </Text>
-                  <Text>{selectedOrder.type}</Text>
-                </Col>
-                <Col span={12}>
-                  <Text strong>Ngày hoàn thành: </Text>
-                  <Text>{selectedOrder.completedDate}</Text>
-                </Col>
-              </Row>
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <Title level={5}>THÔNG TIN MẪU XÉT NGHIỆM</Title>
-              {selectedOrder.sampleInfo ? (
-                <>
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Text strong>Ngày lấy mẫu: </Text>
-                      <Text>{selectedOrder.sampleInfo.collectionDate}</Text>
-                    </Col>
-                    <Col span={12}>
-                      <Text strong>Nhân viên thu mẫu: </Text>
-                      <Text>{selectedOrder.sampleInfo.collector}</Text>
-                    </Col>
-                  </Row>
-                  <Divider style={{ margin: "12px 0" }} />
-                  {selectedOrder.sampleInfo.donors.map((donor, index) => (
-                    <div key={index} style={{ marginBottom: 16 }}>
-                      <Text strong>Người cho mẫu {index + 1}: </Text>
-                      <Text>{donor.name}</Text>
-                      <Row gutter={16} style={{ marginTop: 8 }}>
-                        <Col span={8}>
-                          <Text strong>Loại mẫu: </Text>
-                          <Text>{donor.sampleType}</Text>
-                        </Col>
-                        <Col span={8}>
-                          <Text strong>Số lượng: </Text>
-                          <Text>{donor.sampleQuantity}</Text>
-                        </Col>
-                        <Col span={8}>
-                          <Text strong>Mối quan hệ: </Text>
-                          <Text>{donor.relationship}</Text>
-                        </Col>
-                      </Row>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <Text>Không có thông tin chi tiết về mẫu xét nghiệm</Text>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <Title level={5}>PHƯƠNG PHÁP XÉT NGHIỆM</Title>
-              <Paragraph>
-                {selectedOrder.testingMethod === "STR" &&
-                  "Phương pháp phân tích STR (Short Tandem Repeat) được sử dụng để xác định mối quan hệ huyết thống. Phương pháp này phân tích các vùng lặp lại ngắn trong DNA để xác định mối quan hệ di truyền giữa các cá nhân."}
-                {selectedOrder.testingMethod === "SNP" &&
-                  "Phương pháp phân tích SNP (Single Nucleotide Polymorphism) được sử dụng để xác định các biến thể di truyền. Phương pháp này phân tích các biến thể đơn nucleotide trong DNA."}
-                {selectedOrder.testingMethod === "CODIS" &&
-                  "Phương pháp CODIS (Combined DNA Index System) được sử dụng để phân tích các marker DNA tiêu chuẩn được sử dụng trong hệ thống dữ liệu DNA pháp y."}
-                {selectedOrder.testingMethod === "Y-STR" &&
-                  "Phương pháp Y-STR (Y-chromosome STR) được sử dụng để phân tích các marker STR trên nhiễm sắc thể Y, giúp xác định mối quan hệ cha con theo dòng nam."}
-                {selectedOrder.testingMethod === "mtDNA" &&
-                  "Phương pháp mtDNA (Mitochondrial DNA) được sử dụng để phân tích DNA ty thể, giúp xác định mối quan hệ theo dòng mẹ."}
-              </Paragraph>
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <Title level={5}>KẾT QUẢ XÉT NGHIỆM</Title>
-              <div style={{ background: "#f6ffed", border: "1px solid #b7eb8f", padding: 16, borderRadius: 6 }}>
-                <Paragraph>{selectedOrder.result}</Paragraph>
-              </div>
-            </div>
-
-            {selectedOrder.testingNotes && (
-              <div style={{ marginBottom: 24 }}>
-                <Title level={5}>GHI CHÚ KỸ THUẬT</Title>
-                <Paragraph>{selectedOrder.testingNotes}</Paragraph>
-              </div>
-            )}
-
-            <div style={{ marginTop: 36, textAlign: "right" }}>
-              <Text strong>Ngày báo cáo: </Text>
-              <Text>{new Date().toLocaleDateString("vi-VN")}</Text>
-              <div style={{ marginTop: 60 }}>
-                <Text strong>Người phụ trách xét nghiệm</Text>
-                <div style={{ marginTop: 8 }}>
-                  <Text>(Ký và ghi rõ họ tên)</Text>
-                </div>
-                <div style={{ marginTop: 40 }}>
-                  <Text>TS. Nguyễn Văn Khoa</Text>
-                  <div>
-                    <Text>Giám đốc Kỹ thuật</Text>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <div
+          style={{ whiteSpace: "pre-line", color: "#fa541c", fontWeight: 500 }}
+        >
+          {reasonText}
+        </div>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default TestingResults
+export default TestingResults;

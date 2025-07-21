@@ -4,16 +4,19 @@ import "./index.css";
 import App from "./App.jsx";
 import { OrderProvider } from "./context/OrderContext";
 import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <BrowserRouter>
+      <NotificationProvider>
         <OrderProvider>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </OrderProvider>
-      </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   </StrictMode>
 );

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, Table, Button, Modal, Form, Input, InputNumber, message } from "antd";
-import { EditOutlined, SaveOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SaveOutlined } from "@ant-design/icons";
+import { Popconfirm } from "antd";
+import AddService from "./AddService";
 import { useOrderContext } from "../../context/OrderContext";
 import "../../Css/PricingManagement.css"; // Import CSS file for hover effects
 
@@ -58,6 +60,16 @@ const PricingManagement = () => {
     });
   };
 
+  const handleDelete = (record) => {
+    const updatedServices = localPricingData[activeTab].filter((service) => service.id !== record.id);
+    setLocalPricingData({
+      ...localPricingData,
+      [activeTab]: updatedServices,
+    });
+    updatePricingData(activeTab, updatedServices);
+    message.success("Xóa dịch vụ thành công!");
+  };
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -94,15 +106,33 @@ const PricingManagement = () => {
       title: "Thao tác",
       key: "action",
       render: (_, record) => (
-        <Button 
-          type="primary" 
-          icon={<EditOutlined />} 
-          onClick={() => handleEdit(record)}
-          className="edit-button"
-          style={{ background: "#52c41a", borderColor: "#52c41a" }}
-        >
-          Sửa
-        </Button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+            className="edit-button"
+            style={{ background: "#52c41a", borderColor: "#52c41a" }}
+          >
+            Sửa
+          </Button>
+          <Popconfirm
+            title="Xóa dịch vụ?"
+            description="Bạn có chắc muốn xoá dịch vụ này?"
+            onConfirm={() => handleDelete(record)}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              className="delete-button"
+            >
+              Xóa
+            </Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
@@ -112,6 +142,7 @@ const PricingManagement = () => {
       <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 700 }}>
         Quản lý thời gian & chi phí
       </h2>
+      <AddService defaultCategory={activeTab} />
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
         <TabPane tab="Xét nghiệm ADN dân sự" key="civil">
           <Table

@@ -10,7 +10,7 @@ const TestingProcess = () => {
   const steps = [
     {
       id: 1,
-      title: "Đăng ký và gửi mẫu",
+      title: "Đăng ký và gửi mẫu, gửi đơn",
       description:
         "Đăng ký xét nghiệm trực tuyến hoặc qua phòng khám và gửi mẫu xét nghiệm theo hướng dẫn.",
       icon: <Send className="process-icon" />,
@@ -19,7 +19,7 @@ const TestingProcess = () => {
       id: 2,
       title: "Thu thập mẫu",
       description:
-        "Mẫu xét nghiệm được thu thập bằng tăm bông đặc biệt trước khi chuyển đến phòng thí nghiệm của chúng tôi.",
+        "Mẫu xét nghiệm được thu thập bằng phương pháp đặc biệt trước khi chuyển đến phòng thí nghiệm của chúng tôi.",
       icon: <Droplet className="process-icon" />,
     },
     {
