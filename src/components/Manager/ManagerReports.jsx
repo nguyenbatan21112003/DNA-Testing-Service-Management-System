@@ -65,15 +65,6 @@ const ManagerReports = () => {
         }).format(amount)
     }
 
-    const staffColumns = [
-        { title: "Nhân viên", dataIndex: "name", key: "name", render: (text) => <span><UserOutlined /> {text}</span> },
-        { title: "Hoàn thành", dataIndex: "completed", key: "completed" },
-        { title: "Đúng hạn", dataIndex: "onTime", key: "onTime" },
-        { title: "Đánh giá", dataIndex: "rating", key: "rating", render: (val) => val ? `${val} ⭐` : "-" },
-        { title: "Hiệu suất", dataIndex: "efficiency", key: "efficiency", render: (val) => val ? `${val}%` : "-" },
-        { title: "Xếp hạng", dataIndex: "rank", key: "rank", render: (val) => val ? <Tag color="#722ed1">#{val}</Tag> : "-" },
-    ]
-
     return (
         <div style={{ padding: 0 }}>
             {/* Header */}
@@ -137,17 +128,7 @@ const ManagerReports = () => {
                     </Card>
                 </Col>
             </Row>
-            {/* Hiệu suất nhân viên */}
-            <Card title={<span style={{ color: "#722ed1" }}>Hiệu suất nhân viên</span>} style={{ marginBottom: 32 }}>
-                <Table
-                    columns={staffColumns}
-                    dataSource={[]}
-                    locale={{ emptyText: <Empty description="Chưa có dữ liệu nhân viên" /> }}
-                    pagination={false}
-                    rowKey="name"
-                />
-            </Card>
-            {/* XÓA PHẦN PHẢN HỒI KHÁCH HÀNG */}
+            
         </div>
     )
 }

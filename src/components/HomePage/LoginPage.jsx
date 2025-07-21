@@ -157,9 +157,7 @@ const LoginPage = () => {
               />
               <span>Ghi nhớ đăng nhập</span>
             </label>
-            <a href="#" className="forgot-password">
-              Quên mật khẩu?
-            </a>
+            
           </div>
           {error && (
             <div className="error-msg" style={{ marginBottom: 8 }}>
