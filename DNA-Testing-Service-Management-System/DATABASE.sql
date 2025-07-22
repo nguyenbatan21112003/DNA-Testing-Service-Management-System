@@ -7,7 +7,7 @@ END;
 GO
 --ALTER DATABASE DNATestingSystem_V4 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 GO
-USE DNATestingSystem_V6;
+USE DNATestingSystem_V4;
 GO
 
 -- ===================== ROLES & FEATURES =====================

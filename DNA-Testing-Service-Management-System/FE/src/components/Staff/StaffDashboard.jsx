@@ -18,6 +18,7 @@ import {
   FormOutlined,
   CaretDownOutlined,
   CaretRightOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -68,6 +69,7 @@ const menuItemsBottom = [
     icon: <CustomerServiceOutlined />,
     label: "Yêu cầu tư vấn",
   },
+  { key: "settings", label: "Cài đặt", icon: <SettingOutlined /> },
 ];
 
 export const StaffDashboardContext = createContext();
@@ -241,24 +243,40 @@ const StaffDashboard = () => {
                 padding: "0 24px",
                 height: 48,
                 cursor: "pointer",
-                background: activeTab === "center-sampling" ? "#e6f7ff" : "#fff",
+                background:
+                  activeTab === "center-sampling" ? "#e6f7ff" : "#fff",
                 fontWeight: activeTab === "center-sampling" ? 600 : 400,
                 color: activeTab === "center-sampling" ? "#1677ff" : "#222",
                 userSelect: "none",
               }}
             >
               <span
-                style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}
-                onClick={() => { setActiveTab("center-sampling"); setCenterMenuOpen(true); }}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+                onClick={() => {
+                  setActiveTab("center-sampling");
+                  setCenterMenuOpen(true);
+                }}
               >
                 <BankOutlined style={{ fontSize: 18 }} />
                 {!collapsed && "Thu mẫu tại cơ sở"}
               </span>
               <span
-                onClick={e => { e.stopPropagation(); setCenterMenuOpen(open => !open); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCenterMenuOpen((open) => !open);
+                }}
                 style={{ padding: 4, marginLeft: 8 }}
               >
-                {centerMenuOpen ? <CaretDownOutlined /> : <CaretRightOutlined />}
+                {centerMenuOpen ? (
+                  <CaretDownOutlined />
+                ) : (
+                  <CaretRightOutlined />
+                )}
               </span>
             </div>
             {/* Submenu */}
@@ -270,19 +288,22 @@ const StaffDashboard = () => {
                     display: "flex",
                     alignItems: "center",
                     cursor: "pointer",
-                    color: activeTab === "sample-collection" ? "#1677ff" : "#222",
+                    color:
+                      activeTab === "sample-collection" ? "#1677ff" : "#222",
                     fontWeight: activeTab === "sample-collection" ? 600 : 400,
                     justifyContent: collapsed ? "center" : "flex-start",
                   }}
                   onClick={() => setActiveTab("sample-collection")}
                 >
-                  <span style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: collapsed ? 40 : undefined,
-                    marginRight: !collapsed ? 8 : 0,
-                  }}>
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: collapsed ? 40 : undefined,
+                      marginRight: !collapsed ? 8 : 0,
+                    }}
+                  >
                     <FormOutlined style={{ fontSize: 18 }} />
                   </span>
                   {!collapsed && "Lấy mẫu hành chính"}
@@ -293,19 +314,25 @@ const StaffDashboard = () => {
                     display: "flex",
                     alignItems: "center",
                     cursor: "pointer",
-                    color: activeTab === "civil-sample-collection" ? "#1677ff" : "#222",
-                    fontWeight: activeTab === "civil-sample-collection" ? 600 : 400,
+                    color:
+                      activeTab === "civil-sample-collection"
+                        ? "#1677ff"
+                        : "#222",
+                    fontWeight:
+                      activeTab === "civil-sample-collection" ? 600 : 400,
                     justifyContent: collapsed ? "center" : "flex-start",
                   }}
                   onClick={() => setActiveTab("civil-sample-collection")}
                 >
-                  <span style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: collapsed ? 40 : undefined,
-                    marginRight: !collapsed ? 8 : 0,
-                  }}>
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: collapsed ? 40 : undefined,
+                      marginRight: !collapsed ? 8 : 0,
+                    }}
+                  >
                     <FormOutlined style={{ fontSize: 18 }} />
                   </span>
                   {!collapsed && "Lấy mẫu dân sự"}
