@@ -143,6 +143,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetTestResultById",
+    "RelativePath": "Customer/test-result{result_id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "result_id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
     "Method": "GetTestSampleByTestRequestId",
     "RelativePath": "Customer/test-sample/{test_requestId}",
     "HttpMethod": "PUT",
@@ -177,6 +193,16 @@
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "GetAllBlogPosts",
     "RelativePath": "Manager/all-BlogPost",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllTestProcess",
+    "RelativePath": "Manager/all-test-process",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

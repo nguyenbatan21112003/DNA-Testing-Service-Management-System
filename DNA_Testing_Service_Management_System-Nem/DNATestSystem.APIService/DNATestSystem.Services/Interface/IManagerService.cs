@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.BlogPost;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
@@ -33,5 +34,7 @@ namespace DNATestSystem.Services.Interface
         Task<bool> UpdateTestResultByTestResultId(ManagerUpdateTestResultDto model);
         //
         Task<List<BlogPost>> GetAllBlogPostsAsync();
+        //
+        Task<List<ManagerTestProcessDto>> GetAllTestProcess();
     }
 }

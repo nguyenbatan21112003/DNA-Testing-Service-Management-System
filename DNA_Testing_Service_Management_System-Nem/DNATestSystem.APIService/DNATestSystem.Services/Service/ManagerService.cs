@@ -254,5 +254,22 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
             return blogPosts;
         }
+        public async Task<List<ManagerTestProcessDto>> GetAllTestProcess()
+        {
+            var testProcesses = await _context.TestProcesses
+                .Select(tp => new ManagerTestProcessDto
+                {
+                    ProcessId = tp.ProcessId,
+                    RequestId = tp.RequestId,
+                    StaffId = tp.StaffId,
+                    KitCode = tp.KitCode,
+                    ClaimtAt = tp.ClaimedAt,
+                    CurrentStatus = tp.CurrentStatus,
+                    Notes = tp.Notes,
+                    UpdatedAt = tp.UpdatedAt
+                })
+                .ToListAsync();
+            return testProcesses;
+        }
     }
 }

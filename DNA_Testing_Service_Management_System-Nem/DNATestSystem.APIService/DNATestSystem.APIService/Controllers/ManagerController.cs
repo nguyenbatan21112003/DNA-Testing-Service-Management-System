@@ -153,6 +153,19 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet("all-test-process")]
+        public async Task<IActionResult> GetAllTestProcess()
+        {
+            try
+            {
+                var result = await _managerService.GetAllTestProcess();
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
 
+        }
     }
 }

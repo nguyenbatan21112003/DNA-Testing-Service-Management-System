@@ -293,6 +293,29 @@
         }
       }
     },
+    "/Customer/test-result{result_id}": {
+      "get": {
+        "tags": [
+          "Customer"
+        ],
+        "parameters": [
+          {
+            "name": "result_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/Mail/send": {
       "post": {
         "tags": [
@@ -478,6 +501,18 @@
       }
     },
     "/Manager/all-BlogPost": {
+      "get": {
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/all-test-process": {
       "get": {
         "tags": [
           "Manager"
