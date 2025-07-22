@@ -31,5 +31,4 @@ public partial class Service
 
     public virtual ICollection<TestRequest> TestRequests { get; set; } = new List<TestRequest>();
 
-    public virtual ICollection<UserSelectedService> UserSelectedServices { get; set; } = new List<UserSelectedService>();
 }

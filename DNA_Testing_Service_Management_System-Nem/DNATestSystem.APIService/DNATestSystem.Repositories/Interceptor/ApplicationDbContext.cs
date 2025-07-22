@@ -45,8 +45,6 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
-        public virtual DbSet<UserSelectedService> UserSelectedServices { get; set; }
-
         public virtual DbSet<Invoice> Invoices { get; set; }
 
         public virtual DbSet<RequestDeclarant> RequestDeclarants { get; set; }
@@ -452,25 +450,7 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__UserProfi__UserI__2F10007B");
             });
-            modelBuilder.Entity<UserSelectedService>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("PK__UserSele__3214EC271BA82503");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-                entity.Property(e => e.ConvertedToRequest).HasDefaultValue(false);
-                entity.Property(e => e.Note).HasColumnType("text");
-                entity.Property(e => e.SelectedAt).HasColumnType("datetime");
-                entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.Service).WithMany(p => p.UserSelectedServices)
-                    .HasForeignKey(d => d.ServiceId)
-                    .HasConstraintName("FK__UserSelec__Servi__4222D4EF");
-
-                entity.HasOne(d => d.User).WithMany(p => p.UserSelectedServices)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserSelec__UserI__412EB0B6");
-            });
+           
             
             OnModelCreatingPartial(modelBuilder);
         }
