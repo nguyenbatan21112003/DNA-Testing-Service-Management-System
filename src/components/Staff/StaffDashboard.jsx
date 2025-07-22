@@ -18,6 +18,7 @@ import {
   FormOutlined,
   CaretDownOutlined,
   CaretRightOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -31,6 +32,7 @@ import CenterSampling from "./CenterSampling";
 import OrderManagement from "./OrderManagement";
 import SampleCollection from "./SampleCollection";
 import CivilSampleCollectionForm from "./CivilSampleCollectionForm";
+import UserSettings from "../User/UserSetting";
 
 const { Sider, Content } = Layout;
 
@@ -67,6 +69,11 @@ const menuItemsBottom = [
     key: "consultation",
     icon: <CustomerServiceOutlined />,
     label: "Yêu cầu tư vấn",
+  },
+  {
+    key: "settings",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
   },
 ];
 
@@ -150,6 +157,8 @@ const StaffDashboard = () => {
         return <OrderManagement />;
       case "civil-sample-collection":
         return <CivilSampleCollectionForm />;
+      case "settings":
+        return <UserSettings />;
       default:
         return <StaffOverview />;
     }

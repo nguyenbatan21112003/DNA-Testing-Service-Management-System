@@ -170,7 +170,6 @@ const SampleCollection = ({ caseType }) => {
       try {
         const data = JSON.parse(draft);
         if (data.form) {
-          // Convert stored string dates back to dayjs object for DatePicker compatibility
           const draftForm = { ...data.form };
           if (draftForm.collectionDate) {
             draftForm.collectionDate = dayjs(

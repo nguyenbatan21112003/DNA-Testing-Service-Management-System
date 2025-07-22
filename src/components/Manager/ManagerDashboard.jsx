@@ -12,6 +12,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   FileTextOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import NotificationBell from "../HomePage/NotificationBell";
@@ -21,6 +22,7 @@ import ManagerOverview from "./ManagerOverview";
 import ManagerReports from "./ManagerReports";
 import TestResultVerification from "./TestResultVerification";
 import BlogManagement from "./BlogManagement";
+import UserSettings from "../User/UserSetting";
 
 const { Sider, Content } = Layout;
 
@@ -44,6 +46,11 @@ const menuItems = [
     key: "blog",
     icon: <FileTextOutlined />,
     label: "Quản lý Blog",
+  },
+  {
+    key: "settings",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
   },
 ];
 
@@ -123,6 +130,8 @@ const ManagerDashboard = () => {
         return <ManagerReports />;
       case "blog":
         return <BlogManagement />;
+      case "settings":
+        return <UserSettings />;
       default:
         return <ManagerOverview />;
     }

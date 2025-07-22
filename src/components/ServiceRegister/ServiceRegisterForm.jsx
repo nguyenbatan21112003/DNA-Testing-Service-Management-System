@@ -107,7 +107,14 @@ const ServiceRegisterForm = () => {
     const extra = peopleCount > 2 ? (peopleCount - 2) * addPerPerson : 0;
 
     setPrice(base + extra);
-  }, [serviceType, numPeople, category, pricingData, sampleMethod, memberTable]);
+  }, [
+    serviceType,
+    numPeople,
+    category,
+    pricingData,
+    sampleMethod,
+    memberTable,
+  ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -398,7 +405,9 @@ const ServiceRegisterForm = () => {
             {sampleMethod === "center" && (
               <div className="form-group" style={{ marginTop: 16 }}>
                 <label htmlFor="numPeople">Số người xét nghiệm</label>
-                <p style={{ color: "red" }}>**Lưu ý: Chọn chính xác số người xét nghiệm</p>
+                <p style={{ color: "red" }}>
+                  **Lưu ý: Chọn chính xác số người xét nghiệm
+                </p>
                 <select
                   id="numPeople"
                   name="numPeople"
@@ -425,7 +434,8 @@ const ServiceRegisterForm = () => {
                 fontSize: 18,
               }}
             >
-              Số tiền cần thanh toán: {new Intl.NumberFormat("vi-VN").format(price)} VNĐ
+              Số tiền cần thanh toán:{" "}
+              {new Intl.NumberFormat("vi-VN").format(price)} VNĐ
             </div>
           )}
           <div className="form-row">
