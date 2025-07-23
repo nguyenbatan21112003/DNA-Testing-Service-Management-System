@@ -36,5 +36,6 @@ namespace DNATestSystem.Services.Interface
         Task<List<BlogPost>> GetAllBlogPostsAsync();
         //
         Task<List<ManagerTestProcessDto>> GetAllTestProcess();
+        Task<bool> UpdateTestProcess(ManagerUpdateTestProcessDto model);
     }
 }

@@ -271,5 +271,19 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
             return testProcesses;
         }
+        public async Task<bool> UpdateTestProcess(ManagerUpdateTestProcessDto model)
+        {
+            var testProcess = await _context.TestProcesses
+                .FirstOrDefaultAsync(tp => tp.RequestId == model.RequestId);
+            if (testProcess == null)
+            {
+                return false; // Không tìm thấy Test Process
+            }
+            // Cập nhật thông tin Test Process
+            testProcess.CurrentStatus = model.CurrentStatus;
+            testProcess.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
+        }
     }
 }
