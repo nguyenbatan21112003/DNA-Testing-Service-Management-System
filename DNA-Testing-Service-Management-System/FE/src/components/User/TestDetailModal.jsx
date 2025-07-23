@@ -142,12 +142,12 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
             Thể loại:
           </span>
           <Tag
-            color={order.category === "civil" ? "#722ed1" : "#36cfc9"}
+            color={order.category === "Voluntary" ? "#722ed1" : "#36cfc9"}
             style={{ fontWeight: 600, fontSize: 15 }}
           >
-            {order.category === "civil"
+            {order.category === "Voluntary"
               ? "Dân sự"
-              : order.category === "admin"
+              : order.category === "Administrative"
               ? "Hành chính"
               : order.category}
           </Tag>
@@ -181,17 +181,77 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
           </span>
           <span>{order.serviceName ? order.serviceName : ""}</span>
         </div>
+        
+        {order.samples?.length > 0 &&
+          order.samples.some(
+            (s) => s.ownerName || s.relationship || s.sampleType || s.yob
+          ) && (
+            <>
+            <div style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }} />
+              <div style={{ fontWeight: 700, marginTop: 16 }}>
+                Danh sách người cung cấp mẫu:
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {order.samples.map((s, idx) => (
+                  <div
+                    key={s.sampleId || idx}
+                    style={{
+                      background: "#f9f9f9",
+                      border: "1px solid #ddd",
+                      borderRadius: 8,
+                      padding: 10,
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <div>
+                      <strong>Họ tên:</strong> {s.ownerName || "-"}
+                    </div>
+                    <div>
+                      <strong>Quan hệ:</strong> {s.relationship || "-"}
+                    </div>
+                    <div>
+                      <strong>Năm sinh:</strong> {s.yob || "-"}
+                    </div>
+                    <div>
+                      <strong>Loại mẫu:</strong> {s.sampleType || "-"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
         <div style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }} />
         <div>
-          <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
-          <span>{getSampleMethodLabel(order.sampleMethod)}</span>
+          <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+          <span>
+            {order.collectType ? getSampleMethodLabel(order.collectType) : "-"}
+          </span>
         </div>
-        {order.sampleMethod === "Home" && order.testProcess?.kitCode && (
+        {order.collectType === "At Home" ? (
           <div>
             <span style={{ fontWeight: 600 }}>Mã kit:</span>{" "}
-            <span>{order.testProcess.kitCode}</span>
+            <span>{order.testProcess?.kitCode || "-"}</span>
           </div>
-        )}
+        ) : order.collectType === "At Center" ? (
+          <>
+            <div>
+              <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
+              <span>
+                2A Phan Chu Trinh, Hiệp Phú, Thủ Đức, Hồ Chí Minh 71300, Vietnam
+              </span>
+            </div>
+            <div>
+              <span style={{ fontWeight: 600 }}>Ngày hẹn lấy mẫu:</span>{" "}
+              <span>
+                {order.scheduleDate
+                  ? new Date(order.scheduleDate).toLocaleDateString("vi-VN")
+                  : "-"}
+              </span>
+            </div>
+          </>
+        ) : null}
 
         <div>
           <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}

@@ -10,7 +10,7 @@ import TestDetailModal from "./TestDetailModal";
 // dayjs import removed because not used
 
 const TestAppManagement = ({
-  onViewDetail = () => {},
+  // onViewDetail = () => {},
   onViewResult = () => {},
   onDownloadResult = () => {},
   onGiveFeedback = () => {},
@@ -35,47 +35,55 @@ const TestAppManagement = ({
   const [showTimeline, setShowTimeline] = useState({}); // {orderId: boolean}
 
   const fetchUserOrders = async () => {
-    try {
-      const res = await customerApi.getTestRequestHistory(user.userId);
-      const rawData = res?.data?.data || [];
+  try {
+    const res = await customerApi.getTestRequest(); // Gọi danh sách đơn
+    const requestList = res?.data || [];
 
-      // Lặp qua từng đơn, gọi thêm API để lấy số mẫu
-      const mapped = await Promise.all(
-        rawData.map(async (item) => {
-          const requestId = item.request?.requestId;
-          let samples = [];
+    const mapped = await Promise.all(
+      requestList.map(async (request) => {
+        const requestId = request.requestId;
 
-          try {
-            const resSamples = await customerApi.getSamplesByRequestId(
-              requestId
-            );
-            if (Array.isArray(resSamples.data)) {
-              samples = resSamples.data;
-            }
-          } catch (err) {
-            console.warn("Không lấy được samples cho đơn:", err);
-          }
+        // Default values
+        let testProcess = null;
+        let declarant = {};
+        let samples = [];
 
-          return {
-            ...item.request,
-            testProcess: item.testProcess,
-            feedbacks: item.feedbacks || [],
-            samples,
-            // service: item.serviceName || "",
-            numPeople: samples.length,
-            name: item.declarant?.fullName || "", // 👈 Thêm đầy đủ các trường
-            phone: item.declarant?.phoneNumber || "",
-            email: item.declarant?.email || "",
-            address: item.declarant?.address || "",
-          };
-        })
-      );
+        try {
+          const [resProcess, resDeclarant, resSamples] = await Promise.all([
+            customerApi.getTestProcessByRequestId(requestId),
+            customerApi.getDeclarantByRequestId(requestId),
+            customerApi.getSamplesByRequestId(requestId),
+          ]);
 
-      setUserOrders(mapped);
-    } catch (error) {
-      console.error("Lỗi khi load test requests:", error);
-    }
-  };
+          testProcess = resProcess?.data || null;
+          declarant = resDeclarant?.data || {};
+          samples = Array.isArray(resSamples?.data) ? resSamples.data : [];
+        } catch (err) {
+          console.warn(`Lỗi khi load dữ liệu phụ cho đơn ${requestId}`, err);
+        }
+
+        return {
+          ...request,
+          testProcess,
+          declarant,
+          feedbacks: request.feedbacks || [],
+          samples,
+          numPeople: samples.length || 0,
+          name: declarant.fullName || "",
+          phone: declarant.phoneNumber || "",
+          email: declarant.email || "",
+          address: declarant.address || "",
+          service: request.serviceName || "", // Nếu có
+        };
+      })
+    );
+
+    setUserOrders(mapped);
+  } catch (error) {
+    console.error("Lỗi khi load danh sách đơn:", error);
+  }
+};
+
 
   // Load đơn đăng ký của user
   useEffect(() => {

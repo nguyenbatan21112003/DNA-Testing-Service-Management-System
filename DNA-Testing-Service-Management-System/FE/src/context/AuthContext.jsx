@@ -28,7 +28,10 @@ export const AuthProvider = ({ children }) => {
       };
 
       setUser(userData);
-      localStorage.setItem("accessToken", JSON.stringify(response.data.accessToken));
+      localStorage.setItem(
+        "accessToken",
+        JSON.stringify(response.data.accessToken)
+      );
       localStorage.setItem("userData", JSON.stringify(userData));
 
       return { success: true, role_id: response.data.roleId };
@@ -43,12 +46,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await axiosInstance.post(`/user/logout`);
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
       setUser(null);
       localStorage.clear();
       window.location.href = "/";
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
@@ -103,11 +105,11 @@ export const AuthProvider = ({ children }) => {
 
       setUser(updatedUserData);
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
-      return true
+      return true;
     } catch (error) {
       console.error("Update user failed:", error);
       alert(messagesError.updateUserFailed);
-      return false
+      return false;
     }
   };
 

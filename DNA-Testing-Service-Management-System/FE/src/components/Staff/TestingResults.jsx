@@ -62,18 +62,33 @@ const TestingResults = () => {
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
     return "Khác";
   };
+  const statusPriority = {
+  "Đang xét nghiệm": 1,
+  "Chờ xác thực": 2,
+  "Từ chối": 3,
+  "Hoàn thành": 4,
+};
 
   useEffect(() => {
+ 
+
     setFilteredOrders(
-      orders.filter(
-        (order) =>
-          !order.isHiddenByStaff &&
-          getStatusText(order.status) === "Đang xét nghiệm" &&
-          ((Array.isArray(order.resultTableData) &&
-            order.resultTableData.length > 0) ||
-            (Array.isArray(order.members) && order.members.length > 0))
-      )
-    );
+  orders
+    .filter(
+      (order) =>
+        !order.isHiddenByStaff &&
+        getStatusText(order.status) === "Đang xét nghiệm" &&
+        ((Array.isArray(order.resultTableData) &&
+          order.resultTableData.length > 0) ||
+          (Array.isArray(order.members) && order.members.length > 0))
+    )
+    .sort((a, b) => {
+      const aPriority = statusPriority[getStatusText(a.status)] || 999;
+      const bPriority = statusPriority[getStatusText(b.status)] || 999;
+      return aPriority - bPriority;
+    })
+);
+
   }, [orders]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
@@ -94,13 +109,23 @@ const TestingResults = () => {
     if (filterStatus === "all") {
       setFilteredOrders(orders.filter((order) => !order.isHiddenByStaff));
     } else {
-      setFilteredOrders(
-        orders.filter(
-          (order) =>
-            !order.isHiddenByStaff &&
-            getStatusText(order.status) === filterStatus
-        )
-      );
+ 
+
+setFilteredOrders(
+  orders
+    .filter((order) => !order.isHiddenByStaff)
+    .filter((order) =>
+      filterStatus === "all"
+        ? true
+        : getStatusText(order.status) === filterStatus
+    )
+    .sort((a, b) => {
+      const aPriority = statusPriority[getStatusText(a.status)] || 999;
+      const bPriority = statusPriority[getStatusText(b.status)] || 999;
+      return aPriority - bPriority;
+    })
+);
+
     }
   }, [filterStatus, orders]);
 
