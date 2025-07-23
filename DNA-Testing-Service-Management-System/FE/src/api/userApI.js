@@ -15,8 +15,8 @@ const userApi = {
     axiosInstance.put(`/user/change-password`, data),
   sendConsultRequest: (data) =>
     axiosInstance.post(`/user/send-consult-request`, data),
-  updateUserProfileByUserId:  (id, data) =>
-    axiosInstance.put(`/user/UpdateUserProfile/${id}`, data),
+  updateUserProfileByUserId:  (data) =>
+    axiosInstance.put(`/user/UpdateUserProfile`, data),
 };
 
 export default userApi;

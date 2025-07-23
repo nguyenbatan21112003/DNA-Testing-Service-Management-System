@@ -5,7 +5,8 @@ const customerApi = {
   getDeclarantByRequestId: (requestId) =>
     axiosInstance.get(`/Customer/request-declarants/${requestId}`),
   getTestProcessByRequestId: (requestId) => axiosInstance.get(`/Customer/test-process/${requestId}`),
-  getResults: (userId) => axiosInstance.get(`/user/test-results/history?${userId}`)
+  getTestRequestHistory: (userId) => axiosInstance.get(`/user/test-results/history?userId=${userId}`),
+  getSamplesByRequestId: (requestId) => axiosInstance.get(`/Customer/test-sample/${requestId}`),
 
 };
 

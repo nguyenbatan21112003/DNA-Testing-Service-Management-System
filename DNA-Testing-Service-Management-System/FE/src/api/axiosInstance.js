@@ -1,8 +1,9 @@
 import axios from "axios";
+// import { useContext } from "react";
+// import { AuthContext } from "../context/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_URL_BE;
-
-
+  // const { logout} = useContext(AuthContext);
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL, //đây chính là url gốc của api BE là phải xử lý cors
   timeout: 100000, //thời gian chờ phản hồi từ server
@@ -55,9 +56,7 @@ axiosInstance.interceptors.response.use(
         return await axiosInstance(originalRequest);
       } catch (refreshError) {
         // Refresh failed, redirect to login
-        // localStorage.removeItem("accessToken");
         // localStorage.clear()
-        // Cookies.remove("refreshToken");
         // window.location.href = "/";
         return Promise.reject(refreshError);
       }
