@@ -820,5 +820,22 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
             return feedbacks;
         }
+        public async Task<List<GetTestResultDto>> GetTestRequestByRequestId(int request_id)
+        {
+            var data = await _context.TestResults
+                            .Where( x => x.RequestId == request_id)
+                            .Select(x => new GetTestResultDto 
+                            {
+                                ResultId = x.ResultId,
+                                RequestId = x.RequestId,
+                                EnteredBy = x.EnteredBy,
+                                VerifiedBy = x.VerifiedBy,
+                                ResultData = x.ResultData,
+                                Status = x.Status,
+                                EnteredAt = x.EnteredAt,
+                                VerifiedAt = x.VerifiedAt
+                            }).ToListAsync();
+            return data;
+        }
     }
 }

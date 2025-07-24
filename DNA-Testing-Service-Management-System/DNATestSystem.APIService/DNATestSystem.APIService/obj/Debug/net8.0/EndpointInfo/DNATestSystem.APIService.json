@@ -259,7 +259,7 @@
       }
     },
     "/Customer/test-sample/{test_requestId}": {
-      "put": {
+      "get": {
         "tags": [
           "Customer"
         ],
@@ -285,6 +285,29 @@
       "get": {
         "tags": [
           "Customer"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Customer/test-result/{request_id}": {
+      "get": {
+        "tags": [
+          "Customer"
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -482,6 +505,49 @@
         "tags": [
           "Manager"
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/all-test-process": {
+      "get": {
+        "tags": [
+          "Manager"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/update-test-process": {
+      "put": {
+        "tags": [
+          "Manager"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -2099,6 +2165,25 @@
           },
           "notes": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },

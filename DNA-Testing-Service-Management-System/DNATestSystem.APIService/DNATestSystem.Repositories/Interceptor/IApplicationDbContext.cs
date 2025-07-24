@@ -36,7 +36,6 @@ namespace DNATestSystem.Repositories
 
          DbSet<UserProfile> UserProfiles { get; set; }
 
-         DbSet<UserSelectedService> UserSelectedServices { get; set; }
 
          DbSet<Invoice> Invoices { get; set; }
 

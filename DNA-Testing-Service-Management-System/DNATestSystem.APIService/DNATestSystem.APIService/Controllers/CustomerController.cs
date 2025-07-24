@@ -75,7 +75,7 @@ namespace DNATestSystem.APIService.Controllers
             }
             return Ok(data);
         }
-        [HttpPut("test-sample/{test_requestId}")]
+        [HttpGet("test-sample/{test_requestId}")]
         public async Task<IActionResult> GetTestSampleByTestRequestId([FromRoute] int test_requestId)
         {
             var data = await _userService.GetSampleProvidersByTestRequestIdAsync(test_requestId);
@@ -92,6 +92,16 @@ namespace DNATestSystem.APIService.Controllers
             if (data == null)
             {
                 return NotFound(new { message = "Không tìm thấy test-sample" });
+            }
+            return Ok(data);
+        }
+        [HttpGet("test-result/{request_id}")]
+        public async Task<IActionResult> GetTestResultById([FromRoute] int request_id)
+        {
+            var data = await _userService.GetTestRequestByRequestId(request_id);
+            if (data == null)
+            {
+                return NotFound(new { message = "Không tìm thấy kết quả xét nghiệm" });
             }
             return Ok(data);
         }

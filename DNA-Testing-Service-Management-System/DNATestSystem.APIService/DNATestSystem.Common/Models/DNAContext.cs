@@ -448,13 +448,13 @@ public partial class DNAContext : DbContext
             entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.Service).WithMany(p => p.UserSelectedServices)
-                .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__UserSelec__Servi__66603565");
+            //entity.HasOne(d => d.Service).WithMany(p => p.UserSelectedServices)
+            //    .HasForeignKey(d => d.ServiceId)
+            //    .HasConstraintName("FK__UserSelec__Servi__66603565");
 
-            entity.HasOne(d => d.User).WithMany(p => p.UserSelectedServices)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__UserSelec__UserI__656C112C");
+            //entity.HasOne(d => d.User).WithMany(p => p.UserSelectedServices)
+            //    .HasForeignKey(d => d.UserId)
+            //    .HasConstraintName("FK__UserSelec__UserI__656C112C");
         });
 
         modelBuilder.Entity<Weather>(entity =>

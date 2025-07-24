@@ -143,9 +143,25 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "GetTestResultById",
+    "RelativePath": "Customer/test-result/{request_id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request_id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
     "Method": "GetTestSampleByTestRequestId",
     "RelativePath": "Customer/test-sample/{test_requestId}",
-    "HttpMethod": "PUT",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -177,6 +193,16 @@
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "GetAllBlogPosts",
     "RelativePath": "Manager/all-BlogPost",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetAllTestProcess",
+    "RelativePath": "Manager/all-test-process",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -247,6 +273,22 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "UpdateTestProcess",
+    "RelativePath": "Manager/update-test-process",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

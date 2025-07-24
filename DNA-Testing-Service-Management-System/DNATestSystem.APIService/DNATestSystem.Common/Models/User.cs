@@ -45,5 +45,4 @@ public partial class User
 
     public virtual ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 
-    public virtual ICollection<UserSelectedService> UserSelectedServices { get; set; } = new List<UserSelectedService>();
 }

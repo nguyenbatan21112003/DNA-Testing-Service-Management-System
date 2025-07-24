@@ -4,6 +4,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -153,6 +154,39 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet("all-test-process")]
+        public async Task<IActionResult> GetAllTestProcess()
+        {
+            try
+            {
+                var result = await _managerService.GetAllTestProcess();
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
 
+        }
+        [HttpPut("update-test-process")]
+        public async Task<IActionResult> UpdateTestProcess([FromBody] ManagerUpdateTestProcessDto model)
+        {
+            try
+            {
+                var result = await _managerService.UpdateTestProcess(model);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật quy trình kiểm tra thành công." });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy quy trình kiểm tra." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
