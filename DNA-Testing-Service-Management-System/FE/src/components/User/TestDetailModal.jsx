@@ -19,7 +19,7 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
   // Helper: chuẩn hóa status hiển thị
   // console.log(order)
   const getStatusText = (statusRaw) => {
-    const status = statusRaw?.toUpperCase?.() || "";
+    const status = statusRaw?.toUpperCase() || "";
 
     switch (status) {
       case "PENDING":
@@ -28,12 +28,13 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
         return "Đang xử lý";
       case "KIT NOT SENT":
         return "Chưa gửi kit";
-      case "KIT_SENT":
+      case "KIT SENT":
         return "Đã gửi kit";
-      case "SAMPLE_COLLECTING":
+      // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-      case "PROCESSING":
-      case "WAITING_APPROVAL":
+        return 'Đã nhận mẫu'
+      // case "PROCESSING":
+      // case "WAITING_APPROVAL":
       case "WAITING_FOR_APPOINTMENT":
         return "Chờ đến ngày hẹn";
       case "REJECTED":
@@ -60,7 +61,7 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
         return "#a259ec";
       case "Đã gửi kit":
         return "#00b894";
-      case "Đã gửi mẫu":
+      case "Đã nhận mẫu":
         return "#13c2c2";
       case "Đang xử lý":
         return "#faad14";

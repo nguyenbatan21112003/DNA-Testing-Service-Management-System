@@ -45,7 +45,7 @@ const TestingResults = () => {
   const [confirmHideOrder, setConfirmHideOrder] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [reasonModalVisible, setReasonModalVisible] = useState(false);
-  const [reasonText, setReasonText] = useState("");
+  // const [reasonText, setReasonText] = useState("");
   // const [requests, setRequests] = useState([]);
 
   const STATUS_TESTING = "Đang xét nghiệm";
@@ -63,32 +63,29 @@ const TestingResults = () => {
     return "Khác";
   };
   const statusPriority = {
-  "Đang xét nghiệm": 1,
-  "Chờ xác thực": 2,
-  "Từ chối": 3,
-  "Hoàn thành": 4,
-};
+    "Đang xét nghiệm": 1,
+    "Chờ xác thực": 2,
+    "Từ chối": 3,
+    "Hoàn thành": 4,
+  };
 
   useEffect(() => {
- 
-
     setFilteredOrders(
-  orders
-    .filter(
-      (order) =>
-        !order.isHiddenByStaff &&
-        getStatusText(order.status) === "Đang xét nghiệm" &&
-        ((Array.isArray(order.resultTableData) &&
-          order.resultTableData.length > 0) ||
-          (Array.isArray(order.members) && order.members.length > 0))
-    )
-    .sort((a, b) => {
-      const aPriority = statusPriority[getStatusText(a.status)] || 999;
-      const bPriority = statusPriority[getStatusText(b.status)] || 999;
-      return aPriority - bPriority;
-    })
-);
-
+      orders
+        .filter(
+          (order) =>
+            !order.isHiddenByStaff &&
+            getStatusText(order.status) === "Đang xét nghiệm" &&
+            ((Array.isArray(order.resultTableData) &&
+              order.resultTableData.length > 0) ||
+              (Array.isArray(order.members) && order.members.length > 0))
+        )
+        .sort((a, b) => {
+          const aPriority = statusPriority[getStatusText(a.status)] || 999;
+          const bPriority = statusPriority[getStatusText(b.status)] || 999;
+          return aPriority - bPriority;
+        })
+    );
   }, [orders]);
 
   // Lắng nghe sự kiện storage để tự động cập nhật khi manager thay đổi trạng thái
@@ -109,23 +106,20 @@ const TestingResults = () => {
     if (filterStatus === "all") {
       setFilteredOrders(orders.filter((order) => !order.isHiddenByStaff));
     } else {
- 
-
-setFilteredOrders(
-  orders
-    .filter((order) => !order.isHiddenByStaff)
-    .filter((order) =>
-      filterStatus === "all"
-        ? true
-        : getStatusText(order.status) === filterStatus
-    )
-    .sort((a, b) => {
-      const aPriority = statusPriority[getStatusText(a.status)] || 999;
-      const bPriority = statusPriority[getStatusText(b.status)] || 999;
-      return aPriority - bPriority;
-    })
-);
-
+      setFilteredOrders(
+        orders
+          .filter((order) => !order.isHiddenByStaff)
+          .filter((order) =>
+            filterStatus === "all"
+              ? true
+              : getStatusText(order.status) === filterStatus
+          )
+          .sort((a, b) => {
+            const aPriority = statusPriority[getStatusText(a.status)] || 999;
+            const bPriority = statusPriority[getStatusText(b.status)] || 999;
+            return aPriority - bPriority;
+          })
+      );
     }
   }, [filterStatus, orders]);
 
@@ -1628,7 +1622,7 @@ setFilteredOrders(
         <div
           style={{ whiteSpace: "pre-line", color: "#fa541c", fontWeight: 500 }}
         >
-          {reasonText}
+          {/* {reasonText} */}
         </div>
       </Modal>
     </div>

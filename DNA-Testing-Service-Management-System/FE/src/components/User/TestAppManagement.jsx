@@ -15,7 +15,7 @@ const TestAppManagement = ({
   onDownloadResult = () => {},
   onGiveFeedback = () => {},
   onViewFeedback = () => {},
-  onConfirmKit = () => {},
+  // onConfirmKit = () => {},
 }) => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -24,6 +24,8 @@ const TestAppManagement = ({
     setSelectedOrder(order);
     setDetailModalVisible(true);
   };
+  
+  
 
   const { user } = useContext(AuthContext);
   const { getAllOrders } = useOrderContext();
@@ -34,11 +36,13 @@ const TestAppManagement = ({
 
   const [showTimeline, setShowTimeline] = useState({}); // {orderId: boolean}
 
+
+  
   const fetchUserOrders = async () => {
   try {
     const res = await customerApi.getTestRequest(); // Gọi danh sách đơn
     const requestList = res?.data || [];
-
+    
     const mapped = await Promise.all(
       requestList.map(async (request) => {
         const requestId = request.requestId;
@@ -58,6 +62,7 @@ const TestAppManagement = ({
           testProcess = resProcess?.data || null;
           declarant = resDeclarant?.data || {};
           samples = Array.isArray(resSamples?.data) ? resSamples.data : [];
+          console.log(samples)
         } catch (err) {
           console.warn(`Lỗi khi load dữ liệu phụ cho đơn ${requestId}`, err);
         }
@@ -68,7 +73,7 @@ const TestAppManagement = ({
           declarant,
           feedbacks: request.feedbacks || [],
           samples,
-          numPeople: samples.length || 0,
+          numPeople: samples?.length || 0,
           name: declarant.fullName || "",
           phone: declarant.phoneNumber || "",
           email: declarant.email || "",
@@ -79,6 +84,7 @@ const TestAppManagement = ({
     );
 
     setUserOrders(mapped);
+    console.log(mapped)
   } catch (error) {
     console.error("Lỗi khi load danh sách đơn:", error);
   }
@@ -116,7 +122,7 @@ const TestAppManagement = ({
   };
 
   const getStatusText = (statusRaw) => {
-    const status = statusRaw?.toUpperCase?.() || "";
+    const status = statusRaw?.toUpperCase() || "";
 
     switch (status) {
       case "PENDING":
@@ -125,12 +131,13 @@ const TestAppManagement = ({
         return "Đang xử lý";
       case "KIT NOT SENT":
         return "Chưa gửi kit";
-      case "KIT_SENT":
+      case "KIT SENT":
         return "Đã gửi kit";
-      case "SAMPLE_COLLECTING":
+      // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-      case "PROCESSING":
-      case "WAITING_APPROVAL":
+        return 'Đã nhận mẫu'
+      // case "PROCESSING":
+      // case "WAITING_APPROVAL":
       case "WAITING_FOR_APPOINTMENT":
         return "Chờ đến ngày hẹn";
       case "REJECTED":
@@ -525,7 +532,7 @@ const TestAppManagement = ({
                       </>
                     )}
 
-                    {getStatusText(getDisplayStatus(order)) ===
+                    {/* {getStatusText(getDisplayStatus(order)) ===
                       "Đã gửi kit" && (
                       <button
                         onClick={() => onConfirmKit(order)}
@@ -533,7 +540,7 @@ const TestAppManagement = ({
                       >
                         Xác nhận đã nhận kit
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </div>
 

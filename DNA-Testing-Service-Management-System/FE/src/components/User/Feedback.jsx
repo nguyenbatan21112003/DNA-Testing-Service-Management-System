@@ -6,8 +6,8 @@ const Feedback = ({
   isOpen,
   order,
   onClose,
-  addFeedback,
-  setUserOrders,
+  onSubmitFeedback,
+  // setUserOrders,
 }) => {
   // Internal state for rating and comment
   const [overallRating, setOverallRating] = useState(0);
@@ -16,12 +16,7 @@ const Feedback = ({
 
   // Sync when opening / switching order
   useEffect(() => {
-    if (
-      isOpen &&
-      order &&
-      order.feedbacks &&
-      order.feedbacks.length > 0
-    ) {
+    if (isOpen && order && order.feedbacks && order.feedbacks.length > 0) {
       const lastFb = order.feedbacks[order.feedbacks.length - 1];
       setOverallRating(lastFb.rating || 0);
       setFeedbackInput(lastFb.feedback || "");
@@ -35,30 +30,31 @@ const Feedback = ({
   if (!isOpen || !order) return null;
 
   // Helpers replicated from UserProfile
-  const getStatusText = (status) => {
-    if (status === "Đang lấy mẫu" || status === "SAMPLE_COLLECTING")
-      return "Đang xử lý";
+  const getStatusText = (statusRaw) => {
+    const status = statusRaw?.toUpperCase() || "";
+
     switch (status) {
-      case "PENDING_CONFIRM":
+      case "PENDING":
         return "Chờ xác nhận";
-      case "KIT_NOT_SENT":
+      case "CONFIRMED":
+        return "Đang xử lý";
+      case "KIT NOT SENT":
         return "Chưa gửi kit";
-      case "KIT_SENT":
+      case "KIT SENT":
         return "Đã gửi kit";
+      // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-        return "Đã gửi mẫu";
-      case "PROCESSING":
+        return 'Đã nhận mẫu'
+      // case "PROCESSING":
+      // case "WAITING_APPROVAL":
+      case "WAITING_FOR_APPOINTMENT":
+        return "Chờ đến ngày hẹn";
+      case "REJECTED":
         return "Đang xử lý";
       case "COMPLETED":
-        return "Đã có kết quả";
-      case "WAITING_APPROVAL":
-      case "CHO_XAC_THUC":
-      case "Chờ xác thực":
-      case "REJECTED":
-      case "Từ chối":
-        return "Đang xử lý";
+        return "Hoàn thành";
       default:
-        return status;
+        return "Không xác định";
     }
   };
 
@@ -82,28 +78,30 @@ const Feedback = ({
       setFeedbackSuccess("Vui lòng chọn số sao!");
       return;
     }
-    addFeedback(order.id, feedbackInput, overallRating, {
-      overall: overallRating,
-    });
-
-    if (setUserOrders) {
-      setUserOrders((prev) =>
-        prev.map((o) =>
-          o.id === order.id
-            ? {
-                ...o,
-                feedbacks: [
-                  {
-                    rating: overallRating,
-                    feedback: feedbackInput,
-                    date: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-                  },
-                ],
-              }
-            : o
-        )
-      );
+    if (onSubmitFeedback) {
+      onSubmitFeedback(order, overallRating, feedbackInput);
     }
+
+    // if (setUserOrders) {
+    //   setUserOrders((prev) =>
+    //     prev.map((o) =>
+    //       o.id === order.id
+    //         ? {
+    //             ...o,
+    //             feedbacks: [
+    //               {
+    //                 rating: overallRating,
+    //                 feedback: feedbackInput,
+    //                 date: `${new Date().getDate()}/${
+    //                   new Date().getMonth() + 1
+    //                 }/${new Date().getFullYear()}`,
+    //               },
+    //             ],
+    //           }
+    //         : o
+    //     )
+    //   );
+    // }
 
     onClose();
     setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
@@ -239,7 +237,9 @@ const Feedback = ({
           }}
         />
         {/* Submit / info */}
-        {order.feedbacks && order.feedbacks.length > 0 ? (
+        {order.feedbacks &&
+        order.feedbacks.length > 0 &&
+        order.feedbacks[0].rating ? (
           <div
             style={{
               display: "flex",
@@ -260,7 +260,7 @@ const Feedback = ({
               }}
             >
               <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                Đánh giá vào ngày: {" "}
+                Đánh giá vào ngày:{" "}
                 {order.feedbacks[order.feedbacks.length - 1].date}
               </div>
             </div>

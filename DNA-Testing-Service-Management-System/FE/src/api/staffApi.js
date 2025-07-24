@@ -13,14 +13,20 @@ const staffApi = {
   getSamplesByRequestId: (requestId) =>
     axiosInstance.get(`/staff/samples?requestId=${requestId}`),
   getFeedbacks: () => axiosInstance.get(`/staff/get-staff-feedback`),
-  updateRequest: (requestId, data) => axiosInstance.put(`/staff/update-status/${requestId}`, data),
-  sendKit:  (data) => axiosInstance.put(`/staff/update-test-process`, data),
-  receiveSample: (data) => axiosInstance.put(`/staff/mark-sample-received`, data),
-  updateCenterSampleVoluntary: (data) => axiosInstance.put(`/staff/update-multiple-test-sample`, data),
-  createSampleAdministration: (data) => axiosInstance.post(`/staff/post-SampleCollection`, data),
-  createTestResult: (data) => axiosInstance.post(`staff/test-results/create`,data),
+  updateRequest: (requestId, data) =>
+    axiosInstance.put(`/staff/update-status/${requestId}`, data),
+  sendKit: (data) => axiosInstance.put(`/staff/update-test-process`, data),
+  receiveSample: (data) =>
+    axiosInstance.put(`/staff/mark-sample-received`, data),
+  updateCenterSampleVoluntary: (data) =>
+    axiosInstance.put(`/staff/update-multiple-test-sample`, data),
+  createSampleAdministration: (data) =>
+    axiosInstance.post(`/staff/post-SampleCollection`, data),
+  createTestResult: (data) =>
+    axiosInstance.post(`staff/test-results/create`, data),
   getTestResultByRequestId: (requestId) =>
-  axiosInstance.get(`/staff/test-results/${requestId}`),
+    axiosInstance.get(`/staff/test-results/${requestId}`),
+  
 };
 
 export default staffApi;

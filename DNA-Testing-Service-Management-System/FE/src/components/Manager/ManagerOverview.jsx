@@ -28,6 +28,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import managerApi from "../../api/managerApi";
 
 ChartJS.register(
   CategoryScale,
@@ -40,6 +41,11 @@ ChartJS.register(
 );
 
 const ManagerOverview = () => {
+  const [totalSamples, setTotalSamples] = useState(0);
+  const [processingCount, setProcessingCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [overdueCount, setOverdueCount] = useState(0);
+
   // Lắng nghe sự kiện storage để tự động reload dữ liệu khi localStorage thay đổi
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -52,32 +58,70 @@ const ManagerOverview = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
+  const fetchStats = async () => {
+    try {
+      const [samplesRes, processRes, requestRes] = await Promise.all([
+        managerApi.getTestSamples(),
+        managerApi.getTestProcess(),
+        managerApi.getTestRequests(),
+      ]);
+
+      const samples = samplesRes.data;
+      const processes = processRes.data;
+      const requests = requestRes.data;
+
+      setTotalSamples(samples.length);
+
+      const completed = processes.filter(
+        (p) => p.currentStatus?.toLowerCase() === "completed"
+      ).length;
+
+      const processing = processes.length - completed;
+      setCompletedCount(completed);
+      setProcessingCount(processing);
+
+      const now = new Date();
+      const overdue = requests.filter((r) => {
+        const created = new Date(r.createdAt);
+        const daysDiff = (now - created) / (1000 * 60 * 60 * 24);
+        return daysDiff > 15 && r.status?.toLowerCase() !== "completed";
+      }).length;
+
+      setOverdueCount(overdue);
+    } catch (err) {
+      console.error("Lỗi khi fetch thống kê:", err);
+    }
+  };
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
   // Dữ liệu thống kê
   const stats = [
     {
       title: "Tổng mẫu xét nghiệm",
-      value: 1247,
+      value: totalSamples,
       icon: <ExperimentOutlined style={{ color: "#722ed1" }} />,
       color: "#722ed1",
-      change: "+12%",
+      change: "+12%", // Có thể tính toán hoặc để cố định
     },
     {
       title: "Đang xử lý",
-      value: 89,
+      value: processingCount,
       icon: <ClockCircleOutlined style={{ color: "#fa8c16" }} />,
       color: "#fa8c16",
       change: "+5%",
     },
     {
       title: "Hoàn thành",
-      value: 1158,
+      value: completedCount,
       icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
       color: "#52c41a",
       change: "+8%",
     },
     {
       title: "Quá hạn",
-      value: 12,
+      value: overdueCount,
       icon: <AlertOutlined style={{ color: "#ff4d4f" }} />,
       color: "#ff4d4f",
       change: "-3%",

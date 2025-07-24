@@ -30,8 +30,8 @@ const Header = () => {
     setLogoutModal(true);
   };
 
-  const confirmLogout = () => {
-    logout();
+  const confirmLogout = async () => {
+    await logout();
     setLogoutModal(false);
     setShowDropdown(false);
     window.location.href = "/";

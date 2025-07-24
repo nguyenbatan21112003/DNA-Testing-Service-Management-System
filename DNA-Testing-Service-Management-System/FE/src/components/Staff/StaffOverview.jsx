@@ -16,6 +16,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import staffApi from "../../api/staffApi";
 
 // Đưa hàm getStatusText ra ngoài để dùng chung
 const getStatusText = (status) => {
@@ -49,108 +50,116 @@ const StaffOverview = () => {
     centerSampling: 0,
   });
   const [recentActivities, setRecentActivities] = useState([]);
-  const [, setTodayAppointments] = useState([]);
+  // const [todayAppointments, setTodayAppointments] = useState([]);
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("dna_orders") || "[]");
-    setOrders(savedOrders);
+    const fetchData = async () => {
+      try {
+        const res = await staffApi.getTestProccesses();
+        const data = res.data; // ✅ Fix chỗ này
+        console.log(data);
+        const orders = Array.isArray(data) ? data : [];
+        setOrders(orders);
 
-    // Đếm đơn chờ xác nhận
-    const waitingCount = savedOrders.filter(
-      (o) => getStatusText(o.status) === "Chờ xác nhận"
-    ).length;
-    // Đếm đơn đang xử lý
-    const processingCount = savedOrders.filter(
-      (o) => getStatusText(o.status) === "Đang xử lý"
-    ).length;
+        const total = orders.length;
 
-    // Tính toán thống kê
-    const newStats = {
-      total: savedOrders.length,
-      waiting: waitingCount,
-      processing: processingCount,
-      completed: savedOrders.filter(
-        (order) => getStatusText(order.status) === "Hoàn thành"
-      ).length,
-      homeSampling: savedOrders.filter((order) => order.sampleMethod === "home")
-        .length,
-      centerSampling: savedOrders.filter(
-        (order) => order.sampleMethod === "center"
-      ).length,
+        const pending = orders.filter(
+          (o) => o.request?.status?.toLowerCase() === "pending"
+        ).length;
+
+        const processing = orders.filter(
+          (o) => o.request?.status?.toLowerCase() === "confirmed"
+        ).length;
+
+        const completed = orders.filter(
+          (o) => o.testProcess?.currentStatus === "COMPLETED"
+        ).length;
+
+        const homeSampling = orders.filter(
+          (o) => o.request?.collectType === "At Home"
+        ).length;
+
+        const centerSampling = orders.filter(
+          (o) => o.request?.collectType === "At Center"
+        ).length;
+
+        setStats({
+          total,
+          pending,
+          processing,
+          completed,
+          homeSampling,
+          centerSampling,
+        });
+
+        generateRecentActivities(orders);
+      } catch (err) {
+        console.error("Lỗi khi lấy dữ liệu:", err);
+      }
     };
-    setStats(newStats);
 
-    // Lọc các cuộc hẹn hôm nay
-    const today = dayjs().format("DD/MM/YYYY");
-    const appointments = savedOrders
-      .filter(
-        (order) =>
-          (order.sampleMethod === "center" &&
-            order.appointmentDate === today) ||
-          (order.sampleMethod === "home" &&
-            order.scheduledDate &&
-            order.scheduledDate.includes(today))
-      )
-      .slice(0, 5);
-    setTodayAppointments(appointments);
-
-    // Tạo hoạt động gần đây
-    generateRecentActivities(savedOrders);
+    fetchData();
   }, []);
 
   const generateRecentActivities = (orders) => {
     const activities = [];
-    // Đơn hàng mới tạo
-    orders.slice(-3).forEach((order) => {
-      activities.push({
-        time: order.createdAt
-          ? dayjs(order.createdAt).format("DD/MM/YYYY HH:mm")
-          : "Gần đây",
-        content: `Tạo đơn hàng #${order.id} - ${
-          order.name || order.fullName || order.email
-        }`,
-        type: "new",
-        icon: <FileTextOutlined style={{ color: "#00a67e" }} />,
-      });
-    });
-    // Đơn hàng hoàn thành
-    orders
-      .filter((o) => getStatusText(o.status) === "Hoàn thành")
-      .slice(-2)
-      .forEach((order) => {
+
+    orders.forEach((order) => {
+      const r = order.request || {};
+      const p = order.testProcess || {};
+      const declarantName = order.declarant?.fullName || "Chưa rõ";
+      const requestId = r.requestId;
+
+      const currentStatus = p.currentStatus?.toUpperCase();
+      const requestStatus = r.status?.toLowerCase();
+
+      // 1. Nếu vừa được nhận xử lý (status === confirmed)
+      if (requestStatus === "confirmed" && r.updatedAt) {
         activities.push({
-          time: order.updatedAt
-            ? dayjs(order.updatedAt).format("DD/MM/YYYY HH:mm")
-            : "Gần đây",
-          content: `Hoàn thành đơn hàng #${order.id} - ${
-            order.name || order.fullName || order.email
-          }`,
+          time: dayjs(r.updatedAt).format("DD/MM/YYYY HH:mm"),
+          content: `Nhận xử lý đơn #${requestId} - ${declarantName}`,
+          type: "new",
+          icon: <FileTextOutlined style={{ color: "#00a67e" }} />,
+        });
+        return; // ✅ Không thêm vào các mục cập nhật nữa
+      }
+
+      // 2. Nếu hoàn thành
+      if (currentStatus === "COMPLETED" && p.updatedAt) {
+        activities.push({
+          time: dayjs(p.updatedAt).format("DD/MM/YYYY HH:mm"),
+          content: `Hoàn thành đơn hàng #${requestId} - ${declarantName}`,
           type: "done",
           icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
         });
-      });
+        return;
+      }
 
-    // Đơn hàng cập nhật trạng thái gần đây
-    orders.slice(-5).forEach((order) => {
+      // 3. Các trạng thái xử lý khác (nhận mẫu, gửi kit, ...)
+      const translated = getStatusText(p.currentStatus);
       if (
-        getStatusText(order.status) &&
-        getStatusText(order.status) !== "Hoàn thành"
+        translated &&
+        translated !== "Hoàn thành" &&
+        translated !== "Đang xử lý" &&
+        translated !== "Chờ xác nhận"
       ) {
         activities.push({
-          time: order.updatedAt
-            ? dayjs(order.updatedAt).format("DD/MM/YYYY HH:mm")
+          time: p.updatedAt
+            ? dayjs(p.updatedAt).format("DD/MM/YYYY HH:mm")
             : "Gần đây",
-          content: `Cập nhật trạng thái đơn #${order.id} - ${getStatusText(
-            order.status
-          )}`,
+          content: `Cập nhật trạng thái đơn #${requestId} - ${translated}`,
           type: "update",
           icon: <LoadingOutlined style={{ color: "#1890ff" }} />,
         });
       }
     });
 
-    // Sắp xếp theo thời gian mới nhất
-    activities.sort((a, b) => (b.time > a.time ? 1 : -1));
+    activities.sort(
+      (a, b) =>
+        dayjs(b.time, "DD/MM/YYYY HH:mm").valueOf() -
+        dayjs(a.time, "DD/MM/YYYY HH:mm").valueOf()
+    );
+
     setRecentActivities(activities.slice(0, 6));
   };
 
@@ -172,7 +181,7 @@ const StaffOverview = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Tổng đơn hàng"
+              title="Tổng đơn hàng đã nhận"
               value={stats.total}
               prefix={<FileTextOutlined style={{ color: "#00a67e" }} />}
               valueStyle={{ color: "#00a67e", fontWeight: 600 }}

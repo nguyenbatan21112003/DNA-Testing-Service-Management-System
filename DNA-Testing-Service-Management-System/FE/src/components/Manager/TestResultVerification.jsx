@@ -77,7 +77,7 @@ const TestResultVerification = () => {
       const requests = Array.isArray(resRequests.data) ? resRequests.data : [];
       const services = Array.isArray(resServices.data) ? resServices.data : [];
 
-      console.log("data", results, requests, services);
+      // console.log("data", results, requests, services);
       const hiddenIds = JSON.parse(localStorage.getItem("dna_hidden") || "[]");
 
       const mapped = results?.map((result) => {
@@ -115,11 +115,18 @@ const TestResultVerification = () => {
   const confirmApprove = async () => {
     if (!pendingApproveOrder) return;
     try {
+  
+      const resUpdate = await managerApi.updateTestProcess({
+        requestId: pendingApproveOrder.id,
+        currentStatus: "completed",
+        updatedAt: new Date().toISOString(), // ✅ chuẩn ISO 8601
+      });
       const res = await managerApi.verifyTestResult({
         resultID: pendingApproveOrder.resultId,
         managerID: user?.userId, // bạn cần truyền vào từ context hoặc localStorage
       });
-      console.log(res);
+
+      console.log(res, resUpdate);
       alert("Phê duyệt thành công!");
       message.success("Phê duyệt thành công!");
       fetchResults();
@@ -137,7 +144,8 @@ const TestResultVerification = () => {
         resultID: pendingRejectOrder.resultId,
         status: "rejected", // hoặc enum tương ứng nếu cần
       });
-      console.log(res);
+      // console.log(res);
+      if(res.status !== 200) throw new Error
       alert("Đã từ chối kết quả!");
       message.success("Đã từ chối kết quả!");
       fetchResults();

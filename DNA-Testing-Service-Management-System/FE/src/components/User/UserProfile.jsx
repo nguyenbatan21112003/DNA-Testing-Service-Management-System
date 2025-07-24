@@ -12,10 +12,19 @@ import Feedback from "./Feedback";
 import CivilTestResult from "./CivilTestResult";
 import AdminTestResult from "./AdminTestResult";
 import userApi from "../../api/userApI";
+import customerApi from "../../api/customerApi";
 
 const UserProfile = () => {
   const { user, updateUser, logout } = useContext(AuthContext);
-  const { getAllOrders, addFeedback, updateOrder } = useOrderContext();
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [resultType, setResultType] = useState(""); // 'civil' | 'admin'
+  const [showResultModal, setShowResultModal] = useState(false);
+
+  const {
+    getAllOrders,
+    // addFeedback,
+    //  updateOrder
+  } = useOrderContext();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: user?.fullName || "",
@@ -28,8 +37,6 @@ const UserProfile = () => {
   const [success, setSuccess] = useState("");
   const [tab, setTab] = useState("profile");
 
-  const [selectedOrder, setSelectedOrder] = useState(null);
-
   const [, setFeedbackInput] = useState("");
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -37,13 +44,12 @@ const UserProfile = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showResultModal, setShowResultModal] = useState(false);
 
   const [, setOverallRating] = useState(0);
 
   const [_showFormModal] = useState(false); // placeholder, feature disabled
-  const [showConfirmKitModal, setShowConfirmKitModal] = useState(false);
-  const [kitInfo, setKitInfo] = useState(null);
+  // const [showConfirmKitModal, setShowConfirmKitModal] = useState(false);
+  // const [kitInfo, setKitInfo] = useState(null);
   const [, setUserOrders] = useState([]); // only setter needed for feedback updates
 
   //fetch userProfile data:
@@ -74,6 +80,40 @@ const UserProfile = () => {
       } else {
         message.error("Không thể tải thông tin người dùng.");
       }
+    }
+  };
+
+  const handleSubmitFeedback = async (order, rating, comment) => {
+    if (!order || !order.resultId || !user?.userId) {
+      message.error("Thiếu thông tin để gửi đánh giá.");
+      return;
+    }
+
+    try {
+      await customerApi.sendFeedback({
+        resultId: order.resultId,
+        userId: user.userId,
+        rating,
+        comment,
+      });
+
+      message.success("Gửi đánh giá thành công!");
+      setShowFeedbackModal(false);
+
+      // Cập nhật local UI nếu muốn
+      setSelectedOrder({
+        ...order,
+        feedbacks: [
+          {
+            rating,
+            feedback: comment,
+            date: new Date().toLocaleDateString("vi-VN"),
+          },
+        ],
+      });
+    } catch (err) {
+      console.error("Lỗi khi gửi feedback:", err);
+      message.error("Không thể gửi đánh giá. Vui lòng thử lại.");
     }
   };
 
@@ -148,28 +188,92 @@ const UserProfile = () => {
       fingerfile: "",
     };
     const check = await updateUser(formUpdate);
-    fetchUserProfile()
+    fetchUserProfile();
     if (check) {
       setSuccess("Cập nhật thông tin thành công!");
       setTimeout(() => setSuccess(""), 2000);
     }
   };
 
-  const handleUserConfirmKit = (order) => {
-    setKitInfo(order);
-    setShowConfirmKitModal(true);
+  const handleViewResult = async (order) => {
+    try {
+      const res = await customerApi.getResultByRequestId(order.requestId);
+
+      if (res?.data?.length > 0) {
+        const resultData = res.data[0];
+
+        // Nếu là đơn hành chính → gọi thêm API lấy sample collection
+        let sampleInfo = null;
+        if (
+          order.category === "Administrative" &&
+          order.testProcess?.processId
+        ) {
+          const sampleRes = await customerApi.getSampleCollection(
+            order.testProcess.processId
+          );
+          // console.log(sampleRes);
+          sampleInfo = {
+            location: sampleRes.data.location,
+            donors: sampleRes.data.sampleProviders.map((p) => ({
+              name: p.fullName,
+              gender: p.gender,
+              birth: p.yob,
+              idType: p.idType,
+              idNumber: p.idnumber,
+              idIssueDate: p.idissuedDate,
+              idIssuePlace: p.idissuedPlace,
+              nationality: "Việt Nam",
+              relationship: p.relationship,
+              sampleType: p.sampleType,
+              fingerprintImage: p.fingerprintImage, // giữ nguyên!
+            })),
+          };
+        }
+
+        setSelectedOrder({
+          ...order,
+          conclusion: resultData.resultData || "Không có kết luận",
+          verifiedBy: resultData.verifiedBy,
+          verifiedAt: resultData.verifiedAt,
+          resultId: resultData.resultId,
+          resultTableData:
+            order.samples?.map((s) => ({
+              key: s.sampleId,
+              name: s.ownerName,
+              gender: s.gender,
+              birth: s.birthYear,
+              relationship: s.relationship,
+              sampleType: s.sampleType,
+            })) || [],
+          sampleInfo, // chỉ cần cho admin
+        });
+        console.log(selectedOrder);
+        setResultType(order.category === "Administrative" ? "admin" : "civil");
+        setShowResultModal(true);
+      } else {
+        message.warning("Không tìm thấy kết quả xét nghiệm.");
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("Không thể tải kết quả xét nghiệm.");
+    }
   };
-  const handleUserConfirmKitOk = () => {
-    if (!kitInfo) return;
-    updateOrder(kitInfo.id, {
-      status: "SAMPLE_RECEIVED",
-      samplingStatus: "SAMPLE_RECEIVED",
-      kitStatus: "SAMPLE_RECEIVED",
-      updatedAt: new Date().toISOString(),
-    });
-    setShowConfirmKitModal(false);
-    message.success("Bạn đã xác nhận đã nhận kit thành công!");
-  };
+
+  // const handleUserConfirmKit = (order) => {
+  //   setKitInfo(order);
+  //   setShowConfirmKitModal(true);
+  // };
+  // const handleUserConfirmKitOk = () => {
+  //   if (!kitInfo) return;
+  //   updateOrder(kitInfo.id, {
+  //     status: "SAMPLE_RECEIVED",
+  //     samplingStatus: "SAMPLE_RECEIVED",
+  //     kitStatus: "SAMPLE_RECEIVED",
+  //     updatedAt: new Date().toISOString(),
+  //   });
+  //   setShowConfirmKitModal(false);
+  //   message.success("Bạn đã xác nhận đã nhận kit thành công!");
+  // };
   // Hàm chuyển đổi mã địa điểm thu mẫu sang nhãn thân thiện
   // const _getSampleMethodLabel = (val) => {
   //   if (val === "home") return "Tại nhà";
@@ -400,14 +504,20 @@ const UserProfile = () => {
                 setShowDetailModal(true);
               }}
               onViewResult={(order) => {
-                setSelectedOrder(order);
-                setShowResultModal(true);
+                // setSelectedOrder(order);
+                // // Giả sử order.category có giá trị "Dân sự" hoặc "Hành chính"
+                // setResultType(
+                //   order.category === "Administrative" ? "admin" : "civil"
+                // );
+                handleViewResult(order);
+                // setShowResultModal(true);
               }}
               onDownloadResult={(order) => handleDownloadResult(order)}
               onGiveFeedback={(order) => {
-                setSelectedOrder(order);
-                setOverallRating(0);
-                setFeedbackInput("");
+                setSelectedOrder({
+                  ...order,
+                  resultId: order.resultId || "FAKE_RESULT_ID", // thêm resultId giả để Feedback mở được
+                });
                 setShowFeedbackModal(true);
               }}
               onViewFeedback={(order) => {
@@ -417,7 +527,7 @@ const UserProfile = () => {
                 setFeedbackInput(lastFb.feedback);
                 setShowFeedbackModal(true);
               }}
-              onConfirmKit={(order) => handleUserConfirmKit(order)}
+              // onConfirmKit={(order) => handleUserConfirmKit(order)}
             />
           )}
           {tab === "settings" && <UserSetting />}
@@ -449,25 +559,30 @@ const UserProfile = () => {
         isOpen={showFeedbackModal}
         order={selectedOrder}
         onClose={() => setShowFeedbackModal(false)}
-        addFeedback={addFeedback}
-        setUserOrders={setUserOrders}
+        onSubmitFeedback={handleSubmitFeedback}
       />
       <TestDetailModal
         isOpen={showDetailModal}
         order={selectedOrder}
         onClose={() => setShowDetailModal(false)}
       />
-      <CivilTestResult
-        isOpen={showResultModal}
-        order={selectedOrder}
-        onClose={() => setShowResultModal(false)}
-      />
-      <AdminTestResult
-        isOpen={showResultModal}
-        order={selectedOrder}
-        onClose={() => setShowResultModal(false)}
-      />
-      <Modal
+      {resultType === "civil" && (
+        <CivilTestResult
+          isOpen={showResultModal}
+          order={selectedOrder}
+          onClose={() => setShowResultModal(false)}
+        />
+      )}
+
+      {resultType === "admin" && (
+        <AdminTestResult
+          isOpen={showResultModal}
+          order={selectedOrder}
+          resultType={resultType}
+          onClose={() => setShowResultModal(false)}
+        />
+      )}
+      {/* <Modal
         title={
           <span
             style={{
@@ -567,7 +682,7 @@ const UserProfile = () => {
             </div>
           </div>
         )}
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

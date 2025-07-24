@@ -10,9 +10,10 @@ import React from 'react';
  */
 const CivilTestResult = ({ isOpen, order, onClose }) => {
   // Chỉ hiển thị khi được mở và là đơn dân sự
-  if (!isOpen || !order || !(order.type && order.type.toLowerCase().includes('dân sự'))) return null;
+if (!isOpen || !order || order.category !== "Voluntary") return null;
 
   // Helper: nhãn địa điểm thu mẫu
+  console.log(order.resultTableData)
   const _getSampleMethodLabel = (val) => {
     if (val === 'home') return 'Tại nhà';
     if (val === 'center') return 'Tại trung tâm';
@@ -85,7 +86,8 @@ const CivilTestResult = ({ isOpen, order, onClose }) => {
                 overflowX: 'auto',
               }}
             >
-              {Array.isArray(order.resultTableData) && order.resultTableData.length > 0 ? (
+             {Array.isArray(order.resultTableData || []) && (order.resultTableData || []).length > 0 ? (
+
                 <table
                   className="result-table"
                   style={{ minWidth: 600, tableLayout: 'auto', borderCollapse: 'collapse', width: '100%' }}
@@ -94,7 +96,7 @@ const CivilTestResult = ({ isOpen, order, onClose }) => {
                     <tr style={{ background: '#e6f7ff' }}>
                       <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>STT</th>
                       <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Họ và tên</th>
-                      <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Ngày sinh</th>
+                      <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Năm sinh</th>
                       <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Giới tính</th>
                       <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Mối quan hệ</th>
                       <th style={{ padding: '10px 14px', fontSize: 16, fontWeight: 700, textAlign: 'center', borderBottom: '1.5px solid #b6e4b6' }}>Loại mẫu</th>
@@ -102,11 +104,12 @@ const CivilTestResult = ({ isOpen, order, onClose }) => {
                   </thead>
                   <tbody>
                     {order.resultTableData.map((data, index) => (
+
                       <tr key={data.key} style={{ background: index % 2 === 0 ? '#fff' : '#f4f8ff' }}>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{index + 1}</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.name}</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{
-                          data.birth || data.birthYear || data.namSinh || data.namsinh || ''
+                         order.yob || data.birth || ''
                         }</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.gender}</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.relationship}</td>
