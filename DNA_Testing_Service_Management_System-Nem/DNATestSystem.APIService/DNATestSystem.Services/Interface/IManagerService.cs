@@ -37,5 +37,7 @@ namespace DNATestSystem.Services.Interface
         //
         Task<List<ManagerTestProcessDto>> GetAllTestProcess();
         Task<bool> UpdateTestProcess(ManagerUpdateTestProcessDto model);
+        //
+        Task<string?> GetThumbnailBySlugAsync(string slug);
     }
 }

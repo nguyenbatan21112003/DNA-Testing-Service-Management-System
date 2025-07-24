@@ -31,5 +31,17 @@ namespace DNATestSystem.Services.Hepler
             string hash = Convert.ToHexString(hashBytes);
             return hash;
         }
+        public async Task<string> SaveBase64ToFileAsync(string base64String, string fileName)
+        {
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            var filePath = Path.Combine(folderPath, fileName);
+            byte[] bytes = Convert.FromBase64String(base64String);
+
+            await System.IO.File.WriteAllBytesAsync(filePath, bytes);
+            return "/uploads/" + fileName; // Trả lại đường dẫn để FE hiển thị nếu cần
+        }
     }
 }

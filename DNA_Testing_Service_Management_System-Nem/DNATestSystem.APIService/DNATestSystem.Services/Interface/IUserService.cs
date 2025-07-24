@@ -46,6 +46,7 @@ namespace DNATestSystem.Services.Interface
         // Hồ sơ cá nhân
         Task<ProfileDetailModel?> GetProfileUserAsync(int profileId);
         Task<UpdateProfileModel> UpdateProfileAsync(UpdateProfileModel updateProfileModel);
+        Task<string> GetProfileByUser();
         //đăng ký tư vấn
         Task<ConsultRequest> SendConsultRequestAsync(SendConsultRequestModel model);
         Task<ApiResponseDtoWithReqId> SubmitTestRequestAsync(TestRequestSubmissionDto dto);

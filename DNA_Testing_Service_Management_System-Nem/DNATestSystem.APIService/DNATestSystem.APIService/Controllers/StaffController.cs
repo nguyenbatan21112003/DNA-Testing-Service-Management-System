@@ -270,5 +270,16 @@ namespace DNATestSystem.APIService.Controllers
                 return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
+        [HttpGet("SampleTest-fingleFile")]
+        public async Task<IActionResult> GetSampleCollectionByCustomerAsync([FromQuery] int processId)
+        {
+            var data = await _staffService.GetFingerprintImageBySlugAsync(processId);
+            if (data == null)
+            {
+                return NotFound(new { message = "Không tìm thấy thông tin thu mẫu cho processId này." });
+            }
+            return Ok(data);
+        
+        }
     }
 }

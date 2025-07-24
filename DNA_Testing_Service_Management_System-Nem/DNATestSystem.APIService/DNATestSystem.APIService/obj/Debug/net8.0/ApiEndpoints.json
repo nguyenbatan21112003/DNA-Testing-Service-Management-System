@@ -893,6 +893,16 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "GetProfileImage",
+    "RelativePath": "user/profile-image",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "RefreshToken",
     "RelativePath": "user/refresh-token",
     "HttpMethod": "POST",

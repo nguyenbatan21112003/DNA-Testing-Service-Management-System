@@ -1469,6 +1469,18 @@
         }
       }
     },
+    "/user/profile-image": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/user/UpdateUserProfile": {
       "put": {
         "tags": [

@@ -23,6 +23,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DNATestSystem.Services.Service
 {
@@ -357,6 +358,32 @@ namespace DNATestSystem.Services.Service
 
         }
 
+        public async Task<string> GetProfileByUser()
+        {
+            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            {
+                throw new Exception("Không tìm thấy người dùng.");
+            }
+
+            // 📥 Lấy hồ sơ người dùng
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (profile == null)
+            {
+                throw new Exception("Không tìm thấy hồ sơ người dùng.");
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.Fingerfile))
+            {
+                throw new Exception("Không có ảnh vân tay.");
+            }
+
+            // 🟢 Trả về chuỗi base64
+            return profile.Fingerfile;
+        }
+        
         public async Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id)
         {
             var service = await _context.Services.Include(s => s.PriceDetails).FirstOrDefaultAsync(s => s.ServiceId == id);

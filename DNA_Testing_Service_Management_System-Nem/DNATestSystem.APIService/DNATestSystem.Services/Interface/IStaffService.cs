@@ -59,5 +59,7 @@ namespace DNATestSystem.Services.Interface
         Task<UpdateKitCodeByTestProcess> UpdateKitCodeByTestProcessIdAsync(UpdateKitCodeByTestProcess dto);
 
         Task<List<UpdatedTestSampleDto>> UpdateTesSampleByTestRequestAndSampleId(List<UpdatedTestSampleDto> dtos);
+    
+        Task<string?> GetFingerprintImageBySlugAsync(int collectId);
     }
 }

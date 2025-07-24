@@ -632,6 +632,14 @@ namespace DNATestSystem.Services.Service
 
             return true;
         }
+        public async Task<string?> GetFingerprintImageBySlugAsync(int collectId)
+        {
+            var form = await _context.SampleCollectionForms
+              .Where(f => f.CollectionId == collectId)
+              .Select(f => f.FingerprintImage)
+              .FirstOrDefaultAsync();
+            return form;
+        }
 
         public async Task<bool> MarkTestProcessSampleReceivedAsync(UpdateTestProcessModel model)
         {

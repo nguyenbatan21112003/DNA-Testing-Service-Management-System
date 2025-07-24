@@ -162,6 +162,16 @@ namespace DNATestSystem.Controllers
             return Ok(result);
         }
 
+        [HttpGet("profile-image")]
+        public async Task<IActionResult> GetProfileImage()
+        {
+            var data = await _userService.GetProfileByUser();
+            if (data == null)
+            {
+                return NotFound(new { success = false, message = "Không tìm thấy hồ sơ người dùng." });
+            }
+            return Ok(new { success = true, data });
+        }
 
         [Authorize]
         [HttpPut("UpdateUserProfile")]
