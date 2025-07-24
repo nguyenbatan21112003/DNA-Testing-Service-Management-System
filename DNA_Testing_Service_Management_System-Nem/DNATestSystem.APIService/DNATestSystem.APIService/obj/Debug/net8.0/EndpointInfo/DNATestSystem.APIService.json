@@ -259,7 +259,7 @@
       }
     },
     "/Customer/test-sample/{test_requestId}": {
-      "put": {
+      "get": {
         "tags": [
           "Customer"
         ],
@@ -309,6 +309,37 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Customer/update-Feedback": {
+      "put": {
+        "tags": [
+          "Customer"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -517,6 +548,37 @@
         "tags": [
           "Manager"
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/update-test-process": {
+      "put": {
+        "tags": [
+          "Manager"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1802,6 +1864,30 @@
         },
         "additionalProperties": false
       },
+      "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto": {
+        "type": "object",
+        "properties": {
+          "feedbackId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.FeedBackDto": {
         "type": "object",
         "properties": {
@@ -2054,6 +2140,10 @@
           },
           "includeVAT": {
             "type": "boolean"
+          },
+          "timeToResult": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2134,6 +2224,25 @@
           },
           "notes": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.ManagerUpdateTestProcessDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },

@@ -72,5 +72,7 @@ namespace DNATestSystem.Services.Interface
         Task<List<CustomerFeedbackDto>> GetFeedbackByCustomerIdAsync();
         //
         Task<List<GetTestResultDto>> GetTestRequestByRequestId(int request_id);
+        //
+        Task<bool> UpdateFeedbackByFeedbackId(CustomerFeedbackUpdateDto model);
     }
 }

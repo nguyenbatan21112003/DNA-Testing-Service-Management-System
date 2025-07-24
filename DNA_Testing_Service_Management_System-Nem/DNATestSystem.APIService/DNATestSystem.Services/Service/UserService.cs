@@ -837,5 +837,19 @@ namespace DNATestSystem.Services.Service
                             }).ToListAsync();
             return data;
         }
+        public async Task<bool> UpdateFeedbackByFeedbackId(CustomerFeedbackUpdateDto model)
+        {
+            int userId = GetCurrentUserId();
+            if (userId == 0) throw new Exception("Không tìm thấy người dùng.");
+            var data = await _context.Feedbacks.Where(x => x.FeedbackId == model.FeedbackId
+                                                && x.UserId == userId).FirstOrDefaultAsync();
+            if(data == null) throw new Exception("Không tìm thấy feedback");
+
+            data.Comment = model.Comment;
+            data.Rating = model.Rating;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
