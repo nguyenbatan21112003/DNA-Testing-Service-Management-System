@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
+using DNATestSystem.BusinessObjects.Application.Dtos.Pdf;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.Staff;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
@@ -61,5 +62,6 @@ namespace DNATestSystem.Services.Interface
         Task<List<UpdatedTestSampleDto>> UpdateTesSampleByTestRequestAndSampleId(List<UpdatedTestSampleDto> dtos);
     
         Task<string?> GetFingerprintImageBySlugAsync(int collectId);
+
     }
 }

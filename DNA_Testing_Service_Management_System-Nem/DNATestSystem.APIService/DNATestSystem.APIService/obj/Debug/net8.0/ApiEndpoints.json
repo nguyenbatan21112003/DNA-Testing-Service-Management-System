@@ -293,6 +293,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetThumbnailBySlugAsync",
+    "RelativePath": "Manager/thumbnail-by-slug",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "slug",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
     "Method": "UpdateTestProcess",
     "RelativePath": "Manager/update-test-process",
     "HttpMethod": "PUT",
@@ -672,6 +688,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetSampleCollectionByCustomerAsync",
+    "RelativePath": "Staff/SampleTest-fingleFile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "processId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetTestProcessesByStaffId",
     "RelativePath": "Staff/test-processes",
     "HttpMethod": "GET",
@@ -828,6 +860,22 @@
       {
         "Name": "dto",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.UserProfile.UserProfileDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "ExportRequestPdf",
+    "RelativePath": "user/export-request-pdf/{requestId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "requestId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],

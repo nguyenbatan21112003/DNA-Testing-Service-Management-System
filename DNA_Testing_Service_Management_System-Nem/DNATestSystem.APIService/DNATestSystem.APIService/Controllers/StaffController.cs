@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
+using DNATestSystem.APIService.PDF;
 using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
+using DNATestSystem.BusinessObjects.Application.Dtos.Pdf;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
@@ -11,6 +13,8 @@ using DNATestSystem.Services.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
+
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -22,11 +26,11 @@ namespace DNATestSystem.APIService.Controllers
         private readonly IStaffService _staffService;
         private readonly IApplicationDbContext _context;
 
+
         public StaffController(IStaffService staffService, IApplicationDbContext context)
         {
             _staffService = staffService;
             _context = context;
-
         }
         //private int GetCurrentUserId()
         //{
@@ -281,5 +285,6 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(data);
         
         }
+       
     }
 }

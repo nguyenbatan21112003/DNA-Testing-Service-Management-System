@@ -15,6 +15,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.RequestDeclarant;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
+using DNATestSystem.BusinessObjects.Application.Dtos.Pdf;
 
 
 namespace DNATestSystem.Services.Interface
@@ -66,7 +67,7 @@ namespace DNATestSystem.Services.Interface
         //63
         Task<GetTestProcessDto> GetTestProcessByTestRequestAsync(int test_requestId);
         //64
-        Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId); 
+        Task<GetDeclarantDto> GetRequestDeclarantsByTestRequestIdAsync(int test_requestId);
         //65
         Task<List<GetTestSampleDto>> GetSampleProvidersByTestRequestIdAsync(int test_requestId);
         //66
@@ -75,5 +76,10 @@ namespace DNATestSystem.Services.Interface
         Task<List<GetTestResultDto>> GetTestRequestByRequestId(int request_id);
         //
         Task<bool> UpdateFeedbackByFeedbackId(CustomerFeedbackUpdateDto model);
+
+
+        Task<PdfExportDto?> GetExportPdfDataAsync(int resultId);
+
+        //Task<List<PdfAdministrativeDocument>> GetPdfAdministrativeDocumentAsync(int requestId);
     }
 }
