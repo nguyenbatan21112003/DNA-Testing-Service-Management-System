@@ -63,6 +63,7 @@ const Feedback = ({
       order.status ||
       order.samplingStatus ||
       order.kitStatus ||
+      (order.testProcess && order.testProcess.currentStatus) ||
       "PENDING_CONFIRM"
     );
   };

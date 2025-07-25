@@ -7,10 +7,7 @@ import {
   Shield,
   Users,
   ChevronDown,
-  ChevronUp,
-  Phone,
-  Mail,
-  MapPin,
+  ChevronUp,  
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
@@ -115,29 +112,29 @@ const AboutUsPage = () => {
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/lab-equipment.jpg"
+                      src="/AboutUs/thiet-bi.jpg"
                       alt="Thiết bị xét nghiệm hiện đại"
                     />
                     <h4>Thiết bị tiên tiến</h4>
                   </div>
                   <div className="facility-item">
-                    <img src="/reception.jpg" alt="Không gian tiếp đón" />
+                    <img src="/DNA.jpg" alt="Không gian tiếp đón" />
                     <h4>Không gian tiếp đón</h4>
                   </div>
                   <div className="facility-item">
-                    <img src="/waiting-room.jpg" alt="Phòng chờ tiện nghi" />
+                    <img src="/AboutUs/ko-gian.jpg" alt="Phòng chờ tiện nghi" />
                     <h4>Phòng chờ tiện nghi</h4>
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/sample-room.jpg"
+                      src="/AboutUs/phong-lay-mau.jpg"
                       alt="Phòng lấy mẫu riêng biệt"
                     />
                     <h4>Phòng lấy mẫu riêng biệt</h4>
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/consulting-room.jpg"
+                      src="/AboutUs/nhan-vien.jpg"
                       alt="Phòng tư vấn chuyên nghiệp"
                     />
                     <h4>Nhân viên chuyên nghiệp</h4>
@@ -504,7 +501,7 @@ const AboutUsPage = () => {
                 <div className="team-member">
                   <div className="member-image">
                     <img
-                      src="/placeholder.svg?height=300&width=300"
+                      src="/AboutUs/bacsi3.jpg"
                       alt="GS.TS. Nguyễn Văn A"
                     />
                   </div>
@@ -532,7 +529,7 @@ const AboutUsPage = () => {
                 <div className="team-member">
                   <div className="member-image">
                     <img
-                      src="/placeholder.svg?height=300&width=300"
+                      src="/AboutUs/bacsi4.jpg"
                       alt="PGS.TS. Trần Thị B"
                     />
                   </div>
@@ -560,7 +557,7 @@ const AboutUsPage = () => {
                 <div className="team-member">
                   <div className="member-image">
                     <img
-                      src="/placeholder.svg?height=300&width=300"
+                      src="/AboutUs/bacsi1.jpg"
                       alt="TS.BS. Lê Văn C"
                     />
                   </div>
@@ -588,7 +585,7 @@ const AboutUsPage = () => {
                 <div className="team-member">
                   <div className="member-image">
                     <img
-                      src="/placeholder.svg?height=300&width=300"
+                      src="/AboutUs/bacsi2.jpg"
                       alt="ThS. Phạm Thị D"
                     />
                   </div>
@@ -619,28 +616,28 @@ const AboutUsPage = () => {
                 <div className="certifications-grid">
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Chứng nhận ISO 17025"
                     />
                     <p>Chứng nhận ISO 17025</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/unnamed.png"
                       alt="Chứng nhận ISO 9001:2015"
                     />
                     <p>Chứng nhận ISO 9001:2015</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Giải thưởng Chất lượng Quốc gia"
                     />
                     <p>Giải thưởng Chất lượng Quốc gia</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Thành viên Hiệp hội Di truyền Quốc tế"
                     />
                     <p>Thành viên Hiệp hội Di truyền Quốc tế</p>

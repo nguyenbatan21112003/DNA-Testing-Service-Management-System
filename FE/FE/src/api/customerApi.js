@@ -11,8 +11,8 @@ const customerApi = {
   getSamplesByRequestId: (requestId) =>
     axiosInstance.get(`/Customer/test-sample/${requestId}`),
   getResultByRequestId: (requestId) =>
-    axiosInstance.get(`/customer/test-result/${requestId}`),
-  getSampleCollection: (processId) => axiosInstance.get(`/customer/sample-collection/${processId}`),
+    axiosInstance.get(`/Customer/test-result/${requestId}`),
+  getSampleCollection: (processId) => axiosInstance.get(`/Customer/sample-collection/${processId}`),
   sendFeedback: (data) => axiosInstance.post(`/send-FeedBack`,data)
 };
 

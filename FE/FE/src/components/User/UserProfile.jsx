@@ -113,7 +113,7 @@ const UserProfile = () => {
       });
     } catch (err) {
       console.error("Lỗi khi gửi feedback:", err);
-      message.error("Không thể gửi đánh giá. Vui lòng thử lại.");
+
     }
   };
 
@@ -513,12 +513,26 @@ const UserProfile = () => {
                 // setShowResultModal(true);
               }}
               onDownloadResult={(order) => handleDownloadResult(order)}
-              onGiveFeedback={(order) => {
-                setSelectedOrder({
-                  ...order,
-                  resultId: order.resultId || "FAKE_RESULT_ID", // thêm resultId giả để Feedback mở được
-                });
-                setShowFeedbackModal(true);
+              onGiveFeedback={async (order) => {
+                try {
+                  // Lấy resultId chính xác từ BE trước khi mở modal đánh giá
+                  const res = await customerApi.getResultByRequestId(order.requestId);
+                  const resultId = res?.data?.[0]?.resultId;
+
+                  if (!resultId) {
+                    message.warning("Không tìm thấy kết quả để đánh giá.");
+                    return;
+                  }
+
+                  setSelectedOrder({
+                    ...order,
+                    resultId,
+                  });
+                  setShowFeedbackModal(true);
+                } catch (err) {
+                  console.log("Lỗi lấy kết quả để đánh giá", err);
+                  
+                }
               }}
               onViewFeedback={(order) => {
                 setSelectedOrder(order);

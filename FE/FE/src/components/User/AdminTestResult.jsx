@@ -15,6 +15,17 @@ const AdminTestResult = ({ isOpen, order, onClose }) => {
   //   return val;
   // };
 
+  const donors = Array.isArray(order.sampleInfo?.donors)
+    ? Array.from(
+        new Map(
+          order.sampleInfo.donors.map((d) => [
+            `${d.idNumber || ''}_${d.name || ''}_${d.birth || ''}`,
+            d,
+          ])
+        ).values()
+      )
+    : [];
+
   return (
     <div
       style={{
@@ -140,10 +151,9 @@ const AdminTestResult = ({ isOpen, order, onClose }) => {
         >
           Thông tin người cho mẫu
         </div>
-        {Array.isArray(order.sampleInfo?.donors) &&
-          order.sampleInfo.donors.length > 0 && (
+        {donors.length > 0 && (
             <div style={{ marginBottom: 24 }}>
-              {order.sampleInfo.donors.map((donor, idx) => (
+              {donors.map((donor, idx) => (
                 <div
                   key={idx}
                   style={{

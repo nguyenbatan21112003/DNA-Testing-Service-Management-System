@@ -547,29 +547,32 @@ const TestAppManagement = ({
                 {/* Timeline toggle */}
                 <button
                   style={{
-                    background: showTimeline[order.id] ? "#e6f7f1" : "#fff",
+                    background: showTimeline[order.requestId] ? "#e6f7f1" : "#fff",
                     color: "#009e74",
                     border: "1px solid #009e74",
-                    borderRadius: 8,
-                    padding: "6px 18px",
+                    borderRadius: 6,
+                    padding: "6px 12px",
                     fontWeight: 600,
                     cursor: "pointer",
-                    fontSize: 15,
+                    fontSize: 14,
                     alignSelf: "center",
-                    width: "auto",
+                    maxWidth: 220,
+                    lineHeight: 1.3,
+                    textAlign: "center",
+                    whiteSpace: "normal",
                   }}
                   onClick={() =>
                     setShowTimeline((prev) => ({
                       ...prev,
-                      [order.id]: !prev[order.id],
+                      [order.requestId]: !prev[order.requestId],
                     }))
                   }
                 >
-                  {showTimeline[order.id]
+                  {showTimeline[order.requestId]
                     ? "Ẩn timeline"
                     : "Xem tiến độ & timeline xử lý"}
                 </button>
-                {showTimeline[order.id] && <TimelineProgress order={order} />}
+                {showTimeline[order.requestId] && <TimelineProgress order={order} />}
               </div>
             ));
           })()}
@@ -588,18 +591,19 @@ const TestAppManagement = ({
       border: `1.5px solid ${color}`,
       color: "#fff",
       background: color,
-      borderRadius: 12,
-      padding: "10px 22px",
+      borderRadius: 6,
+      padding: "6px 14px",
       fontWeight: 600,
-      fontSize: 16,
+      fontSize: 14,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 8,
+      gap: 4,
       transition: "background 0.2s, color 0.2s, border 0.2s",
       outline: "none",
       cursor: "pointer",
       boxShadow: `0 2px 8px ${color}22`,
+      minWidth: 160,
       width: "100%",
     };
   }
@@ -609,18 +613,19 @@ const TestAppManagement = ({
       border: `1.5px solid ${color}`,
       color: color,
       background: "#fff",
-      borderRadius: 12,
-      padding: "10px 22px",
+      borderRadius: 6,
+      padding: "6px 14px",
       fontWeight: 600,
-      fontSize: 16,
+      fontSize: 14,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 8,
+      gap: 4,
       transition: "background 0.2s, color 0.2s, border 0.2s",
       outline: "none",
       cursor: "pointer",
       boxShadow: `0 2px 8px ${color}22`,
+      minWidth: 160,
       width: "100%",
     };
   }
