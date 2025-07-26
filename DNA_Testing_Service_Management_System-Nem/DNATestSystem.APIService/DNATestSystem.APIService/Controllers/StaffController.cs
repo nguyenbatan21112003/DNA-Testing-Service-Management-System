@@ -24,13 +24,11 @@ namespace DNATestSystem.APIService.Controllers
     public class StaffController : Controller
     {
         private readonly IStaffService _staffService;
-        private readonly IApplicationDbContext _context;
 
 
-        public StaffController(IStaffService staffService, IApplicationDbContext context)
+        public StaffController(IStaffService staffService)
         {
             _staffService = staffService;
-            _context = context;
         }
         //private int GetCurrentUserId()
         //{
@@ -71,25 +69,13 @@ namespace DNATestSystem.APIService.Controllers
             var result = await _staffService.AtHomeTestRequestAsync();
             return Ok(result);
         }
-        //[HttpGet("at-center-administrative")]
-        //public async Task<IActionResult> GetAtCenterAdministrativeRequests([FromQuery] int staffId)
-        //{
-        //    var result = await _staffService.GetAtCenterAdministrativeRequestsAsync();
-        //    return Ok(result);
-        //}
+     
         [HttpGet("at-center-administrative")]
         public async Task<IActionResult> GetAtCenterAdministrativeRequests()
         {
             var result = await _staffService.GetAtCenterAdministrativeRequestsAsync();
             return Ok(result);
-        }//2 thằng dưới đây sẽ ko truyền vào một staffId nữa , vì do đã làm ở trong StaffService
-
-        //[HttpGet("test-processes/{staffId}")]
-        //public async Task<IActionResult> GetTestProcessesByStaffId(int staffId)
-        //{
-        //    var result = await _staffService.GetTestProcessesByStaffIdAsync();
-        //    return Ok(result);
-        //}
+        }
         [HttpGet("test-processes")]
         public async Task<IActionResult> GetTestProcessesByStaffId()
         {
@@ -97,19 +83,7 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(result);
         }
 
-        //[HttpGet("samples")]
-        //public async Task<IActionResult> GetSamplesByRequest([FromQuery] int requestId)
-        //{
-        //    var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //    if (!int.TryParse(staffIdClaim, out var staffId))
-        //    {
-        //        return Unauthorized("Invalid staff identity");
-        //    }
-
-        //    var result = await _staffService.GetSamplesByStaffAndRequestAsync(staffId, requestId);
-        //    return Ok(result);
-        //}
+      
         [HttpGet("samples")]
         public async Task<IActionResult> GetSamplesByRequest([FromQuery] int requestId)
         {
@@ -130,26 +104,7 @@ namespace DNATestSystem.APIService.Controllers
                 message = "Sample collection saved successfully"
             });
         }
-        //[HttpPut("mark-sample-received")]
-        //public async Task<IActionResult> MarkSampleReceived([FromBody] UpdateTestProcessModel model)
-        //{
-        //    var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    if (!int.TryParse(staffIdClaim, out var staffId))
-        //        return Unauthorized("Invalid staff identity");
-
-        //    model.StaffId = staffId; // gán vào model
-
-        //    var result = await _staffService.MarkTestProcessSampleReceivedAsync(model);
-
-        //    if (!result)
-        //        return NotFound("Không tìm thấy TestProcess phù hợp với staff hiện tại.");
-
-        //    return Ok(new
-        //    {
-        //        success = true,
-        //        message = "Cập nhật trạng thái thành công."
-        //    });
-        //}
+       
 
         [HttpPut("mark-sample-received")]
         public async Task<IActionResult> MarkSampleReceived([FromBody] UpdateTestProcessModel model)

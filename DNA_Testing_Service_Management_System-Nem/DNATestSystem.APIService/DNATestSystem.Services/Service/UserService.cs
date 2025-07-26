@@ -46,24 +46,7 @@ namespace DNATestSystem.Services.Service
             var claim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(claim, out var id) ? id : 0;
         }
-        //public User? Login(UserLoginModel loginModel)
-        //{
-        //    var user = _context.Users
-        //        .FirstOrDefault(x => x.Email == loginModel.Email);
-        //    if (user == null)
-        //    {
-        //        return null;
-        //    }
-        //    var password = loginModel.Password;
-
-        //    if (HashHelper.BCriptVerify(password, user.Password))
-        //    {
-        //        return user;
-        //    }
-        //    return null;
-        //}
-
-
+     
         public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
             var user = await _context.Users
@@ -200,28 +183,6 @@ namespace DNATestSystem.Services.Service
                                     .Include(s => s.PriceDetails)
                                     .Where(s => s.IsPublished == true)
                                     .ToListAsync();
-            ////tạo ra priceDetails khi đã join với Service
-            //var service = priceDetails
-            //                .Select(s =>
-            //                {
-            //                    var price = s.PriceDetails.FirstOrDefault();
-            //                    //lấy tk Price ra
-
-            //                    return new ServiceSummaryDto
-            //                    {
-            //                        Id = s.ServiceId,
-            //                        Slug = s.Slug,
-            //                        ServiceName = s.ServiceName,
-            //                        Description = s.Description,
-            //                        Category = s.Category,
-            //                        IsUrgent = (bool)s.IsUrgent,
-            //                        IncludeVAT = true,
-            //                        Price2Samples = price?.Price2Samples,
-            //                        Price3Samples = price?.Price3Samples,
-            //                        TimeToResult = price?.TimeToResult
-            //                    };
-            //                }).ToList();
-            //return service;
             var service = priceDetails
                         .Select(s =>
                         {

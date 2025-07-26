@@ -202,56 +202,7 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
 
             return result;
-        }
-
-        //public async Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync(int staffId)
-        //{
-        //    var result = await _context.TestProcesses
-        //       .Include(p => p.Request)
-        //           .ThenInclude(r => r.Service)
-        //       .Include(p => p.Request)
-        //           .ThenInclude(r => r.CollectType) // Type là CollectType
-        //       .Include(p => p.Request)
-        //           .ThenInclude(r => r.RequestDeclarants)
-        //       .Include(p => p.Request)
-        //           .ThenInclude(r => r.TestSamples)
-        //       .Where(p => p.StaffId == staffId &&
-        //                   p.Request.CollectType.CollectName == "At Center" &&
-        //                   p.Request.Category == "Administrative")
-        //       .Select(p => new TestRequestViewDto
-        //       {
-        //           RequestId = p.Request.RequestId,
-        //           ServiceName = p.Request.Service.ServiceName,
-        //           CollectionType = p.Request.CollectType.CollectName,
-        //           Category = p.Request.Category,
-        //           Status = p.Request.Status,
-        //           ScheduleDate = p.Request.ScheduleDate,
-        //           CreatedAt = p.Request.CreatedAt,
-        //           Address = p.Request.Address,
-        //           Declarant = p.Request.RequestDeclarants.Select(d => new DeclarantDto
-        //           {
-        //               FullName = d.FullName,
-        //               Gender = d.Gender,
-        //               IdentityNumber = d.IdentityNumber,
-        //               IdentityIssuedDate = d.IdentityIssuedDate,
-        //               IdentityIssuedPlace = d.IdentityIssuedPlace,
-        //               Address = d.Address,
-        //               Phone = d.Phone,
-        //               Email = d.Email
-        //           }).FirstOrDefault(),
-        //           Sample = p.Request.TestSamples.Select(s => new TestSampleDto
-        //           {
-        //               OwnerName = s.OwnerName,
-        //               Gender = s.Gender,
-        //               Relationship = s.Relationship,
-        //               Yob = s.Yob,
-        //               SampleType = s.SampleType,
-        //           }).ToList()
-        //       })
-        //       .ToListAsync();
-
-        //    return result;
-        //}
+        }   
 
         public async Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync()
         {
@@ -304,97 +255,6 @@ namespace DNATestSystem.Services.Service
 
             return result;
         }
-
-        //public async Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync(int staffId)
-        //{
-        //    //var testProcesses = await _context.TestProcesses
-        //    //                        .Include(tp => tp.Request)
-        //    //                            .ThenInclude(r => r.Service)
-        //    //                        .Include(tp => tp.Request)
-        //    //                            .ThenInclude(r => r.CollectType)
-        //    //                        .Include(tp => tp.Request)
-        //    //                            .ThenInclude(r => r.RequestDeclarants)
-        //    //                        .Include(tp => tp.Request)
-
-        //    //                        .ToListAsync();
-
-        //    var testProcesses = await _context.TestProcesses
-        //                  .Include(tp => tp.Request)
-        //                      .ThenInclude(r => r.Service)
-        //                  .Include(tp => tp.Request)
-        //                      .ThenInclude(r => r.CollectType)
-        //                  .Include(tp => tp.Request)
-        //                      .ThenInclude(r => r.RequestDeclarants)
-        //                  .Include(tp => tp.Request)
-        //                      .ThenInclude(r => r.TestSamples)
-        //                  .Where(tp =>
-        //                      tp.Request != null &&
-        //                      tp.Request.UserId == staffId &&
-        //                      tp.Request.Status != "COMPLETED" &&
-        //                      tp.Request.Category == "Voluntary"
-        //                  )
-        //                  .ToListAsync();
-
-
-        //    var result = testProcesses.Select(tp => new TestProcessDto
-        //    {
-        //        Request = new RequestDto
-        //        {
-        //            RequestId = tp.Request.RequestId,
-        //            ServiceId = tp.Request.ServiceId,
-        //            ServiceName = tp.Request.Service?.ServiceName,
-        //            TypeId = tp.Request.TypeId,
-        //            CollectType = tp.Request.CollectType?.CollectName,
-        //            Category = tp.Request.Category,
-        //            ScheduleDate = tp.Request.ScheduleDate,
-        //            Address = tp.Request.Address,
-        //            Status = tp.Request.Status,
-        //            CreatedAt = tp.Request.CreatedAt
-        //        },
-
-        //        TestProcess = new TestProcessInfoDto
-        //        {
-        //            ProcessId = tp.ProcessId,
-        //            RequestId = tp.RequestId,
-        //            StaffId = tp.StaffId,
-        //            KitCode = tp.KitCode ?? "",
-        //            CurrentStatus = tp.CurrentStatus,
-        //            Notes = tp.Notes
-        //        },
-
-        //        Declarant = tp.Request.RequestDeclarants.FirstOrDefault() == null ? null : new DeclarantDto
-        //        {
-        //            FullName = tp.Request.RequestDeclarants.First().FullName,
-        //            Gender = tp.Request.RequestDeclarants.First().Gender,
-        //            IdentityNumber = tp.Request.RequestDeclarants.First().IdentityNumber,
-        //            IdentityIssuedDate = tp.Request.RequestDeclarants.First().IdentityIssuedDate,
-        //            IdentityIssuedPlace = tp.Request.RequestDeclarants.First().IdentityIssuedPlace,
-        //            Address = tp.Request.RequestDeclarants.First().Address,
-        //            Phone = tp.Request.RequestDeclarants.First().Phone,
-        //            Email = tp.Request.RequestDeclarants.First().Email
-        //        },     
-        //    }).ToList();
-
-        //    return result;
-        //}
-
-        //public async Task<List<TestSampleDto>> GetSamplesByStaffAndRequestAsync(int staffId, int requestId)
-        //{
-        //    var samples = await _context.TestSamples
-        //        .Where(s => s.RequestId == requestId &&
-        //                    s.Request.TestProcesses.Any(p => p.StaffId == staffId)) // đảm bảo staff phụ trách đơn này
-        //        .Select(s => new TestSampleDto
-        //        {
-        //            OwnerName = s.OwnerName,
-        //            Gender = s.Gender,
-        //            Relationship = s.Relationship,
-        //            SampleType = s.SampleType,
-        //            Yob = s.Yob
-        //        })
-        //        .ToListAsync();
-
-        //    return samples;
-        //}
 
         public async Task<List<TestProcessDto>> GetTestProcessesByStaffIdAsync()
         {
@@ -485,49 +345,6 @@ namespace DNATestSystem.Services.Service
             return samples;
         }
 
-        //public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
-        //{
-
-        //    var process = new TestProcess
-        //    {
-        //        RequestId = dto.RequestId,
-        //        StaffId = dto.StaffId,
-        //        ClaimedAt = DateTime.Now,
-        //        UpdatedAt = DateTime.Now,
-        //        Notes = dto.Notes,
-        //    };
-
-        //    if (dto.CollectionType == "At Home")
-        //    {
-        //        process.KitCode = dto.KitCode;
-        //        process.CurrentStatus = "KIT SENT";
-        //    }
-        //    else if (dto.CollectionType == "At Center")
-        //    {
-        //        process.KitCode = "";
-        //        process.CurrentStatus = "WAITING_FOR_APPOINTMENT";
-        //    }
-        //    else
-        //    {
-        //        return new ApiResponseDto
-        //        {
-        //            Success = false,
-        //            Message = "Invalid CollectType."
-        //        };
-
-        //    }
-        //    // là như thế này , nếu mà staff để là At home thì lưu kit
-        //    // và chỉnh CurrentStatus , còn nếu ko có thì coi như là để trống 
-        //    _context.TestProcesses.Add(process);
-        //    await _context.SaveChangesAsync();
-
-        //    return new ApiResponseDto
-        //    {
-        //        Success = true,
-        //        Message = "Assigned test process successfully."
-        //    };
-
-        //}
         public async Task<ApiResponseDto> AssignTestProcessAsync(AssignTestProcessDto dto)
         {
             var collectionType = dto.CollectionType?.Trim().ToLower();
