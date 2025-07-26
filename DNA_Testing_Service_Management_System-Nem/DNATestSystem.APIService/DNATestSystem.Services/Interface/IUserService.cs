@@ -77,9 +77,7 @@ namespace DNATestSystem.Services.Interface
         //
         Task<bool> UpdateFeedbackByFeedbackId(CustomerFeedbackUpdateDto model);
 
-
         Task<PdfExportDto?> GetExportPdfDataAsync(int resultId);
 
-        //Task<List<PdfAdministrativeDocument>> GetPdfAdministrativeDocumentAsync(int requestId);
     }
 }

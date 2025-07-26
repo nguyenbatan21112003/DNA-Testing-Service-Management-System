@@ -298,21 +298,6 @@ namespace DNATestSystem.Controllers
             var fileName = $"XetNghiem_{requestId}.pdf";
             return File(stream, "application/pdf", fileName);
         }
-
-        //[HttpGet("export-PdfAdministrative-request/{requestId}")]
-        //public async Task<IActionResult> ExportAdministrative(int requestId)
-        //{
-        //    var data = await _userService.GetPdfAdministrativeDocumentAsync(requestId);
-        //    if (data == null)
-        //        return NotFound(new { message = "Không tìm thấy yêu cầu xét nghiệm." });
-        //    var stream = new MemoryStream();
-        //    var document = new AdministrativeDocument(data); // bạn đã tạo class này để render PDF
-        //    document.GeneratePdf(stream);
-        //    stream.Position = 0;
-        //    var fileName = $"XetNghiem_{requestId}.pdf";
-        //    return File(stream, "application/pdf", fileName);
-
-        //}
     }
 }
 
