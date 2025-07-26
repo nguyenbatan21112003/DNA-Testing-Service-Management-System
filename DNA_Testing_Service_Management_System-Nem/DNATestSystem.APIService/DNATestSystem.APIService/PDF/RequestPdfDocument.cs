@@ -23,28 +23,71 @@ namespace DNATestSystem.APIService.PDF
 
         public void Compose(IDocumentContainer container)
         {
+
             container.Page(page =>
             {
+
                 page.Margin(30);
                 page.Size(PageSizes.A4);
-
                 page.Content().Column(col =>
                 {
                 col.Item().Element(e => e
                 .PaddingBottom(10)
                 .AlignCenter()
-                .Text("PHIẾU KẾT QUẢ XÉT NGHIỆM")
+                .Text("PHIẾU KẾT QUẢ XÉT NGHIỆM🧬")
                     .FontSize(20)
                     .Bold()
             );
 
-                col.Item().Text($"Dịch vụ: {_data.ServiceName}");
-                col.Item().Text($"Ngày đăng ký mẫu: {_data.ScheduleDate?.ToString("dd/MM/yyyy")}");
-                col.Item().Text($"Người yêu cầu: {_data.DeclarantName}");
-                col.Item().Text($"Nhân viên xử lý: {_data.StaffName}");
-                col.Item().Text($"Địa chỉ: {_data.RequestAddress}");
-                col.Item().Text($"Cccd :{_data.IdentityNumber}");
-                col.Item().Text($"Số điện thoại: {_data.PhoneNumber}");
+                    //col.Item().Text($"Dịch vụ: {_data.ServiceName}");
+                    //col.Item().Text($"Ngày đăng ký mẫu: {_data.ScheduleDate?.ToString("dd/MM/yyyy")}");
+                    //col.Item().Text($"Người yêu cầu: {_data.DeclarantName}");
+                    //col.Item().Text($"Nhân viên xử lý: {_data.StaffName}");
+                    //col.Item().Text($"Địa chỉ: {_data.RequestAddress}");
+                    //col.Item().Text($"Cccd :{_data.IdentityNumber}");
+                    //col.Item().Text($"Số điện thoại: {_data.PhoneNumber}");
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Dịch vụ: ").Bold().FontSize(13);
+                        text.Span(_data.ServiceName);
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Ngày đăng ký mẫu: ").Bold().FontSize(13);
+                        text.Span(_data.ScheduleDate?.ToString("dd/MM/yyyy"));
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Người yêu cầu: ").Bold().FontSize(13);
+                        text.Span(_data.DeclarantName);
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Nhân viên xử lý: ").Bold().FontSize(13);
+                        text.Span(_data.StaffName);
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Địa chỉ: ").Bold().FontSize(13);
+                        text.Span(_data.RequestAddress);
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Căn Cước Công Dân: ").Bold().FontSize(13);
+                        text.Span(_data.IdentityNumber);
+                    });
+
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Số điện thoại: ").Bold().FontSize(13);
+                        text.Span(_data.PhoneNumber);
+                    });
+
 
                     col.Item().PaddingVertical(10);
 
@@ -120,8 +163,6 @@ namespace DNATestSystem.APIService.PDF
                             );
                         });
                     });
-
-
                 });
             });
         }

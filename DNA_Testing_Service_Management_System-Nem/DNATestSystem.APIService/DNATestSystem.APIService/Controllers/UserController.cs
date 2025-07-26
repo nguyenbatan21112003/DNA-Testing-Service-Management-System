@@ -295,7 +295,7 @@ namespace DNATestSystem.Controllers
             document.GeneratePdf(stream);
             stream.Position = 0;
 
-            var fileName = $"XetNghiem_{requestId}.pdf";
+            var fileName = $"DonXetNghiemCuaBan_{data.DeclarantName}.pdf";
             return File(stream, "application/pdf", fileName);
         }
     }
