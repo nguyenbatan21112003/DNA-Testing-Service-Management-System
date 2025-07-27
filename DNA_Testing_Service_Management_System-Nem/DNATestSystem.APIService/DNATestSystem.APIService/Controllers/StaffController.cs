@@ -240,6 +240,19 @@ namespace DNATestSystem.APIService.Controllers
             return Ok(data);
         
         }
-       
+        [HttpPut("update-test-result")]
+        public async Task<IActionResult> UpdateTestReuslt([FromBody] StaffUpdateTestResult dto)
+        {
+            try
+            {
+                var result = await _staffService.UpdateTestResultByResultIdAsync(dto);
+                return Ok(new { success = result, message = "Cập nhật kết quả xét nghiệm thành công." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }   
+
     }
 }
