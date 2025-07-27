@@ -26,7 +26,7 @@ const staffApi = {
     axiosInstance.post(`staff/test-results/create`, data),
   getTestResultByRequestId: (requestId) =>
     axiosInstance.get(`/staff/test-results/${requestId}`),
-  
+  getFeedbackByResultId: (resultId) => axiosInstance.get(`/Staff/feedback/${resultId}`)
 };
 
 export default staffApi;

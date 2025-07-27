@@ -71,27 +71,25 @@ const SampleCollection = ({ caseType }) => {
       : "Lấy mẫu xét nghiệm hành chính";
 
   // Khi mở tab, nếu có draft thì tự động điền lại
-useEffect(() => {
-  const draft = localStorage.getItem("sample_collection_draft");
-  const prefillRaw = localStorage.getItem("dna_sample_collection_prefill");
-
-  // ✅ Nếu KHÔNG có prefill thì mới áp dụng draft
-  if (!prefillRaw && draft) {
-    try {
-      const data = JSON.parse(draft);
-      if (data.form) {
-        form.setFieldsValue(data.form);
-      }
-      if (data.donors) {
-        setDonors(data.donors);
-      }
-    } catch (error) {
-      console.error("Error parsing draft:", error);
-      localStorage.removeItem("sample_collection_draft");
-    }
-  }
-}, [form]);
-
+  //   useEffect(() => {
+  //     const draft = localStorage.getItem("sample_collection_draft");
+  // const prefillRaw = localStorage.getItem("dna_sample_collection_prefill");
+  //     // ✅ Nếu KHÔNG có prefill thì mới áp dụng draft
+  //     if (!prefillRaw && draft) {
+  //       try {
+  //         const data = JSON.parse(draft);
+  //         if (data.form) {
+  //           form.setFieldsValue(data.form);
+  //         }
+  //         if (data.donors) {
+  //           setDonors(data.donors);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error parsing draft:", error);
+  //         localStorage.removeItem("sample_collection_draft");
+  //       }
+  //     }
+  //   }, [form]);
 
   useEffect(() => {
     // console.log("location.search:", location.search); // Debug URL parameters
@@ -130,13 +128,13 @@ useEffect(() => {
       setSelectedOrder({
         orderProcessId: prefillData.orderProcessId,
       });
-      // ✅ Sinh đúng số lượng khung người cho mẫu
-      const sampleCount = Array.isArray(prefillData.sampleIds)
-        ? prefillData.sampleIds.length
-        : 1;
-
-      const generatedDonors = Array.from({ length: sampleCount }, (_, i) => ({
-        id: i + 1,
+      const sampleIds = Array.isArray(prefillData.sampleIds)
+        ? prefillData.sampleIds
+        : [];
+      console.log(sampleIds);
+      const generatedDonors = sampleIds.map((sampleId, index) => ({
+        id: index + 1,
+        sampleId, // có thể lưu sampleId nếu cần dùng sau
         name: "",
         idType: "CCCD",
         idNumber: "",
@@ -150,8 +148,8 @@ useEffect(() => {
         healthIssues: "không",
         fingerprint: null,
       }));
-
       setDonors(generatedDonors);
+      console.log(generatedDonors);
     }
   }, []);
 
@@ -179,49 +177,49 @@ useEffect(() => {
   }, [donors]);
 
   // Khi mở tab, nếu có draft thì tự động điền lại
-  useEffect(() => {
-    const draft = localStorage.getItem("sample_collection_draft");
-    if (draft) {
-      try {
-        const data = JSON.parse(draft);
-        // console.log("Draft data:", data); // Debug draft data
-        if (data.form) {
-          form.setFieldsValue(data.form);
-        }
-        if (data.donors) {
-          setDonors(data.donors);
-        }
-      } catch (error) {
-        console.error("Error parsing draft:", error);
-        localStorage.removeItem("sample_collection_draft");
-      }
-    }
-  }, [form]);
+  // useEffect(() => {
+  //   const draft = localStorage.getItem("sample_collection_draft");
+  //   if (draft) {
+  //     try {
+  //       const data = JSON.parse(draft);
+  //       // console.log("Draft data:", data); // Debug draft data
+  //       if (data.form) {
+  //         form.setFieldsValue(data.form);
+  //       }
+  //       if (data.donors) {
+  //         setDonors(data.donors);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error parsing draft:", error);
+  //       localStorage.removeItem("sample_collection_draft");
+  //     }
+  //   }
+  // }, [form]);
 
-  const addDonor = () => {
-    const newDonor = {
-      id: donors.length + 1,
-      name: "",
-      idType: "CCCD",
-      idNumber: "",
-      idIssueDate: null,
-      idIssuePlace: "",
-      nationality: "Việt Nam",
-      address: "",
-      sampleType: "Máu",
-      sampleQuantity: "01",
-      relationship: "",
-      healthIssues: "không",
-      fingerprint: null,
-    };
-    const newDonors = [...donors, newDonor];
-    setDonors(newDonors);
-    const values = form.getFieldsValue();
-    localStorage.setItem(
-      "sample_collection_draft",
-      JSON.stringify({ form: values, donors: newDonors })
-    );
-  };
+  // const addDonor = () => {
+  //   const newDonor = {
+  //     id: donors.length + 1,
+  //     name: "",
+  //     idType: "CCCD",
+  //     idNumber: "",
+  //     idIssueDate: null,
+  //     idIssuePlace: "",
+  //     nationality: "Việt Nam",
+  //     address: "",
+  //     sampleType: "Máu",
+  //     sampleQuantity: "01",
+  //     relationship: "",
+  //     healthIssues: "không",
+  //     fingerprint: null,
+  //   };
+  //   const newDonors = [...donors, newDonor];
+  //   setDonors(newDonors);
+  //   const values = form.getFieldsValue();
+  //   localStorage.setItem(
+  //     "sample_collection_draft",
+  //     JSON.stringify({ form: values, donors: newDonors })
+  //   );
+  // };
 
   const removeDonor = (id) => {
     if (donors.length > 1) {
@@ -314,7 +312,7 @@ useEffect(() => {
         updateSampleRes?.data?.success == true
       ) {
         localStorage.removeItem("sample_collection_draft");
-        alert("✅Lưu và gửi biên bản thành công!");
+        // alert("✅Lưu và gửi biên bản thành công!");
       } else {
         alert("❌Không thể lưu và gửi biên bản!");
       }
@@ -363,7 +361,6 @@ useEffect(() => {
     }
   };
 
-  // const handleSave = async (values) => {
   //   try {
   //     const newForm = {
   //       id: Date.now(),
@@ -675,13 +672,7 @@ useEffect(() => {
                     <Col span={12}>
                       <Form.Item label="Loại giấy tờ" required>
                         <Select
-                          value={
-                            ["CCCD", "Giấy Chứng Sinh", "Bằng Lái Xe"].includes(
-                              donor.idType
-                            )
-                              ? donor.idType
-                              : "CCCD"
-                          }
+                          value={donor.idType}
                           onChange={(value) =>
                             updateDonor(donor.id, "idType", value)
                           }
@@ -694,40 +685,31 @@ useEffect(() => {
                         </Select>
                       </Form.Item>
                     </Col>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            donor.idType === "CCCD" ? "Số CCCD" : "Số giấy tờ"
-                          }
-                          required
-                        >
-                          <Input
-                            value={donor.idNumber}
-                            onChange={(e) =>
-                              updateDonor(donor.id, "idNumber", e.target.value)
-                            }
-                            placeholder={
-                              donor.idType === "CCCD"
-                                ? "Nhập số CCCD"
-                                : "Nhập số giấy tờ"
-                            }
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+
                     <Col span={12}>
-                      <Form.Item label="Quốc tịch">
+                      <Form.Item
+                        label={
+                          donor.idType === "CCCD"
+                            ? "Số CCCD"
+                            : donor.idType === "Giấy Chứng Sinh"
+                            ? "Số Giấy Chứng Sinh"
+                            : donor.idType === "Bằng Lái Xe"
+                            ? "Số Bằng Lái Xe"
+                            : "Số giấy tờ"
+                        }
+                        required
+                      >
                         <Input
-                          value={donor.nationality}
+                          value={donor.idNumber}
                           onChange={(e) =>
-                            updateDonor(donor.id, "nationality", e.target.value)
+                            updateDonor(donor.id, "idNumber", e.target.value)
                           }
-                          placeholder="Quốc tịch"
+                          placeholder="Nhập số giấy tờ tùy thân"
                         />
                       </Form.Item>
                     </Col>
                   </Row>
+
                   <Row gutter={16}>
                     <Col span={24}>
                       <Form.Item label="Địa chỉ của người cho mẫu">
@@ -859,7 +841,7 @@ useEffect(() => {
                 </Card>
               ))}
 
-              <Button
+              {/* <Button
                 type="dashed"
                 onClick={addDonor}
                 icon={<PlusOutlined />}
@@ -882,7 +864,7 @@ useEffect(() => {
                 }}
               >
                 Thêm người cho mẫu
-              </Button>
+              </Button> */}
 
               <div style={{ textAlign: "center" }}>
                 <Space size="large">

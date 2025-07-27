@@ -13,13 +13,14 @@ import {
   Tooltip,
 } from "antd";
 import { EyeOutlined, StarOutlined } from "@ant-design/icons";
-import { useOrderContext } from "../../context/OrderContext";
+// import { useOrderContext } from "../../context/OrderContext";
+import staffApi from "../../api/staffApi";
 
 const { Option } = Select;
 const { Search } = Input;
 
 const CustomerFeedback = () => {
-  const { getAllOrders } = useOrderContext();
+  // const { getAllOrders } = useOrderContext();
   const [feedbacks, setFeedbacks] = useState([]);
   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -29,60 +30,122 @@ const CustomerFeedback = () => {
 
   useEffect(() => {
     // Lấy dữ liệu phản hồi từ localStorage
-    loadFeedbacks();
+    loadFeedbacksFromServer();
 
-    // Thêm event listener để cập nhật feedbacks khi localStorage thay đổi
-    window.addEventListener("storage", handleStorageChange);
+    // // Thêm event listener để cập nhật feedbacks khi localStorage thay đổi
+    // window.addEventListener("storage", handleStorageChange);
 
-    // Cleanup khi component unmount
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    // // Cleanup khi component unmount
+    // return () => {
+    //   window.removeEventListener("storage", handleStorageChange);
+    // };
   }, []);
 
   // Hàm xử lý khi localStorage thay đổi
-  const handleStorageChange = (event) => {
-    if (event.key === "dna_orders") {
-      loadFeedbacks();
+  // const handleStorageChange = (event) => {
+  //   if (event.key === "dna_orders") {
+  //     loadFeedbacks();
+  //   }
+  // };
+  const loadFeedbacksFromServer = async () => {
+    try {
+      const res = await staffApi.getTestProccesses();
+      const testProcesses = Array.isArray(res.data) ? res.data : [];
+      const completedProcesses = testProcesses.filter(
+        (item) => item.testProcess?.currentStatus === "completed"
+      );
+      // console.log(testProcesses);
+      const feedbackList = [];
+      // console.log("completedProcesses", completedProcesses);
+      for (const item of completedProcesses) {
+        // console.log("item nè", item);
+        const requestId = item.request.requestId;
+        // console.log("request id", requestId);
+        const resResult = await staffApi.getTestResultByRequestId(requestId);
+        // console.log('resResult',resResult)
+        const testResult = Array.isArray(resResult.data) ? resResult.data : [];
+
+        const resultId = testResult[0]?.resultId;
+        // console.log('resultId:', resultId)
+        if (!resultId) continue;
+
+        const feedbackRes = await staffApi.getFeedbackByResultId(resultId);
+        console.log("feedback res", feedbackRes);
+        if (
+          feedbackRes.status === 200 &&
+          feedbackRes.data != null &&
+          feedbackRes.data.resultId !== null
+        ) {
+          const feedback = feedbackRes.data;
+          console.log(feedback);
+          feedbackList.push({
+            id: feedback.feedbackId,
+            orderId: requestId,
+            resultId: resultId,
+            phone: item.declarant?.phone,
+            gender: item.declarant?.gender,
+            customerName: item.declarant?.fullName,
+            email: item.declarant?.email,
+            method: item.request?.collectType,
+            rating: feedback.rating,
+            comment: feedback.comment,
+            createdAt: new Date(feedback.createdAt).toLocaleDateString("vi-VN"),
+            status: "Chưa xem",
+            category: item.request.category,
+            serviceType: item.request.serviceName,
+          });
+        }
+      }
+      console.log("feedback nè", feedbackList);
+      // Sort theo thời gian giảm dần
+      // feedbackList.sort(
+      //   (a, b) =>
+      //     parseVietnameseDate(b.createdAt) - parseVietnameseDate(a.createdAt)
+      // );
+
+      setFeedbacks(feedbackList);
+      applyFilters(feedbackList, filterRating, searchText);
+    } catch (error) {
+      console.error("Lỗi khi load phản hồi:", error);
     }
   };
 
   // Hàm load phản hồi từ các đơn đăng ký
-  const loadFeedbacks = () => {
-    const allOrders = getAllOrders();
-    const allFeedbacks = [];
+  // const loadFeedbacks = () => {
+  //   const allOrders = getAllOrders();
+  //   const allFeedbacks = [];
 
-    // Tìm tất cả phản hồi trong các đơn đăng ký
-    allOrders.forEach((order) => {
-      if (order.feedbacks && order.feedbacks.length > 0) {
-        order.feedbacks.forEach((feedback, index) => {
-          allFeedbacks.push({
-            id: `${order.id}-${index}`,
-            orderId: order.id,
-            customerName: feedback.user,
-            email: feedback.email,
-            serviceType: order.type,
-            rating: feedback.rating,
-            comment: feedback.feedback,
-            createdAt: feedback.date,
-            status: "Chưa xem",
-            category: getCategoryFromRatings(feedback.categoryRatings),
-            categoryRatings: feedback.categoryRatings,
-          });
-        });
-      }
-    });
+  //   // Tìm tất cả phản hồi trong các đơn đăng ký
+  //   allOrders.forEach((order) => {
+  //     if (order.feedbacks && order.feedbacks.length > 0) {
+  //       order.feedbacks.forEach((feedback, index) => {
+  //         allFeedbacks.push({
+  //           id: `${order.id}-${index}`,
+  //           orderId: order.id,
+  //           customerName: feedback.user,
+  //           email: feedback.email,
+  //           serviceType: order.type,
+  //           rating: feedback.rating,
+  //           comment: feedback.feedback,
+  //           createdAt: feedback.date,
+  //           status: "Chưa xem",
+  //           category: getCategoryFromRatings(feedback.categoryRatings),
+  //           categoryRatings: feedback.categoryRatings,
+  //         });
+  //       });
+  //     }
+  //   });
 
-    // Sắp xếp theo thời gian mới nhất
-    allFeedbacks.sort((a, b) => {
-      const dateA = parseVietnameseDate(a.createdAt);
-      const dateB = parseVietnameseDate(b.createdAt);
-      return dateB - dateA;
-    });
+  //   // Sắp xếp theo thời gian mới nhất
+  //   allFeedbacks.sort((a, b) => {
+  //     const dateA = parseVietnameseDate(a.createdAt);
+  //     const dateB = parseVietnameseDate(b.createdAt);
+  //     return dateB - dateA;
+  //   });
 
-    setFeedbacks(allFeedbacks);
-    applyFilters(allFeedbacks, filterRating, searchText);
-  };
+  //   setFeedbacks(allFeedbacks);
+  //   applyFilters(allFeedbacks, filterRating, searchText);
+  // };
 
   // Hàm chuyển đổi ngày dạng Việt Nam sang Date object
   const parseVietnameseDate = (dateStr) => {
@@ -102,21 +165,26 @@ const CustomerFeedback = () => {
     };
     return categoryMap[key] || key;
   };
+  const normalizeText = (str) =>
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
 
   // Hàm xác định danh mục chính từ đánh giá
-  const getCategoryFromRatings = (ratings) => {
-    if (!ratings || Object.keys(ratings).length === 0) {
-      return "Tổng thể";
-    }
+  // const getCategoryFromRatings = (ratings) => {
+  //   if (!ratings || Object.keys(ratings).length === 0) {
+  //     return "Tổng thể";
+  //   }
 
-    // Tìm danh mục có điểm cao nhất
-    const entries = Object.entries(ratings).filter(([, value]) => value > 0);
-    if (entries.length === 0) return "Tổng thể";
+  //   // Tìm danh mục có điểm cao nhất
+  //   const entries = Object.entries(ratings).filter(([, value]) => value > 0);
+  //   if (entries.length === 0) return "Tổng thể";
 
-    // Sắp xếp theo điểm giảm dần và lấy danh mục đầu tiên
-    const highestCategory = entries.sort((a, b) => b[1] - a[1])[0][0];
-    return getCategoryName(highestCategory);
-  };
+  //   // Sắp xếp theo điểm giảm dần và lấy danh mục đầu tiên
+  //   const highestCategory = entries.sort((a, b) => b[1] - a[1])[0][0];
+  //   return getCategoryName(highestCategory);
+  // };
 
   const handleViewFeedback = (feedback) => {
     setSelectedFeedback(feedback);
@@ -147,20 +215,18 @@ const CustomerFeedback = () => {
   const applyFilters = (data, rating, search) => {
     let filtered = [...data];
 
-    // Lọc theo đánh giá
     if (rating !== "all") {
       filtered = filtered.filter((item) => item.rating === parseInt(rating));
     }
 
-    // Lọc theo từ khóa tìm kiếm
     if (search) {
-      const searchLower = search.toLowerCase();
+      const searchLower = normalizeText(search);
       filtered = filtered.filter(
         (item) =>
-          item.customerName.toLowerCase().includes(searchLower) ||
-          item.orderId.toString().toLowerCase().includes(searchLower) ||
-          item.serviceType.toLowerCase().includes(searchLower) ||
-          (item.comment && item.comment.toLowerCase().includes(searchLower))
+          normalizeText(item.customerName).includes(searchLower) ||
+          item.orderId.toString().includes(searchLower) ||
+          normalizeText(item.serviceType || "").includes(searchLower) ||
+          normalizeText(item.comment || "").includes(searchLower)
       );
     }
 
@@ -220,27 +286,27 @@ const CustomerFeedback = () => {
           type="primary"
           icon={<EyeOutlined style={{ fontSize: 14 }} />}
           style={{
-            background: '#1890ff',
-            borderColor: '#1890ff',
-            color: '#fff',
+            background: "#1890ff",
+            borderColor: "#1890ff",
+            color: "#fff",
             fontWeight: 600,
             fontSize: 14,
             height: 28,
-            padding: '0 10px',
-            transition: 'background 0.2s, color 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 5
+            padding: "0 10px",
+            transition: "background 0.2s, color 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
           }}
-          onMouseOver={e => {
-            e.currentTarget.style.background = '#1765ad';
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = '#1765ad';
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = "#1765ad";
+            e.currentTarget.style.color = "#fff";
+            e.currentTarget.style.borderColor = "#1765ad";
           }}
-          onMouseOut={e => {
-            e.currentTarget.style.background = '#1890ff';
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = '#1890ff';
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "#1890ff";
+            e.currentTarget.style.color = "#fff";
+            e.currentTarget.style.borderColor = "#1890ff";
           }}
           onClick={() => handleViewFeedback(record)}
         >
@@ -266,10 +332,10 @@ const CustomerFeedback = () => {
     percentage:
       feedbacks.length > 0
         ? (
-          (feedbacks.filter((f) => f.rating === rating).length /
-            feedbacks.length) *
-          100
-        ).toFixed(1)
+            (feedbacks.filter((f) => f.rating === rating).length /
+              feedbacks.length) *
+            100
+          ).toFixed(1)
         : 0,
   }));
 
@@ -370,10 +436,10 @@ const CustomerFeedback = () => {
                         item.rating >= 4
                           ? "#52c41a"
                           : item.rating === 3
-                            ? "#faad14"
-                            : item.rating <= 2
-                              ? "#ff4d4f"
-                              : "#00a67e",
+                          ? "#faad14"
+                          : item.rating <= 2
+                          ? "#ff4d4f"
+                          : "#00a67e",
                       borderRadius: 4,
                     }}
                   />
@@ -413,10 +479,11 @@ const CustomerFeedback = () => {
           </div>
           <div>
             <Search
-              placeholder="Tìm kiếm theo tên khách hàng, mã đơn, dịch vụ..."
-              onSearch={handleSearch}
-              style={{ width: 300 }}
+              placeholder="Tìm theo khách hàng, mã đơn, dịch vụ..."
+              onChange={(e) => handleSearch(e.target.value)}
+              value={searchText}
               allowClear
+              style={{ width: 300 }}
             />
           </div>
         </div>
@@ -466,7 +533,11 @@ const CustomerFeedback = () => {
               </p>
               <p>
                 <strong>Danh mục chính:</strong>{" "}
-                <Tag color="blue">{selectedFeedback.category}</Tag>
+                <Tag color="blue">
+                  {selectedFeedback.category == "Voluntary"
+                    ? "Dân sự"
+                    : "Hành chính"}
+                </Tag>
               </p>
             </div>
 
@@ -507,12 +578,13 @@ const CustomerFeedback = () => {
                   background: "#f6f6f6",
                   padding: 16,
                   borderRadius: 6,
-                  borderLeft: `4px solid ${selectedFeedback.rating >= 4
-                    ? "#52c41a"
-                    : selectedFeedback.rating >= 3
+                  borderLeft: `4px solid ${
+                    selectedFeedback.rating >= 4
+                      ? "#52c41a"
+                      : selectedFeedback.rating >= 3
                       ? "#faad14"
                       : "#ff4d4f"
-                    }`,
+                  }`,
                 }}
               >
                 {selectedFeedback.comment}

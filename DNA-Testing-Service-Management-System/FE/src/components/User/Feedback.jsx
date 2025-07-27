@@ -76,19 +76,26 @@ const Feedback = ({
 
   if (!canRate) return null;
 
-  const handleSubmit = () => {
-    if (overallRating === 0) {
-      setFeedbackSuccess("Vui lòng chọn số sao!");
-      return;
+  const handleSubmit = async () => {
+  if (overallRating === 0) {
+    setFeedbackSuccess("Vui lòng chọn số sao!");
+    return;
+  }
+  if (onSubmitFeedback) {
+    try {
+      await onSubmitFeedback(order, overallRating, feedbackInput);
+      setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
+      setTimeout(() => {
+        setFeedbackSuccess("");
+        onClose(); // 🔁 gọi sau khi UI đã cập nhật xong
+      }, 1500);
+    } catch (err) {
+      console.log(err)
+      setFeedbackSuccess("Đã xảy ra lỗi khi gửi đánh giá!");
     }
-    if (onSubmitFeedback) {
-      onSubmitFeedback(order, overallRating, feedbackInput);
-    }
+  }
+};
 
-    onClose();
-    setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
-    setTimeout(() => setFeedbackSuccess(""), 2000);
-  };
 
   return (
     // Overlay

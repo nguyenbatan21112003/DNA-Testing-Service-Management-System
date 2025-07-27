@@ -39,7 +39,7 @@ const TestResultVerification = () => {
   const [approveConfirmVisible, setApproveConfirmVisible] = useState(false);
   const [pendingApproveOrder, setPendingApproveOrder] = useState(null);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
-  const [rejectNote, setRejectNote] = useState("");
+  // const [rejectNote, setRejectNote] = useState("");
   const [pendingRejectOrder, setPendingRejectOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -48,21 +48,9 @@ const TestResultVerification = () => {
   const [orderToHide, setOrderToHide] = useState(null);
   const [results, setResult] = useState([]);
 
-  // useEffect(() => {
-  //   loadOrdersNeedingApproval();
-  // }, []);
-
   // Lắng nghe sự kiện storage để tự động reload orders khi localStorage thay đổi
   useEffect(() => {
     fetchResults();
-
-    // const handleStorageChange = (event) => {
-    //   if (event.key === "dna_orders") {
-    //     loadOrdersNeedingApproval(); // Chỉ reload dữ liệu thay vì reload cả trang
-    //   }
-    // };
-    // window.addEventListener("storage", handleStorageChange);
-    // return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const fetchResults = async () => {
@@ -83,12 +71,13 @@ const TestResultVerification = () => {
       const mapped = results?.map((result) => {
         const req = requests?.find((r) => r.requestId === result.requestId);
         const service = services?.find((s) => s.id === req?.serviceId);
-
+        console.log("req nè ", req);
         return {
           id: result.requestId,
           resultId: result.resultId,
           result: result.resultData,
           type: service?.serviceName || "Chưa rõ",
+          createdAt: req.createdAt,
           category:
             req?.category === "Voluntary"
               ? "Dân sự"
@@ -104,7 +93,7 @@ const TestResultVerification = () => {
           conclusion: result.resultData || "Không có",
         };
       });
-
+      console.log("mapped:", mapped);
       setResult(mapped);
       setFilteredOrders(mapped);
     } catch (error) {
@@ -154,32 +143,8 @@ const TestResultVerification = () => {
     setPendingRejectOrder(null);
   };
 
-  // const fetchRequestInfo = async () => {
-  //   const res = await managerApi.getTestRequests();
-  //   return Array.isArray(res.data) ? res.data : [];
-  // };
-
-  // useEffect(() => {
-  // const allOrders = getAllOrders();
-  // Chỉ lấy các đơn có trạng thái 'Chờ xác thực', 'Hoàn thành', hoặc 'Từ chối'
-  //   setFilteredOrders(
-  //     allOrders.filter((order) => {
-  //       const status = getStatusText(order.status);
-  //       return (
-  //         status === "Chờ xác thực" ||
-  //         status === "Hoàn thành" ||
-  //         status === "Từ chối"
-  //       );
-  //     })
-  //   );
-  // }, [ordersNeedingApproval, getAllOrders]);
-
-  // const loadOrdersNeedingApproval = () => {
-  //   const orders = getOrdersNeedingApproval();
-  //   setOrdersNeedingApproval(orders);
-  // };
-
   const handleViewResult = (order) => {
+    console.log("ordr nè", order);
     setSelectedOrder(order);
     setViewModalVisible(true);
   };
@@ -199,19 +164,7 @@ const TestResultVerification = () => {
     setOrderToHide(order);
     setHideModalVisible(true);
   };
-  // const confirmHideOrder = () => {
-  //   if (!orderToHide) return;
-  //   const orders = getAllOrders();
-  //   const updatedOrders = orders.map((o) =>
-  //     o.id === orderToHide.id ? { ...o, isHiddenByManager: true } : o
-  //   );
-  //   localStorage.setItem("dna_orders", JSON.stringify(updatedOrders));
-  //   window.dispatchEvent(new Event("dna_orders_updated"));
-  //   setFilteredOrders((prev) => prev.filter((o) => o.id !== orderToHide.id));
-  //   setHideModalVisible(false);
-  //   setOrderToHide(null);
-  //   message.success("Đã ẩn đơn hàng khỏi danh sách!");
-  // };
+
   const confirmHideOrder = () => {
     const hiddenIds = JSON.parse(localStorage.getItem("dna_hidden") || "[]");
     localStorage.setItem(
@@ -234,35 +187,6 @@ const TestResultVerification = () => {
     setOrderToHide(null);
   };
 
-  // const confirmApprove = async () => {
-  //   if (!pendingApproveOrder) return;
-  //   await updateOrder(pendingApproveOrder.id, {
-  //     managerConfirm: true,
-  //     status: "Hoàn thành",
-  //     approvedAt: new Date().toISOString(),
-  //     managerNote: "",
-  //   });
-  //   setApproveConfirmVisible(false);
-  //   setPendingApproveOrder(null);
-  //   message.success("Đã phê duyệt kết quả xét nghiệm thành công!");
-  //   // Đơn KHÔNG bị ẩn khỏi danh sách, chỉ cập nhật trạng thái
-  // };
-
-  // const confirmReject = async () => {
-  //   if (!pendingRejectOrder) return;
-  //   await updateOrder(pendingRejectOrder.id, {
-  //     managerConfirm: false,
-  //     status: "Từ chối",
-  //     approvedAt: new Date().toISOString(),
-  //     managerNote: rejectNote,
-  //   });
-  //   setRejectModalVisible(false);
-  //   setRejectNote("");
-  //   setPendingRejectOrder(null);
-  //   message.success("Đã từ chối kết quả xét nghiệm!");
-  //   // Đơn KHÔNG bị ẩn khỏi danh sách, chỉ cập nhật trạng thái
-  // };
-
   // Hàm chuẩn hóa chuỗi: bỏ dấu tiếng Việt, chuyển thường, loại bỏ khoảng trắng thừa
   function normalizeStatus(str) {
     if (!str) return "";
@@ -279,6 +203,18 @@ const TestResultVerification = () => {
     if (["verified", "completed"].includes(s)) return "Hoàn thành";
     if (["rejected"].includes(s)) return "Từ chối";
     return "Khác";
+  };
+  const searchFilter = (orders, keyword) => {
+    if (!keyword) return orders;
+    const lower = keyword.toLowerCase();
+    return orders.filter((o) => {
+      return (
+        o.type?.toLowerCase().includes(lower) ||
+        o.category?.toLowerCase().includes(lower) ||
+        o.name?.toLowerCase().includes(lower) ||
+        o.id?.toString().includes(lower)
+      );
+    });
   };
 
   // Hàm lọc theo trạng thái
@@ -376,7 +312,7 @@ const TestResultVerification = () => {
       },
     },
     {
-      title: "Ngày tạo",
+      title: "Ngày nhập kết quả",
       dataIndex: "date",
       key: "date",
       width: 120,
@@ -675,8 +611,11 @@ const TestResultVerification = () => {
         ) : (
           <Table
             columns={columns}
-            dataSource={filterByStatus(results, activeTab).filter(
-              (order) => !order.isHiddenByManager
+            dataSource={searchFilter(
+              filterByStatus(results, activeTab).filter(
+                (order) => !order.isHiddenByManager
+              ),
+              searchText
             )}
             rowKey={(record) => record.id}
             pagination={{
@@ -696,34 +635,44 @@ const TestResultVerification = () => {
         title={null}
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setViewModalVisible(false)}>
-            Đóng
-          </Button>,
-          <Button
-            key="approve"
-            type="primary"
-            icon={<CheckCircleOutlined />}
-            onClick={() => {
-              setViewModalVisible(false);
-              handleApprove(selectedOrder);
-            }}
-            style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
-          >
-            Phê duyệt
-          </Button>,
-          <Button
-            key="reject"
-            danger
-            icon={<CloseCircleOutlined />}
-            onClick={() => {
-              setViewModalVisible(false);
-              handleReject(selectedOrder);
-            }}
-          >
-            Từ chối
-          </Button>,
-        ]}
+        footer={() => {
+          const status = getStatusText(selectedOrder?.status);
+          if (status === "Hoàn thành" || status === "Từ chối") {
+            return [
+              <Button key="close" onClick={() => setViewModalVisible(false)}>
+                Đóng
+              </Button>,
+            ];
+          }
+          return [
+            <Button key="close" onClick={() => setViewModalVisible(false)}>
+              Đóng
+            </Button>,
+            <Button
+              key="approve"
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => {
+                setViewModalVisible(false);
+                handleApprove(selectedOrder);
+              }}
+              style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+            >
+              Phê duyệt
+            </Button>,
+            <Button
+              key="reject"
+              danger
+              icon={<CloseCircleOutlined />}
+              onClick={() => {
+                setViewModalVisible(false);
+                handleReject(selectedOrder);
+              }}
+            >
+              Từ chối
+            </Button>,
+          ];
+        }}
         width={700}
         style={{ top: 32 }}
       >
@@ -760,11 +709,29 @@ const TestResultVerification = () => {
               {/* <div style={{ fontSize: 18, marginBottom: 6 }}>
                 <b>Khách hàng:</b> {selectedOrder.name}
               </div> */}
+
               <div style={{ fontSize: 18, marginBottom: 6 }}>
                 <b>Loại xét nghiệm:</b> {selectedOrder.type}
               </div>
+              <div style={{ fontSize: 18, marginBottom: 6 }}>
+                <b>Nơi lấy mẫu:</b>{" "}
+                {selectedOrder.sampleMethod === "home"
+                  ? "Tại nhà"
+                  : "Tại cơ sở"}
+              </div>
               <div style={{ fontSize: 18 }}>
-                <b>Ngày tạo:</b> {selectedOrder.date}
+                <b>Ngày đăng ký đơn:</b>{" "}
+                {selectedOrder.createdAt
+                  ? new Date(selectedOrder.createdAt).toLocaleDateString(
+                      "vi-VN"
+                    )
+                  : "Không rõ"}
+              </div>
+              <div style={{ fontSize: 18 }}>
+                <b>Ngày nhập kết quả:</b>{" "}
+                {selectedOrder.date
+                  ? new Date(selectedOrder.date).toLocaleDateString("vi-VN")
+                  : "Không rõ"}
               </div>
             </div>
 

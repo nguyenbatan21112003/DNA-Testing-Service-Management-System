@@ -84,6 +84,8 @@ const StaffDashboard = () => {
 
   const navigate = useNavigate();
 
+  
+
   // Xoá toàn bộ đoạn code tạo dữ liệu mẫu (sampleOrders, tempStaffAccount) trong useEffect
   useEffect(() => {
     // Không seed dữ liệu mẫu nữa

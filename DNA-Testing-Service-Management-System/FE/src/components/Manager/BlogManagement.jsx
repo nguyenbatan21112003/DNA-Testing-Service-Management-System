@@ -30,7 +30,7 @@ import {
 import { Slate, Editable, withReact } from "slate-react";
 import { createEditor, Node } from "slate";
 import managerApi from "../../api/managerApi";
-import blogApi from "../../api/blogApi";
+
 import { AuthContext } from "../../context/AuthContext";
 
 const { Title, Text } = Typography;
@@ -103,15 +103,15 @@ const BlogManagement = () => {
     }
     setIsModalVisible(true);
   };
-  const STATUS_MAP = {
-    published: true,
-    draft: false,
-  };
+  // const STATUS_MAP = {
+  //   published: true,
+  //   draft: false,
+  // };
 
-  const REVERSE_STATUS = {
-    true: "published",
-    false: "draft",
-  };
+  // const REVERSE_STATUS = {
+  //   true: "published",
+  //   false: "draft",
+  // };
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -146,14 +146,15 @@ const BlogManagement = () => {
     }
   };
 
-  const handleDelete = (id) => {
-    setBlogPosts(blogPosts.filter((blog) => blog.id !== id));
-    // Đồng bộ localStorage
-    const stored = JSON.parse(
-      localStorage.getItem(BLOG_STORAGE_KEY) || "[]"
-    ).filter((p) => p.id !== id);
-    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(stored));
-    message.success("Xóa bài viết thành công!");
+  const handleDelete = async (id) => {
+    try {
+      await managerApi.deleteBlog(id); // ⬅ gọi API
+      message.success("Xóa bài viết thành công!");
+      fetchBlogs(); // load lại
+    } catch (error) {
+      message.error("Xóa thất bại!");
+      console.error(error);
+    }
   };
 
   const handlePreview = (blog) => {
@@ -170,20 +171,19 @@ const BlogManagement = () => {
   };
 
   const filteredBlogPosts = blogPosts.filter((blog) => {
-  const matchesTab =
-    activeTab === "all"
-      ? true
-      : activeTab === "published"
-      ? blog.isPublished
-      : !blog.isPublished;
+    const matchesTab =
+      activeTab === "all"
+        ? true
+        : activeTab === "published"
+        ? blog.isPublished
+        : !blog.isPublished;
 
-  const matchesSearch = blog.title
-    ?.toLowerCase()
-    .includes(searchTerm.toLowerCase());
+    const matchesSearch = blog.title
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
-  return matchesTab && matchesSearch;
-});
-
+    return matchesTab && matchesSearch;
+  });
 
   const columns = [
     {
@@ -283,14 +283,13 @@ const BlogManagement = () => {
         </div>
 
         <div className="mb-4">
-        <Input
-  placeholder="Tìm kiếm bài viết..."
-  prefix={<SearchOutlined />}
-  className="w-full"
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-/>
-
+          <Input
+            placeholder="Tìm kiếm bài viết..."
+            prefix={<SearchOutlined />}
+            className="w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
         <Tabs defaultActiveKey="all" onChange={handleTabChange}>

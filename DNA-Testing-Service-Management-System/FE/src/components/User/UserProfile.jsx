@@ -83,7 +83,8 @@ const UserProfile = () => {
     }
   };
   useEffect(() => {
-    if (selectedOrder) {
+    // console.log('useeffext',selectedOrder)
+    if (selectedOrder && selectedOrder.feedbacks.length > 0) {
       setShowFeedbackModal(true);
     }
   }, [selectedOrder]);
@@ -236,7 +237,7 @@ const UserProfile = () => {
             })),
           };
         }
-setResultType(order.category === "Administrative" ? "admin" : "civil");
+        setResultType(order.category === "Administrative" ? "admin" : "civil");
         setSelectedOrder({
           ...order,
           conclusion: resultData.resultData || "Không có kết luận",
@@ -255,7 +256,7 @@ setResultType(order.category === "Administrative" ? "admin" : "civil");
           sampleInfo, // chỉ cần cho admin
         });
         console.log(selectedOrder);
-        
+
         setShowResultModal(true);
       } else {
         message.warning("Không tìm thấy kết quả xét nghiệm.");
@@ -548,7 +549,7 @@ setResultType(order.category === "Administrative" ? "admin" : "civil");
                     resultId,
                     feedbacks: matchedFeedbacks,
                   });
-                  console.log('order có feedback nè', order)
+                  console.log("order có feedback nè", order);
                   setShowFeedbackModal(true);
                 } catch (err) {
                   console.error("Lỗi khi mở modal đánh giá:", err);

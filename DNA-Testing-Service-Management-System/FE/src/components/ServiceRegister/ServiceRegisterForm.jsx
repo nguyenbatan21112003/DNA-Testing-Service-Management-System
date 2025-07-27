@@ -179,7 +179,7 @@ const ServiceRegisterForm = () => {
         yob: Number(m.birth) || 0,
       })),
     };
-    console.log("form submit: ", submitPayload);
+    // console.log("form submit: ", submitPayload);
     try {
       const response = await userApi.submitFormRequest(submitPayload); // POST /user/submit
       console.log(response);
