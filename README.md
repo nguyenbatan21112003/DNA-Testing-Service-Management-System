@@ -71,38 +71,11 @@ Các tính năng nổi bật bao gồm:
 - **UI:** React Bootstrap
 - **Thư viện hỗ trợ:** Axios, React Hook Form, Yup, React Toastify
 
-## 🚀 Hướng Dẫn Cài Đặt
 
-###  Backend
-```bash
-git clone https://github.com/your-repo/backend-dna.git
-cd backend-dna
-dotnet restore
-dotnet ef database update
-dotnet run
-```
+## 🖼️ Hướng dẫn sử dung
+[📄 Tải file hướng dẫn sử dụng](./docs/UserGuide.exe)
 
-### Frontend
-```bash
-git clone https://github.com/your-repo/frontend-dna.git
-cd frontend-dna
-npm install
-npm run dev
-```
 
-## 🖼️ Giao Diện Minh Họa
-
-## 🗂️ Cấu Trúc Thư Mục Dự Án
-```
-├── backend-dna/
-│   ├── Controllers/
-│   ├── Models/
-│   └── Services/
-├── frontend-dna/
-│   ├── pages/
-│   ├── components/
-│   └── public/
-```
 
 ## 👥 Nhóm phát triển
 - Nguyễn Bá Tân - SE183860
