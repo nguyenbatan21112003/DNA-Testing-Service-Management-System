@@ -187,8 +187,8 @@ const CenterSampling = () => {
         return "#52c41a"; // xanh lá
       case "":
         return "#fa8c16"; // cam
-      case "SAMPLE_RECEIVEDaa":
-        return "#0984e3"; // xanh dương tươi
+      case "COMPLETED":
+        return "gold"; // xanh dương tươi
 
       default:
         return "#b2bec3"; // xám nhạt
@@ -199,8 +199,8 @@ const CenterSampling = () => {
     switch (status) {
       case "WAITING_FOR_APPOINTMENT":
         return "Đã hẹn";
-      case "Đã đến":
-        return "Đã đến";
+      case "COMPLETED":
+        return "Đã trả kết quả";
       case "SAMPLE_RECEIVED":
         return "Đã lấy mẫu";
       case "Đang xử lý":

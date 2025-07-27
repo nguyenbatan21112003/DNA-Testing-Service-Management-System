@@ -13,13 +13,14 @@ const CivilTestResult = ({ isOpen, order, onClose }) => {
 if (!isOpen || !order || order.category !== "Voluntary") return null;
 
   // Helper: nhãn địa điểm thu mẫu
-  console.log(order.resultTableData)
+  // console.log(order.resultTableData)
   const _getSampleMethodLabel = (val) => {
     if (val === 'home') return 'Tại nhà';
     if (val === 'center') return 'Tại trung tâm';
     if (val === 'self') return 'Tự thu và gửi mẫu';
     return val;
   };
+  // console.log('order:', order)
 
   return (
     <div
@@ -87,7 +88,7 @@ if (!isOpen || !order || order.category !== "Voluntary") return null;
               }}
             >
              {Array.isArray(order.resultTableData || []) && (order.resultTableData || []).length > 0 ? (
-
+             
                 <table
                   className="result-table"
                   style={{ minWidth: 600, tableLayout: 'auto', borderCollapse: 'collapse', width: '100%' }}
@@ -103,13 +104,13 @@ if (!isOpen || !order || order.category !== "Voluntary") return null;
                     </tr>
                   </thead>
                   <tbody>
-                    {order.resultTableData.map((data, index) => (
+                    {order.samples?.map((data, index) => (
 
                       <tr key={data.key} style={{ background: index % 2 === 0 ? '#fff' : '#f4f8ff' }}>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{index + 1}</td>
-                        <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.name}</td>
+                        <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.ownerName}</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{
-                         order.yob || data.birth || ''
+                         data.yob || data.birth || ''
                         }</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.gender}</td>
                         <td style={{ padding: '10px 14px', fontSize: 16, textAlign: 'center' }}>{data.relationship}</td>

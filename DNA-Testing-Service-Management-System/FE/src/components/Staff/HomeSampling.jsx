@@ -365,7 +365,7 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          {record.status !== "SAMPLE_RECEIVED" && (
+          {record.status !== "SAMPLE_RECEIVED" && record.status !== "COMPLETED" && (
             <Button
               size="small"
               icon={<CarOutlined />}

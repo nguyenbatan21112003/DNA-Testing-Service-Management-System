@@ -95,15 +95,22 @@ namespace DNATestSystem.APIService.Controllers
             }
             return Ok(data);
         }
-        [HttpGet("test-result/{request_id}")]
-        public async Task<IActionResult> GetTestResultById([FromRoute] int request_id)
+        [HttpGet("test-result/{result_id}")]
+        public async Task<IActionResult> GetTestResultById([FromRoute] int result_id)
         {
-            var data = await _userService.GetTestRequestByRequestId(request_id);
+            var data = await _userService.GetTestRequestByRequestId(result_id);
             if (data == null)
             {
                 return NotFound(new { message = "Không tìm thấy kết quả xét nghiệm" });
             }
             return Ok(data);
+        }
+        [HttpPut("update-Feedback")]
+        public async Task<IActionResult> UpdateFeedbackByFeedbackId([FromBody] CustomerFeedbackUpdateDto model)
+        {
+             var data = await _userService.UpdateFeedbackByFeedbackId(model);
+            return await Task.FromResult(Ok(new { message = " Cập nhật FeedBack Thành công" }));
+
         }
     }
 }

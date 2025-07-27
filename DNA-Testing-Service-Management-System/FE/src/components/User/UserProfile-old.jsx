@@ -78,6 +78,7 @@ const UserProfile = () => {
               );
               process = response?.data || null;
             } catch (err) {
+              console.log(err)
               console.warn(`Không có process cho requestId ${order.requestId}`);
             }
 

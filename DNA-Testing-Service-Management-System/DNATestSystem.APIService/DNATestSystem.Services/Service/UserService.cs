@@ -23,6 +23,8 @@ using DNATestSystem.BusinessObjects.Application.Dtos.FeedBack;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestSample;
+using Microsoft.AspNetCore.Http.HttpResults;
+using DNATestSystem.BusinessObjects.Application.Dtos.Pdf;
 
 namespace DNATestSystem.Services.Service
 {
@@ -44,24 +46,7 @@ namespace DNATestSystem.Services.Service
             var claim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(claim, out var id) ? id : 0;
         }
-        //public User? Login(UserLoginModel loginModel)
-        //{
-        //    var user = _context.Users
-        //        .FirstOrDefault(x => x.Email == loginModel.Email);
-        //    if (user == null)
-        //    {
-        //        return null;
-        //    }
-        //    var password = loginModel.Password;
-
-        //    if (HashHelper.BCriptVerify(password, user.Password))
-        //    {
-        //        return user;
-        //    }
-        //    return null;
-        //}
-
-
+     
         public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
             var user = await _context.Users
@@ -198,28 +183,6 @@ namespace DNATestSystem.Services.Service
                                     .Include(s => s.PriceDetails)
                                     .Where(s => s.IsPublished == true)
                                     .ToListAsync();
-            ////tạo ra priceDetails khi đã join với Service
-            //var service = priceDetails
-            //                .Select(s =>
-            //                {
-            //                    var price = s.PriceDetails.FirstOrDefault();
-            //                    //lấy tk Price ra
-
-            //                    return new ServiceSummaryDto
-            //                    {
-            //                        Id = s.ServiceId,
-            //                        Slug = s.Slug,
-            //                        ServiceName = s.ServiceName,
-            //                        Description = s.Description,
-            //                        Category = s.Category,
-            //                        IsUrgent = (bool)s.IsUrgent,
-            //                        IncludeVAT = true,
-            //                        Price2Samples = price?.Price2Samples,
-            //                        Price3Samples = price?.Price3Samples,
-            //                        TimeToResult = price?.TimeToResult
-            //                    };
-            //                }).ToList();
-            //return service;
             var service = priceDetails
                         .Select(s =>
                         {
@@ -332,7 +295,7 @@ namespace DNATestSystem.Services.Service
                 throw new Exception("Không tìm thấy hồ sơ người dùng.");
 
             // Cập nhật profile
-            
+
             userProfile.Gender = updateProfileModel.Gender;
             userProfile.Address = updateProfileModel.Address;
             userProfile.DateOfBirth = updateProfileModel.DateOfBirth;
@@ -355,6 +318,32 @@ namespace DNATestSystem.Services.Service
                 Fingerfile = userProfile.Fingerfile,
             };
 
+        }
+
+        public async Task<string> GetProfileByUser()
+        {
+            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var userId))
+            {
+                throw new Exception("Không tìm thấy người dùng.");
+            }
+
+            // 📥 Lấy hồ sơ người dùng
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+
+            if (profile == null)
+            {
+                throw new Exception("Không tìm thấy hồ sơ người dùng.");
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.Fingerfile))
+            {
+                throw new Exception("Không có ảnh vân tay.");
+            }
+
+            // 🟢 Trả về chuỗi base64
+            return profile.Fingerfile;
         }
 
         public async Task<ServiceSummaryDetailsModel?> GetServiceByIdAsync(int id)
@@ -823,19 +812,77 @@ namespace DNATestSystem.Services.Service
         public async Task<List<GetTestResultDto>> GetTestRequestByRequestId(int request_id)
         {
             var data = await _context.TestResults
-                            .Where( x => x.RequestId == request_id)
-                            .Select(x => new GetTestResultDto 
+                            .Where(x => x.RequestId == request_id)
+                            .Select(x => new GetTestResultDto
                             {
                                 ResultId = x.ResultId,
                                 RequestId = x.RequestId,
                                 EnteredBy = x.EnteredBy,
                                 VerifiedBy = x.VerifiedBy,
                                 ResultData = x.ResultData,
+
                                 Status = x.Status,
                                 EnteredAt = x.EnteredAt,
                                 VerifiedAt = x.VerifiedAt
                             }).ToListAsync();
             return data;
         }
+        public async Task<bool> UpdateFeedbackByFeedbackId(CustomerFeedbackUpdateDto model)
+        {
+            int userId = GetCurrentUserId();
+            if (userId == 0) throw new Exception("Không tìm thấy người dùng.");
+            var data = await _context.Feedbacks.Where(x => x.FeedbackId == model.FeedbackId
+                                                && x.UserId == userId).FirstOrDefaultAsync();
+            if (data == null) throw new Exception("Không tìm thấy feedback");
+
+            data.Comment = model.Comment;
+            data.Rating = model.Rating;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<PdfExportDto?> GetExportPdfDataAsync(int resultId)
+        {
+            var query = await (from r in _context.TestResults
+                               join tr in _context.TestRequests on r.RequestId equals tr.RequestId
+                               join s in _context.Services on tr.ServiceId equals s.ServiceId
+                               join u in _context.Users on tr.UserId equals u.UserId
+                               join tp in _context.TestProcesses on tr.RequestId equals tp.RequestId into tpj
+                               join du in _context.RequestDeclarants on tr.RequestId equals du.RequestId
+                               from tp in tpj.DefaultIfEmpty()
+                               join staff in _context.Users on tp.StaffId equals staff.UserId into staffj
+                               from staff in staffj.DefaultIfEmpty()
+                               where r.ResultId == resultId
+                               select new PdfExportDto
+                               {
+                                   RequestId = tr.RequestId,
+                                   ServiceName = s.ServiceName,
+                                   Category = tr.Category,
+                                   ScheduleDate = tr.ScheduleDate,
+                                   RequestAddress = tr.Address,
+                                   DeclarantName = u.FullName,
+                                   StaffName = staff.FullName,
+                                   KitCode = tp.KitCode,
+                                   PhoneNumber = u.Phone,
+                                   IdentityNumber = du.IdentityNumber,
+                                   ResultData = r.ResultData
+                               }).FirstOrDefaultAsync();
+
+            if (query == null) return null;
+
+            query.Samples = await _context.TestSamples
+                .Where(x => x.RequestId == query.RequestId)
+                .Select(x => new TestSampleDto
+                {
+                    OwnerName = x.OwnerName,
+                    Gender = x.Gender,
+                    Yob = x.Yob,
+                    Relationship = x.Relationship,
+                    SampleType = x.SampleType
+                }).ToListAsync();
+
+            return query;
+        }
+      
     }
 }

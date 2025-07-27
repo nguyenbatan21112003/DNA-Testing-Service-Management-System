@@ -1,14 +1,16 @@
 import React from "react";
 import { Modal, Tag } from "antd";
+import { Card, Descriptions } from "antd";
+import {
+  UserOutlined,
+  TeamOutlined,
+  CalendarOutlined,
+  ExperimentOutlined,
+} from "@ant-design/icons";
 
-/**
- * Hiển thị chi tiết một đơn đăng ký (order) trong modal.
- * Tách ra từ UserProfile.jsx để dễ bảo trì, tái sử dụng.
- */
 const TestDetailModal = ({ isOpen, order, onClose }) => {
   if (!isOpen || !order) return null;
 
-  // Helper: chuyển đổi mã địa điểm thu mẫu sang nhãn thân thiện
   const getSampleMethodLabel = (val) => {
     if (val === "At Home") return "Tại nhà";
     if (val === "At Center") return "Tại trung tâm";
@@ -32,7 +34,7 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
         return "Đã gửi kit";
       // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-        return 'Đã nhận mẫu'
+        return "Đã nhận mẫu";
       // case "PROCESSING":
       // case "WAITING_APPROVAL":
       case "WAITING_FOR_APPOINTMENT":
@@ -182,123 +184,156 @@ const TestDetailModal = ({ isOpen, order, onClose }) => {
           </span>
           <span>{order.serviceName ? order.serviceName : ""}</span>
         </div>
-        
+
         {order.samples?.length > 0 &&
           order.samples.some(
             (s) => s.ownerName || s.relationship || s.sampleType || s.yob
           ) && (
             <>
-            <div style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }} />
-              <div style={{ fontWeight: 700, marginTop: 16 }}>
-                Danh sách người cung cấp mẫu:
+             
+
+              <div>
+                <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
+                <span>
+                  {order.collectType
+                    ? getSampleMethodLabel(order.collectType)
+                    : "-"}
+                </span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {order.samples.map((s, idx) => (
-                  <div
-                    key={s.sampleId || idx}
-                    style={{
-                      background: "#f9f9f9",
-                      border: "1px solid #ddd",
-                      borderRadius: 8,
-                      padding: 10,
-                      fontSize: 14,
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    <div>
-                      <strong>Họ tên:</strong> {s.ownerName || "-"}
-                    </div>
-                    <div>
-                      <strong>Quan hệ:</strong> {s.relationship || "-"}
-                    </div>
-                    <div>
-                      <strong>Năm sinh:</strong> {s.yob || "-"}
-                    </div>
-                    <div>
-                      <strong>Loại mẫu:</strong> {s.sampleType || "-"}
-                    </div>
+              {order.collectType === "At Home" ? (
+                <div>
+                  <span style={{ fontWeight: 600 }}>Mã kit:</span>{" "}
+                  <span>{order.testProcess?.kitCode || "-"}</span>
+                </div>
+              ) : order.collectType === "At Center" ? (
+                <>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
+                    <span>
+                      2A Phan Chu Trinh, Hiệp Phú, Thủ Đức, Hồ Chí Minh 71300,
+                      Vietnam
+                    </span>
                   </div>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Ngày hẹn lấy mẫu:</span>{" "}
+                    <span>
+                      {order.scheduleDate
+                        ? new Date(order.scheduleDate).toLocaleDateString(
+                            "vi-VN"
+                          )
+                        : "-"}
+                    </span>
+                  </div>
+                </>
+              ) : null}
+
+              <div>
+                <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
+                <span>
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleDateString("vi-VN")
+                    : "-"}
+                </span>
+              </div>
+              {order.appointmentDate && order.sampleMethod === "At Center" && (
+                <div
+                  style={{
+                    background: "#e0edff",
+                    color: "#2563eb",
+                    fontWeight: 700,
+                    border: "1.5px solid #1d4ed8",
+                    borderRadius: 8,
+                    padding: "8px 18px",
+                    margin: "10px 0 0 0",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    fontSize: 17,
+                    gap: 8,
+                    boxShadow: "0 2px 8px #2563eb22",
+                  }}
+                >
+                  <span style={{ fontSize: 20, marginRight: 6 }}>
+                    <svg
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"
+                        stroke="#1d4ed8"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  Ngày lấy mẫu: {order.appointmentDate}
+                </div>
+              )}
+               <div
+                style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style={{ fontWeight: 700, marginTop: 16 }}>
+                  Danh sách người cung cấp mẫu:
+                </div>
+                {order.samples.map((s, idx) => (
+                  <Card
+                  
+                    key={s.sampleId || idx}
+                    bordered
+                    size="small"
+                    style={{ borderRadius: 12, marginTop: 3 }}
+                    hoverable
+                    title={`Người cung cấp ${idx + 1}`}
+                  >
+                    <Descriptions column={1} size="small">
+                      <Descriptions.Item
+                        label={
+                          <>
+                            <UserOutlined /> Họ tên
+                          </>
+                        }
+                      >
+                        {s.ownerName || "-"}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        label={
+                          <>
+                            <TeamOutlined /> Quan hệ
+                          </>
+                        }
+                      >
+                        {s.relationship || "-"}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        label={
+                          <>
+                            <CalendarOutlined /> Năm sinh
+                          </>
+                        }
+                      >
+                        {s.yob || "-"}
+                      </Descriptions.Item>
+                      <Descriptions.Item
+                        label={
+                          <>
+                            <ExperimentOutlined /> Loại mẫu
+                          </>
+                        }
+                      >
+                        {s.sampleType || "-"}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Card>
                 ))}
               </div>
             </>
           )}
 
         <div style={{ borderTop: "1px solid #e6e6e6", margin: "12px 0" }} />
-        <div>
-          <span style={{ fontWeight: 600 }}>Hình thức thu mẫu:</span>{" "}
-          <span>
-            {order.collectType ? getSampleMethodLabel(order.collectType) : "-"}
-          </span>
-        </div>
-        {order.collectType === "At Home" ? (
-          <div>
-            <span style={{ fontWeight: 600 }}>Mã kit:</span>{" "}
-            <span>{order.testProcess?.kitCode || "-"}</span>
-          </div>
-        ) : order.collectType === "At Center" ? (
-          <>
-            <div>
-              <span style={{ fontWeight: 600 }}>Địa điểm thu mẫu:</span>{" "}
-              <span>
-                2A Phan Chu Trinh, Hiệp Phú, Thủ Đức, Hồ Chí Minh 71300, Vietnam
-              </span>
-            </div>
-            <div>
-              <span style={{ fontWeight: 600 }}>Ngày hẹn lấy mẫu:</span>{" "}
-              <span>
-                {order.scheduleDate
-                  ? new Date(order.scheduleDate).toLocaleDateString("vi-VN")
-                  : "-"}
-              </span>
-            </div>
-          </>
-        ) : null}
-
-        <div>
-          <span style={{ fontWeight: 600 }}>Ngày đăng ký:</span>{" "}
-          <span>
-            {order.createdAt
-              ? new Date(order.createdAt).toLocaleDateString("vi-VN")
-              : "-"}
-          </span>
-        </div>
-        {order.appointmentDate && order.sampleMethod === "At Center" && (
-          <div
-            style={{
-              background: "#e0edff",
-              color: "#2563eb",
-              fontWeight: 700,
-              border: "1.5px solid #1d4ed8",
-              borderRadius: 8,
-              padding: "8px 18px",
-              margin: "10px 0 0 0",
-              display: "inline-flex",
-              alignItems: "center",
-              fontSize: 17,
-              gap: 8,
-              boxShadow: "0 2px 8px #2563eb22",
-            }}
-          >
-            <span style={{ fontSize: 20, marginRight: 6 }}>
-              <svg
-                width="1em"
-                height="1em"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M7 2v2m10-2v2M3 10h18M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"
-                  stroke="#1d4ed8"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            Ngày lấy mẫu: {order.appointmentDate}
-          </div>
-        )}
       </div>
     </Modal>
   );

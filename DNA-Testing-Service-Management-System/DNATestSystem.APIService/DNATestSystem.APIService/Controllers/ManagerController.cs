@@ -188,5 +188,22 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet("thumbnail-by-slug")]
+        public async Task<IActionResult> GetThumbnailBySlugAsync([FromQuery] string slug)
+        {
+            try
+            {
+                var thumbnail = await _managerService.GetThumbnailBySlugAsync(slug);
+                if (thumbnail == null)
+                {
+                    return NotFound(new { success = false, message = "Thumbnail not found." });
+                }
+                return Ok(new { success = true, data = thumbnail });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace DNATestSystem.APIService.Controllers
         private readonly IVnPayService _vnPayService;
         private readonly IApplicationDbContext _context;
 
-        public CheckoutController(IVnPayService vnPayService , IApplicationDbContext dbContext)
+        public CheckoutController(IVnPayService vnPayService, IApplicationDbContext dbContext)
         {
             _vnPayService = vnPayService;
             _context = dbContext;
@@ -29,7 +29,7 @@ namespace DNATestSystem.APIService.Controllers
                 if (response.VnPayResponseCode != "00" || !response.Success)
                 {
                     var failMessage = response.VnPayResponseCode != "00"
-                        ? "Thanh toán bị huỷ hoặc thất bại"
+                        ? "Thanh toán bị hủy hoặc thất bại"
                         : "Thanh toán thất bại";
 
                     var failRedirect = $"http://localhost:5173/payment-success?status=fail&message={Uri.EscapeDataString(failMessage)}";
@@ -88,7 +88,7 @@ namespace DNATestSystem.APIService.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Exception tại PaymentCallback: " + ex.Message);
+                Console.WriteLine("Lỗi ở payment CallBack: " + ex.Message);
                 var errorRedirect = "http://localhost:5173/payment-success?status=fail&message=Loi%20he%20thong";
                 return Content(CreateRedirectHtml(errorRedirect), "text/html");
             }
@@ -98,25 +98,26 @@ namespace DNATestSystem.APIService.Controllers
         private string CreateRedirectHtml(string url, bool success = false)
         {
             var color = success ? "green" : "red";
-            var message = success ? "✅ Thanh toán thành công." : "❌ Thanh toán thất bại.";
+            var message = success ? "Thanh toán thành công" : "Thanh toán thất bại";
+
             return $@"
-    <html>
-        <head>
-            <meta http-equiv='refresh' content='2;url={url}' />
-            <script>
-                setTimeout(function() {{
-                    window.location.href = '{url}';
-                }}, 2000);
-            </script>
-        </head>
-        <body>
-            <h3 style='text-align:center;margin-top:40px;color:{color};'>
-                {message} Đang chuyển hướng...
-            </h3>
-        </body>
-    </html>";
+            <!DOCTYPE html>
+            <html lang='vi'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta http-equiv='refresh' content='2;url={url}' />
+                    <script>
+                        setTimeout(function() {{
+                            window.location.href = '{url}';
+                        }}, 2000);
+                    </script>
+                </head>
+                <body>
+                    <h3 style='text-align:center;margin-top:40px;color:{color};'>
+                        {message}. Đang chuyển hướng...
+                    </h3>
+                </body>
+            </html>";
         }
-
-
     }
 }

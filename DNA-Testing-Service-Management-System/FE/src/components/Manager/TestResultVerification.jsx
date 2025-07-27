@@ -115,7 +115,6 @@ const TestResultVerification = () => {
   const confirmApprove = async () => {
     if (!pendingApproveOrder) return;
     try {
-  
       const resUpdate = await managerApi.updateTestProcess({
         requestId: pendingApproveOrder.id,
         currentStatus: "completed",
@@ -142,11 +141,9 @@ const TestResultVerification = () => {
     try {
       const res = await managerApi.updateTestResult({
         resultID: pendingRejectOrder.resultId,
-        status: "rejected", // hoặc enum tương ứng nếu cần
+        status: "rejected",
       });
-      // console.log(res);
-      if(res.status !== 200) throw new Error
-      alert("Đã từ chối kết quả!");
+      if (res.status !== 200) throw new Error();
       message.success("Đã từ chối kết quả!");
       fetchResults();
     } catch (err) {
@@ -154,7 +151,7 @@ const TestResultVerification = () => {
       message.error("Từ chối thất bại");
     }
     setRejectModalVisible(false);
-    setRejectNote("");
+    setPendingRejectOrder(null);
   };
 
   // const fetchRequestInfo = async () => {
@@ -193,7 +190,8 @@ const TestResultVerification = () => {
   };
 
   const handleReject = (order) => {
-    setPendingRejectOrder(order);
+    // setPendingRejectOrder(order);
+    setPendingRejectOrder(order); // ✅ đặt order cần từ chối
     setRejectModalVisible(true);
   };
 
@@ -897,14 +895,14 @@ const TestResultVerification = () => {
             danger
             icon={<CloseCircleOutlined />}
             onClick={confirmReject}
-            disabled={!rejectNote.trim()}
+            // disabled={!rejectNote.trim()}
           >
             Từ chối
           </Button>,
         ]}
         width={500}
       >
-        <div style={{ marginBottom: 16 }}>
+        {/* <div style={{ marginBottom: 16 }}>
           <Text strong>Lý do từ chối:</Text>
           <textarea
             value={rejectNote}
@@ -919,7 +917,7 @@ const TestResultVerification = () => {
               marginTop: 8,
             }}
           />
-        </div>
+        </div> */}
       </Modal>
 
       {/* Modal xác nhận ẩn đơn hàng */}

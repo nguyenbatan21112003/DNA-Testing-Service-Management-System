@@ -13,17 +13,26 @@ const Feedback = ({
   const [overallRating, setOverallRating] = useState(0);
   const [feedbackInput, setFeedbackInput] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState("");
+  const [lastFeedback, setLastFeedback] = useState(null);
 
   // Sync when opening / switching order
   useEffect(() => {
-    if (isOpen && order && order.feedbacks && order.feedbacks.length > 0) {
-      const lastFb = order.feedbacks[order.feedbacks.length - 1];
-      setOverallRating(lastFb.rating || 0);
-      setFeedbackInput(lastFb.feedback || "");
-    } else if (isOpen) {
-      // Reset when opening for new feedback
-      setOverallRating(0);
-      setFeedbackInput("");
+    if (isOpen && order) {
+      const lastFb =
+        order.feedbacks && order.feedbacks?.length > 0
+          ? order.feedbacks[order.feedbacks.length - 1]
+          : null;
+
+      if (lastFb) {
+        console.log(lastFb);
+        setOverallRating(lastFb.rating || 0);
+        setFeedbackInput(lastFb.comment || "");
+        setLastFeedback(lastFb); // ✅ gán ở đây
+      } else {
+        setOverallRating(0);
+        setFeedbackInput("");
+        setLastFeedback(null);
+      }
     }
   }, [isOpen, order]);
 
@@ -44,9 +53,7 @@ const Feedback = ({
         return "Đã gửi kit";
       // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-        return 'Đã nhận mẫu'
-      // case "PROCESSING":
-      // case "WAITING_APPROVAL":
+        return "Đã nhận mẫu";
       case "WAITING_FOR_APPOINTMENT":
         return "Chờ đến ngày hẹn";
       case "REJECTED":
@@ -59,16 +66,12 @@ const Feedback = ({
   };
 
   const getDisplayStatus = (order) => {
-    return (
-      order.status ||
-      order.samplingStatus ||
-      order.kitStatus ||
-      "PENDING_CONFIRM"
-    );
+    // console.log('order nè',order)
+    return order.testProcess?.currentStatus || order.status || "PENDING";
   };
 
   const canRate =
-    getStatusText(getDisplayStatus(order)) === "Đã có kết quả" ||
+    getStatusText(getDisplayStatus(order)) === "completed" ||
     getStatusText(getDisplayStatus(order)) === "Hoàn thành";
 
   if (!canRate) return null;
@@ -81,27 +84,6 @@ const Feedback = ({
     if (onSubmitFeedback) {
       onSubmitFeedback(order, overallRating, feedbackInput);
     }
-
-    // if (setUserOrders) {
-    //   setUserOrders((prev) =>
-    //     prev.map((o) =>
-    //       o.id === order.id
-    //         ? {
-    //             ...o,
-    //             feedbacks: [
-    //               {
-    //                 rating: overallRating,
-    //                 feedback: feedbackInput,
-    //                 date: `${new Date().getDate()}/${
-    //                   new Date().getMonth() + 1
-    //                 }/${new Date().getFullYear()}`,
-    //               },
-    //             ],
-    //           }
-    //         : o
-    //     )
-    //   );
-    // }
 
     onClose();
     setFeedbackSuccess("Cảm ơn bạn đã đánh giá!");
@@ -237,9 +219,8 @@ const Feedback = ({
           }}
         />
         {/* Submit / info */}
-        {order.feedbacks &&
-        order.feedbacks.length > 0 &&
-        order.feedbacks[0].rating ? (
+        {/* Submit / info */}
+        {lastFeedback ? (
           <div
             style={{
               display: "flex",
@@ -261,8 +242,17 @@ const Feedback = ({
             >
               <div style={{ fontWeight: 600, marginBottom: 4 }}>
                 Đánh giá vào ngày:{" "}
-                {order.feedbacks[order.feedbacks.length - 1].date}
+                <span style={{ color: "#222" }}>
+                  {lastFeedback.createdAt
+                    ? new Date(lastFeedback.createdAt).toLocaleDateString(
+                        "vi-VN"
+                      )
+                    : "-"}
+                </span>
               </div>
+              {/* <div style={{ fontStyle: "italic", color: "#444" }}>
+                “{lastFeedback.feedback || "Không có nhận xét"}”
+              </div> */}
             </div>
           </div>
         ) : (
@@ -284,6 +274,7 @@ const Feedback = ({
             Gửi đánh giá
           </button>
         )}
+
         {feedbackSuccess && (
           <div
             style={{

@@ -17,14 +17,14 @@ import {
 } from "@ant-design/icons";
 import staffApi from "../../api/staffApi";
 import { AuthContext } from "../../context/AuthContext";
-import { useServiceContext } from "../../context/ServiceContext";
+import { ServiceContext } from "../../context/ServiceContext";
 
 const ConsultationRequests = () => {
   const [consultations, setConsultations] = useState([]);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const { user } = useContext(AuthContext);
-  const services = useServiceContext();
+  const services = useContext(ServiceContext);
 
   const getServiceName = (id) => {
     const s = services.find((x) => x.id == id);
@@ -150,7 +150,7 @@ const ConsultationRequests = () => {
           </Button>
           {record.status !== "Đã phản hồi" && (
             <Button size="small" onClick={() => handleMarkCompleted(record)}>
-              Xác nhận đã hoàn thành
+             Hoàn thành
             </Button>
           )}
         </Space>
@@ -211,7 +211,7 @@ const ConsultationRequests = () => {
               <strong>SĐT:</strong> {selectedConsultation.phone}
             </p>
             <p>
-              <strong>Danh mục:</strong> {selectedConsultation.category}
+              <strong>Danh mục:</strong> {selectedConsultation.category == 'Administrative' ? 'Hành chính' : 'Dân sự'}
             </p>
             <h3>Dịch vụ:</h3>
             <p>{getServiceName(selectedConsultation.serviceId)}</p>

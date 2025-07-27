@@ -21,6 +21,7 @@ import ManagerOverview from "./ManagerOverview";
 import ManagerReports from "./ManagerReports";
 import TestResultVerification from "./TestResultVerification";
 import BlogManagement from "./BlogManagement";
+import CustomerFeedbackManager from "./CustomerFeedbackManager";
 
 const { Sider, Content } = Layout;
 
@@ -40,6 +41,11 @@ const menuItems = [
     icon: <BarChartOutlined />,
     label: "Báo cáo",
   },
+  // {
+  //   key: "feedback",
+  //   icon: <CustomerFeedbackManager />,
+  //   label: "Phản hồi của Khách hàng",
+  // },
   {
     key: "blog",
     icon: <FileTextOutlined />,

@@ -14,6 +14,17 @@ const AdminTestResult = ({ isOpen, order, onClose }) => {
   //   if (val === "self") return "Tự thu và gửi mẫu";
   //   return val;
   // };
+  // console.log(order);
+  const donors = Array.isArray(order.sampleInfo?.donors)
+    ? Array.from(
+        new Map(
+          order.sampleInfo.donors.map((d) => [
+            `${d.idNumber || ""}_${d.name || ""}_${d.birth || ""}`,
+            d,
+          ])
+        ).values()
+      )
+    : [];
 
   return (
     <div
@@ -123,9 +134,9 @@ const AdminTestResult = ({ isOpen, order, onClose }) => {
                 2A Phan Chu Trinh, Hiệp Phú, Thủ Đức, Hồ Chí Minh 71300, Vietnam
               </b>
             </div>
-            <div>
+            {/* <div>
               Mã đơn hàng: <b>#{order.requestId}</b>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -140,100 +151,110 @@ const AdminTestResult = ({ isOpen, order, onClose }) => {
         >
           Thông tin người cho mẫu
         </div>
-        {Array.isArray(order.sampleInfo?.donors) &&
-          order.sampleInfo.donors.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              {order.sampleInfo.donors.map((donor, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    border: "1px solid #eee",
-                    borderRadius: 8,
-                    padding: 16,
-                    marginBottom: 12,
-                    background: "#fafbfc",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: 0, marginBottom: 4 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Họ và tên:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.name || ""}
-                      </span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Giới tính:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.gender || ""}
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 0, marginBottom: 4 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Năm sinh:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.birth || ""}
-                      </span>
-                    </div>
-                    {/* <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Quốc tịch:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.nationality || ""}
-                      </span>
-                    </div> */}
-                    {donor.fingerprintImage && (
-                      <div style={{ marginTop: 8 }}>
-                        <b>Vân tay:</b>
-                        <br />
-                        <img
-                          src={
-                            donor.fingerprintImage.startsWith("data:")
-                              ? donor.fingerprintImage
-                              : `data:image/png;base64,${donor.fingerprintImage}`
-                          }
-                          alt="Vân tay"
-                          style={{ maxHeight: 120, marginTop: 6 }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ display: "flex", gap: 0, marginBottom: 4 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Loại giấy tờ:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.idType || ""}
-                      </span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Số giấy tờ:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.idNumber || ""}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: "flex", gap: 0, marginBottom: 4 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Ngày cấp:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.idIssueDate
-                          ? dayjs(donor.idIssueDate).isValid()
-                            ? dayjs(donor.idIssueDate).format("DD/MM/YYYY")
-                            : donor.idIssueDate
-                          : ""}
-                      </span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <b>Nơi cấp:</b>{" "}
-                      <span style={{ fontWeight: 400 }}>
-                        {donor.idIssuePlace || ""}
-                      </span>
-                    </div>
-                  </div>
+        {donors?.map((donor, idx) => (
+          <div
+            key={idx}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: 10,
+              padding: 20,
+              marginBottom: 16,
+              background: "#fefefe",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px 20px",
+                marginBottom: 12,
+                alignItems: "start",
+              }}
+            >
+              <div>
+                <b>Họ và tên:</b>{" "}
+                <span style={{ fontWeight: 400 }}>{donor.name || ""}</span>
+              </div>
+              <div>
+                <b>Giới tính:</b>{" "}
+                <span style={{ fontWeight: 400 }}>{donor.gender || ""}</span>
+              </div>
+
+              <div>
+                <b>Năm sinh:</b>{" "}
+                <span style={{ fontWeight: 400 }}>{donor.birth || ""}</span>
+              </div>
+              <div>
+                <b>Địa chỉ:</b>{" "}
+                <span style={{ fontWeight: 400 }}>
+                  {donor.address || donor.idIssuePlace || ""}
+                </span>
+              </div>
+
+              <div>
+                <b>Loại mẫu:</b>{" "}
+                <span style={{ fontWeight: 400 }}>
+                  {donor.sampleType || ""}
+                </span>
+              </div>
+              <div>
+                <b>Mối quan hệ:</b>{" "}
+                <span style={{ fontWeight: 400 }}>
+                  {donor.relationship || ""}
+                </span>
+              </div>
+
+              <div>
+                <b>Loại giấy tờ:</b>{" "}
+                <span style={{ fontWeight: 400 }}>{donor.idType || ""}</span>
+              </div>
+              <div>
+                <b>Số giấy tờ:</b>{" "}
+                <span style={{ fontWeight: 400 }}>{donor.idNumber || ""}</span>
+              </div>
+
+              <div>
+                <b>Ngày cấp:</b>{" "}
+                <span style={{ fontWeight: 400 }}>
+                  {donor.idIssueDate
+                    ? dayjs(donor.idIssueDate).isValid()
+                      ? dayjs(donor.idIssueDate).format("DD/MM/YYYY")
+                      : donor.idIssueDate
+                    : ""}
+                </span>
+              </div>
+              <div>
+                <b>Nơi cấp:</b>{" "}
+                <span style={{ fontWeight: 400 }}>
+                  {donor.idIssuePlace || ""}
+                </span>
+              </div>
+
+              {donor.fingerprintImage && (
+                <div style={{ gridColumn: "1 / -1", marginTop: 8 }}>
+                  <b>Vân tay:</b>
+                  <br />
+                  <img
+                    src={
+                      donor.fingerprintImage.startsWith("data:")
+                        ? donor.fingerprintImage
+                        : `data:image/png;base64,${donor.fingerprintImage}`
+                    }
+                    alt="Vân tay"
+                    style={{
+                      maxHeight: 120,
+                      marginTop: 6,
+                      border: "1px solid #ccc",
+                      padding: 2,
+                      borderRadius: 4,
+                    }}
+                  />
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          </div>
+        ))}
 
         {/* Bảng kết quả xét nghiệm */}
         {Array.isArray(order.resultTableData) &&

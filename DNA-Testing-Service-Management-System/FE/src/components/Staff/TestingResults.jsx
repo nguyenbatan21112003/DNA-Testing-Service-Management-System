@@ -45,6 +45,7 @@ const TestingResults = () => {
   const [confirmHideOrder, setConfirmHideOrder] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [reasonModalVisible, setReasonModalVisible] = useState(false);
+
   // const [reasonText, setReasonText] = useState("");
   // const [requests, setRequests] = useState([]);
 
@@ -424,6 +425,7 @@ const TestingResults = () => {
                   ? resultRes.data[0]
                   : null;
               }
+              console.log(testResult);
             } catch (err) {
               console.log(err);
               console.warn("Không có kết quả xét nghiệm cho đơn:", requestId);
@@ -635,10 +637,11 @@ const TestingResults = () => {
               icon={<EditOutlined />}
               onClick={() => handleEditResult(record)}
             >
-              Nhập kết quả
+              {getStatusText(record.status) === "Từ chối"
+                ? "Cập nhật kết quả"
+                : "Nhập kết quả"}
             </Button>
           )}
-
           {getStatusText(record.status) !== "Đang xét nghiệm" && (
             <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
               <Button
@@ -1221,6 +1224,7 @@ const TestingResults = () => {
                             }}
                           >
                             {data.birth ||
+                              data.yob ||
                               data.birthYear ||
                               data.namSinh ||
                               data.namsinh ||
@@ -1294,11 +1298,11 @@ const TestingResults = () => {
               >
                 Kết quả
               </h3>
-              {selectedOrder.conclusion ? (
+              {selectedOrder.result ? (
                 <div
                   style={{ fontSize: 18, color: "#005c3c", fontWeight: 700 }}
                 >
-                  {selectedOrder.conclusion}
+                  {selectedOrder.result}
                 </div>
               ) : (
                 <div style={{ color: "#faad14", fontWeight: 600 }}>
@@ -1493,8 +1497,8 @@ const TestingResults = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(tableData)
-                    ? tableData.map((data, index) => (
+                  {Array.isArray(sampleData)
+                    ? sampleData.map((data, index) => (
                         <tr
                           key={data.key || index}
                           style={{
@@ -1533,6 +1537,7 @@ const TestingResults = () => {
                             }}
                           >
                             {data.birth ||
+                              data.yob ||
                               data.birthYear ||
                               data.namSinh ||
                               data.namsinh ||
@@ -1592,6 +1597,7 @@ const TestingResults = () => {
               rows={3}
               placeholder="Nhập kết luận và ghi chú kỹ thuật..."
               style={{ background: "#fff7e6", borderRadius: 8, fontSize: 16 }}
+              value={selectedOrder?.result || ""}
             />
           </Form.Item>
         </Form>

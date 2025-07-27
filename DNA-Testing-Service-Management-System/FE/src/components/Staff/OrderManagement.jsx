@@ -108,33 +108,7 @@ const OrderManagement = () => {
     }
   };
 
-  // const handleSubmitAcceptOrder = async (values) => {
-  //   try {
-  //     const payload = {
-  //       processId: 0,
-  //       requestId: acceptingOrder.id,
-  //       staffId: user.userId,
-  //       kitCode: values.kitCode,
-  //       collectionType: "At Home",
-  //       notes: values.notes,
-  //     };
-  //     // console.log(payload);
-  //     const res = await staffApi.assignRequest(payload);
-  //     if (res.status !== 200) throw new Error();
-  //     const resConfirmed = {
-  //       requestId: payload.requestId,
-  //       newStatus: "confirmed",
-  //     };
-  //     // console.log(resConfirmed);
-  //     await confirmTestRequest(resConfirmed.requestId, resConfirmed);
-  //     message.success("Đã nhận đơn tại nhà!");
 
-  //     setAcceptModalVisible(false);
-  //     await loadAllSamplingRequests();
-  //   } catch {
-  //     message.error("Lỗi khi nhận đơn!");
-  //   }
-  // };
 
   const loadAllSamplingRequests = async () => {
     try {
@@ -143,14 +117,14 @@ const OrderManagement = () => {
         staffApi.getRequestCenter(),
       ]);
       const mapData = (data) =>
-        data.map((item) => {
+        data.filter((item) => item.status == 'pending').map((item) => {
           const declarant = item.declarant || {};
           const methodLabel = item.collectionType
             ?.toLowerCase()
             .includes("at home")
             ? "home"
             : "center";
-
+          console.log(item)
           return {
             id: item.requestId,
             name: declarant.fullName,
@@ -466,7 +440,7 @@ const OrderManagement = () => {
                     </p>
                     <p style={{ marginBottom: 8 }}>
                       <strong>⚥ Giới tính:</strong> {donor.gender} &nbsp;|&nbsp;{" "}
-                      <strong>🎂 Năm sinh:</strong> {donor.yob}
+                      <strong>🎂 Năm sinh:</strong> {donor.yob ?  donor.yob : ''}
                     </p>
                     <p style={{ marginBottom: 0 }}>
                       <strong>🔗 Quan hệ:</strong> {donor.relationship}{" "}

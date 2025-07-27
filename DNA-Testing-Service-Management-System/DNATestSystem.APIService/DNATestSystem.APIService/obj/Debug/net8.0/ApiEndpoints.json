@@ -144,13 +144,13 @@
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
     "Method": "GetTestResultById",
-    "RelativePath": "Customer/test-result/{request_id}",
+    "RelativePath": "Customer/test-result/{result_id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "request_id",
+        "Name": "result_id",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -168,6 +168,22 @@
       {
         "Name": "test_requestId",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "UpdateFeedbackByFeedbackId",
+    "RelativePath": "Customer/update-Feedback",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto",
         "IsRequired": true
       }
     ],
@@ -273,6 +289,22 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "GetThumbnailBySlugAsync",
+    "RelativePath": "Manager/thumbnail-by-slug",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "slug",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -656,6 +688,22 @@
   },
   {
     "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "GetSampleCollectionByCustomerAsync",
+    "RelativePath": "Staff/SampleTest-fingleFile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "processId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
     "Method": "GetTestProcessesByStaffId",
     "RelativePath": "Staff/test-processes",
     "HttpMethod": "GET",
@@ -819,6 +867,22 @@
   },
   {
     "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "ExportRequestPdf",
+    "RelativePath": "user/export-request-pdf/{requestId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "requestId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
     "Method": "GetUserProfileByEmail",
     "RelativePath": "user/get-userProfile-ByEmail/{email}",
     "HttpMethod": "POST",
@@ -870,6 +934,16 @@
     "Method": "Logout",
     "RelativePath": "user/logout",
     "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.Controllers.UserController",
+    "Method": "GetProfileImage",
+    "RelativePath": "user/profile-image",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],

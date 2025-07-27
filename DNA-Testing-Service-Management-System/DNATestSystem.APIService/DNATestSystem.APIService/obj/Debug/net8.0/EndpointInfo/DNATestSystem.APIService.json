@@ -293,14 +293,14 @@
         }
       }
     },
-    "/Customer/test-result/{request_id}": {
+    "/Customer/test-result/{result_id}": {
       "get": {
         "tags": [
           "Customer"
         ],
         "parameters": [
           {
-            "name": "request_id",
+            "name": "result_id",
             "in": "path",
             "required": true,
             "schema": {
@@ -309,6 +309,37 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Customer/update-Feedback": {
+      "put": {
+        "tags": [
+          "Customer"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -548,6 +579,27 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Manager/thumbnail-by-slug": {
+      "get": {
+        "tags": [
+          "Manager"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1260,6 +1312,28 @@
         }
       }
     },
+    "/Staff/SampleTest-fingleFile": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "parameters": [
+          {
+            "name": "processId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/user/register": {
       "post": {
         "tags": [
@@ -1430,6 +1504,18 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/user/profile-image": {
+      "get": {
+        "tags": [
+          "User"
         ],
         "responses": {
           "200": {
@@ -1667,6 +1753,29 @@
           }
         }
       }
+    },
+    "/user/export-request-pdf/{requestId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1828,6 +1937,30 @@
           "repliedAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.FeedBack.CustomerFeedbackUpdateDto": {
+        "type": "object",
+        "properties": {
+          "feedbackId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "comment": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -2085,6 +2218,10 @@
           },
           "includeVAT": {
             "type": "boolean"
+          },
+          "timeToResult": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

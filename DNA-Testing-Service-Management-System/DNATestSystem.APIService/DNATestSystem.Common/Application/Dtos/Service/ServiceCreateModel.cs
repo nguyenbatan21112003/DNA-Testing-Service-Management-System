@@ -19,5 +19,7 @@ namespace DNATestSystem.BusinessObjects.Application.Dtos.Service
         public decimal Price2Samples { get; set; }
         public decimal Price3Samples { get; set; }
         public bool IncludeVAT { get; set; }
+        public string? TimeToResult { get; set; }
+
     }
 }

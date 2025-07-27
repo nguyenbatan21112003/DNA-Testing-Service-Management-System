@@ -11,6 +11,7 @@ const managerApi = {
   createBlogs: (data) => axiosInstance.post("/Manager/create-BlogPost", data),
   updateTestProcess: (data) =>
     axiosInstance.put(`/Manager/update-test-process`, data),
+  getBlogs: () => axiosInstance.get(`/Manager/all-BlogPost`)
 };
 
 export default managerApi;

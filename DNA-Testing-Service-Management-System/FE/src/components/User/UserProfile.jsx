@@ -82,6 +82,11 @@ const UserProfile = () => {
       }
     }
   };
+  useEffect(() => {
+    if (selectedOrder) {
+      setShowFeedbackModal(true);
+    }
+  }, [selectedOrder]);
 
   const handleSubmitFeedback = async (order, rating, comment) => {
     if (!order || !order.resultId || !user?.userId) {
@@ -90,12 +95,14 @@ const UserProfile = () => {
     }
 
     try {
-      await customerApi.sendFeedback({
+      const dataFeedback = {
         resultId: order.resultId,
         userId: user.userId,
         rating,
         comment,
-      });
+      };
+      await customerApi.sendFeedback(dataFeedback);
+      console.log(dataFeedback);
 
       message.success("Gửi đánh giá thành công!");
       setShowFeedbackModal(false);
@@ -113,7 +120,6 @@ const UserProfile = () => {
       });
     } catch (err) {
       console.error("Lỗi khi gửi feedback:", err);
-      message.error("Không thể gửi đánh giá. Vui lòng thử lại.");
     }
   };
 
@@ -219,6 +225,7 @@ const UserProfile = () => {
               gender: p.gender,
               birth: p.yob,
               idType: p.idType,
+              address: p.address,
               idNumber: p.idnumber,
               idIssueDate: p.idissuedDate,
               idIssuePlace: p.idissuedPlace,
@@ -229,7 +236,7 @@ const UserProfile = () => {
             })),
           };
         }
-
+setResultType(order.category === "Administrative" ? "admin" : "civil");
         setSelectedOrder({
           ...order,
           conclusion: resultData.resultData || "Không có kết luận",
@@ -248,7 +255,7 @@ const UserProfile = () => {
           sampleInfo, // chỉ cần cho admin
         });
         console.log(selectedOrder);
-        setResultType(order.category === "Administrative" ? "admin" : "civil");
+        
         setShowResultModal(true);
       } else {
         message.warning("Không tìm thấy kết quả xét nghiệm.");
@@ -513,14 +520,43 @@ const UserProfile = () => {
                 // setShowResultModal(true);
               }}
               onDownloadResult={(order) => handleDownloadResult(order)}
-              onGiveFeedback={(order) => {
-                setSelectedOrder({
-                  ...order,
-                  resultId: order.resultId || "FAKE_RESULT_ID", // thêm resultId giả để Feedback mở được
-                });
-                setShowFeedbackModal(true);
+              onGiveFeedback={async (order) => {
+                try {
+                  // 1. Gọi API để lấy resultId
+                  const res = await customerApi.getResultByRequestId(
+                    order.requestId
+                  );
+                  const resultId = res?.data?.[0]?.resultId;
+
+                  if (!resultId) {
+                    message.warning("Không tìm thấy kết quả để đánh giá.");
+                    return;
+                  }
+
+                  // 2. Gọi API lấy tất cả feedbacks
+                  const fbRes = await customerApi.getAllFeedback(); // GET /Customer/feedback
+                  const allFeedbacks = fbRes?.data || [];
+
+                  // 3. Lọc ra feedback tương ứng với resultId
+                  const matchedFeedbacks = allFeedbacks.filter(
+                    (fb) => fb.resultId === resultId
+                  );
+
+                  // 4. Cập nhật selectedOrder và mở modal
+                  setSelectedOrder({
+                    ...order,
+                    resultId,
+                    feedbacks: matchedFeedbacks,
+                  });
+                  console.log('order có feedback nè', order)
+                  setShowFeedbackModal(true);
+                } catch (err) {
+                  console.error("Lỗi khi mở modal đánh giá:", err);
+                  message.error("Không thể mở đánh giá.");
+                }
               }}
               onViewFeedback={(order) => {
+                console.log(order);
                 setSelectedOrder(order);
                 const lastFb = order.feedbacks[order.feedbacks.length - 1];
                 setOverallRating(lastFb.rating);

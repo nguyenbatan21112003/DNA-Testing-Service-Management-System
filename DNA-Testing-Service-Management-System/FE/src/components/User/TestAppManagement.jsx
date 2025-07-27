@@ -24,8 +24,6 @@ const TestAppManagement = ({
     setSelectedOrder(order);
     setDetailModalVisible(true);
   };
-  
-  
 
   const { user } = useContext(AuthContext);
   const { getAllOrders } = useOrderContext();
@@ -36,60 +34,72 @@ const TestAppManagement = ({
 
   const [showTimeline, setShowTimeline] = useState({}); // {orderId: boolean}
 
-
-  
   const fetchUserOrders = async () => {
-  try {
-    const res = await customerApi.getTestRequest(); // Gọi danh sách đơn
-    const requestList = res?.data || [];
-    
-    const mapped = await Promise.all(
-      requestList.map(async (request) => {
-        const requestId = request.requestId;
+    try {
+      const res = await customerApi.getTestRequest(); // Gọi danh sách đơn
+      const requestList = res?.data || [];
 
-        // Default values
-        let testProcess = null;
-        let declarant = {};
-        let samples = [];
+      const mapped = await Promise.all(
+        requestList
+          .filter((item) => item.status != "unpaid")
+          .map(async (request) => {
+            // console.log("request: ", request);
+            const requestId = request.requestId;
 
-        try {
-          const [resProcess, resDeclarant, resSamples] = await Promise.all([
-            customerApi.getTestProcessByRequestId(requestId),
-            customerApi.getDeclarantByRequestId(requestId),
-            customerApi.getSamplesByRequestId(requestId),
-          ]);
+            // Default values
+            let testProcess = null;
+            let declarant = {};
+            let samples = [];
 
-          testProcess = resProcess?.data || null;
-          declarant = resDeclarant?.data || {};
-          samples = Array.isArray(resSamples?.data) ? resSamples.data : [];
-          console.log(samples)
-        } catch (err) {
-          console.warn(`Lỗi khi load dữ liệu phụ cho đơn ${requestId}`, err);
-        }
+            try {
+              // console.log('request nè:', request)
+              // Chỉ fetch testProcess nếu không phải PENDING
+              if (request.status !== "pending") {
+                const resProcess = await customerApi.getTestProcessByRequestId(
+                  requestId
+                );
+                testProcess = resProcess?.data || null;
+              }
+              const [resDeclarant, resSamples] = await Promise.all([
+                // customerApi.getTestProcessByRequestId(requestId),
+                customerApi.getDeclarantByRequestId(requestId),
+                customerApi.getSamplesByRequestId(requestId),
+              ]);
 
-        return {
-          ...request,
-          testProcess,
-          declarant,
-          feedbacks: request.feedbacks || [],
-          samples,
-          numPeople: samples?.length || 0,
-          name: declarant.fullName || "",
-          phone: declarant.phoneNumber || "",
-          email: declarant.email || "",
-          address: declarant.address || "",
-          service: request.serviceName || "", // Nếu có
-        };
-      })
-    );
+              // testProcess = resProcess?.data || null;
+              declarant = resDeclarant?.data || {};
+              // console.log("resSample nè", resSamples);
+              samples = Array.isArray(resSamples?.data) ? resSamples.data : [];
+              // console.log(samples);
+            } catch (err) {
+              console.warn(
+                `Lỗi khi load dữ liệu phụ cho đơn ${requestId}`,
+                err
+              );
+            }
+            // console.log("declarant:", declarant);
+            return {
+              ...request,
+              testProcess,
+              declarant,
+              feedbacks: request.feedbacks || [],
+              samples,
+              numPeople: samples?.length || 0,
+              name: declarant.fullName || "",
+              phone: declarant.phone || "",
+              email: declarant.email || "",
+              address: declarant.address || "",
+              service: request.serviceName || "", // Nếu có
+            };
+          })
+      );
 
-    setUserOrders(mapped);
-    console.log(mapped)
-  } catch (error) {
-    console.error("Lỗi khi load danh sách đơn:", error);
-  }
-};
-
+      setUserOrders(mapped);
+      // console.log(mapped);
+    } catch (error) {
+      console.error("Lỗi khi load danh sách đơn:", error);
+    }
+  };
 
   // Load đơn đăng ký của user
   useEffect(() => {
@@ -135,9 +145,7 @@ const TestAppManagement = ({
         return "Đã gửi kit";
       // case "SAMPLE_COLLECTING":
       case "SAMPLE_RECEIVED":
-        return 'Đã nhận mẫu'
-      // case "PROCESSING":
-      // case "WAITING_APPROVAL":
+        return "Đã nhận mẫu";
       case "WAITING_FOR_APPOINTMENT":
         return "Chờ đến ngày hẹn";
       case "REJECTED":
@@ -150,6 +158,7 @@ const TestAppManagement = ({
   };
 
   const getDisplayStatus = (order) => {
+    // console.log('order nè',order)
     return order.testProcess?.currentStatus || order.status || "PENDING";
   };
 
@@ -244,7 +253,7 @@ const TestAppManagement = ({
               }}
             >
               <option value="Tất cả">Tất cả</option>
-              <option value="Chờ xử lý">Chờ xử lý</option>
+              <option value="Chờ xác nhận">Chờ xác nhận</option>
               <option value="Đang xử lý">Đang xử lý</option>
               <option value="Hoàn thành">Hoàn thành</option>
             </select>
@@ -253,22 +262,26 @@ const TestAppManagement = ({
           {(() => {
             const filteredOrders = userOrders
               .filter((o) => {
+                // const statusText = getStatusText(getDisplayStatus(o));
                 if (filterStatus === "Tất cả") return true;
-                if (filterStatus === "Có kết quả")
-                  return getStatusText(getDisplayStatus(o)) === "Đã có kết quả";
-                return getStatusText(getDisplayStatus(o)) === filterStatus;
+                if (filterStatus === "Chờ xác nhận")
+                  return getDisplayStatus(o)?.toUpperCase() === "PENDING";
+                if (filterStatus === "Đang xử lý")
+                  return getDisplayStatus(o)?.toUpperCase() !== "COMPLETED";
+                if (filterStatus === "Hoàn thành")
+                  return getDisplayStatus(o)?.toUpperCase() === "COMPLETED";
+                return true;
               })
-              .filter(
-                (o) =>
-                  searchOrder.trim() === "" ||
-                  o.id
-                    .toLowerCase()
-                    .includes(searchOrder.trim().toLowerCase()) ||
-                  (o.type &&
-                    o.type
-                      .toLowerCase()
-                      .includes(searchOrder.trim().toLowerCase()))
-              );
+
+              .filter((o) => {
+                const keyword = searchOrder.trim().toLowerCase();
+                return (
+                  keyword === "" ||
+                  `dna#${o.requestId}`.toLowerCase().includes(keyword) ||
+                  o.service?.toLowerCase().includes(keyword)
+                );
+              });
+
             if (filteredOrders.length === 0) {
               return (
                 <div
@@ -342,9 +355,9 @@ const TestAppManagement = ({
                                 return "#faad14";
                               case "Đã hẹn":
                                 return "#40a9ff";
-                              case "Đã đến":
+                              case "Đã nhận mẫu":
                                 return "#006d75";
-                              case "Đã có kết quả":
+                              case "Đã nhân":
                                 return "#52c41a";
                               case "Hoàn thành":
                                 return "#52c41a";
@@ -547,29 +560,36 @@ const TestAppManagement = ({
                 {/* Timeline toggle */}
                 <button
                   style={{
-                    background: showTimeline[order.id] ? "#e6f7f1" : "#fff",
+                    background: showTimeline[order.requestId]
+                      ? "#e6f7f1"
+                      : "#fff",
                     color: "#009e74",
                     border: "1px solid #009e74",
-                    borderRadius: 8,
-                    padding: "6px 18px",
+                    borderRadius: 6,
+                    padding: "6px 12px",
                     fontWeight: 600,
                     cursor: "pointer",
-                    fontSize: 15,
+                    fontSize: 14,
                     alignSelf: "center",
-                    width: "auto",
+                    maxWidth: 220,
+                    lineHeight: 1.3,
+                    textAlign: "center",
+                    whiteSpace: "normal",
                   }}
                   onClick={() =>
                     setShowTimeline((prev) => ({
                       ...prev,
-                      [order.id]: !prev[order.id],
+                      [order.requestId]: !prev[order.requestId],
                     }))
                   }
                 >
-                  {showTimeline[order.id]
+                  {showTimeline[order.requestId]
                     ? "Ẩn timeline"
                     : "Xem tiến độ & timeline xử lý"}
                 </button>
-                {showTimeline[order.id] && <TimelineProgress order={order} />}
+                {showTimeline[order.requestId] && (
+                  <TimelineProgress order={order} />
+                )}
               </div>
             ));
           })()}
@@ -588,18 +608,19 @@ const TestAppManagement = ({
       border: `1.5px solid ${color}`,
       color: "#fff",
       background: color,
-      borderRadius: 12,
-      padding: "10px 22px",
+      borderRadius: 6,
+      padding: "6px 14px",
       fontWeight: 600,
-      fontSize: 16,
+      fontSize: 14,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 8,
+      gap: 4,
       transition: "background 0.2s, color 0.2s, border 0.2s",
       outline: "none",
       cursor: "pointer",
       boxShadow: `0 2px 8px ${color}22`,
+      minWidth: 160,
       width: "100%",
     };
   }
@@ -609,18 +630,19 @@ const TestAppManagement = ({
       border: `1.5px solid ${color}`,
       color: color,
       background: "#fff",
-      borderRadius: 12,
-      padding: "10px 22px",
+      borderRadius: 6,
+      padding: "6px 14px",
       fontWeight: 600,
-      fontSize: 16,
+      fontSize: 14,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 8,
+      gap: 4,
       transition: "background 0.2s, color 0.2s, border 0.2s",
       outline: "none",
       cursor: "pointer",
       boxShadow: `0 2px 8px ${color}22`,
+      minWidth: 160,
       width: "100%",
     };
   }

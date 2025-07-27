@@ -10,6 +10,9 @@ using DNATestSystem.BusinessObjects.Application.Dtos.ConsultRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 using DNATestSystem.BusinessObjects.Application.Dtos.UserProfile;
+using DNATestSystem.APIService.PDF;
+using DNATestSystem.Services.Service;
+using QuestPDF.Fluent;
 
 namespace DNATestSystem.Controllers
 {
@@ -50,7 +53,8 @@ namespace DNATestSystem.Controllers
             if (user == null)
             {
                 return BadRequest("Username or password is wrong");
-            }else if(user.Status == -1)
+            }
+            else if (user.Status == -1)
             {
                 return BadRequest("This account have been banned pls contact to admin !");
             }
@@ -64,7 +68,7 @@ namespace DNATestSystem.Controllers
             var accessToken = await _userService.GenerateJwtAsync(user);
             var refreshToken = await _userService.GenerateRefreshTokenAsync(user.UserId);
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, newOptions);
-            return Ok(new { accessToken , user.RoleId , user.FullName, user.UserId});
+            return Ok(new { accessToken, user.RoleId, user.FullName, user.UserId });
         }
 
         [HttpPost("refresh-token")]
@@ -115,7 +119,7 @@ namespace DNATestSystem.Controllers
             HttpContext.Session.Clear();
             HttpContext.Response.Cookies.Delete("refreshToken", options);
             return Ok();
-           
+
         }
 
         [HttpGet("services")]
@@ -162,6 +166,16 @@ namespace DNATestSystem.Controllers
             return Ok(result);
         }
 
+        [HttpGet("profile-image")]
+        public async Task<IActionResult> GetProfileImage()
+        {
+            var data = await _userService.GetProfileByUser();
+            if (data == null)
+            {
+                return NotFound(new { success = false, message = "Không tìm thấy hồ sơ người dùng." });
+            }
+            return Ok(new { success = true, data });
+        }
 
         [Authorize]
         [HttpPut("UpdateUserProfile")]
@@ -202,7 +216,7 @@ namespace DNATestSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost("send-consult-request")]
         public async Task<IActionResult> SendConsultRequest([FromBody] SendConsultRequestModel model)
         {
@@ -267,6 +281,22 @@ namespace DNATestSystem.Controllers
             {
                 return BadRequest(new { success = false, message = ex.Message });
             }
+        }
+        [HttpGet("export-request-pdf/{requestId}")]
+        public async Task<IActionResult> ExportRequestPdf(int requestId)
+        {
+            var data = await _userService.GetExportPdfDataAsync(requestId);
+            if (data == null)
+                return NotFound(new { message = "Không tìm thấy yêu cầu xét nghiệm." });
+
+            var stream = new MemoryStream();
+
+            var document = new RequestPdfDocument(data); // bạn đã tạo class này để render PDF
+            document.GeneratePdf(stream);
+            stream.Position = 0;
+
+            var fileName = $"DonXetNghiemCuaBan_{data.DeclarantName}.pdf";
+            return File(stream, "application/pdf", fileName);
         }
     }
 }

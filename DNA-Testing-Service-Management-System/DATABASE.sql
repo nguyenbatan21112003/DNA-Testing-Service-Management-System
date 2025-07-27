@@ -135,7 +135,7 @@ GO
 CREATE TABLE TestSamples (
   SampleID INT PRIMARY KEY IDENTITY(1,1),
   RequestID INT FOREIGN KEY REFERENCES TestRequests(RequestID),
-  --ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
+  ProcessID INT FOREIGN KEY REFERENCES TestProcesses(ProcessID),
   OwnerName NVARCHAR(100),
   Gender VARCHAR(10),
   Relationship NVARCHAR(30),

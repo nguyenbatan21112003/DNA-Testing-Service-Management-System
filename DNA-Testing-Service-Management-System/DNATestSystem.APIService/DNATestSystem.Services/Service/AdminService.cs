@@ -62,6 +62,7 @@ namespace DNATestSystem.Services.Service
                 NumberSample = serviceCreateModel.NumberSample,
                 IsUrgent = serviceCreateModel.IsUrgent,
                 IsPublished = serviceCreateModel.IsPublished,
+                
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -74,7 +75,8 @@ namespace DNATestSystem.Services.Service
                 Price2Samples = serviceCreateModel.Price2Samples,
                 Price3Samples = serviceCreateModel.Price3Samples,
                 IncludeVat = serviceCreateModel.IncludeVAT,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                TimeToResult = serviceCreateModel.TimeToResult
             };
 
             _context.PriceDetails.Add(priceDetail);

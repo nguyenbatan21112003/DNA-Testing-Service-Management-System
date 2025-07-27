@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
@@ -144,6 +145,16 @@ namespace DNATestSystem.Services.Service
                 Success = true,
                 Message = "Đăng bài viết thành công",
             };
+        }
+        public async Task<string?> GetThumbnailBySlugAsync(string slug)
+        {
+            var post = await _context.BlogPosts
+                .FirstOrDefaultAsync(p => p.Slug == slug);
+
+            if (post == null || string.IsNullOrWhiteSpace(post.ThumbnailUrl))
+                return null;
+
+            return post.ThumbnailUrl; 
         }
 
         public async Task<List<FeedbackViewDto>> GetAllFeedbacksAsync()
