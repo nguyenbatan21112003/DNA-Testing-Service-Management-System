@@ -73,7 +73,7 @@ Các tính năng nổi bật bao gồm:
 
 
 ## 🖼️ Hướng dẫn sử dung
-[📄 Tải file hướng dẫn sử dụng](./docs/UserGuide.exe)
+[📄 Tải file hướng dẫn sử dụng](doc/User_Guide_Team2.docx)
 
 
 
