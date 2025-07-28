@@ -62,7 +62,7 @@ namespace DNATestSystem.Services.Service
                 NumberSample = serviceCreateModel.NumberSample,
                 IsUrgent = serviceCreateModel.IsUrgent,
                 IsPublished = serviceCreateModel.IsPublished,
-                
+
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -150,7 +150,7 @@ namespace DNATestSystem.Services.Service
             if (service == null)
                 throw new Exception("Service không tồn tại");
 
-            service.IsPublished = false; 
+            service.IsPublished = false;
             service.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -177,7 +177,7 @@ namespace DNATestSystem.Services.Service
         public async Task<List<UserShowModel>> GetAllUserAsync()
         {
             return await _context.Users
-               
+
             .Select(u => new UserShowModel
             {
                 UserId = u.UserId,
@@ -238,10 +238,10 @@ namespace DNATestSystem.Services.Service
         public async Task UpdateServiceAndPriceAsync(ServiceUpdateModel model)
         {
             var service = await _context.Services
-                            .Include (s => s.PriceDetails)
+                            .Include(s => s.PriceDetails)
                             .FirstOrDefaultAsync(s => s.ServiceId == model.ServiceID);
 
-            if(service == null)
+            if (service == null)
             {
                 throw new Exception($"Service with ID {model.ServiceID} not found.");
             }
@@ -268,6 +268,20 @@ namespace DNATestSystem.Services.Service
 
             await _context.SaveChangesAsync();
         }
+        public async Task<bool> UpdatePhoneNumberNameAndStatusAsync(UpdatePhoneNumberNameAndStatus model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.UserId);
+            if (user == null)
+            {
+                return false; // Người dùng không tồn tại
+            }
+            user.Phone = model.PhoneNumber;
+            user.FullName = model.FullName;
+            user.Status = (int)model.Status;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
 
-    }
+        }
+    } 
 }

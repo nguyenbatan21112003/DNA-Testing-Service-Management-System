@@ -28,6 +28,7 @@ namespace DNATestSystem.Services.Interface
         // User
         Task<List<UserShowModel>> GetAllUserAsync();
         Task<int> BanUserByIdAsync(int id);
+        Task<bool> UpdatePhoneNumberNameAndStatusAsync(UpdatePhoneNumberNameAndStatus model);
     }
 }
             
