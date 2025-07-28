@@ -298,26 +298,6 @@ namespace DNATestSystem.Controllers
             var fileName = $"DonXetNghiemCuaBan_{data.DeclarantName}.pdf";
             return File(stream, "application/pdf", fileName);
         }
-        [HttpPut("update-TestRequest")]
-        public async Task<IActionResult> UpdateTestRequest([FromBody] CustomerUpdateTestRequest dto)
-        {
-            try
-            {
-                var result = await _userService.UpdateTestRequestByTestRequestIdAsync(dto);
-                if (result)
-                {
-                    return Ok(new { success = true, message = "Cập nhật yêu cầu xét nghiệm thành công." });
-                }
-                else
-                {
-                    return BadRequest(new { success = false, message = "Cập nhật yêu cầu xét nghiệm thất bại." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
     }
 }
 

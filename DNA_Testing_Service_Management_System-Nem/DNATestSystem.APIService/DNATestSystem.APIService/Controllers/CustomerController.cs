@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using DNATestSystem.BusinessObjects.Application.Dtos.SampleCollectionForms;
 using DNATestSystem.Services.Service;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestRequest;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -111,6 +112,26 @@ namespace DNATestSystem.APIService.Controllers
              var data = await _userService.UpdateFeedbackByFeedbackId(model);
             return await Task.FromResult(Ok(new { message = " Cập nhật FeedBack Thành công" }));
 
+        }
+        [HttpPut("update-TestRequest")]
+        public async Task<IActionResult> UpdateTestRequest([FromBody] CustomerUpdateTestRequest dto)
+        {
+            try
+            {
+                var result = await _userService.UpdateTestRequestByTestRequestIdAsync(dto);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật yêu cầu xét nghiệm thành công." });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = "Cập nhật yêu cầu xét nghiệm thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
     }
 }
