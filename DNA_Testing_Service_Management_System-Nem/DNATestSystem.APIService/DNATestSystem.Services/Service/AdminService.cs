@@ -268,6 +268,20 @@ namespace DNATestSystem.Services.Service
 
             await _context.SaveChangesAsync();
         }
+        public async Task<bool> UpdatePhoneNumberNameAndStatusAsync(UpdatePhoneNumberNameAndStatus model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.UserId);
+            if (user == null)
+            {
+                return false; // Người dùng không tồn tại
+            }
+            user.Phone = model.PhoneNumber;
+            user.FullName = model.FullName;
+            user.Status = (int)model.Status;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
 
+        }
     }
 }

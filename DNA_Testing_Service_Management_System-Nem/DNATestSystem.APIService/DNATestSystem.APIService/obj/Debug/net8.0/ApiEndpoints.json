@@ -190,6 +190,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
+    "Method": "UpdateTestRequest",
+    "RelativePath": "Customer/update-TestRequest",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestRequest.CustomerUpdateTestRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.MailController",
     "Method": "SendMail",
     "RelativePath": "Mail/send",
@@ -303,6 +319,22 @@
         "Name": "slug",
         "Type": "System.String",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.ManagerController",
+    "Method": "UpdateBlogPostByPostId",
+    "RelativePath": "Manager/update-blog-post",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.BlogPost.ManagerUpdateBlogPost",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -792,6 +824,22 @@
       {
         "Name": "dto",
         "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestProcess.UpdateKitCodeByTestProcess",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "UpdateTestReuslt",
+    "RelativePath": "Staff/update-test-result",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult",
         "IsRequired": true
       }
     ],

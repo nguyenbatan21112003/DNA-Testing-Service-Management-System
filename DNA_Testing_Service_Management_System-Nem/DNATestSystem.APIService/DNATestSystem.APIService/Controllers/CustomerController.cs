@@ -96,7 +96,7 @@ namespace DNATestSystem.APIService.Controllers
             }
             return Ok(data);
         }
-        [HttpGet("test-result{result_id}")]
+        [HttpGet("test-result/{result_id}")]
         public async Task<IActionResult> GetTestResultById([FromRoute] int result_id)
         {
             var data = await _userService.GetTestRequestByRequestId(result_id);
@@ -106,6 +106,7 @@ namespace DNATestSystem.APIService.Controllers
             }
             return Ok(data);
         }
+
         [HttpPut("update-Feedback")]
         public async Task<IActionResult> UpdateFeedbackByFeedbackId([FromBody] CustomerFeedbackUpdateDto model)
         {

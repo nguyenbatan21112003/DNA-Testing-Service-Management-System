@@ -80,5 +80,7 @@ namespace DNATestSystem.Services.Interface
         Task<PdfExportDto?> GetExportPdfDataAsync(int resultId);
 
         Task<bool> UpdateTestRequestByTestRequestIdAsync(CustomerUpdateTestRequest model);
+        //
+
     }
 }
