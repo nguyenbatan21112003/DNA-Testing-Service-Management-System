@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
   baseURL: API_BASE_URL, //đây chính là url gốc của api BE là phải xử lý cors
   timeout: 100000, //thời gian chờ phản hồi từ server
   headers: {
-    "Content-Type": "application/json", //nghĩa là bạn gửi dữ liệu dạng Json
+    "Content-Type": 'application/json; charset=utf-8', //nghĩa là bạn gửi dữ liệu dạng Json
     "Cache-Control": "no-cache",
     Pragma: "no-cache",
     Expires: "0",

@@ -101,8 +101,7 @@ namespace DNATestSystem.Services.Service
                 .FirstOrDefaultAsync(tr =>
                     tr.ResultId == dto.ResultID &&
                     tr.Status == "Pending" &&
-                    tr.VerifiedBy == null &&
-                    tr.VerifiedAt == null);
+                    tr.VerifiedBy == null);
 
             if (result == null)
                 return false;

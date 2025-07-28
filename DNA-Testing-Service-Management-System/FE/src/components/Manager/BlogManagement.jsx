@@ -65,6 +65,8 @@ const BlogManagement = () => {
   const [content, setContent] = useState([
     { type: "paragraph", children: [{ text: "" }] },
   ]);
+  const [thumbnailBase64, setThumbnailBase64] = useState("");
+
   const [activeTab, setActiveTab] = useState("all");
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewBlog, setPreviewBlog] = useState(null);
@@ -117,11 +119,23 @@ const BlogManagement = () => {
     setIsModalVisible(false);
     setEditingBlog(null);
   };
+  function removeVietnameseTones(str) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // bỏ dấu
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  }
 
   const handleSubmit = async (values) => {
     const payload = {
       title: values.title,
-      slug: values.title.toLowerCase().replace(/\s+/g, "-"),
+      slug: removeVietnameseTones(values.title)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "") // bỏ ký tự đặc biệt
+        .replace(/\s+/g, "-") // thay khoảng trắng = "-"
+        .replace(/-+/g, "-") // gộp dấu "-" liền nhau
+        .replace(/^-|-$/g, ""), // bỏ dấu "-" đầu/cuối,
       summary: values.summary,
       content: values.content, // ✅ đơn giản, text thô
 
@@ -129,7 +143,7 @@ const BlogManagement = () => {
       isPublished: values.status === "published",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      thumbnailUrl: values.thumbnail?.file?.name || "", // lấy từ Upload
+      thumbnailUrl: thumbnailBase64 || "", // lấy từ Upload
     };
     // console.log(payload);
     try {
@@ -380,10 +394,28 @@ const BlogManagement = () => {
           </Form.Item>
 
           <Form.Item name="thumbnail" label="Ảnh đại diện">
-            <Upload
+            {/* <Upload
               listType="picture-card"
               maxCount={1}
               beforeUpload={() => false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải lên</div>
+              </div>
+            </Upload> */}
+            <Upload
+              listType="picture-card"
+              maxCount={1}
+              beforeUpload={(file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  setThumbnailBase64(e.target.result); // lưu base64
+                };
+                reader.readAsDataURL(file);
+                return false; // không upload tự động
+              }}
+              showUploadList={true}
             >
               <div>
                 <PlusOutlined />

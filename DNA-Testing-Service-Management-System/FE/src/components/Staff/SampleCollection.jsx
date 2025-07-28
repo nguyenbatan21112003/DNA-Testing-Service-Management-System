@@ -757,19 +757,31 @@ const SampleCollection = ({ caseType }) => {
                         <Upload
                           listType="picture-card"
                           showUploadList={false}
+                          // beforeUpload={(file) => {
+                          //   const objectURL = URL.createObjectURL(file);
+                          //   updateDonor(donor.id, "fingerprint", objectURL);
+                          //   // const reader = new FileReader();
+                          //   // reader.onload = (e) => {
+                          //   //   updateDonor(
+                          //   //     donor.id,
+                          //   //     "fingerprint",
+                          //   //     e.target.result
+                          //   //   );
+                          //   // };
+                          //   // reader.readAsDataURL(file);
+                          //   return false; // Ngăn upload lên server
+                          // }}
                           beforeUpload={(file) => {
-                            const objectURL = URL.createObjectURL(file);
-                            updateDonor(donor.id, "fingerprint", objectURL);
-                            // const reader = new FileReader();
-                            // reader.onload = (e) => {
-                            //   updateDonor(
-                            //     donor.id,
-                            //     "fingerprint",
-                            //     e.target.result
-                            //   );
-                            // };
-                            // reader.readAsDataURL(file);
-                            return false; // Ngăn upload lên server
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                              updateDonor(
+                                donor.id,
+                                "fingerprint",
+                                e.target.result
+                              ); // Gán base64
+                            };
+                            reader.readAsDataURL(file); // Chuyển sang base64
+                            return false; // Không upload lên server
                           }}
                         >
                           {donor.fingerprint ? (

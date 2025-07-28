@@ -1334,6 +1334,37 @@
         }
       }
     },
+    "/Staff/update-test-result": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/user/register": {
       "post": {
         "tags": [
@@ -2438,6 +2469,29 @@
           "resultId": {
             "type": "integer",
             "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult": {
+        "type": "object",
+        "properties": {
+          "resultID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resultData": {
+            "type": "string",
+            "nullable": true
+          },
+          "enteredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           },
           "status": {
             "type": "string",

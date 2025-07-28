@@ -191,7 +191,7 @@ const TestingResults = () => {
         typeof updatedOrder.result === "string"
       ) {
         try {
-          const parsedData = JSON.parse(updatedOrder.result);
+          const parsedData = updatedOrder.result;
           if (Array.isArray(parsedData)) {
             initialTableData = parsedData;
           }
@@ -260,6 +260,76 @@ const TestingResults = () => {
     setEditModalVisible(true);
   };
 
+  // const handleSaveResult = async (values) => {
+  //   try {
+  //     let dataToSave =
+  //       Array.isArray(values.resultTableData) &&
+  //       values.resultTableData.length > 0
+  //         ? values.resultTableData
+  //         : tableData;
+
+  //     const resultTableDataCopy = Array.isArray(dataToSave)
+  //       ? JSON.parse(JSON.stringify(dataToSave))
+  //       : null;
+
+  //     const isErrorSample =
+  //       (values.conclusion || "")
+  //         .toLowerCase()
+  //         .normalize("NFD")
+  //         .replace(/\p{Diacritic}/gu, "")
+  //         .trim() === "loi mau";
+
+  //     if (isErrorSample) {
+  //       updateOrder(selectedOrder.id, {
+  //         result: resultTableDataCopy
+  //           ? JSON.stringify(resultTableDataCopy)
+  //           : values.result,
+  //         testingMethod: values.testingMethod,
+  //         testingNotes: values.conclusion,
+  //         conclusion: values.conclusion,
+  //         resultTableData: resultTableDataCopy,
+  //         updatedAt: new Date().toLocaleString("vi-VN"),
+  //       });
+
+  //       window.dispatchEvent(new Event("dna_orders_updated"));
+  //       setTempFormData({});
+  //       setCurrentEditOrderId(null);
+  //       setEditModalVisible(false);
+  //       message.warning(
+  //         "Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!"
+  //       );
+  //       return;
+  //     }
+
+  //     // ⬇️ Gọi API BE
+  //     const res = await staffApi.createTestResult({
+  //       requestId: selectedOrder.id,
+  //       data: values.conclusion,
+  //     });
+  //     console.log(res);
+  //     updateOrder(selectedOrder.id, {
+  //       status: "Chờ xác thực",
+  //       result: JSON.stringify(resultTableDataCopy),
+  //       testingMethod: values.testingMethod,
+  //       testingNotes: values.conclusion,
+  //       conclusion: values.conclusion,
+  //       resultTableData: resultTableDataCopy,
+  //       updatedAt: new Date().toLocaleString("vi-VN"),
+  //     });
+
+  //     window.dispatchEvent(new Event("dna_orders_updated"));
+  //     setTempFormData({});
+  //     setCurrentEditOrderId(null);
+  //     setEditModalVisible(false);
+  //     message.success("Đã lưu kết quả và chuyển trạng thái sang Chờ xác thực!");
+  //     loadDataFromAPI();
+  //     alert("Kết quả đã được lưu thành công!");
+  //   } catch (error) {
+  //     console.error("Error saving result:", error);
+  //     message.error("Có lỗi xảy ra khi lưu kết quả!");
+  //   }
+  // };
+
   const handleSaveResult = async (values) => {
     try {
       let dataToSave =
@@ -279,6 +349,7 @@ const TestingResults = () => {
           .replace(/\p{Diacritic}/gu, "")
           .trim() === "loi mau";
 
+      // Trường hợp mẫu lỗi
       if (isErrorSample) {
         updateOrder(selectedOrder.id, {
           result: resultTableDataCopy
@@ -301,12 +372,33 @@ const TestingResults = () => {
         return;
       }
 
-      // ⬇️ Gọi API BE
-      const res = await staffApi.createTestResult({
-        requestId: selectedOrder.id,
-        data: values.conclusion,
-      });
-      console.log(res);
+      // ✅ Tùy thuộc trạng thái → gọi API tương ứng
+      const statusText = getStatusText(selectedOrder.status);
+
+      console.log(selectedOrder, selectedOrder.status);
+      if (statusText === "Từ chối" && selectedOrder.resultId) {
+        console.log("update nha");
+        // 👉 Gọi API cập nhật
+        const datapayload = {
+          resultID: selectedOrder.resultId,
+          resultData: values.conclusion,
+          enteredAt: new Date().toISOString(),
+          status: 'Pending'
+        };
+        console.log("datapayload", datapayload);
+        const res = await staffApi.updateTestResult(datapayload);
+        console.log();
+        console.log("Đã cập nhật kết quả từ chối:", res);
+      } else {
+        // 👉 Gọi API tạo mới
+        const res = await staffApi.createTestResult({
+          requestId: selectedOrder.id,
+          data: values.conclusion,
+        });
+        console.log("Đã tạo kết quả mới:", res);
+      }
+
+      // ✅ Cập nhật lại local state
       updateOrder(selectedOrder.id, {
         status: "Chờ xác thực",
         result: JSON.stringify(resultTableDataCopy),
@@ -404,9 +496,9 @@ const TestingResults = () => {
       console.log(res.data);
       const fullOrders = await Promise.all(
         res.data
-          ?.filter(
-            (item) => item.testProcess?.currentStatus === "SAMPLE_RECEIVED"
-          )
+          // .filter(
+          //   (item) => item.testProcess?.currentStatus === "SAMPLE_RECEIVED"
+          // )
           .map(async (item) => {
             const request = item.request || {};
             const declarant = item.declarant || {};
@@ -420,14 +512,16 @@ const TestingResults = () => {
               const resultRes = await staffApi.getTestResultByRequestId(
                 requestId
               );
-              if (resultRes.status === 200 && Array.isArray(resultRes.data)) {
-                testResult = Array.isArray(resultRes.data)
-                  ? resultRes.data[0]
-                  : null;
+
+              if (resultRes.status === 200) {
+                if (Array.isArray(resultRes.data)) {
+                  testResult = resultRes.data[0] || null;
+                } else if (typeof resultRes.data === "object") {
+                  testResult = resultRes.data;
+                }
               }
-              console.log(testResult);
             } catch (err) {
-              console.log(err);
+              console.log(err)
               console.warn("Không có kết quả xét nghiệm cho đơn:", requestId);
             }
 
@@ -435,9 +529,10 @@ const TestingResults = () => {
             const finalStatus = testResult?.status
               ? testResult.status // Ví dụ: 'WAITING_APPROVAL', 'REJECTED', 'COMPLETED'
               : process?.currentStatus || "SAMPLE_RECEIVED";
-
+            console.log('testResult nè', testResult)
             return {
               id: requestId,
+              resultId: testResult?.resultId || testResult?.resultId || null,
               processId: process.processId,
               status: finalStatus, // dùng status từ testResult nếu có
               name: declarant.fullName || "",
@@ -693,6 +788,8 @@ const TestingResults = () => {
     completed: orders.filter(
       (o) => getStatusText(o.status) === STATUS_COMPLETED
     ).length,
+    rejected: orders.filter((o) => getStatusText(o.status) === STATUS_REJECT)
+      .length, // ✅ thêm dòng này
     withResults: orders.filter((o) => o.result).length,
   };
 

@@ -75,6 +75,22 @@ const OrderManagement = () => {
 
   const handleAcceptOrder = async (order) => {
     try {
+      // Bước 1: Fetch lại toàn bộ đơn
+      loadAllSamplingRequests()
+
+      // Bước 2: Tìm lại đơn cần xử lý
+      const latestOrder = order.find((o) => o.id === order.id);
+      console.log('order đã load nè', latestOrder)
+      if (!latestOrder) {
+        message.error("Không tìm thấy đơn hàng!");
+        return;
+      }
+
+      if (latestOrder.status === "confirmed") {
+        alert("Đơn đã được xử lý bởi người khác!");
+        loadAllSamplingRequests();
+        return;
+      }
       const payload = {
         processId: 0,
         requestId: order.id,
@@ -108,8 +124,6 @@ const OrderManagement = () => {
     }
   };
 
-
-
   const loadAllSamplingRequests = async () => {
     try {
       const [homeRes, centerRes] = await Promise.all([
@@ -117,45 +131,47 @@ const OrderManagement = () => {
         staffApi.getRequestCenter(),
       ]);
       const mapData = (data) =>
-        data.filter((item) => item.status == 'pending').map((item) => {
-          const declarant = item.declarant || {};
-          const methodLabel = item.collectionType
-            ?.toLowerCase()
-            .includes("at home")
-            ? "home"
-            : "center";
-          console.log(item)
-          return {
-            id: item.requestId,
-            name: declarant.fullName,
-            phone: declarant.phone,
-            address: declarant.address,
-            email: declarant.email,
-            identityNumber: declarant.identityNumber,
-            type: item.serviceName,
-            category:
-              item.serviceCategory === "Administrative"
-                ? "Hành chính"
-                : "Dân sự",
-            sampleMethod: methodLabel,
-            status: item.status?.toUpperCase() || "PENDING",
-            createdAt: item.createdAt,
-            date: new Date(item.createdAt).toLocaleDateString("vi-VN"),
-            scheduledDate: item.scheduleDate
-              ? new Date(item.scheduleDate).toLocaleString("vi-VN")
-              : null,
-            isHidden: item.isHidden ?? false,
-            sampleInfo: {
-              donors: (item.sample || []).map((s) => ({
-                name: s.ownerName,
-                gender: s.gender,
-                relationship: s.relationship,
-                yob: s.yob,
-                sampleType: s.sampleType,
-              })),
-            },
-          };
-        });
+        data
+          .filter((item) => item.status == "pending")
+          .map((item) => {
+            const declarant = item.declarant || {};
+            const methodLabel = item.collectionType
+              ?.toLowerCase()
+              .includes("at home")
+              ? "home"
+              : "center";
+            console.log(item);
+            return {
+              id: item.requestId,
+              name: declarant.fullName,
+              phone: declarant.phone,
+              address: declarant.address,
+              email: declarant.email,
+              identityNumber: declarant.identityNumber,
+              type: item.serviceName,
+              category:
+                item.serviceCategory === "Administrative"
+                  ? "Hành chính"
+                  : "Dân sự",
+              sampleMethod: methodLabel,
+              status: item.status?.toUpperCase() || "PENDING",
+              createdAt: item.createdAt,
+              date: new Date(item.createdAt).toLocaleDateString("vi-VN"),
+              scheduledDate: item.scheduleDate
+                ? new Date(item.scheduleDate).toLocaleString("vi-VN")
+                : null,
+              isHidden: item.isHidden ?? false,
+              sampleInfo: {
+                donors: (item.sample || []).map((s) => ({
+                  name: s.ownerName,
+                  gender: s.gender,
+                  relationship: s.relationship,
+                  yob: s.yob,
+                  sampleType: s.sampleType,
+                })),
+              },
+            };
+          });
 
       const allOrders = [
         ...mapData(Array.isArray(homeRes.data) ? homeRes.data : []),
@@ -168,7 +184,6 @@ const OrderManagement = () => {
         return 0; // giữ nguyên thứ tự nếu cùng trạng thái
       });
       setOrders(sortedOrders);
-
     } catch (error) {
       console.error("Lỗi khi load đơn:", error);
     }
@@ -177,6 +192,7 @@ const OrderManagement = () => {
   useEffect(() => {
     loadAllSamplingRequests();
   }, []);
+
 
   useEffect(() => {
     let filtered = orders;
@@ -440,7 +456,7 @@ const OrderManagement = () => {
                     </p>
                     <p style={{ marginBottom: 8 }}>
                       <strong>⚥ Giới tính:</strong> {donor.gender} &nbsp;|&nbsp;{" "}
-                      <strong>🎂 Năm sinh:</strong> {donor.yob ?  donor.yob : ''}
+                      <strong>🎂 Năm sinh:</strong> {donor.yob ? donor.yob : ""}
                     </p>
                     <p style={{ marginBottom: 0 }}>
                       <strong>🔗 Quan hệ:</strong> {donor.relationship}{" "}

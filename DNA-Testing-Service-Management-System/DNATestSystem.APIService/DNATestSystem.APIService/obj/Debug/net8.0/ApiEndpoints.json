@@ -798,6 +798,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "DNATestSystem.APIService.Controllers.StaffController",
+    "Method": "UpdateTestReuslt",
+    "RelativePath": "Staff/update-test-result",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "DNATestSystem.BusinessObjects.Application.Dtos.TestResult.StaffUpdateTestResult",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "DNATestSystem.APIService.Controllers.CustomerController",
     "Method": "GetCustomerTestRequests",
     "RelativePath": "test-requests",

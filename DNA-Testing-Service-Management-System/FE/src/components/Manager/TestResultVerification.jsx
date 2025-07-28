@@ -85,7 +85,7 @@ const TestResultVerification = () => {
               ? "Hành chính"
               : "Không rõ",
 
-          sampleMethod: req?.typeId === 1 ? "center" : "home",
+          sampleMethod: req?.typeId === 1 ? "At Home" : "At Center",
           name: "Ẩn danh",
           status: result.status,
           date: result.enteredAt?.split("T")[0],
@@ -109,10 +109,12 @@ const TestResultVerification = () => {
         currentStatus: "completed",
         updatedAt: new Date().toISOString(), // ✅ chuẩn ISO 8601
       });
-      const res = await managerApi.verifyTestResult({
+      const data = {
         resultID: pendingApproveOrder.resultId,
         managerID: user?.userId, // bạn cần truyền vào từ context hoặc localStorage
-      });
+      }
+      console.log(data)
+      const res = await managerApi.verifyTestResult(data);
 
       console.log(res, resUpdate);
       alert("Phê duyệt thành công!");
@@ -276,7 +278,7 @@ const TestResultVerification = () => {
       key: "location",
       width: 180,
       render: (_, record) => {
-        if (record.sampleMethod === "home")
+        if (record.sampleMethod === "At Home")
           return (
             <Tag
               style={{
@@ -292,7 +294,7 @@ const TestResultVerification = () => {
               Tại nhà
             </Tag>
           );
-        if (record.sampleMethod === "center")
+        if (record.sampleMethod === "At Center")
           return (
             <Tag
               style={{
@@ -715,7 +717,7 @@ const TestResultVerification = () => {
               </div>
               <div style={{ fontSize: 18, marginBottom: 6 }}>
                 <b>Nơi lấy mẫu:</b>{" "}
-                {selectedOrder.sampleMethod === "home"
+                {selectedOrder.sampleMethod === "At Home"
                   ? "Tại nhà"
                   : "Tại cơ sở"}
               </div>

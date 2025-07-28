@@ -820,7 +820,6 @@ namespace DNATestSystem.Services.Service
                                 EnteredBy = x.EnteredBy,
                                 VerifiedBy = x.VerifiedBy,
                                 ResultData = x.ResultData,
-
                                 Status = x.Status,
                                 EnteredAt = x.EnteredAt,
                                 VerifiedAt = x.VerifiedAt

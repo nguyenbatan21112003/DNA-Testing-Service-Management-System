@@ -202,7 +202,7 @@ namespace DNATestSystem.Services.Service
                 .ToListAsync();
 
             return result;
-        }   
+        }
 
         public async Task<List<TestRequestViewDto>> GetAtCenterAdministrativeRequestsAsync()
         {
@@ -691,8 +691,19 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return updatedList;
         }
+        public async Task<bool> UpdateTestResultByResultIdAsync(StaffUpdateTestResult dto)
+        {
 
-       
+            var result = await _context.TestResults
+                .FirstOrDefaultAsync(r => r.ResultId == dto.ResultID);
+            if (result == null) return false;
+            result.ResultData = dto.ResultData;
+            result.VerifiedAt = DateTime.UtcNow;
+            result.Status = "Pending";
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
     }
 }
+

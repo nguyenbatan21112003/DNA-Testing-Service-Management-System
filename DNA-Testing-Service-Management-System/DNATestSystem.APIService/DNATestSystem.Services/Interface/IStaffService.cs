@@ -61,6 +61,7 @@ namespace DNATestSystem.Services.Interface
 
         Task<List<UpdatedTestSampleDto>> UpdateTesSampleByTestRequestAndSampleId(List<UpdatedTestSampleDto> dtos);
     
+        Task<bool> UpdateTestResultByResultIdAsync(StaffUpdateTestResult dto);
         Task<string?> GetFingerprintImageBySlugAsync(int collectId);
 
     }
