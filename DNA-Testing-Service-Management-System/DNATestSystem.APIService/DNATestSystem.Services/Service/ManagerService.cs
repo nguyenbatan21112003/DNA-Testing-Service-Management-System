@@ -295,5 +295,24 @@ namespace DNATestSystem.Services.Service
             await _context.SaveChangesAsync();
             return true; // Cập nhật thành công
         }
+        public async Task<bool> UpdateBlogPostByPostId(ManagerUpdateBlogPost model)
+        {
+            var blogPost = await _context.BlogPosts
+                .FirstOrDefaultAsync(bp => bp.PostId == model.BlogId);
+            if (blogPost == null)
+            {
+                return false; // Không tìm thấy bài viết
+            }
+            // Cập nhật thông tin bài viết
+            blogPost.Title = model.Title;
+            blogPost.Slug = model.Slug;
+            blogPost.Summary = model.Summary;
+            blogPost.Content = model.Content;
+            blogPost.IsPublished = model.IsPublished ?? blogPost.IsPublished;
+            blogPost.UpdatedAt = model.UpdatedAt ?? DateTime.Now;
+            blogPost.ThumbnailUrl = model.ThumbnailUrl;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
+        }
     }
 }

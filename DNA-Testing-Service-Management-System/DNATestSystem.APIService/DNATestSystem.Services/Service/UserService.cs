@@ -882,6 +882,28 @@ namespace DNATestSystem.Services.Service
 
             return query;
         }
-      
+        public async Task<bool> UpdateTestRequestByTestRequestIdAsync(CustomerUpdateTestRequest model)
+        {
+
+            var userId = GetCurrentUserId();
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("Không thể xác định người dùng.");
+            }
+            var testRequest = await _context.TestRequests
+               .FirstOrDefaultAsync(tr => tr.RequestId == model.RequestId && tr.UserId == userId);
+
+            if (testRequest == null)
+            {
+                throw new Exception("Không tìm thấy yêu cầu xét nghiệm.");
+            }
+            // Cập nhật thông tin
+            testRequest.ScheduleDate = model.ScheduleDate;
+            testRequest.Address = model.Address;
+            _context.TestRequests.Update(testRequest);
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
     }
 }
