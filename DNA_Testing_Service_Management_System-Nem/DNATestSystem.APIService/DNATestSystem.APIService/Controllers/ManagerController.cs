@@ -205,5 +205,25 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpPut("update-blog-post")]
+        public async Task<IActionResult> UpdateBlogPostByPostId([FromBody] ManagerUpdateBlogPost model)
+        {
+            try
+            {
+                var result = await _managerService.UpdateBlogPostByPostId(model);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật bài viết thành công." });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy bài viết." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DNATestSystem.APIService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+15e8475429a2374ce5e09a13aedad39a62410574")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee623a0b7679df9faa7bd9f7380b15035fca61e2")]
 [assembly: System.Reflection.AssemblyProductAttribute("DNATestSystem.APIService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DNATestSystem.APIService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

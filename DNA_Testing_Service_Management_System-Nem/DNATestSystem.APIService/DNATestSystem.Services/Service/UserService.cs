@@ -46,7 +46,7 @@ namespace DNATestSystem.Services.Service
             var claim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(claim, out var id) ? id : 0;
         }
-     
+
         public async Task<User?> LoginAsync(UserLoginModel loginModel)
         {
             var user = await _context.Users
@@ -840,32 +840,76 @@ namespace DNATestSystem.Services.Service
 
             return true;
         }
+        //public async Task<PdfExportDto?> GetExportPdfDataAsync(int resultId)
+        //{
+        //    var query = await (from r in _context.TestResults
+        //                       join tr in _context.TestRequests on r.RequestId equals tr.RequestId
+        //                       join s in _context.Services on tr.ServiceId equals s.ServiceId
+        //                       join u in _context.Users on tr.UserId equals u.UserId
+        //                       join tp in _context.TestProcesses on tr.RequestId equals tp.RequestId into tpj
+        //                       join du in _context.RequestDeclarants on tr.RequestId equals du.RequestId
+        //                       from tp in tpj.DefaultIfEmpty()
+        //                       join staff in _context.Users on tp.StaffId equals staff.UserId into staffj
+        //                       from staff in staffj.DefaultIfEmpty()
+        //                       where r.ResultId == resultId
+        //                       select new PdfExportDto
+        //                       {
+        //                           RequestId = tr.RequestId,
+        //                           ServiceName = s.ServiceName,
+        //                           Category = tr.Category,
+        //                           ScheduleDate = tr.ScheduleDate,
+        //                           RequestAddress = tr.Address,
+        //                           DeclarantName = u.FullName,
+        //                           StaffName = staff.FullName,
+        //                           KitCode = tp.KitCode,
+        //                           PhoneNumber = u.Phone,
+        //                           IdentityNumber = du.IdentityNumber,
+        //                           ResultData = r.ResultData
+        //                       }).FirstOrDefaultAsync();
+
+        //    if (query == null) return null;
+
+        //    query.Samples = await _context.TestSamples
+        //        .Where(x => x.RequestId == query.RequestId)
+        //        .Select(x => new TestSampleDto
+        //        {
+        //            OwnerName = x.OwnerName,
+        //            Gender = x.Gender,
+        //            Yob = x.Yob,
+        //            Relationship = x.Relationship,
+        //            SampleType = x.SampleType
+        //        }).ToListAsync();
+
+        //    return query;
+        //}
         public async Task<PdfExportDto?> GetExportPdfDataAsync(int resultId)
         {
-            var query = await (from r in _context.TestResults
-                               join tr in _context.TestRequests on r.RequestId equals tr.RequestId
-                               join s in _context.Services on tr.ServiceId equals s.ServiceId
-                               join u in _context.Users on tr.UserId equals u.UserId
-                               join tp in _context.TestProcesses on tr.RequestId equals tp.RequestId into tpj
-                               join du in _context.RequestDeclarants on tr.RequestId equals du.RequestId
-                               from tp in tpj.DefaultIfEmpty()
-                               join staff in _context.Users on tp.StaffId equals staff.UserId into staffj
-                               from staff in staffj.DefaultIfEmpty()
-                               where r.ResultId == resultId
-                               select new PdfExportDto
-                               {
-                                   RequestId = tr.RequestId,
-                                   ServiceName = s.ServiceName,
-                                   Category = tr.Category,
-                                   ScheduleDate = tr.ScheduleDate,
-                                   RequestAddress = tr.Address,
-                                   DeclarantName = u.FullName,
-                                   StaffName = staff.FullName,
-                                   KitCode = tp.KitCode,
-                                   PhoneNumber = u.Phone,
-                                   IdentityNumber = du.IdentityNumber,
-                                   ResultData = r.ResultData
-                               }).FirstOrDefaultAsync();
+            var query = await _context.TestResults
+                .Where(r => r.ResultId == resultId)
+                .Select(r => new
+                {
+                    r,
+                    tr = r.Request,
+                    s = r.Request.Service,
+                    u = r.Request.User,
+                    tp = _context.TestProcesses.FirstOrDefault(tp => tp.RequestId == r.RequestId),
+                    du = _context.RequestDeclarants.FirstOrDefault(du => du.RequestId == r.RequestId),
+                })
+                .Select(data => new PdfExportDto
+                {
+                    RequestId = data.tr.RequestId,
+                    ServiceName = data.s.ServiceName,
+                    Category = data.tr.Category,
+                    ScheduleDate = data.tr.ScheduleDate,
+                    RequestAddress = data.tr.Address,
+                    DeclarantName = data.u.FullName,
+                    StaffName = data.tp != null ? _context.Users.Where(u => u.UserId == data.tp.StaffId).Select(u => u.FullName).FirstOrDefault() : null,
+                    KitCode = data.tp.KitCode,
+                    PhoneNumber = data.u.Phone,
+                    IdentityNumber = data.du.IdentityNumber,
+                    ResultData = data.r.ResultData
+                })
+                .FirstOrDefaultAsync();
 
             if (query == null) return null;
 
@@ -882,6 +926,29 @@ namespace DNATestSystem.Services.Service
 
             return query;
         }
-      
+
+        public async Task<bool> UpdateTestRequestByTestRequestIdAsync(CustomerUpdateTestRequest model)
+        {
+           
+            var userId = GetCurrentUserId();
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("Không thể xác định người dùng.");
+            }
+            var testRequest = await _context.TestRequests
+               .FirstOrDefaultAsync(tr => tr.RequestId == model.RequestId && tr.UserId == userId);
+
+            if (testRequest == null)
+            {
+                throw new Exception("Không tìm thấy yêu cầu xét nghiệm.");
+            }
+            // Cập nhật thông tin
+            testRequest.ScheduleDate = model.ScheduleDate;
+            testRequest.Address = model.Address;
+            _context.TestRequests.Update(testRequest);
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
     }
 }
