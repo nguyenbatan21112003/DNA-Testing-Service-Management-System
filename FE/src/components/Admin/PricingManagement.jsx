@@ -15,6 +15,7 @@ import AddService from "./AddService";
 import { EditOutlined, SaveOutlined } from "@ant-design/icons";
 import "../../Css/PricingManagement.css";
 import adminApi from "../../api/adminApi";
+/* eslint-disable react-hooks/exhaustive-deps */
 
 const { TabPane } = Tabs;
 
@@ -44,10 +45,10 @@ const PricingManagement = () => {
           Voluntary: voluntary,
           Administrative: administrative,
         });
-        console.log(categorizedServices);
+        // console.log(categorizedServices);
       }
     } catch (error) {
-      console.error("Error fetching services:", error);
+      console.error("Error fetching services:", error.status);
       message.error("Không thể tải dữ liệu dịch vụ. Vui lòng thử lại sau.");
     }
   };
@@ -63,6 +64,7 @@ const PricingManagement = () => {
     });
   };
 
+  // Fetch services on mount
   useEffect(() => {
     fetchServices();
   }, []);
@@ -146,7 +148,7 @@ const PricingManagement = () => {
       fetchServices();
       alert("Cập nhật dịch vụ thành công!");
     } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
+      console.error("Lỗi khi cập nhật:", error.status);
       message.error("Không thể cập nhật dịch vụ. Vui lòng thử lại sau.");
     }
   };
@@ -333,14 +335,16 @@ const PricingManagement = () => {
               { required: true, message: "Vui lòng nhập giá 2 mẫu" },
               {
                 type: "number",
-                min: 0,
-                message: "Giá phải là số không âm",
+                min: 1000000,
+                max: 10000000,
+                message: "Giá phải từ 1 triệu đến 10 triệu.",
               },
             ]}
           >
             <InputNumber
               style={{ width: "100%" }}
-              min={0}
+              min={1000000}
+              max={10000000}
               step={100000}
               formatter={(value) =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -356,14 +360,16 @@ const PricingManagement = () => {
               { required: true, message: "Vui lòng nhập giá người thứ 3" },
               {
                 type: "number",
-                min: 0,
-                message: "Giá phải là số không âm",
+                min: 1000000,
+                max: 10000000,
+                message: "Giá phải từ 1 triệu đến 10 triệu.",
               },
             ]}
           >
             <InputNumber
               style={{ width: "100%" }}
-              min={0}
+              min={1000000}
+              max={10000000}
               step={100000}
               formatter={(value) =>
                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")

@@ -17,14 +17,14 @@ import {
 } from "@ant-design/icons";
 import staffApi from "../../api/staffApi";
 import { AuthContext } from "../../context/AuthContext";
-import { useServiceContext } from "../../context/ServiceContext";
+import { ServiceContext } from "../../context/ServiceContext";
 
 const ConsultationRequests = () => {
   const [consultations, setConsultations] = useState([]);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const { user } = useContext(AuthContext);
-  const services = useServiceContext();
+  const services = useContext(ServiceContext);
 
   const getServiceName = (id) => {
     const s = services.find((x) => x.id == id);
@@ -53,7 +53,7 @@ const ConsultationRequests = () => {
 
       setConsultations(mapped);
     } catch (err) {
-      console.error("Lỗi khi gọi API tư vấn:", err);
+      console.error("Lỗi khi gọi API tư vấn:", err.status);
     }
   };
 
@@ -81,7 +81,7 @@ const ConsultationRequests = () => {
       message.success("Đánh dấu hoàn thành thành công!");
       fetchConsultations();
     } catch (err) {
-      console.error("Gửi phản hồi thất bại:", err);
+      console.error("Gửi phản hồi thất bại:", err.status);
       message.error("Gửi phản hồi thất bại!");
     }
   };
@@ -150,7 +150,7 @@ const ConsultationRequests = () => {
           </Button>
           {record.status !== "Đã phản hồi" && (
             <Button size="small" onClick={() => handleMarkCompleted(record)}>
-              Xác nhận đã hoàn thành
+             Hoàn thành
             </Button>
           )}
         </Space>
@@ -211,7 +211,7 @@ const ConsultationRequests = () => {
               <strong>SĐT:</strong> {selectedConsultation.phone}
             </p>
             <p>
-              <strong>Danh mục:</strong> {selectedConsultation.category}
+              <strong>Danh mục:</strong> {selectedConsultation.category == 'Administrative' ? 'Hành chính' : 'Dân sự'}
             </p>
             <h3>Dịch vụ:</h3>
             <p>{getServiceName(selectedConsultation.serviceId)}</p>

@@ -4,6 +4,7 @@ using DNATestSystem.BusinessObjects.Application.Dtos.TestResult;
 using DNATestSystem.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DNATestSystem.BusinessObjects.Application.Dtos.TestProcess;
 
 namespace DNATestSystem.APIService.Controllers
 {
@@ -153,6 +154,76 @@ namespace DNATestSystem.APIService.Controllers
                 return BadRequest(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet("all-test-process")]
+        public async Task<IActionResult> GetAllTestProcess()
+        {
+            try
+            {
+                var result = await _managerService.GetAllTestProcess();
+                return Ok(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
 
+        }
+        [HttpPut("update-test-process")]
+        public async Task<IActionResult> UpdateTestProcess([FromBody] ManagerUpdateTestProcessDto model)
+        {
+            try
+            {
+                var result = await _managerService.UpdateTestProcess(model);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật quy trình kiểm tra thành công." });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy quy trình kiểm tra." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpGet("thumbnail-by-slug")]
+        public async Task<IActionResult> GetThumbnailBySlugAsync([FromQuery] string slug)
+        {
+            try
+            {
+                var thumbnail = await _managerService.GetThumbnailBySlugAsync(slug);
+                if (thumbnail == null)
+                {
+                    return NotFound(new { success = false, message = "Thumbnail not found." });
+                }
+                return Ok(new { success = true, data = thumbnail });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpPut("update-blog-post")]
+        public async Task<IActionResult> UpdateBlogPostByPostId([FromBody] ManagerUpdateBlogPost model)
+        {
+            try
+            {
+                var result = await _managerService.UpdateBlogPostByPostId(model);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Cập nhật bài viết thành công." });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Không tìm thấy bài viết." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

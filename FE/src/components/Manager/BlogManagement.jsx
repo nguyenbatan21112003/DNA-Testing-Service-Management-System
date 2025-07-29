@@ -1,4 +1,6 @@
-﻿import React, { useState, useMemo, useEffect } from "react";
+﻿import React, { useState, 
+  // useMemo,
+   useEffect, useContext } from "react";
 import {
   Layout,
   Typography,
@@ -27,10 +29,11 @@ import {
   ClockCircleOutlined,
   InboxOutlined,
 } from "@ant-design/icons";
-import { Slate, Editable, withReact } from "slate-react";
-import { createEditor, Node } from "slate";
+// import { Slate, Editable, withReact } from "slate-react";
+// import { createEditor, Node } from "slate";
 import managerApi from "../../api/managerApi";
-import blogApi from "../../api/blogApi";
+
+import { AuthContext } from "../../context/AuthContext";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -43,114 +46,137 @@ const BlogManagement = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const fetchBlogs = async () => {
     try {
-      const res = await blogApi.getBlogs();
-      setBlogPosts(Array.isArray(res.data)? res.data: [])
+      const res = await managerApi.getBlogs();
+      const blogs = res.data?.data || [];
+      // console.log(blogs);
+      setBlogPosts(blogs);
     } catch (error) {
-      console.log(error)
+      console.error(error.status);
     }
-  }
+  };
+
   useEffect(() => {
-    fetchBlogs()
+    fetchBlogs();
   }, []);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
-  const editor = useMemo(() => withReact(createEditor()), []);
-  const [content, setContent] = useState([
-    { type: "paragraph", children: [{ text: "" }] },
-  ]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // const editor = useMemo(() => withReact(createEditor()), []);
+  // const [content, setContent] = useState([
+  //   { type: "paragraph", children: [{ text: "" }] },
+  // ]);
+  const [thumbnailBase64, setThumbnailBase64] = useState("");
+
   const [activeTab, setActiveTab] = useState("all");
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewBlog, setPreviewBlog] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const showModal = (blog = null) => {
     setEditingBlog(blog);
     if (blog) {
-     form.setFieldsValue({
-  title: blog.title,
-  summary: blog.summary || "",
-  status: blog.isPublished ? "published" : "draft",  // ✅ SỬA chỗ này
-  category: blog.category || "kiến thức",
-  author: blog.author || "",
-});
+      form.setFieldsValue({
+        title: blog.title,
+        summary: blog.summary || "",
+        content: blog.content || "", // ✅ CHỖ NÀY
+        status: blog.isPublished ? "published" : "draft",
+        category: blog.category || "kiến thức",
+        author: blog.author || "",
+      });
 
-      try {
-        setContent(
-          blog.content
-            ? JSON.parse(blog.content)
-            : [{ type: "paragraph", children: [{ text: "" }] }]
-        );
-      } catch {
-        setContent([{ type: "paragraph", children: [{ text: "" }] }]);
-      }
+      // try {
+      //   setContent(
+      //     blog.content
+      //       ? JSON.parse(blog.content)
+      //       : [{ type: "paragraph", children: [{ text: "" }] }]
+      //   );
+      // } catch {
+      //   setContent([{ type: "paragraph", children: [{ text: "" }] }]);
+      // }
     } else {
       form.resetFields();
       form.setFieldsValue({
         title: "",
         summary: "",
         status: "draft",
-        category: "kiến thức",
-        author: "",
+        // category: "kiến thức",
+        // author: "",
       });
-      setContent([{ type: "paragraph", children: [{ text: "" }] }]);
+      // setContent([{ type: "paragraph", children: [{ text: "" }] }]);
     }
     setIsModalVisible(true);
   };
-const STATUS_MAP = {
-  published: true,
-  draft: false,
-};
+  // const STATUS_MAP = {
+  //   published: true,
+  //   draft: false,
+  // };
 
-const REVERSE_STATUS = {
-  true: "published",
-  false: "draft",
-};
+  // const REVERSE_STATUS = {
+  //   true: "published",
+  //   false: "draft",
+  // };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setEditingBlog(null);
   };
+  function removeVietnameseTones(str) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // bỏ dấu
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  }
 
   const handleSubmit = async (values) => {
-  const payload = {
-    title: values.title,
-    slug: values.title.toLowerCase().replace(/\s+/g, "-"),
-    summary: values.summary,
-    content: JSON.stringify(content),
-    authorId: 1,
-    isPublished: values.status === "published",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    thumbnailUrl: values.thumbnailUrl || "", // cần có
+    const payload = {
+      blogId: editingBlog?.postId || 0,
+      title: values.title,
+      slug: removeVietnameseTones(values.title)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, ""),
+      summary: values.summary,
+      content: values.content,
+      isPublished: values.status === "published",
+      updatedAt: new Date().toISOString(),
+      thumbnailUrl: thumbnailBase64 || editingBlog?.thumbnailUrl || "",
+    };
+
+    try {
+      if (editingBlog) {
+        await managerApi.updateBlog(payload); // Gọi API PUT
+        message.success("Cập nhật bài viết thành công!");
+      } else {
+        await managerApi.createBlogs({
+          ...payload,
+          authorId: user ? user.userId : 1,
+          createdAt: new Date().toISOString(),
+        });
+        message.success("Tạo bài viết thành công!");
+      }
+      setIsModalVisible(false);
+      setEditingBlog(null);
+      fetchBlogs();
+    } catch (err) {
+      console.error(err.status);
+      message.error(
+        editingBlog ? "Cập nhật thất bại!" : "Tạo bài viết thất bại!"
+      );
+    }
   };
 
-  try {
-    await managerApi.createBlogs(payload);
-    message.success(editingBlog ? "Cập nhật thành công!" : "Tạo bài viết thành công!");
-    setIsModalVisible(false);
-    setEditingBlog(null);
-    fetchBlogs(); // dùng lại hàm đã định nghĩa
-  } catch (err) {
-    console.error(err);
-    message.error("Không thể tạo bài viết");
-  }
-};
 
-
-  const handleDelete = (id) => {
-    setBlogPosts(blogPosts.filter((blog) => blog.id !== id));
-    // Đồng bộ localStorage
-    const stored = JSON.parse(
-      localStorage.getItem(BLOG_STORAGE_KEY) || "[]"
-    ).filter((p) => p.id !== id);
-    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(stored));
-    message.success("Xóa bài viết thành công!");
-  };
 
   const handlePreview = (blog) => {
-    const htmlPreview = Array.isArray(content)
-      ? content.map((n) => `<p>${Node.string(n)}</p>`).join("")
-      : content || "<p>Nội dung bài viết chưa được cập nhật</p>";
+    const plainText = blog.content || "Nội dung bài viết chưa được cập nhật";
+
+    const htmlPreview = `<p>${plainText}</p>`; // hoặc format thêm nếu cần
+
     setPreviewBlog({ ...blog, content: htmlPreview });
     setPreviewVisible(true);
   };
@@ -159,89 +185,85 @@ const REVERSE_STATUS = {
     setActiveTab(key);
   };
 
-  const filteredBlogPosts =
-  activeTab === "all"
-    ? blogPosts
-    : blogPosts.filter((blog) =>
-        activeTab === "published" ? blog.isPublished : !blog.isPublished
-      );
+  const filteredBlogPosts = blogPosts.filter((blog) => {
+    const matchesTab =
+      activeTab === "all"
+        ? true
+        : activeTab === "published"
+        ? blog.isPublished
+        : !blog.isPublished;
 
+    const matchesSearch = blog.title
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    return matchesTab && matchesSearch;
+  });
 
   const columns = [
-  {
-    title: "Tiêu đề",
-    dataIndex: "title",
-    key: "title",
-    render: (text, record) => (
-      <div>
-        <Text strong>{text}</Text>
-        <br />
-        <Text type="secondary" className="text-xs">
-          ID: {record.postId}
-        </Text>
-      </div>
-    ),
-  },
-  {
-    title: "Tác giả",
-    dataIndex: "authorName",
-    key: "authorName",
-  },
-  {
-  title: "Trạng thái",
-  dataIndex: "isPublished",
-  key: "isPublished",
-  render: (isPublished) => {
-    let color = isPublished ? "green" : "orange";
-    let icon = isPublished ? <CheckCircleOutlined /> : <ClockCircleOutlined />;
-    let text = isPublished ? "Đã đăng" : "Bản nháp";
+    {
+      title: "Tiêu đề",
+      dataIndex: "title",
+      key: "title",
+      render: (text, record) => (
+        <div>
+          <Text strong>{text}</Text>
+          <br />
+          <Text type="secondary" className="text-xs">
+            ID: {record.postId}
+          </Text>
+        </div>
+      ),
+    },
 
-    return (
-      <Tag color={color} icon={icon}>
-        {text}
-      </Tag>
-    );
-  },
-},
-
-  {
-    title: "Ngày tạo",
-    dataIndex: "createdAt",
-    key: "createdAt",
-  },
-  {
-    title: "Thao tác",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <Tooltip title="Xem trước">
-          <Button
-            icon={<EyeOutlined />}
-            onClick={() => handlePreview(record)}
-            size="small"
-          />
-        </Tooltip>
-        <Tooltip title="Chỉnh sửa">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => showModal(record)}
-            size="small"
-          />
-        </Tooltip>
-        <Tooltip title="Xóa">
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa bài viết này?"
-            onConfirm={() => handleDelete(record.postId)}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button icon={<DeleteOutlined />} danger size="small" />
-          </Popconfirm>
-        </Tooltip>
-      </Space>
-    ),
-  },
-];
+    {
+      title: "Trạng thái",
+      dataIndex: "isPublished",
+      key: "isPublished",
+      render: (isPublished) => {
+        const color = isPublished ? "green" : "orange";
+        const icon = isPublished ? (
+          <CheckCircleOutlined />
+        ) : (
+          <ClockCircleOutlined />
+        );
+        const text = isPublished ? "Đã đăng" : "Bản nháp";
+        return (
+          <Tag color={color} icon={icon}>
+            {text}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value) => new Date(value).toLocaleDateString("vi-VN"),
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Tooltip title="Xem trước">
+            <Button
+              icon={<EyeOutlined />}
+              onClick={() => handlePreview(record)}
+              size="small"
+            />
+          </Tooltip>
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => showModal(record)}
+              size="small"
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <Layout className="p-6 bg-gray-100 min-h-[calc(100vh-48px)]">
@@ -265,6 +287,8 @@ const REVERSE_STATUS = {
             placeholder="Tìm kiếm bài viết..."
             prefix={<SearchOutlined />}
             className="w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
@@ -277,24 +301,30 @@ const REVERSE_STATUS = {
         <Table
           columns={columns}
           dataSource={filteredBlogPosts}
-          rowKey="id"
+          rowKey="postId"
           pagination={{ pageSize: 10 }}
         />
       </div>
 
       {/* Modal tạo/chỉnh sửa bài viết */}
       <Modal
-        title={editingBlog ? "Chỉnh sửa bài viết" : "Tạo bài viết mới"}
+        title={
+          <div
+            style={{ textAlign: "center", fontWeight: 600, fontSize: "20px" }}
+          >
+            {editingBlog ? "Chỉnh sửa bài viết" : "Tạo bài viết mới"}
+          </div>
+        }
         open={isModalVisible}
         onCancel={handleCancel}
         width={1000}
         footer={[
-          <Button
-            key="preview"
-            onClick={() => handlePreview(editingBlog || {})}
-          >
-            Xem trước
-          </Button>,
+          // <Button
+          //   key="preview"
+          //   onClick={() => handlePreview(editingBlog || {})}
+          // >
+          //   Xem trước
+          // </Button>,
           <Button key="back" onClick={handleCancel}>
             Hủy
           </Button>,
@@ -341,26 +371,37 @@ const REVERSE_STATUS = {
             />
           </Form.Item>
 
-          <Form.Item label="Nội dung" required>
-            <div className="border border-gray-200 rounded min-h-[300px] p-3">
-              <Slate
-                editor={editor}
-                initialValue={content}
-                onChange={setContent}
-              >
-                <Editable
-                  placeholder="Nhập nội dung..."
-                  className="min-h-[260px]"
-                />
-              </Slate>
-            </div>
+          <Form.Item
+            name="content"
+            label="Nội dung"
+            rules={[{ required: true, message: "Vui lòng nhập nội dung!" }]}
+          >
+            <Input.TextArea placeholder="Nhập nội dung bài viết" rows={8} />
           </Form.Item>
 
           <Form.Item name="thumbnail" label="Ảnh đại diện">
-            <Upload
+            {/* <Upload
               listType="picture-card"
               maxCount={1}
               beforeUpload={() => false}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải lên</div>
+              </div>
+            </Upload> */}
+            <Upload
+              listType="picture-card"
+              maxCount={1}
+              beforeUpload={(file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  setThumbnailBase64(e.target.result); // lưu base64
+                };
+                reader.readAsDataURL(file);
+                return false; // không upload tự động
+              }}
+              showUploadList={true}
             >
               <div>
                 <PlusOutlined />
@@ -371,20 +412,20 @@ const REVERSE_STATUS = {
 
           <Form.Item name="status" label="Trạng thái">
             <Select>
-              <Option value="published">Đăng ngay</Option>
+              <Option value="published">Đăng Bài</Option>
               <Option value="draft">Lưu nháp</Option>
             </Select>
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="author"
             label="Tác giả"
             rules={[{ required: true, message: "Vui lòng nhập tên tác giả!" }]}
           >
             <Input placeholder="Nhập tên tác giả" />
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item
+          {/* <Form.Item
             name="category"
             label="Danh mục"
             rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
@@ -394,13 +435,17 @@ const REVERSE_STATUS = {
               <Option value="công nghệ">Công nghệ</Option>
               <Option value="dịch vụ">Dịch vụ</Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </Modal>
 
       {/* Modal xem trước bài viết */}
       <Modal
-        title={previewBlog?.title || "Xem trước bài viết"}
+        title={
+          <div className="text-lg font-semibold">
+            {previewBlog?.title || "Xem trước bài viết"}
+          </div>
+        }
         open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         width={800}
@@ -411,30 +456,53 @@ const REVERSE_STATUS = {
         ]}
       >
         {previewBlog && (
-          <div className="py-4">
-            <Title level={2}>{previewBlog.title}</Title>
-            <div className="my-4 flex gap-2 items-center">
-              <Text type="secondary">Tác giả: {previewBlog.author}</Text>
-              <Text type="secondary">Ngày tạo: {previewBlog.createdAt}</Text>
+          <div className="py-4 space-y-6">
+            {/* Tiêu đề */}
+            <Title level={3} className="text-center">
+              {previewBlog.title}
+            </Title>
+
+            {/* Thông tin metadata */}
+            <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded border border-gray-200">
+              <div>
+                <Text strong>Slug:</Text>
+                <div className="text-gray-700">{previewBlog.slug || "—"}</div>
+              </div>
+
+              <div>
+                <Text strong>Trạng thái:</Text>
+                <div className="text-gray-700">
+                  {previewBlog.isPublished ? "Đã đăng" : "Bản nháp"}
+                </div>
+              </div>
+
+              <div>
+                <Text strong>Ngày tạo:</Text>
+                <div className="text-gray-700">
+                  {previewBlog.createdAt
+                    ? new Date(previewBlog.createdAt).toLocaleDateString(
+                        "vi-VN"
+                      )
+                    : "—"}
+                </div>
+              </div>
+
+              <div>
+                <Text strong>Tóm tắt:</Text>
+                <div className="text-gray-700">
+                  {previewBlog.summary || "Không có tóm tắt"}
+                </div>
+              </div>
             </div>
-            <div
-              className="blog-content p-4 border border-gray-200 rounded min-h-[300px]"
-              dangerouslySetInnerHTML={{
-                __html: (() => {
-                  try {
-                    const parsed = JSON.parse(previewBlog.content || "[]");
-                    if (Array.isArray(parsed)) {
-                      return parsed
-                        .map((n) => `<p>${Node.string(n)}</p>`)
-                        .join("");
-                    }
-                    return previewBlog.content;
-                  } catch {
-                    return previewBlog.content;
-                  }
-                })(),
-              }}
-            />
+
+            {/* Nội dung bài viết */}
+            <div className="blog-content p-4 border border-gray-200 rounded min-h-[300px]">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: previewBlog.content || "<p>Nội dung chưa có</p>",
+                }}
+              />
+            </div>
           </div>
         )}
       </Modal>

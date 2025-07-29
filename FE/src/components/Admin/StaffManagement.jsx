@@ -157,12 +157,12 @@ const StaffManagement = () => {
       if (!response || response.status != 200) {
         throw new Error("Không nhận được phản hồi từ server");
       }
-     alert("Tạo tài khoản thành công!");
+      alert("Tạo tài khoản thành công!");
       setAddModal(false);
       fetchStaffs();
     } catch (err) {
-      console.error("Tạo tài khoản lỗi:", err);
-      setAddError("Lỗi tạo tài khoản hoặc email đã tồn tại!");
+      console.error("Tạo tài khoản lỗi:", err.status);
+      setAddError("Lỗi tạo tài khoản hoặc phone, email đã tồn tại!");
     }
 
     // setAddLoading(false);
@@ -197,23 +197,36 @@ const StaffManagement = () => {
     setEditLoading(true);
     setEditError("");
 
-    const payload = {
+    const payloadRole = {
       id: editForm.userId,
       role: editForm.roleId,
       status: editForm.status,
     };
-
+    const payloadInfo = {
+      userId: editForm.userId,
+      fullName: editForm.fullName,
+      phoneNumber: editForm.phone,
+      status: editForm.status,
+    };
+    // console.log(payloadRole, payloadInfo);
     try {
-      const response = await adminApi.updateRoleUserById(payload);
-      // console.log("Update thành công:", response);
-      if (response.status !== 200) {
-        throw new Error("Cập nhật không thành công");
+      const [res1, res2] = await Promise.all([
+        adminApi.updateRoleUserById(payloadRole), // PUT /Admin/update-role-status
+        adminApi.updateUserInfo(payloadInfo), // PUT /Admin/update-phone-number-name-status
+      ]);
+      if (res1.status !== 200 || res2.status !== 200) {
+        throw new Error("Một trong các yêu cầu cập nhật thất bại");
       }
+      // const response = await adminApi.updateRoleUserById(payload);
+      // // console.log("Update thành công:", response);
+      // if (response.status !== 200) {
+      //   throw new Error("Cập nhật không thành công");
+      // }
       setEditModal(false);
       fetchStaffs(); // làm mới danh sách
-      alert('Cập nhật dịch vụ thành công')
+      alert("Cập nhật dịch vụ thành công");
     } catch (error) {
-      console.error("Update lỗi:", error);
+      console.error("Update lỗi:", error.status);
       setEditError("Lỗi cập nhật thông tin!");
     }
 
@@ -456,9 +469,9 @@ const StaffManagement = () => {
             </div>
 
             {/* Thêm các trường khác nếu có */}
-          {/* </div> */}
-        {/* )} */}
-      {/* // </Modal> */} 
+      {/* </div> */}
+      {/* )} */}
+      {/* // </Modal> */}
       <Modal
         open={addModal}
         onCancel={() => setAddModal(false)}
@@ -538,11 +551,11 @@ const StaffManagement = () => {
                 width: "100%",
               }}
               type="tel"
-              pattern="[0-9]{10,11}"
+              pattern="(03|05|07|08|09)[0-9]{8}"
               required
               onInvalid={(e) =>
                 e.target.setCustomValidity(
-                  "Vui lòng nhập đúng định dạng số điện thoại (10-11 số)."
+                  "Vui lòng nhập đúng định dạng số điện thoại."
                 )
               }
               onInput={(e) => e.target.setCustomValidity("")}
@@ -648,14 +661,48 @@ const StaffManagement = () => {
           <div style={{ fontWeight: 600 }}>Mã nhân viên (ID)</div>
           <input value={editForm.userId || ""} readOnly style={inputStyle} />
 
-          <div style={{ fontWeight: 600 }}>Họ tên</div>
-          <input value={editForm.fullName || ""} readOnly style={inputStyle} />
+          <div style={{ fontWeight: 600, backgroundColor: "#fff" }}>Họ tên</div>
+          <input
+            value={editForm.fullName || ""}
+            onChange={(e) =>
+              setEditForm((f) => ({ ...f, fullName: e.target.value }))
+            }
+            style={{
+              padding: 10,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              backgroundColor: "#fff", // NỀN TRẮNG
+              color: "#333",
+              fontSize: 14,
+            }}
+          />
 
           <div style={{ fontWeight: 600 }}>Email</div>
           <input value={editForm.email || ""} readOnly style={inputStyle} />
 
           <div style={{ fontWeight: 600 }}>Số điện thoại</div>
-          <input value={editForm.phone || ""} readOnly style={inputStyle} />
+          <input
+            value={editForm.phone || ""}
+            onChange={(e) =>
+              setEditForm((f) => ({ ...f, phone: e.target.value }))
+            }
+            style={{
+              padding: 10,
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              backgroundColor: "#fff", // NỀN TRẮNG
+              color: "#333",
+              fontSize: 14,
+            }}
+            pattern="(03|05|07|08|09)[0-9]{8}"
+            required
+            onInvalid={(e) =>
+              e.target.setCustomValidity(
+                "SĐT phải bắt đầu bằng 03/05/07/08/09 và đủ 10 số"
+              )
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
 
           <div style={{ fontWeight: 600 }}>Vai trò</div>
           <select
@@ -692,7 +739,7 @@ const StaffManagement = () => {
           <input
             value={
               editForm.createdAt
-                ? new Date(editForm.createdAt).toLocaleString("vi-VN")
+                ? new Date(editForm.createdAt).toLocaleDateString("vi-VN")
                 : ""
             }
             readOnly

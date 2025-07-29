@@ -8,6 +8,7 @@ using DNATestSystem.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Hangfire;
+using QuestPDF;
 using Hangfire.SqlServer;
 using DNATestSystem.ModelValidation;
 using DNATestSystem.Repositories;
@@ -68,6 +69,7 @@ builder.Services.AddControllers()
     {
         fv.RegisterValidatorsFromAssemblyContaining<UserValidateModel>(); // hoặc bất kỳ validator nào bạn viết
     });
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 builder.Services.Configure<MailSettings>(
     builder.Configuration.GetSection("MailSettings"));

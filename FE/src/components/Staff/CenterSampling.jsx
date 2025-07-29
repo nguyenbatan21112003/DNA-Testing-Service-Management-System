@@ -70,7 +70,7 @@ const CenterSampling = () => {
       if (res.status !== 200) throw new Error("Lỗi khi lấy samples");
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error("Fetch samples error:", err);
+      console.error("Fetch samples error:", err.status);
       return [];
     }
   };
@@ -79,10 +79,10 @@ const CenterSampling = () => {
       const res = await staffApi.getTestProccesses();
       if (res.status !== 200) throw new Error("Lỗi khi gọi API");
       // console.log("res center", res);
-      if(!Array.isArray(res.data)) {
-        setAppointments([]) 
-        return
-      } 
+      if (!Array.isArray(res.data)) {
+        setAppointments([]);
+        return;
+      }
       const rawData = res.data.filter(
         (item) => item.request?.collectType == "At Center"
       );
@@ -140,18 +140,26 @@ const CenterSampling = () => {
       );
 
       // Cập nhật thống kê
+      const today = dayjs().startOf("day");
+
       const stat = {
         total: mapped.length,
-        scheduled: mapped.filter((m) => m.status === "ĐÃ HẸN").length,
-        arrived: mapped.filter((m) => m.status === "ĐÃ ĐẾN").length,
-        missed: mapped.filter((m) => m.status === "VẮNG MẶT").length,
-        canceled: mapped.filter((m) => m.status === "ĐÃ HỦY").length,
+        scheduled: mapped.filter((m) => m.status === "WAITING_FOR_APPOINTMENT")
+          .length,
+        arrived: mapped.filter((m) => m.status === "SAMPLE_RECEIVED").length,
+        missed: mapped.filter(
+          (m) =>
+            m.status === "WAITING_FOR_APPOINTMENT" &&
+            m.appointmentDate &&
+            dayjs(m.appointmentDate).isBefore(today, "day")
+        ).length,
       };
+
       setStats(stat);
 
       setAppointments(mapped);
     } catch (error) {
-      console.log("Error loading home sampling requests:", error);
+      console.log("Error loading home sampling requests:", error.status);
     }
   };
 
@@ -187,8 +195,8 @@ const CenterSampling = () => {
         return "#52c41a"; // xanh lá
       case "":
         return "#fa8c16"; // cam
-      case "SAMPLE_RECEIVEDaa":
-        return "#0984e3"; // xanh dương tươi
+      case "COMPLETED":
+        return "gold"; // xanh dương tươi
 
       default:
         return "#b2bec3"; // xám nhạt
@@ -199,8 +207,8 @@ const CenterSampling = () => {
     switch (status) {
       case "WAITING_FOR_APPOINTMENT":
         return "Đã hẹn";
-      case "Đã đến":
-        return "Đã đến";
+      case "COMPLETED":
+        return "Đã trả kết quả";
       case "SAMPLE_RECEIVED":
         return "Đã lấy mẫu";
       case "Đang xử lý":
@@ -474,12 +482,9 @@ const CenterSampling = () => {
       ) === today
   );
 
-
-
   const handleGoToSampleCollection = async (record) => {
     const caseType = record.category;
     if (caseType === "Voluntary") {
-      
       const dataCollec = {
         orderId: record.id,
         sampleIds: record.sampleIds || [],
@@ -528,7 +533,7 @@ const CenterSampling = () => {
         email: record.email || "",
         phone: record.phone || "",
       };
-      console.log(dataCollec);
+      // console.log(dataCollec);
       localStorage.setItem(
         "dna_sample_collection_prefill",
         JSON.stringify(dataCollec)
@@ -577,7 +582,7 @@ const CenterSampling = () => {
         <Col xs={24} sm={8} md={4}>
           <Card>
             <Statistic
-              title="Đã đến"
+              title="Đã lấy mẫu"
               value={stats.arrived}
               valueStyle={{ color: "#52c41a" }}
               prefix={<CheckCircleOutlined />}
@@ -594,7 +599,7 @@ const CenterSampling = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={8} md={4}>
+        {/* <Col xs={24} sm={8} md={4}>
           <Card>
             <Statistic
               title="Đã hủy"
@@ -603,7 +608,7 @@ const CenterSampling = () => {
               prefix={<CloseCircleOutlined />}
             />
           </Card>
-        </Col>
+        </Col> */}
         <Col xs={24} sm={8} md={4}>
           <Card>
             <Statistic
@@ -766,11 +771,11 @@ const CenterSampling = () => {
               scroll={{ x: 1000 }}
             />
           </TabPane>
-          <TabPane tab="Đã đến" key="arrived">
+          <TabPane tab="Đã lấy mẫu" key="arrived">
             <Table
               columns={columns}
               dataSource={appointments.filter(
-                (apt) => apt.status === "SAMPLE_COLLECTING"
+                (apt) => apt.status === "SAMPLE_RECEIVED"
               )}
               rowKey="id"
               pagination={{
@@ -783,7 +788,7 @@ const CenterSampling = () => {
               scroll={{ x: 1000 }}
             />
           </TabPane>
-          <TabPane tab="Vắng mặt/Hủy" key="missed">
+          {/* <TabPane tab="Vắng mặt/Hủy" key="missed">
             <Table
               columns={columns}
               dataSource={appointments.filter(
@@ -799,7 +804,7 @@ const CenterSampling = () => {
               }}
               scroll={{ x: 1000 }}
             />
-          </TabPane>
+          </TabPane> */}
         </Tabs>
       </Card>
 

@@ -20,7 +20,7 @@ const UserManagement = () => {
       // Lọc roleId === 1 (user thường)
       setUsers(response.data.filter((u) => u.roleId === 1));
     } catch (error) {
-      console.log(error);
+      console.log(error.status);
       message.error("Không thể tải danh sách người dùng");
       setUsers([]);
     }

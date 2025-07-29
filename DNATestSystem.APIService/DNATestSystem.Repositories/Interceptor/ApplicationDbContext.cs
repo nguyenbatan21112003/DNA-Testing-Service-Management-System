@@ -45,8 +45,6 @@ namespace DNATestSystem.Repositories
 
         public virtual DbSet<UserProfile> UserProfiles { get; set; }
 
-        public virtual DbSet<UserSelectedService> UserSelectedServices { get; set; }
-
         public virtual DbSet<Invoice> Invoices { get; set; }
 
         public virtual DbSet<RequestDeclarant> RequestDeclarants { get; set; }
@@ -71,7 +69,7 @@ namespace DNATestSystem.Repositories
 
                 entity.Property(e => e.PostId).HasColumnName("PostID");
                 entity.Property(e => e.AuthorId).HasColumnName("AuthorID");
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.IsPublished).HasDefaultValue(true);
                 entity.Property(e => e.Slug).HasMaxLength(100);
@@ -102,7 +100,7 @@ namespace DNATestSystem.Repositories
                     .HasColumnName("ServiceID");
 
                 entity.Property(e => e.Message)
-                    .HasColumnType("text");
+                    .HasColumnType("nvarchar(max)");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50);
@@ -179,7 +177,7 @@ namespace DNATestSystem.Repositories
                 entity.HasKey(e => e.FeatureId).HasName("PK__Features__82230A298C737335");
 
                 entity.Property(e => e.FeatureId).HasColumnName("FeatureID");
-                entity.Property(e => e.Description).HasColumnType("text");
+                entity.Property(e => e.Description).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.Name)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -298,7 +296,7 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("(getdate())")
                     .HasColumnType("datetime");
-                entity.Property(e => e.Description).HasColumnType("text");
+                entity.Property(e => e.Description).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
                 entity.HasOne(d => d.User).WithMany(p => p.SystemLogs)
@@ -316,7 +314,7 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.KitCode)
                     .HasMaxLength(20)
                     .IsUnicode(false);
-                entity.Property(e => e.Notes).HasColumnType("text");
+                entity.Property(e => e.Notes).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.RequestId).HasColumnName("RequestID");
                 entity.Property(e => e.StaffId).HasColumnName("StaffID");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -361,7 +359,9 @@ namespace DNATestSystem.Repositories
                 entity.Property(e => e.ResultId).HasColumnName("ResultID");
                 entity.Property(e => e.EnteredAt).HasColumnType("datetime");
                 entity.Property(e => e.RequestId).HasColumnName("RequestID");
-                entity.Property(e => e.ResultData).HasColumnType("text");
+                entity.Property(e => e.ResultData)
+       .HasColumnType("nvarchar(max)")
+       .IsUnicode(true);
                 entity.Property(e => e.Status).HasMaxLength(50);
                 entity.Property(e => e.VerifiedAt).HasColumnType("datetime");
 
@@ -452,25 +452,7 @@ namespace DNATestSystem.Repositories
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__UserProfi__UserI__2F10007B");
             });
-            modelBuilder.Entity<UserSelectedService>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("PK__UserSele__3214EC271BA82503");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-                entity.Property(e => e.ConvertedToRequest).HasDefaultValue(false);
-                entity.Property(e => e.Note).HasColumnType("text");
-                entity.Property(e => e.SelectedAt).HasColumnType("datetime");
-                entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.Service).WithMany(p => p.UserSelectedServices)
-                    .HasForeignKey(d => d.ServiceId)
-                    .HasConstraintName("FK__UserSelec__Servi__4222D4EF");
-
-                entity.HasOne(d => d.User).WithMany(p => p.UserSelectedServices)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserSelec__UserI__412EB0B6");
-            });
+           
             
             OnModelCreatingPartial(modelBuilder);
         }

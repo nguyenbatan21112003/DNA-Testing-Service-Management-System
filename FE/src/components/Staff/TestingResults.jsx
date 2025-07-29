@@ -45,7 +45,8 @@ const TestingResults = () => {
   const [confirmHideOrder, setConfirmHideOrder] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [reasonModalVisible, setReasonModalVisible] = useState(false);
-  const [reasonText, setReasonText] = useState("");
+
+  // const [reasonText, setReasonText] = useState("");
   // const [requests, setRequests] = useState([]);
 
   const STATUS_TESTING = "Đang xét nghiệm";
@@ -62,17 +63,29 @@ const TestingResults = () => {
     if (["tuchoi", "rejected"].includes(s)) return "Từ chối";
     return "Khác";
   };
+  const statusPriority = {
+    "Đang xét nghiệm": 1,
+    "Chờ xác thực": 2,
+    "Từ chối": 3,
+    "Hoàn thành": 4,
+  };
 
   useEffect(() => {
     setFilteredOrders(
-      orders.filter(
-        (order) =>
-          !order.isHiddenByStaff &&
-          getStatusText(order.status) === "Đang xét nghiệm" &&
-          ((Array.isArray(order.resultTableData) &&
-            order.resultTableData.length > 0) ||
-            (Array.isArray(order.members) && order.members.length > 0))
-      )
+      orders
+        .filter(
+          (order) =>
+            !order.isHiddenByStaff &&
+            getStatusText(order.status) === "Đang xét nghiệm" &&
+            ((Array.isArray(order.resultTableData) &&
+              order.resultTableData.length > 0) ||
+              (Array.isArray(order.members) && order.members.length > 0))
+        )
+        .sort((a, b) => {
+          const aPriority = statusPriority[getStatusText(a.status)] || 999;
+          const bPriority = statusPriority[getStatusText(b.status)] || 999;
+          return aPriority - bPriority;
+        })
     );
   }, [orders]);
 
@@ -95,11 +108,18 @@ const TestingResults = () => {
       setFilteredOrders(orders.filter((order) => !order.isHiddenByStaff));
     } else {
       setFilteredOrders(
-        orders.filter(
-          (order) =>
-            !order.isHiddenByStaff &&
-            getStatusText(order.status) === filterStatus
-        )
+        orders
+          .filter((order) => !order.isHiddenByStaff)
+          .filter((order) =>
+            filterStatus === "all"
+              ? true
+              : getStatusText(order.status) === filterStatus
+          )
+          .sort((a, b) => {
+            const aPriority = statusPriority[getStatusText(a.status)] || 999;
+            const bPriority = statusPriority[getStatusText(b.status)] || 999;
+            return aPriority - bPriority;
+          })
       );
     }
   }, [filterStatus, orders]);
@@ -171,12 +191,12 @@ const TestingResults = () => {
         typeof updatedOrder.result === "string"
       ) {
         try {
-          const parsedData = JSON.parse(updatedOrder.result);
+          const parsedData = updatedOrder.result;
           if (Array.isArray(parsedData)) {
             initialTableData = parsedData;
           }
         } catch (err) {
-          console.error("Failed to parse result data:", err);
+          console.error("Failed to parse result data:", err.status);
         }
       }
 
@@ -240,6 +260,76 @@ const TestingResults = () => {
     setEditModalVisible(true);
   };
 
+  // const handleSaveResult = async (values) => {
+  //   try {
+  //     let dataToSave =
+  //       Array.isArray(values.resultTableData) &&
+  //       values.resultTableData.length > 0
+  //         ? values.resultTableData
+  //         : tableData;
+
+  //     const resultTableDataCopy = Array.isArray(dataToSave)
+  //       ? JSON.parse(JSON.stringify(dataToSave))
+  //       : null;
+
+  //     const isErrorSample =
+  //       (values.conclusion || "")
+  //         .toLowerCase()
+  //         .normalize("NFD")
+  //         .replace(/\p{Diacritic}/gu, "")
+  //         .trim() === "loi mau";
+
+  //     if (isErrorSample) {
+  //       updateOrder(selectedOrder.id, {
+  //         result: resultTableDataCopy
+  //           ? JSON.stringify(resultTableDataCopy)
+  //           : values.result,
+  //         testingMethod: values.testingMethod,
+  //         testingNotes: values.conclusion,
+  //         conclusion: values.conclusion,
+  //         resultTableData: resultTableDataCopy,
+  //         updatedAt: new Date().toLocaleString("vi-VN"),
+  //       });
+
+  //       window.dispatchEvent(new Event("dna_orders_updated"));
+  //       setTempFormData({});
+  //       setCurrentEditOrderId(null);
+  //       setEditModalVisible(false);
+  //       message.warning(
+  //         "Mẫu bị lỗi. Đã gửi thông báo cho khách hàng yêu cầu gửi lại mẫu!"
+  //       );
+  //       return;
+  //     }
+
+  //     // ⬇️ Gọi API BE
+  //     const res = await staffApi.createTestResult({
+  //       requestId: selectedOrder.id,
+  //       data: values.conclusion,
+  //     });
+  //     console.log(res);
+  //     updateOrder(selectedOrder.id, {
+  //       status: "Chờ xác thực",
+  //       result: JSON.stringify(resultTableDataCopy),
+  //       testingMethod: values.testingMethod,
+  //       testingNotes: values.conclusion,
+  //       conclusion: values.conclusion,
+  //       resultTableData: resultTableDataCopy,
+  //       updatedAt: new Date().toLocaleString("vi-VN"),
+  //     });
+
+  //     window.dispatchEvent(new Event("dna_orders_updated"));
+  //     setTempFormData({});
+  //     setCurrentEditOrderId(null);
+  //     setEditModalVisible(false);
+  //     message.success("Đã lưu kết quả và chuyển trạng thái sang Chờ xác thực!");
+  //     loadDataFromAPI();
+  //     alert("Kết quả đã được lưu thành công!");
+  //   } catch (error) {
+  //     console.error("Error saving result:", error);
+  //     message.error("Có lỗi xảy ra khi lưu kết quả!");
+  //   }
+  // };
+
   const handleSaveResult = async (values) => {
     try {
       let dataToSave =
@@ -259,6 +349,7 @@ const TestingResults = () => {
           .replace(/\p{Diacritic}/gu, "")
           .trim() === "loi mau";
 
+      // Trường hợp mẫu lỗi
       if (isErrorSample) {
         updateOrder(selectedOrder.id, {
           result: resultTableDataCopy
@@ -281,12 +372,32 @@ const TestingResults = () => {
         return;
       }
 
-      // ⬇️ Gọi API BE
-      const res = await staffApi.createTestResult({
-        requestId: selectedOrder.id,
-        data: values.conclusion,
-      });
-      console.log(res);
+      // ✅ Tùy thuộc trạng thái → gọi API tương ứng
+      const statusText = getStatusText(selectedOrder.status);
+
+      // console.log(selectedOrder, selectedOrder.status);
+      if (statusText === "Từ chối" && selectedOrder.resultId) {
+        // console.log("update nha");
+        // 👉 Gọi API cập nhật
+        const datapayload = {
+          resultID: selectedOrder.resultId,
+          resultData: values.conclusion,
+          enteredAt: new Date().toISOString(),
+          status: "Pending",
+        };
+        // console.log("datapayload", datapayload);
+        await staffApi.updateTestResult(datapayload);
+        // console.log("Đã cập nhật kết quả từ chối:", res);
+      } else {
+        // 👉 Gọi API tạo mới
+        await staffApi.createTestResult({
+          requestId: selectedOrder.id,
+          data: values.conclusion,
+        });
+        // console.log("Đã tạo kết quả mới:", res);
+      }
+
+      // ✅ Cập nhật lại local state
       updateOrder(selectedOrder.id, {
         status: "Chờ xác thực",
         result: JSON.stringify(resultTableDataCopy),
@@ -305,7 +416,7 @@ const TestingResults = () => {
       loadDataFromAPI();
       alert("Kết quả đã được lưu thành công!");
     } catch (error) {
-      console.error("Error saving result:", error);
+      console.error("Error saving result:", error.status);
       message.error("Có lỗi xảy ra khi lưu kết quả!");
     }
   };
@@ -369,7 +480,7 @@ const TestingResults = () => {
       if (res.status !== 200) throw new Error("Lỗi khi lấy samples");
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error("Fetch samples error:", err);
+      console.error("Fetch samples error:", err.status);
       return [];
     }
   };
@@ -384,8 +495,10 @@ const TestingResults = () => {
       console.log(res.data);
       const fullOrders = await Promise.all(
         res.data
-          ?.filter(
-            (item) => item.testProcess?.currentStatus === "SAMPLE_RECEIVED"
+          .filter((item) =>
+            ["sample_received", "completed"].includes(
+              item.testProcess?.currentStatus?.toLowerCase()
+            )
           )
           .map(async (item) => {
             const request = item.request || {};
@@ -400,13 +513,16 @@ const TestingResults = () => {
               const resultRes = await staffApi.getTestResultByRequestId(
                 requestId
               );
-              if (resultRes.status === 200 && Array.isArray(resultRes.data)) {
-                testResult = Array.isArray(resultRes.data)
-                  ? resultRes.data[0]
-                  : null;
+
+              if (resultRes.status === 200) {
+                if (Array.isArray(resultRes.data)) {
+                  testResult = resultRes.data[0] || null;
+                } else if (typeof resultRes.data === "object") {
+                  testResult = resultRes.data;
+                }
               }
             } catch (err) {
-              console.log(err);
+              console.log(err.status);
               console.warn("Không có kết quả xét nghiệm cho đơn:", requestId);
             }
 
@@ -414,9 +530,10 @@ const TestingResults = () => {
             const finalStatus = testResult?.status
               ? testResult.status // Ví dụ: 'WAITING_APPROVAL', 'REJECTED', 'COMPLETED'
               : process?.currentStatus || "SAMPLE_RECEIVED";
-
+            console.log("testResult nè", testResult);
             return {
               id: requestId,
+              resultId: testResult?.resultId || testResult?.resultId || null,
               processId: process.processId,
               status: finalStatus, // dùng status từ testResult nếu có
               name: declarant.fullName || "",
@@ -616,10 +733,11 @@ const TestingResults = () => {
               icon={<EditOutlined />}
               onClick={() => handleEditResult(record)}
             >
-              Nhập kết quả
+              {getStatusText(record.status) === "Từ chối"
+                ? "Cập nhật kết quả"
+                : "Nhập kết quả"}
             </Button>
           )}
-
           {getStatusText(record.status) !== "Đang xét nghiệm" && (
             <Tooltip title="Ẩn đơn hàng khỏi giao diện nhân viên">
               <Button
@@ -671,6 +789,8 @@ const TestingResults = () => {
     completed: orders.filter(
       (o) => getStatusText(o.status) === STATUS_COMPLETED
     ).length,
+    rejected: orders.filter((o) => getStatusText(o.status) === STATUS_REJECT)
+      .length, // ✅ thêm dòng này
     withResults: orders.filter((o) => o.result).length,
   };
 
@@ -1202,6 +1322,7 @@ const TestingResults = () => {
                             }}
                           >
                             {data.birth ||
+                              data.yob ||
                               data.birthYear ||
                               data.namSinh ||
                               data.namsinh ||
@@ -1275,11 +1396,11 @@ const TestingResults = () => {
               >
                 Kết quả
               </h3>
-              {selectedOrder.conclusion ? (
+              {selectedOrder.result ? (
                 <div
                   style={{ fontSize: 18, color: "#005c3c", fontWeight: 700 }}
                 >
-                  {selectedOrder.conclusion}
+                  {selectedOrder.result}
                 </div>
               ) : (
                 <div style={{ color: "#faad14", fontWeight: 600 }}>
@@ -1474,8 +1595,8 @@ const TestingResults = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(tableData)
-                    ? tableData.map((data, index) => (
+                  {Array.isArray(sampleData)
+                    ? sampleData.map((data, index) => (
                         <tr
                           key={data.key || index}
                           style={{
@@ -1514,6 +1635,7 @@ const TestingResults = () => {
                             }}
                           >
                             {data.birth ||
+                              data.yob ||
                               data.birthYear ||
                               data.namSinh ||
                               data.namsinh ||
@@ -1573,6 +1695,7 @@ const TestingResults = () => {
               rows={3}
               placeholder="Nhập kết luận và ghi chú kỹ thuật..."
               style={{ background: "#fff7e6", borderRadius: 8, fontSize: 16 }}
+              value={selectedOrder?.result || ""}
             />
           </Form.Item>
         </Form>
@@ -1603,7 +1726,7 @@ const TestingResults = () => {
         <div
           style={{ whiteSpace: "pre-line", color: "#fa541c", fontWeight: 500 }}
         >
-          {reasonText}
+          {/* {reasonText} */}
         </div>
       </Modal>
     </div>

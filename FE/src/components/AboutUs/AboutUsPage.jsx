@@ -8,9 +8,6 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
-  Phone,
-  Mail,
-  MapPin,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
@@ -115,29 +112,29 @@ const AboutUsPage = () => {
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/lab-equipment.jpg"
+                      src="/AboutUs/thiet-bi.jpg"
                       alt="Thiết bị xét nghiệm hiện đại"
                     />
                     <h4>Thiết bị tiên tiến</h4>
                   </div>
                   <div className="facility-item">
-                    <img src="/reception.jpg" alt="Không gian tiếp đón" />
+                    <img src="/DNA.jpg" alt="Không gian tiếp đón" />
                     <h4>Không gian tiếp đón</h4>
                   </div>
                   <div className="facility-item">
-                    <img src="/waiting-room.jpg" alt="Phòng chờ tiện nghi" />
+                    <img src="/AboutUs/ko-gian.jpg" alt="Phòng chờ tiện nghi" />
                     <h4>Phòng chờ tiện nghi</h4>
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/sample-room.jpg"
+                      src="/AboutUs/phong-lay-mau.jpg"
                       alt="Phòng lấy mẫu riêng biệt"
                     />
                     <h4>Phòng lấy mẫu riêng biệt</h4>
                   </div>
                   <div className="facility-item">
                     <img
-                      src="/consulting-room.jpg"
+                      src="/AboutUs/nhan-vien.jpg"
                       alt="Phòng tư vấn chuyên nghiệp"
                     />
                     <h4>Nhân viên chuyên nghiệp</h4>
@@ -278,55 +275,6 @@ const AboutUsPage = () => {
 
                 <div
                   className={`accordion-item ${
-                    activeAccordion === 2 ? "active" : ""
-                  }`}
-                >
-                  <div
-                    className="accordion-header"
-                    onClick={() => toggleAccordion(2)}
-                  >
-                    <h3>3. Chính sách hoàn tiền và hủy dịch vụ</h3>
-                    <span className="accordion-icon">
-                      {activeAccordion === 2 ? (
-                        <ChevronUp size={20} />
-                      ) : (
-                        <ChevronDown size={20} />
-                      )}
-                    </span>
-                  </div>
-                  {activeAccordion === 2 && (
-                    <div className="accordion-content">
-                      <p>
-                        DNA Lab áp dụng chính sách hoàn tiền và hủy dịch vụ như
-                        sau:
-                      </p>
-                      <ul>
-                        <li>
-                          Khách hàng có thể hủy dịch vụ và được hoàn 100% phí
-                          nếu thông báo trước ít nhất 48 giờ trước thời điểm hẹn
-                          lấy mẫu.
-                        </li>
-                        <li>
-                          Nếu khách hàng hủy dịch vụ trong vòng 24-48 giờ trước
-                          thời điểm hẹn, sẽ được hoàn 50% phí dịch vụ.
-                        </li>
-                        <li>
-                          Nếu khách hàng hủy dịch vụ trong vòng 24 giờ trước
-                          thời điểm hẹn hoặc không đến theo lịch hẹn, sẽ không
-                          được hoàn phí.
-                        </li>
-                        <li>
-                          Trường hợp DNA Lab không thể cung cấp dịch vụ vì lý do
-                          kỹ thuật hoặc bất khả kháng, khách hàng sẽ được hoàn
-                          100% phí dịch vụ hoặc được sắp xếp lịch hẹn mới.
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div
-                  className={`accordion-item ${
                     activeAccordion === 3 ? "active" : ""
                   }`}
                 >
@@ -334,7 +282,7 @@ const AboutUsPage = () => {
                     className="accordion-header"
                     onClick={() => toggleAccordion(3)}
                   >
-                    <h3>4. Giải quyết tranh chấp</h3>
+                    <h3>3. Giải quyết tranh chấp</h3>
                     <span className="accordion-icon">
                       {activeAccordion === 3 ? (
                         <ChevronUp size={20} />
@@ -503,10 +451,7 @@ const AboutUsPage = () => {
               <div className="team-members">
                 <div className="team-member">
                   <div className="member-image">
-                    <img
-                      src="/placeholder.svg?height=300&width=300"
-                      alt="GS.TS. Nguyễn Văn A"
-                    />
+                    <img src="/AboutUs/bacsi3.jpg" alt="GS.TS. Nguyễn Văn A" />
                   </div>
                   <div className="member-info">
                     <h3>GS.TS. Nguyễn Văn A</h3>
@@ -531,10 +476,7 @@ const AboutUsPage = () => {
 
                 <div className="team-member">
                   <div className="member-image">
-                    <img
-                      src="/placeholder.svg?height=300&width=300"
-                      alt="PGS.TS. Trần Thị B"
-                    />
+                    <img src="/AboutUs/bacsi4.jpg" alt="PGS.TS. Trần Thị B" />
                   </div>
                   <div className="member-info">
                     <h3>PGS.TS. Trần Thị B</h3>
@@ -559,10 +501,7 @@ const AboutUsPage = () => {
 
                 <div className="team-member">
                   <div className="member-image">
-                    <img
-                      src="/placeholder.svg?height=300&width=300"
-                      alt="TS.BS. Lê Văn C"
-                    />
+                    <img src="/AboutUs/bacsi1.jpg" alt="TS.BS. Lê Văn C" />
                   </div>
                   <div className="member-info">
                     <h3>TS.BS. Lê Văn C</h3>
@@ -587,10 +526,7 @@ const AboutUsPage = () => {
 
                 <div className="team-member">
                   <div className="member-image">
-                    <img
-                      src="/placeholder.svg?height=300&width=300"
-                      alt="ThS. Phạm Thị D"
-                    />
+                    <img src="/AboutUs/bacsi2.jpg" alt="ThS. Phạm Thị D" />
                   </div>
                   <div className="member-info">
                     <h3>ThS. Phạm Thị D</h3>
@@ -619,28 +555,28 @@ const AboutUsPage = () => {
                 <div className="certifications-grid">
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Chứng nhận ISO 17025"
                     />
                     <p>Chứng nhận ISO 17025</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/unnamed.png"
                       alt="Chứng nhận ISO 9001:2015"
                     />
                     <p>Chứng nhận ISO 9001:2015</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Giải thưởng Chất lượng Quốc gia"
                     />
                     <p>Giải thưởng Chất lượng Quốc gia</p>
                   </div>
                   <div className="certification-item">
                     <img
-                      src="/placeholder.svg?height=100&width=200"
+                      src="/AboutUs/chung-chi.jpg"
                       alt="Thành viên Hiệp hội Di truyền Quốc tế"
                     />
                     <p>Thành viên Hiệp hội Di truyền Quốc tế</p>

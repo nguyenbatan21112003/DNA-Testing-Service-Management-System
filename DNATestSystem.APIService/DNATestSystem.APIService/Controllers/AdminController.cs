@@ -66,6 +66,25 @@ namespace DNATestSystem.APIService.Controllers
             var users = await _adminService.GetAllUserAsync();
             return Ok(users);
         }
-
+        [HttpPut("update-phone-number-name-status")]
+        public async Task<IActionResult> UpdatePhoneNumberNameAndStatus([FromBody] UpdatePhoneNumberNameAndStatus model)
+        {
+            try
+            {
+                var result = await _adminService.UpdatePhoneNumberNameAndStatusAsync(model);
+                if (result)
+                {
+                    return Ok(new { message = "Cập nhật thành công" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Cập nhật không thành công" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

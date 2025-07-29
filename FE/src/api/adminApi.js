@@ -10,6 +10,7 @@ const adminApi = {
     updateRoleUserById: (data) => axiosInstance.put(`/Admin/update-role-status`, data),
     createStaff: (data) => axiosInstance.post('/Admin/create-staff', data),
     createManager: (data) => axiosInstance.post('/Admin/create-manager', data),
+    updateUserInfo: (data)=>axiosInstance.put(`/Admin/update-phone-number-name-status`, data)
 };
 
 export default adminApi;

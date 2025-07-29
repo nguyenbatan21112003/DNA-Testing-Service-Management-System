@@ -65,7 +65,7 @@ const HomeSampling = () => {
       if (res.status !== 200) throw new Error("Lỗi khi lấy samples");
       return Array.isArray(res.data) ? res.data : [];
     } catch (err) {
-      console.error("Fetch samples error:", err);
+      console.error("Fetch samples error:", err.status);
       return [];
     }
   };
@@ -147,7 +147,7 @@ const HomeSampling = () => {
 
       setSamplingRequests(mapped);
     } catch (error) {
-      console.log("Error loading home sampling requests:", error);
+      console.log("Error loading home sampling requests:", error.status);
     }
   };
 
@@ -234,7 +234,7 @@ const HomeSampling = () => {
       message.success("Cập nhật trạng thái thành công!");
       alert("✅Cập nhật trạng thái thành công!")
     } catch (err) {
-      console.error("Lỗi khi cập nhật trạng thái:", err);
+      console.error("Lỗi khi cập nhật trạng thái:", err.status);
       message.error("Có lỗi xảy ra khi cập nhật!");
     }
   };
@@ -365,7 +365,7 @@ const HomeSampling = () => {
           >
             Xem
           </Button>
-          {record.status !== "SAMPLE_RECEIVED" && (
+          {record.status !== "SAMPLE_RECEIVED" && record.status !== "COMPLETED" && (
             <Button
               size="small"
               icon={<CarOutlined />}

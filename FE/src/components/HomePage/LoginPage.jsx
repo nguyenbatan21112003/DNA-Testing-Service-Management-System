@@ -41,8 +41,7 @@ const LoginPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background:
-          'linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)',
+        background: "linear-gradient(135deg, #00a67e 0%, #36cfc9 100%)",
       }}
     >
       {showToast && (
@@ -89,7 +88,19 @@ const LoginPage = () => {
           <div className="form-group">
             <label htmlFor="login-email">Email</label>
             <input
-              className="bg-white p-4"
+              style={{
+                height: 44,
+                padding: "0 12px",
+                width: "100%",
+                background: "#fff",
+                borderRadius: 10,
+                border: "1.5px solid #e0e7ef",
+                fontSize: 16,
+                fontWeight: 500,
+                outline: "none",
+                boxShadow: "none",
+                transition: "border 0.2s",
+              }}
               type="email"
               id="login-email"
               value={email}
@@ -97,7 +108,7 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div style={{ position: 'relative', width: '100%' }}>
+          <div style={{ position: "relative", width: "100%" }}>
             <input
               type={showPassword ? "text" : "password"}
               id="login-password"
@@ -106,16 +117,16 @@ const LoginPage = () => {
               required
               style={{
                 height: 44,
-                padding: '0 44px 0 12px',
-                width: '100%',
-                background: '#eaf3ff',
+                padding: "0 44px 0 12px",
+                width: "100%",
+                background: "#eaf3ff",
                 borderRadius: 10,
-                border: '1.5px solid #e0e7ef',
+                border: "1.5px solid #e0e7ef",
                 fontSize: 16,
                 fontWeight: 500,
-                outline: 'none',
-                boxShadow: 'none',
-                transition: 'border 0.2s',
+                outline: "none",
+                boxShadow: "none",
+                transition: "border 0.2s",
               }}
               className="password-input"
             />
@@ -123,19 +134,19 @@ const LoginPage = () => {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 bottom: 0,
                 right: 12,
-                height: '100%',
-                background: 'none',
-                border: 'none',
+                height: "100%",
+                background: "none",
+                border: "none",
                 padding: 0,
                 margin: 0,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                color: '#888'
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                color: "#888",
               }}
               tabIndex={0}
               aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
@@ -157,9 +168,6 @@ const LoginPage = () => {
               />
               <span>Ghi nhớ đăng nhập</span>
             </label>
-            <a href="#" className="forgot-password">
-              Quên mật khẩu?
-            </a>
           </div>
           {error && (
             <div className="error-msg" style={{ marginBottom: 8 }}>

@@ -7,6 +7,7 @@ const messagesError = {
   servicesError: "Failed to load services",
   blogsError: "Failed to load blogs",
   blogError: "Failed to load blog",
+  updateUserFailed: 'Failed to update profile'
 };
 
 export default messagesError;

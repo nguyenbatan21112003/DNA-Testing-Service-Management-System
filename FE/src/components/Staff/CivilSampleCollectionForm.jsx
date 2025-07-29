@@ -89,6 +89,22 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // handle CCCD input with inline validation
+  const handleCccdChange = (e) => {
+    const val = e.target.value;
+    setForm((prev) => ({ ...prev, cccd: val }));
+    if (/[^0-9]/.test(val)) {
+      setErrors((prev) => ({ ...prev, cccd: "Chỉ được nhập chữ số." }));
+    } else if (!/^\d{11,12}$/.test(val)) {
+      setErrors((prev) => ({
+        ...prev,
+        cccd: "CCCD phải gồm 11 hoặc 12 chữ số.",
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, cccd: "" }));
+    }
+  };
+
   const handleMemberChange = (idx, field, value) => {
     setForm((prev) => ({
       ...prev,
@@ -163,7 +179,11 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
 
       const updateRes = await staffApi.receiveSample(payloadUpdate);
       // console.log("response nè", response, updateRes);
-      if (response?.status === 200 && response?.data.success == true && updateRes?.data.success == true ) {
+      if (
+        response?.status === 200 &&
+        response?.data.success == true &&
+        updateRes?.data.success == true
+      ) {
         // Nếu gọi thành công, thực hiện các hành động sau:
         setShowSuccessOverlay(true);
         setTimeout(() => {
@@ -182,7 +202,7 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
         alert("❌Không thể cập nhật mẫu, VUi lòng thử lại sau !!");
       }
     } catch (error) {
-      console.error("Lỗi gửi dữ liệu:", error);
+      console.error("Lỗi gửi dữ liệu:", error.status);
       alert("❌Gửi dữ liệu thất bại. Vui lòng thử lại.");
     }
   };
@@ -404,10 +424,12 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                 type="text"
                 name="cccd"
                 value={form.cccd}
-                onChange={handleChange}
+                onChange={handleCccdChange}
+                onBlur={() => setErrors((prev) => ({ ...prev, cccd: "" }))}
                 style={textFieldStyle}
                 required
               />
+              {errors.cccd && <span className="error-msg">{errors.cccd}</span>}
             </div>
           </div>
         </div>
@@ -650,8 +672,38 @@ const CivilSampleCollectionForm = ({ appointmentDate }) => {
                     <input
                       type="text"
                       value={m.birth}
-                      onChange={(e) =>
-                        handleMemberChange(idx, "birth", e.target.value)
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        handleMemberChange(idx, "birth", val);
+                        const year = parseInt(val, 10);
+                        const currentYear = new Date().getFullYear();
+                        if (/[^0-9]/.test(val)) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            [`member_birth_${idx}`]:
+                              "Năm sinh chỉ được nhập số.",
+                          }));
+                        } else if (
+                          isNaN(year) ||
+                          year < 1945 ||
+                          year > currentYear
+                        ) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            [`member_birth_${idx}`]: `Năm sinh phải từ 1945 đến ${currentYear}.`,
+                          }));
+                        } else {
+                          setErrors((prev) => ({
+                            ...prev,
+                            [`member_birth_${idx}`]: "",
+                          }));
+                        }
+                      }}
+                      onBlur={() =>
+                        setErrors((prev) => ({
+                          ...prev,
+                          [`member_birth_${idx}`]: "",
+                        }))
                       }
                       required
                       style={{

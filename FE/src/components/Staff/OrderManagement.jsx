@@ -75,6 +75,24 @@ const OrderManagement = () => {
 
   const handleAcceptOrder = async (order) => {
     try {
+      // Bước 1: Fetch lại toàn bộ đơn
+      const latestOrders = await loadAllSamplingRequests();
+
+
+      // Bước 2: Tìm lại đơn cần xử lý
+      const latestOrder = latestOrders?.find(o => o.id === order.id);
+
+      // console.log("order đã load nè", latestOrder);
+      // if (!latestOrder) {
+      //   alert("Không tìm thấy đơn hàng!");
+      //   return;
+      // }
+
+      if (!latestOrder) {
+        alert("Không tìm thấy đơn hàng hoặc đơn đã được xử lý bởi người khác!");
+        await loadAllSamplingRequests();
+        return;
+      }
       const payload = {
         processId: 0,
         requestId: order.id,
@@ -103,38 +121,10 @@ const OrderManagement = () => {
       alert("✅Nhận đơn thành công");
       await loadAllSamplingRequests();
     } catch (error) {
-      console.log(error);
+      console.log(error.status);
       message.error("Lỗi khi nhận đơn!");
     }
   };
-
-  // const handleSubmitAcceptOrder = async (values) => {
-  //   try {
-  //     const payload = {
-  //       processId: 0,
-  //       requestId: acceptingOrder.id,
-  //       staffId: user.userId,
-  //       kitCode: values.kitCode,
-  //       collectionType: "At Home",
-  //       notes: values.notes,
-  //     };
-  //     // console.log(payload);
-  //     const res = await staffApi.assignRequest(payload);
-  //     if (res.status !== 200) throw new Error();
-  //     const resConfirmed = {
-  //       requestId: payload.requestId,
-  //       newStatus: "confirmed",
-  //     };
-  //     // console.log(resConfirmed);
-  //     await confirmTestRequest(resConfirmed.requestId, resConfirmed);
-  //     message.success("Đã nhận đơn tại nhà!");
-
-  //     setAcceptModalVisible(false);
-  //     await loadAllSamplingRequests();
-  //   } catch {
-  //     message.error("Lỗi khi nhận đơn!");
-  //   }
-  // };
 
   const loadAllSamplingRequests = async () => {
     try {
@@ -143,45 +133,47 @@ const OrderManagement = () => {
         staffApi.getRequestCenter(),
       ]);
       const mapData = (data) =>
-        data.map((item) => {
-          const declarant = item.declarant || {};
-          const methodLabel = item.collectionType
-            ?.toLowerCase()
-            .includes("at home")
-            ? "home"
-            : "center";
-
-          return {
-            id: item.requestId,
-            name: declarant.fullName,
-            phone: declarant.phone,
-            address: declarant.address,
-            email: declarant.email,
-            identityNumber: declarant.identityNumber,
-            type: item.serviceName,
-            category:
-              item.serviceCategory === "Administrative"
-                ? "Hành chính"
-                : "Dân sự",
-            sampleMethod: methodLabel,
-            status: item.status?.toUpperCase() || "PENDING",
-            createdAt: item.createdAt,
-            date: new Date(item.createdAt).toLocaleDateString("vi-VN"),
-            scheduledDate: item.scheduleDate
-              ? new Date(item.scheduleDate).toLocaleString("vi-VN")
-              : null,
-            isHidden: item.isHidden ?? false,
-            sampleInfo: {
-              donors: (item.sample || []).map((s) => ({
-                name: s.ownerName,
-                gender: s.gender,
-                relationship: s.relationship,
-                yob: s.yob,
-                sampleType: s.sampleType,
-              })),
-            },
-          };
-        });
+        data
+          .filter((item) => item.status == "pending")
+          .map((item) => {
+            const declarant = item.declarant || {};
+            const methodLabel = item.collectionType
+              ?.toLowerCase()
+              .includes("at home")
+              ? "home"
+              : "center";
+            // console.log(item);
+            return {
+              id: item.requestId,
+              name: declarant.fullName,
+              phone: declarant.phone,
+              address: declarant.address,
+              email: declarant.email,
+              identityNumber: declarant.identityNumber,
+              type: item.serviceName,
+              category:
+                item.serviceCategory === "Administrative"
+                  ? "Hành chính"
+                  : "Dân sự",
+              sampleMethod: methodLabel,
+              status: item.status?.toUpperCase() || "PENDING",
+              createdAt: item.createdAt,
+              date: new Date(item.createdAt).toLocaleDateString("vi-VN"),
+              scheduledDate: item.scheduleDate
+                ? new Date(item.scheduleDate).toLocaleString("vi-VN")
+                : null,
+              isHidden: item.isHidden ?? false,
+              sampleInfo: {
+                donors: (item.sample || []).map((s) => ({
+                  name: s.ownerName,
+                  gender: s.gender,
+                  relationship: s.relationship,
+                  yob: s.yob,
+                  sampleType: s.sampleType,
+                })),
+              },
+            };
+          });
 
       const allOrders = [
         ...mapData(Array.isArray(homeRes.data) ? homeRes.data : []),
@@ -194,9 +186,9 @@ const OrderManagement = () => {
         return 0; // giữ nguyên thứ tự nếu cùng trạng thái
       });
       setOrders(sortedOrders);
-
+      return sortedOrders;
     } catch (error) {
-      console.error("Lỗi khi load đơn:", error);
+      console.error("Lỗi khi load đơn:", error.status);
     }
   };
 
@@ -466,7 +458,7 @@ const OrderManagement = () => {
                     </p>
                     <p style={{ marginBottom: 8 }}>
                       <strong>⚥ Giới tính:</strong> {donor.gender} &nbsp;|&nbsp;{" "}
-                      <strong>🎂 Năm sinh:</strong> {donor.yob}
+                      <strong>🎂 Năm sinh:</strong> {donor.yob ? donor.yob : ""}
                     </p>
                     <p style={{ marginBottom: 0 }}>
                       <strong>🔗 Quan hệ:</strong> {donor.relationship}{" "}

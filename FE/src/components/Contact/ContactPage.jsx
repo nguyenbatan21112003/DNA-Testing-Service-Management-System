@@ -30,8 +30,7 @@ const ContactPage = () => {
                 </div>
                 <div className="contact-details">
                   <h3>Điện thoại</h3>
-                  <p>0123 456 789</p>
-                  <p>0987 654 321 (Hotline 24/7)</p>
+                  <p>0772 905 704</p>
                 </div>
               </div>
 
@@ -41,8 +40,7 @@ const ContactPage = () => {
                 </div>
                 <div className="contact-details">
                   <h3>Email</h3>
-                  <p>info@dnalab.com.vn</p>
-                  <p>support@dnalab.com.vn</p>
+                  <p>anndtse182633@fpt.edu.vn</p>
                 </div>
               </div>
 

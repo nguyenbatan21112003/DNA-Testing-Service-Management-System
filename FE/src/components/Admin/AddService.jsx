@@ -66,7 +66,7 @@ const AddService = ({ defaultCategory = "Voluntary", onServiceCreated }) => {
       // Gọi lại API để cập nhật danh sách dịch vụ ở trang chính
       onServiceCreated?.(); // <- gọi nếu có truyền props
     } catch (err) {
-      console.log(err);
+      console.log(err.status);
       alert("Thêm dịch vụ thất bại!");
     }
   };
@@ -134,7 +134,15 @@ const AddService = ({ defaultCategory = "Voluntary", onServiceCreated }) => {
               <Form.Item
                 name="price"
                 label="Giá 2 người (VNĐ)"
-                rules={[{ required: true, message: "Vui lòng nhập giá!" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập giá!" },
+                  {
+                    type: "number",
+                    min: 1000000,
+                    max: 10000000,
+                    message: "Giá phải từ 1 triệu đến 10 triệu.",
+                  },
+                ]}
               >
                 <InputNumber
                   style={{ width: "100%" }}
@@ -142,7 +150,8 @@ const AddService = ({ defaultCategory = "Voluntary", onServiceCreated }) => {
                     `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(v) => v.replace(/\$\s?|(,*)/g, "")}
-                  min={0}
+                  min={1000000}
+                  max={10000000}
                 />
               </Form.Item>
             </Col>
@@ -153,6 +162,12 @@ const AddService = ({ defaultCategory = "Voluntary", onServiceCreated }) => {
                 label="Giá người thứ 3 (VNĐ)"
                 rules={[
                   { required: true, message: "Vui lòng nhập giá người thứ 3!" },
+                  {
+                    type: "number",
+                    min: 1000000,
+                    max: 10000000,
+                    message: "Giá phải từ 1 triệu đến 10 triệu.",
+                  },
                 ]}
               >
                 <InputNumber
@@ -161,7 +176,8 @@ const AddService = ({ defaultCategory = "Voluntary", onServiceCreated }) => {
                     `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(v) => v.replace(/\$\s?|(,*)/g, "")}
-                  min={0}
+                  min={2500000}
+                  max={10000000}
                 />
               </Form.Item>
             </Col>

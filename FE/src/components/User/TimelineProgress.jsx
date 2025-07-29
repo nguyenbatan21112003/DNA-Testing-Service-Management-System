@@ -4,12 +4,13 @@ const TimelineProgress = ({ order }) => {
   if (!order) return null;
   // Tùy vào sampleMethod, quyết định có mốc 'Gửi kit' hay không
   const getStepLabel = (key) => {
+    
     switch (key) {
       case "registered":
         return "Đăng ký";
-      case "kit_sent":
+      case "KIT SENT":
         return "Gửi kit";
-      case "sample_received":
+      case "SAMPLE_RECEIVED":
         return "Nhận mẫu";
       case "analyzing":
         return "Phân tích";
@@ -24,7 +25,7 @@ const TimelineProgress = ({ order }) => {
     ...(order.sampleMethod === "home"
       ? [
           {
-            key: "kit_sent",
+            key: "kit sent",
             label: getStepLabel("kit_sent"),
             date: order.kitSentDate,
           },

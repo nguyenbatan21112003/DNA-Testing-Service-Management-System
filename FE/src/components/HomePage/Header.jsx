@@ -4,7 +4,6 @@ import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Modal } from "antd";
-import NotificationBell from "./NotificationBell";
 import "../../css/Header.css";
 
 const Header = () => {
@@ -30,8 +29,8 @@ const Header = () => {
     setLogoutModal(true);
   };
 
-  const confirmLogout = () => {
-    logout();
+  const confirmLogout = async () => {
+    await logout();
     setLogoutModal(false);
     setShowDropdown(false);
     window.location.href = "/";
@@ -130,7 +129,6 @@ const Header = () => {
         <div className="header-buttons">
           {user ? (
             <>
-              <NotificationBell />
               <div
                 style={{ position: "relative", display: "inline-block" }}
                 ref={dropdownRef}

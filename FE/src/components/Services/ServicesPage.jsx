@@ -158,9 +158,9 @@ const ServicesPage = () => {
                         </ul>
                       </div>
                       <div className="service-cta">
-                        <a href="#registration" className="service-button">
+                        <Link to="/dangki" className="service-button">
                           Đăng ký xét nghiệm <ChevronRight size={16} />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -214,9 +214,9 @@ const ServicesPage = () => {
                         </ul>
                       </div>
                       <div className="service-cta">
-                        <a href="#registration" className="service-button">
+                        <Link to="/dangki" className="service-button">
                           Đăng ký xét nghiệm <ChevronRight size={16} />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -245,10 +245,14 @@ const ServicesPage = () => {
                 <div className="blog-card" key={blog.postId}>
                   <div className="blog-image">
                     <img
-                      src={blog.thumbnailURL}
+                      src={blog.thumbnailURL || "/Blog.jpg"}
                       alt={blog.title}
                       height={200}
                       width={300}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/Blog.jpg";
+                      }}
                     />
                   </div>
                   <div className="blog-content">

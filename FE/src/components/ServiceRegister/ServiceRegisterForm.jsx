@@ -35,6 +35,9 @@ const ServiceRegisterForm = () => {
     { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
     { name: "", birth: "", gender: "Nam", relation: "", sampleType: "" },
   ]);
+  const [cccdError, setCccdError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
   const services = useServiceContext();
 
   useEffect(() => {
@@ -124,12 +127,12 @@ const ServiceRegisterForm = () => {
     if (sampleMethod === "At Home") {
       const invalidBirth = memberTable.some((m) => {
         const birth = Number(m.birth);
-        return isNaN(birth) || birth < 1900 || birth > new Date().getFullYear();
+        return isNaN(birth) || birth < 1945 || birth > new Date().getFullYear();
       });
 
       if (invalidBirth) {
         alert(
-          "Vui lòng nhập năm sinh hợp lệ (1900 đến nay) cho tất cả thành viên."
+          "Vui lòng nhập năm sinh hợp lệ (1945 đến nay) cho tất cả thành viên."
         );
         return;
       }
@@ -146,6 +149,29 @@ const ServiceRegisterForm = () => {
       alert("Vui lòng chọn ngày hẹn xét nghiệm.");
       return;
     }
+
+    // Validate phone: only numbers and must start with 0
+    const phoneValue = form.phone.value.trim();
+    if (!/^0\d+$/.test(phoneValue)) {
+      setPhoneError("Số điện thoại sai định dạng.");
+      return;
+    }
+    setPhoneError("");
+
+    ////////////
+    // Validate CCCD
+    const cccdValue = form.cccd.value.trim();
+    // Validate CCCD: only numbers
+    if (/[^0-9]/.test(cccdValue)) {
+      setCccdError("Số CCCD chỉ được nhập số, không được nhập chữ hay ký tự.");
+      return;
+    }
+    // Validate CCCD: must be 11 or 12 digits
+    if (!/^\d{11,12}$/.test(cccdValue)) {
+      setCccdError("Số CCCD phải gồm 11 hoặc 12 chữ số.");
+      return;
+    }
+    setCccdError(""); // Clear error if valid
 
     // 1. Gửi đơn hàng đến BE
     // console.log( appointmentDate.toISOString().slice(0, 10))
@@ -179,15 +205,15 @@ const ServiceRegisterForm = () => {
         yob: Number(m.birth) || 0,
       })),
     };
-    console.log("form submit: ", submitPayload);
+    // console.log("form submit: ", submitPayload);
     try {
       const response = await userApi.submitFormRequest(submitPayload); // POST /user/submit
-      console.log(response);
+      // console.log(response);
       if (!response || response.status !== 200 || !response.data?.requestId) {
         throw new Error("Không thể tạo đơn hàng");
       }
       const requestId = response.data?.requestId;
-      console.log(requestId);
+      // console.log(requestId);
       if (!requestId) {
         alert("Không thể tạo đơn hàng. Vui lòng thử lại.");
         return;
@@ -216,7 +242,7 @@ const ServiceRegisterForm = () => {
         alert("❌ Không tạo được liên kết thanh toán. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Lỗi gửi đơn hàng hoặc thanh toán:", error);
+      console.error("Lỗi gửi đơn hàng hoặc thanh toán:", error.status);
       alert("🚫 Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       form.reset();
@@ -355,7 +381,13 @@ const ServiceRegisterForm = () => {
                 name="phone"
                 required
                 defaultValue={user ? user.phone : ""}
+                onChange={() => setPhoneError("")}
               />
+              {phoneError && (
+                <p style={{ color: "red", marginTop: 4, fontSize: "14px" }}>
+                  {phoneError}
+                </p>
+              )}
             </div>
           </div>
           <div className="form-row">
@@ -522,7 +554,13 @@ const ServiceRegisterForm = () => {
                 id="cccd"
                 name="cccd"
                 placeholder="Nhập số CCCD"
+                onChange={() => setCccdError("")} // Clear error when user types
               />
+              {cccdError && (
+                <p style={{ color: "red", marginTop: 4, fontSize: "14px" }}>
+                  {cccdError}
+                </p>
+              )}
             </div>
             <div className="form-group" style={{ flex: 1 }}>
               <label htmlFor="appointmentDate">Ngày hẹn xét nghiệm</label>
@@ -792,8 +830,9 @@ const ServiceRegisterForm = () => {
               </ul>
               <div style={{ marginBottom: 6 }}>
                 <a
-                  href="/Giấy%20xác%20nhận%20là%20sinh%20viên%20.docx"
-                  download
+                  href="https://www.youtube.com/watch?v=arLtbkwZETk"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     color: "#0a7cff",
                     textDecoration: "underline",

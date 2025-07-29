@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using DNATestSystem.BusinessObjects.Application.Dtos.ApiResponse;
@@ -100,8 +101,7 @@ namespace DNATestSystem.Services.Service
                 .FirstOrDefaultAsync(tr =>
                     tr.ResultId == dto.ResultID &&
                     tr.Status == "Pending" &&
-                    tr.VerifiedBy == null &&
-                    tr.VerifiedAt == null);
+                    tr.VerifiedBy == null);
 
             if (result == null)
                 return false;
@@ -144,6 +144,16 @@ namespace DNATestSystem.Services.Service
                 Success = true,
                 Message = "Đăng bài viết thành công",
             };
+        }
+        public async Task<string?> GetThumbnailBySlugAsync(string slug)
+        {
+            var post = await _context.BlogPosts
+                .FirstOrDefaultAsync(p => p.Slug == slug);
+
+            if (post == null || string.IsNullOrWhiteSpace(post.ThumbnailUrl))
+                return null;
+
+            return post.ThumbnailUrl; 
         }
 
         public async Task<List<FeedbackViewDto>> GetAllFeedbacksAsync()
@@ -253,6 +263,56 @@ namespace DNATestSystem.Services.Service
                 })
                 .ToListAsync();
             return blogPosts;
+        }
+        public async Task<List<ManagerTestProcessDto>> GetAllTestProcess()
+        {
+            var testProcesses = await _context.TestProcesses
+                .Select(tp => new ManagerTestProcessDto
+                {
+                    ProcessId = tp.ProcessId,
+                    RequestId = tp.RequestId,
+                    StaffId = tp.StaffId,
+                    KitCode = tp.KitCode,
+                    ClaimtAt = tp.ClaimedAt,
+                    CurrentStatus = tp.CurrentStatus,
+                    Notes = tp.Notes,
+                    UpdatedAt = tp.UpdatedAt
+                })
+                .ToListAsync();
+            return testProcesses;
+        }
+        public async Task<bool> UpdateTestProcess(ManagerUpdateTestProcessDto model)
+        {
+            var testProcess = await _context.TestProcesses
+                .FirstOrDefaultAsync(tp => tp.RequestId == model.RequestId);
+            if (testProcess == null)
+            {
+                return false; // Không tìm thấy Test Process
+            }
+            // Cập nhật thông tin Test Process
+            testProcess.CurrentStatus = model.CurrentStatus;
+            testProcess.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
+        }
+        public async Task<bool> UpdateBlogPostByPostId(ManagerUpdateBlogPost model)
+        {
+            var blogPost = await _context.BlogPosts
+                .FirstOrDefaultAsync(bp => bp.PostId == model.BlogId);
+            if (blogPost == null)
+            {
+                return false; // Không tìm thấy bài viết
+            }
+            // Cập nhật thông tin bài viết
+            blogPost.Title = model.Title;
+            blogPost.Slug = model.Slug;
+            blogPost.Summary = model.Summary;
+            blogPost.Content = model.Content;
+            blogPost.IsPublished = model.IsPublished ?? blogPost.IsPublished;
+            blogPost.UpdatedAt = model.UpdatedAt ?? DateTime.Now;
+            blogPost.ThumbnailUrl = model.ThumbnailUrl;
+            await _context.SaveChangesAsync();
+            return true; // Cập nhật thành công
         }
     }
 }

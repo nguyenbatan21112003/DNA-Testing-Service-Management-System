@@ -4,6 +4,8 @@ import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Layout, Menu, Modal, message, Button } from "antd";
+// import UserProfile from "../User/UserProfile";
+
 import {
   DashboardOutlined,
   SafetyCertificateOutlined,
@@ -12,15 +14,18 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   FileTextOutlined,
+  SettingOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
-import NotificationBell from "../HomePage/NotificationBell";
 
 // Import các component con
 import ManagerOverview from "./ManagerOverview";
 import ManagerReports from "./ManagerReports";
 import TestResultVerification from "./TestResultVerification";
 import BlogManagement from "./BlogManagement";
+import CustomerFeedbackManager from "./CustomerFeedbackManager";
+import UserSetting from "../User/UserSetting"; // Đảm bảo đường dẫn đúng
 
 const { Sider, Content } = Layout;
 
@@ -35,16 +40,24 @@ const menuItems = [
     icon: <SafetyCertificateOutlined />,
     label: "Xác thực kết quả",
   },
-  {
-    key: "reports",
-    icon: <BarChartOutlined />,
-    label: "Báo cáo",
-  },
+
+  // {
+  //   key: "feedback",
+  //   icon: <CustomerFeedbackManager />,
+  //   label: "Phản hồi của Khách hàng",
+  // },
   {
     key: "blog",
     icon: <FileTextOutlined />,
     label: "Quản lý Blog",
   },
+  //   {
+  //   key: "profile",
+  //   icon: <UserOutlined />,
+  //   label: "Hồ sơ cá nhân",
+  // },
+
+  { key: "settings", label: "Cài đặt", icon: <SettingOutlined /> },
 ];
 
 const ManagerDashboard = () => {
@@ -59,17 +72,15 @@ const ManagerDashboard = () => {
   // Tạo tài khoản Manager và dữ liệu mẫu tự động
   useEffect(() => {
     if (!user || user.role_id !== 3) {
-      const tempManagerAccount = {
-        user_id: 3,
-        name: "Nguyễn Văn Quản",
-        email: "manager@dnalab.com",
-        phone: "0987654321",
-        password: "manager123",
-        role_id: 3,
-        avatar: null,
-      };
-
-      localStorage.setItem("dna_user", JSON.stringify(tempManagerAccount));
+      // const tempManagerAccount = {
+      //   user_id: 3,
+      //   name: "Nguyễn Văn Quản",
+      //   email: "manager@dnalab.com",
+      //   phone: "0987654321",
+      //   password: "manager123",
+      //   role_id: 3,
+      //   avatar: null,
+      // };
       window.location.reload();
       return;
     }
@@ -119,10 +130,13 @@ const ManagerDashboard = () => {
         return <ManagerOverview />;
       case "verification":
         return <TestResultVerification />;
-      case "reports":
-        return <ManagerReports />;
+      //     case "profile":
+      // return <UserProfile />;
+
       case "blog":
         return <BlogManagement />;
+      case "settings":
+        return <UserSetting />;
       default:
         return <ManagerOverview />;
     }
@@ -242,7 +256,7 @@ const ManagerDashboard = () => {
         </div>
       </Sider>
       <Layout style={{ marginLeft: 220 }}>
-        {/* Header with NotificationBell và dòng chào tên manager */}
+        {/* Header và dòng chào tên manager */}
         <div
           style={{
             height: 64,
@@ -258,7 +272,6 @@ const ManagerDashboard = () => {
             gap: 20,
           }}
         >
-          <NotificationBell />
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {/* Avatar hoặc chữ cái đầu */}
             {user?.avatar ? (

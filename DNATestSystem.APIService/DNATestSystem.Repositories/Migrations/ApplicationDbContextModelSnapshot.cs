@@ -844,47 +844,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.UserSelectedService", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("ConvertedToRequest")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool?>("IncludeVat")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("SelectedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("int")
-                        .HasColumnName("ServiceID");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    b.HasKey("Id")
-                        .HasName("PK__UserSele__3214EC271BA82503");
-
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSelectedServices");
-                });
-
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.BlogPost", b =>
                 {
                     b.HasOne("DNATestSystem.BusinessObjects.Models.User", "Author")
@@ -1105,23 +1064,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.UserSelectedService", b =>
-                {
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.Service", "Service")
-                        .WithMany("UserSelectedServices")
-                        .HasForeignKey("ServiceId")
-                        .HasConstraintName("FK__UserSelec__Servi__4222D4EF");
-
-                    b.HasOne("DNATestSystem.BusinessObjects.Models.User", "User")
-                        .WithMany("UserSelectedServices")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK__UserSelec__UserI__412EB0B6");
-
-                    b.Navigation("Service");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.CollectType", b =>
                 {
                     b.Navigation("TestRequests");
@@ -1144,8 +1086,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("PriceDetails");
 
                     b.Navigation("TestRequests");
-
-                    b.Navigation("UserSelectedServices");
                 });
 
             modelBuilder.Entity("DNATestSystem.BusinessObjects.Models.TestProcess", b =>
@@ -1196,8 +1136,6 @@ namespace DNATestSystem.Repositories.Migrations
                     b.Navigation("TestResultVerifiedByNavigations");
 
                     b.Navigation("UserProfiles");
-
-                    b.Navigation("UserSelectedServices");
                 });
 #pragma warning restore 612, 618
         }
