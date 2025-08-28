@@ -66,9 +66,8 @@ Các tính năng nổi bật bao gồm:
 - **Thư viện hỗ trợ:** AutoMapper, JWT, MailKit, Swagger (Swashbuckle)
 
 ### Frontend
-- **Ngôn ngữ:** JavaScript (React)
-- **Framework:** Next.js
-- **UI:** React Bootstrap
+- **Ngôn ngữ:** JavaScript 
+- **Framework:** ReactJS
 - **Thư viện hỗ trợ:** Axios, React Hook Form, Yup, React Toastify
 
 
